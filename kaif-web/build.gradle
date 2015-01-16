@@ -24,6 +24,7 @@ dependencies {
   compile("org.springframework.boot:spring-boot-starter-actuator")
   compile("org.springframework.boot:spring-boot-starter-remote-shell")
   testCompile("org.springframework.boot:spring-boot-starter-test")
-  compile("com.h2database:h2")
+
+  compile 'org.postgresql:postgresql:9.3-1102-jdbc41'
 }
 
