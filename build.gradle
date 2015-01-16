@@ -4,10 +4,19 @@ allprojects {
 }
 
 subprojects {
+  repositories {
+    jcenter()
+  }
+
   apply plugin: 'java'
+  apply plugin: 'idea'
   tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
   }
+
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
+
 }
 
 task wrapper(type: Wrapper) {
