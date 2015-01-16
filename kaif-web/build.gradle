@@ -1,0 +1,43 @@
+buildscript {
+    ext {
+        springBootVersion = '1.2.1.RELEASE'
+    }
+    repositories {
+
+        jcenter()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'spring-boot' 
+
+jar {
+    baseName = 'kaif-web'
+    version = '0.0.1-SNAPSHOT'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    jcenter()
+}
+
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-jdbc")
+    compile("org.springframework.boot:spring-boot-starter-data-elasticsearch")
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-websocket")
+    compile("org.springframework.boot:spring-boot-starter-freemarker")
+    compile("org.springframework.boot:spring-boot-starter-social-twitter")
+    compile("org.springframework.boot:spring-boot-starter-actuator")
+    compile("org.springframework.boot:spring-boot-starter-remote-shell")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    compile("com.h2database:h2")
+}
+

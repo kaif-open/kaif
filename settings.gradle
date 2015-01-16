@@ -1,0 +1,9 @@
+include 'kaif-web'
+
+gradle.allprojects {
+  buildscript {
+    repositories {
+      jcenter()
+    }
+  }
+}
