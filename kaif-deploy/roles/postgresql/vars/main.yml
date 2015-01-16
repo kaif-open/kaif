@@ -1,0 +1,3 @@
+postgresql:
+  version: '9.3'
+  db_path: '/volume/lib/postgresql'

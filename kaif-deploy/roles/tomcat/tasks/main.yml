@@ -1,0 +1,55 @@
+---
+- name: debug vars tomcat for {{tomcat.name}}
+  debug: var=tomcat
+
+- name: check tomcat server {{ tomcat.name }} installed
+  command: "/usr/bin/test -d /var/lib/{{ tomcat.name }} "
+  ignore_errors: True
+  register: tomcat_installed
+  sudo: yes
+
+- name: copy tomcat server for {{ tomcat.name }}
+  when: tomcat_installed|failed
+  unarchive: src=blank-tomcat-7.0.55.tar.gz
+             dest=/var/lib
+             owner={{tomcat.owner}}
+             group={{tomcat.owner}}
+  sudo: yes
+
+- name: install tomcat server for {{ tomcat.name }}
+  when: tomcat_installed|failed
+  shell: "{{item}}"
+  with_items:
+    - mv /var/lib/apache-tomcat-7.0.55 /var/lib/{{tomcat.name }}
+    - chown -R {{tomcat.owner}}.{{tomcat.owner}} /var/lib/{{ tomcat.name }}
+  sudo: yes
+
+- name: install tomcat init service for {{ tomcat.name }}
+  template: src=tomcat-init.j2
+            dest=/etc/init.d/{{tomcat.name}}
+            mode=755
+  sudo: yes
+
+- name: enable tomcat service for {{ tomcat.name }}
+  service: name={{tomcat.name}} enabled=true
+  sudo: yes
+
+- name: apply tomcat setenv.sh
+  template: src=setenv.sh.j2
+            dest=/var/lib/{{tomcat.name}}/bin/setenv.sh
+            owner={{tomcat.owner}} group={{tomcat.owner}}
+  notify:
+    - restart {{tomcat.name}}
+  sudo: yes
+
+- name: apply tomcat server.xml for {{ tomcat.name }}
+  template: src=server.xml.j2
+            dest=/var/lib/{{tomcat.name}}/conf/server.xml
+            owner={{tomcat.owner}} group={{tomcat.owner}}
+  notify:
+    - restart {{tomcat.name}}
+  sudo: yes
+
+- name: quick link for {{tomcat.name}}
+  file: src=/var/lib/{{tomcat.name}} dest={{tomcat.name}} state=link
+

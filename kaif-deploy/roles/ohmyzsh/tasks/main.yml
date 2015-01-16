@@ -1,0 +1,23 @@
+---
+## Install Oh-my-zsh
+
+- name: Install git and zsh 
+  apt: name={{item}} state=present update_cache=yes cache_valid_time=86400
+  with_items:
+  - git
+  - zsh
+  - git-core
+  sudo: True
+
+- name: Clone oh-my-zsh repo
+  git: repo=https://github.com/robbyrussell/oh-my-zsh.git dest=/home/{{user}}/.oh-my-zsh update=no
+  sudo: True
+
+- name: deploy .zshrc
+  template: src=zshrc.j2 dest=/home/{{user}}/.zshrc owner={{user}}
+  sudo: True
+
+- name: Set zsh as default shell
+  user: name={{user}} shell=/bin/zsh
+  sudo: True
+

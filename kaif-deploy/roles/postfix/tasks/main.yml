@@ -1,0 +1,82 @@
+---
+# Defines tasks to install and configure Postfix
+
+- name: Include the OS specific varibles
+  include_vars: "{{ ansible_os_family }}.yml"
+  tags:
+    - common
+    - postfix
+
+- name: Create pre-seed values for Postfix configuration
+  template: >
+    src=tmp-postfix_selections.j2
+    dest=/tmp/postfix_selections
+    mode=0644 owner=root group=root
+  register: preseed_template
+  when: ansible_os_family == 'Debian'
+  tags:
+    - common
+    - postfix
+
+- name: Pre-seed Postfix configuration
+  command: >
+    /usr/bin/debconf-set-selections /tmp/postfix_selections
+    executable=/bin/bash
+  when: preseed_template|changed
+  tags:
+    - common
+    - postfix
+
+- name: Install packages for Debian derivatives
+  apt: >
+    pkg={{ item }}
+    state=installed
+  with_items: postfix_packages
+  when: ansible_os_family == 'Debian'
+  tags:
+    - common
+    - postfix
+
+- name: Write SMTP authentication template
+  template: >
+    src=sasl_passwd.j2
+    dest={{ postfix_config_dir }}/sasl_passwd
+    mode=0600 owner=root group=root
+  notify:
+    - postmap sasl
+  when: postfix_use_smtp and postfix_relayhost_user and postfix_relayhost_pass
+  tags:
+    - common
+    - postfix
+
+- name: Write Postfix configuration template
+  template: >
+    src=main-cf.j2
+    dest={{ postfix_config_dir }}/main.cf
+    mode=0644 owner=root group=root
+    backup=yes
+  notify:
+    - restart postfix
+    - send test email
+  tags:
+    - common
+    - postfix
+
+- name: Configure root user email forwarding
+  template: >
+    src=root-forward.j2
+    dest=/root/.forward
+    mode=0644 owner=root group=root
+  when: postfix_notify_email is defined
+  tags:
+    - common
+    - postfix
+
+- name: Start Postfix on server boot
+  service: >
+    name={{ postfix_service }}
+    state=started
+    enabled=yes
+  tags:
+    - common
+    - postfix

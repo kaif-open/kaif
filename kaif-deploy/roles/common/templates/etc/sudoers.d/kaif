@@ -1,0 +1,5 @@
+## add kaif user sudo service without password
+# for ease deployment
+kaif ALL=(ALL) NOPASSWD:/usr/sbin/service
+
+# ending blank line is important

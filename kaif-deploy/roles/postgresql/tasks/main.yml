@@ -1,0 +1,56 @@
+---
+- name: install latest postgresql server
+  apt: pkg=postgresql-{{postgresql.version}} state=installed
+  sudo: yes
+
+- name: check postgresql cluster created
+  command: "/usr/bin/test -d /etc/postgresql"
+  ignore_errors: True
+  register: cluster_created
+  sudo: yes
+
+- name: create postgresql cluster if required
+  when: cluster_created|failed
+  shell: "LANG=en_US.UTF8
+          LC_COLLATE=en_US.UTF8
+          LC_CTYPE=en_US.UTF8
+          LC_MESSAGES=en_US.UTF8
+          LC_MONETARY=en_US.UTF8
+          LC_NUMERIC=en_US.UTF8
+          LC_TIME=en_US.UTF8
+          LC_ALL=en_US.UTF8
+          pg_createcluster {{postgresql.version}} main"
+  sudo: yes
+
+- name: check postgresql volume moved
+  command: "/usr/bin/test -h /var/lib/postgresql"
+  ignore_errors: True
+  register: pg_moved
+  sudo: yes
+
+- name: move postgresql volume
+  when: pg_moved|failed
+  shell: "{{item}}"
+  with_items:
+    - /usr/sbin/service postgresql stop
+    - mkdir -p {{postgresql.db_path}}
+    - rmdir {{postgresql.db_path}}
+    - mv /var/lib/postgresql {{postgresql.db_path}}
+    - ln -s {{postgresql.db_path}} /var/lib/postgresql
+  sudo: yes
+
+- name: install PostgreSQL config file
+  template: src=postgresql-{{postgresql.version}}.conf
+            dest=/etc/postgresql/{{ postgresql.version }}/main/postgresql.conf
+            owner=postgres group=postgres
+  notify:
+    - restart postgresql
+  sudo: yes
+
+- name: install PostgreSQL hba file
+  template: src=pg_hba-{{postgresql.version}}.conf
+            dest=/etc/postgresql/{{ postgresql.version }}/main/pg_hba.conf
+            owner=postgres group=postgres
+  notify:
+    - restart postgresql
+  sudo: yes

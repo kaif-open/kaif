@@ -1,0 +1,3 @@
+- name: restart {{tomcat.name}}
+  service: name={{tomcat.name}} state=restarted
+  sudo: yes

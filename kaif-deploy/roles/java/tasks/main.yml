@@ -1,0 +1,9 @@
+---
+- name: install python-pycurl
+  apt: name=python-pycurl state=present update_cache=yes cache_valid_time=86400
+
+- include: oracle.yml
+  when: java_versions is defined and java_versions is sequence and java_versions|join|search("oracle")
+
+- include: openjdk.yml
+  when: java_versions is defined and java_versions is sequence and java_versions|join|search("openjdk")

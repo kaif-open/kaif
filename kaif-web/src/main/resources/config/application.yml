@@ -1,6 +1,13 @@
+## freemarker
 spring.freemarker.cache: true
 
+## actuator
 management.context-path: /actuate
+
+## database
+spring.datasource.initialize: false
+spring.datasource.schema: db
+spring.datasource.data: db
 
 ---
 spring:
@@ -8,3 +15,8 @@ spring:
 
 spring.freemarker.cache: false
 
+---
+spring:
+    profiles: test
+
+spring.datasource.initialize: true

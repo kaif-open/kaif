@@ -1,0 +1,107 @@
+  ##
+  # workaround missing python-apt in ansible < 1.6
+  # 
+  #- name: install python-apt
+  #  raw: apt-get update && apt-get install python-apt -y -q
+  #  sudo: yes
+
+  ##
+  # configure distro
+  #
+  - name: upgrade apt to latest safe
+    apt: upgrade=safe state=latest update_cache=yes cache_valid_time=86400
+    sudo: yes
+
+  ## 
+  # locale_gen only support ansible >= 1.6
+  - name: ensure en_US.UTF-8
+    locale_gen: name=en_US.UTF-8 state=present
+    sudo: yes
+
+  ## 
+  # configure locales
+  #
+  # if not disable, the ssh locales become zh_TW.UTF-8 when
+  # we ssh from taiwan clients
+  # TODO not idempotent
+  #
+  - name: ensure not allow ssh use remote locale
+    lineinfile: "dest=/etc/ssh/sshd_config
+      regexp='^#?AcceptEnv LANG LC_\\*$'
+      line='#AcceptEnv LANG LC_*'
+      state=present"
+    sudo: yes
+    notify: reload ssh
+  
+  ###
+  # configure time
+  #
+  - name: ensure ntp is present
+    apt: pkg=ntp state=present
+    sudo: yes
+  - name: set /etc/localtime to {{timezone}}
+    command: /bin/cp /usr/share/zoneinfo/{{timezone}} /etc/localtime
+    sudo: yes
+  - name: set /etc/timezone to {{timezone}}
+    template: src=etc/timezone dest=/etc/timezone
+    sudo: yes
+    notify: update tzdata
+    notify: restart ntp
+    notify: restart cron
+  
+  ###
+  # 
+  # configure limits.conf, sysctl.conf
+  #
+  - name: setup security limits.conf
+    template: src=etc/security/limits.d/vagrant.conf 
+              dest=/etc/security/limits.d/vagrant.conf
+    sudo: yes
+
+  ###
+  # 
+  # configure misc utils
+  #
+  - name: install common utils
+    apt: pkg=netcat state=present
+    apt: pkg=git state=present
+    apt: pkg=zsh state=present
+    apt: pkg=iotop state=present
+    apt: pkg=telnet state=present
+    apt: pkg=bonnie++ state=present
+    apt: pkg=iftop state=present
+    apt: pkg=tree state=present
+    apt: pkg=vim state=present
+    sudo: yes
+
+  ###
+  #
+  # configure systl.conf
+  #
+  - name: setup performance tune sysctl.conf
+    copy: src=etc/sysctl.d/99-tuning.conf
+          dest=/etc/sysctl.d/99-tuning.conf
+    sudo: yes
+    notify: reload sysctl
+
+  ###
+  #
+  # configure hostname, /etc/hosts to {{inventory_hostname}}
+  # this solving sudo unsolve hostname problem
+  # note that order is important, etc hosts before hostname
+  #
+  - name: configure etc hosts
+    lineinfile: dest=/etc/hosts regexp='^127\.0\.1\.1' line='127.0.1.1 {{inventory_hostname}}'
+    sudo: yes
+  - name: configure hostname
+    hostname: name={{inventory_hostname}}
+    sudo: yes
+
+  ###
+  #
+  # add /usr/sbin/service to user, for ease deployment
+  #
+  - name: add service sudo permission to user
+    template: src=etc/sudoers.d/kaif dest=/etc/sudoers.d/kaif mode=440
+    when: ansible_ssh_user == "kaif"
+    sudo: yes

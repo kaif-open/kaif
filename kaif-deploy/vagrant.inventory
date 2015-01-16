@@ -1,0 +1,31 @@
+##
+#  playbook use for vagrant
+#
+#  the IP is defined in Vagrantfile, changing IP
+#  also require update vagrant.ssh_config
+#
+kaif       ansible_ssh_host=192.168.59.59
+
+[web_masters]
+kaif
+
+[web_slaves]
+
+[webs:children]
+web_masters
+web_slaves
+
+[webs:vars]
+inv_catalina_opts=""
+
+[pgs]
+kaif
+
+[postfix]
+kaif
+
+[postfix:vars]
+## production should use 'loopback-only'
+inv_postfix_inet_interfaces="all"
+## production should use blank ''
+inv_postfix_additional_my_networks="192.168.59.0/24"

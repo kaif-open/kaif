@@ -1,0 +1,7 @@
+---
+- hosts: localhost
+  remote_user: root
+  vars_files:
+    - 'example-vars.yml'
+  roles:
+    - ansible-role-nginx

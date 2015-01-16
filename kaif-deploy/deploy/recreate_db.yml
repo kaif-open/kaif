@@ -1,0 +1,22 @@
+- hosts: pgs
+  tasks:
+
+  - name: copy schema files
+    copy: src=schema dest=/tmp force=yes
+    sudo_user: postgres
+    sudo: yes
+
+  - name: stop kaif-web before drop database
+    command: /usr/sbin/service kaif-web stop
+    ignore_errors: yes
+    sudo: yes
+
+  - name: destroy and recreate database and schema
+    shell: "{{ item }}"
+    with_items:
+      - psql < /tmp/schema/recreate.sql
+      - psql < /tmp/schema/recreate_ci.sql
+      # - pg_restore -i -v -d kaif /tmp/schema/pg_kaif.dump
+    sudo_user: postgres
+    sudo: yes
+

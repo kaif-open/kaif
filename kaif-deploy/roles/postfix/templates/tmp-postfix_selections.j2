@@ -1,0 +1,3 @@
+postfix postfix/mailname string {{ ansible_hostname }}.{{ postfix_domain }}
+postfix postfix/main_mailer_type select 'Internet Site'
+postfix postfix/destinations string {{ ansible_hostname }}.{{ postfix_domain }}, localhost.localdomain, localhost

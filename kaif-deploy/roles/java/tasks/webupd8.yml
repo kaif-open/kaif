@@ -1,0 +1,13 @@
+---
+- name: Add the webupd8 APT repository key
+  tags:
+    - java
+    - java-webupd8
+  apt_key: data="{{ lookup('file', 'webupd8.key.asc') }}" state=present
+  # Use a static file because right now using just an ID fails
+
+- name: Add the webupd8 APT repository
+  tags:
+    - java
+    - java-webupd8
+  apt_repository: repo="deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" state=present

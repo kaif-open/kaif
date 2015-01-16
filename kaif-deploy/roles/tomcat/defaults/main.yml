@@ -1,0 +1,17 @@
+tomcat:
+   owner: "{{ansible_ssh_user}}"
+   vm_options: '-Xms512M -XX:+UseG1GC -XX:+UseStringDeduplication'
+   jmxport: '15980'
+   spring_profiles_active: 'production'
+   catalina_opts: ''
+
+## full list of vars
+# tomcat:
+#   name: 'kaif-web'
+#   owner: "{{ansible_ssh_user}}"
+#   http_port: '5980'
+#   shutdown_port: '5905'
+#   jmxport: '15980'
+#   vm_options: '-Xmx512M -Xms512M'
+#   spring_profiles_active: 'production'
+#   catalina_opts" '-Dfoo=bar'
