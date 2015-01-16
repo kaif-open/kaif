@@ -1,0 +1,10 @@
+spring.freemarker.cache: true
+
+management.context-path: /actuate
+
+---
+spring:
+    profiles: dev
+
+spring.freemarker.cache: false
+
