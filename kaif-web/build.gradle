@@ -4,6 +4,9 @@ buildscript {
   }
   dependencies {
     classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+
+    // enable advance class hot swap. don't know if work
+    // classpath 'org.springframework:springloaded:1.2.0.RELEASE'
   }
 }
 
@@ -16,6 +19,11 @@ bootRepackage {
 
 springBoot {
   mainClass = 'io.kaif.Application'
+}
+
+// hack to make `gradle bootRun` start with dev mode
+tasks.withType(org.springframework.boot.gradle.run.BootRunTask) {
+  systemProperty('spring.profiles.active', 'dev')
 }
 
 jar {
@@ -33,6 +41,11 @@ dependencies {
   compile("org.springframework.boot:spring-boot-starter-jdbc")
   compile("org.springframework.boot:spring-boot-starter-freemarker")
   compile("org.springframework.boot:spring-boot-starter-web")
+
+  //TODO remove tomcat jdbc, use better connection pool
+  //exclude embed tomcat in production
+  providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
+
   compile("org.springframework.boot:spring-boot-starter-social-twitter")
   compile("org.springframework.boot:spring-boot-starter-actuator")
   compile("org.springframework.boot:spring-boot-starter-remote-shell")

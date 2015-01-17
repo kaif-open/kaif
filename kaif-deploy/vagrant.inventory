@@ -16,7 +16,8 @@ web_masters
 web_slaves
 
 [webs:vars]
-inv_catalina_opts=""
+# this should change in production, by a secret file that not commit to git
+inv_catalina_opts="-Ddbpassword=changeme"
 
 [pgs]
 kaif

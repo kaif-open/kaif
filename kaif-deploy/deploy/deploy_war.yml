@@ -12,9 +12,11 @@
 
   - name: remove old webapps
     file: path=/var/lib/kaif-web/webapps/ROOT state=absent
+
+  - name: recreate ROOT folder
     file: path=/var/lib/kaif-web/webapps/ROOT state=directory
 
-  - name: deploy new war 
+  - name: deploy new war
     unarchive: src=../../kaif-web/build/libs/kaif-web.war
                dest=/var/lib/kaif-web/webapps/ROOT
 

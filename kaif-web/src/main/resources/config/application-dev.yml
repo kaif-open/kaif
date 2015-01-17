@@ -1,6 +1,6 @@
 spring:
     profiles:
-        active: prod
+        active: dev
 
 spring.freemarker.cache: false
 
