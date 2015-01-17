@@ -2,7 +2,7 @@ tomcat:
    owner: "{{ansible_ssh_user}}"
    vm_options: '-Xms512M -XX:+UseG1GC -XX:+UseStringDeduplication'
    jmxport: '15980'
-   spring_profiles_active: 'production'
+   spring_profiles_active: 'prod'
    catalina_opts: ''
 
 ## full list of vars
@@ -13,5 +13,5 @@ tomcat:
 #   shutdown_port: '5905'
 #   jmxport: '15980'
 #   vm_options: '-Xmx512M -Xms512M'
-#   spring_profiles_active: 'production'
+#   spring_profiles_active: 'prod'
 #   catalina_opts" '-Dfoo=bar'

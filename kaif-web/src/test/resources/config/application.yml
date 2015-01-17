@@ -1,0 +1,14 @@
+## web server
+server:
+    port: 25980
+
+## database
+spring.datasource.initialize: true
+spring.datasource.schema: db
+spring.datasource.data: db
+
+spring.datasource.driver-class-name: org.postgresql.Driver
+spring.datasource.url: jdbc:postgresql://192.168.59.59:5432/ci_kaif
+spring.datasource.username: ci_kaif
+spring.datasource.password: changeme
+

@@ -1,6 +1,6 @@
 allprojects {
   group = 'io.kaif'
-  version = '0.0.1-SNAPSHOT'
+  // version = '0.0.1-SNAPSHOT'
 }
 
 subprojects {

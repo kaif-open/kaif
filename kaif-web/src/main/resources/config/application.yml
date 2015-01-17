@@ -1,3 +1,7 @@
+## web server
+server:
+    port: 5980
+
 ## freemarker
 spring.freemarker.cache: true
 
@@ -13,25 +17,3 @@ spring.datasource.driver-class-name: org.postgresql.Driver
 spring.datasource.url: jdbc:postgresql://192.168.59.59:5432/kaif
 spring.datasource.username: kaif
 spring.datasource.password: changeme
-
----
-spring:
-    profiles: production
-
-spring.datasource.password: ${dbpassword}
-spring.datasource.url: jdbc:postgresql://localhost:5432/kaif
-
----
-spring:
-    profiles: dev
-
-spring.freemarker.cache: false
-
----
-spring:
-    profiles: test
-
-spring.datasource.initialize: true
-spring.datasource.url: jdbc:postgresql://192.168.59.59:5432/ci_kaif
-spring.datasource.username: ci_kaif
-

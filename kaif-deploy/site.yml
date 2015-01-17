@@ -126,7 +126,7 @@
            name: 'kaif-web',
            http_port: '5980',
            shutdown_port: '5905',
-           spring_profiles_active: 'production,masterTask',
+           spring_profiles_active: 'prod,master',
            catalina_opts: "{{inv_catalina_opts}}"
         }
       }

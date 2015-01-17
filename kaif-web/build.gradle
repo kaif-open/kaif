@@ -8,8 +8,21 @@ buildscript {
 }
 
 apply plugin: 'spring-boot'
+apply plugin: 'war'
+
+bootRepackage {
+  mainClass = 'io.kaif.Application'
+}
+
+springBoot {
+  mainClass = 'io.kaif.Application'
+}
 
 jar {
+  baseName = 'kaif-web'
+}
+
+war {
   baseName = 'kaif-web'
 }
 
