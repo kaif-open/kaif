@@ -4,6 +4,7 @@ server:
 
 ## freemarker
 spring.freemarker.cache: true
+spring.freemarker.templateLoaderPath: /WEB-INF/views
 
 ## actuator
 management.context-path: /actuate
