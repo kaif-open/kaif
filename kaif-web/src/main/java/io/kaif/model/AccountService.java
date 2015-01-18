@@ -20,11 +20,13 @@ public class AccountService {
   @Autowired
   private PasswordEncoder passwordEncoder;
 
-  public Account create(String email, String password, String name) {
-    return accountDao.create(email, passwordEncoder.encode(password), name);
+  public Account createViaEmail(String name, String email, String password) {
+    return accountDao.create(name, email, passwordEncoder.encode(password));
   }
 
   public Account findById(String accountId) {
     return accountDao.findById(UUID.fromString(accountId));
   }
+
+  //TODO activate via email
 }

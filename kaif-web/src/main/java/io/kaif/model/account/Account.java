@@ -9,13 +9,38 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public class Account {
-  public static Account create(String email, String passwordHash, String name, Instant createTime) {
-    return new Account(name,
-        UUID.randomUUID(),
+  public static Account create(String name, String email, String passwordHash, Instant createTime) {
+    return new Account(UUID.randomUUID(),
+        name,
         email,
         passwordHash,
         createTime,
-        EnumSet.of(Authority.NORMAL));
+        EnumSet.of(Authority.NORMAL),
+        false);
+  }
+
+  private final String name;
+  private final UUID accountId;
+  private final String email;
+  private final String passwordHash;
+  private final Instant createTime;
+  private final Set<Authority> authorities;
+  private final boolean activated;
+
+  Account(UUID accountId,
+      String name,
+      String email,
+      String passwordHash,
+      Instant createTime,
+      Set<Authority> authorities,
+      boolean activated) {
+    this.name = name;
+    this.accountId = accountId;
+    this.email = email;
+    this.passwordHash = passwordHash;
+    this.createTime = createTime;
+    this.authorities = authorities;
+    this.activated = activated;
   }
 
   public String getName() {
@@ -42,27 +67,6 @@ public class Account {
     return authorities;
   }
 
-  private final String name;
-  private final UUID accountId;
-  private final String email;
-  private final String passwordHash;
-  private final Instant createTime;
-  private final Set<Authority> authorities;
-
-  public Account(String name,
-      UUID accountId,
-      String email,
-      String passwordHash,
-      Instant createTime,
-      Set<Authority> authorities) {
-    this.name = name;
-    this.accountId = accountId;
-    this.email = email;
-    this.passwordHash = passwordHash;
-    this.createTime = createTime;
-    this.authorities = authorities;
-  }
-
   /**
    * do not include password hash in toString
    */
@@ -74,6 +78,7 @@ public class Account {
         ", email='" + email + '\'' +
         ", createTime=" + createTime +
         ", authorities=" + authorities +
+        ", activated=" + activated +
         '}';
   }
 
@@ -102,5 +107,9 @@ public class Account {
   @Override
   public int hashCode() {
     return name != null ? name.hashCode() : 0;
+  }
+
+  public boolean isActivated() {
+    return activated;
   }
 }
