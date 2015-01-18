@@ -9,21 +9,66 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import io.kaif.database.DbIntegrationTests;
 import io.kaif.model.account.Account;
+import io.kaif.model.account.AccountAccessToken;
+import io.kaif.model.account.AccountAuth;
+import io.kaif.model.account.AccountSecret;
 import io.kaif.model.account.Authority;
 
 public class AccountServiceTest extends DbIntegrationTests {
 
   @Autowired
   private AccountService service;
+  @Autowired
+  private AccountSecret accountSecret;
 
   @Test
   public void createViaEmail() {
-    Account account = service.createViaEmail("myname", "foo@gmail.com", "pw123");
+    Account account = service.createViaEmail("myname", "foo@gmail.com", "pwd123");
     Account loaded = service.findById(account.getAccountId().toString());
     assertEquals(account, loaded);
     assertEquals("foo@gmail.com", loaded.getEmail());
     assertFalse(loaded.isActivated());
-    assertEquals(EnumSet.of(Authority.NORMAL), loaded.getAuthorities());
+
   }
 
+  @Test
+  public void isNameAvailable() throws Exception {
+    assertTrue(service.isNameAvailable("xyz123"));
+    service.createViaEmail("xyz123", "foobar@gmail.com", "9999123");
+
+    assertFalse(service.isNameAvailable("xyz123"));
+    assertFalse(service.isNameAvailable("XYZ123"));
+  }
+
+  @Test
+  public void authenticate() {
+    assertFalse(service.authenticate("notexist", "pwd123").isPresent());
+    service.createViaEmail("myname", "foo@gmail.com", "pwd123");
+    AccountAuth auth = service.authenticate("myName", "pwd123").get();
+    assertEquals("myname", auth.getName());
+    assertTrue(AccountAccessToken.tryDecode(auth.getAccessToken(), accountSecret).isPresent());
+    assertEquals(EnumSet.of(Authority.NORMAL), auth.getAuthorities());
+
+    //failed case
+    assertFalse(service.authenticate("myname", "wrong pass").isPresent());
+  }
+
+  @Test
+  public void verifyAccessToken() throws Exception {
+    service.createViaEmail("abc99", "bar@gmail.com", "pppwww");
+    AccountAuth accountAuth = service.authenticate("abc99", "pppwww").get();
+    assertTrue(service.verifyAccessToken(accountAuth.getAccessToken()));
+    assertFalse(service.verifyAccessToken("badtoken"));
+  }
+
+  @Test
+  public void extendsAccessToken() throws Exception {
+    service.createViaEmail("bbbb99", "bar@gmail.com", "pppwww");
+    AccountAuth accountAuth = service.authenticate("bbbb99", "pppwww").get();
+    AccountAuth extend = service.extendsAccessToken(accountAuth.getAccessToken()).get();
+    assertFalse(extend.equals(accountAuth));
+    assertTrue(service.verifyAccessToken(extend.getAccessToken()));
+
+    assertFalse(service.extendsAccessToken("bbbbaaaddd").isPresent());
+  }
 }

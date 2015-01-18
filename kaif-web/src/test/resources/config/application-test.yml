@@ -17,3 +17,4 @@ spring.jmx.enabled: false
 
 ## misc
 spring.main.show_banner: false
+

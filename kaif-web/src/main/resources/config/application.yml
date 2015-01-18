@@ -21,3 +21,8 @@ spring.datasource.password: changeme
 
 ## jmx
 spring.jmx.enabled: false
+
+## model
+account:
+    mac: n7LOo9kKqSqM-fshf_T3xw
+    key: dnXAz2u6mn4L_vZyiW0hHA

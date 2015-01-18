@@ -6,3 +6,7 @@ spring.datasource.password: ${dbpassword}
 spring.datasource.url: jdbc:postgresql://localhost:5432/kaif
 
 logging.config: classpath:logback-prod.xml
+
+account:
+    mac: ${accountmac}
+    key: ${accountkey}

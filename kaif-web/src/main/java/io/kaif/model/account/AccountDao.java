@@ -2,6 +2,7 @@ package io.kaif.model.account;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -60,5 +61,11 @@ public class AccountDao implements DaoOperations {
   public Account findById(UUID accountId) {
     final String sql = " SELECT * FROM Account WHERE accountId = ? ";
     return jdbc().query(sql, accountMapper, accountId).stream().findAny().orElse(null);
+  }
+
+  public Optional<Account> findByName(String name) {
+    return jdbc().query(" SELECT * FROM Account WHERE name = lower(?) ", accountMapper, name)
+        .stream()
+        .findAny();
   }
 }
