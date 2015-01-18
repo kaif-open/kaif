@@ -10,7 +10,7 @@
     <logger name="io.kaif" level="DEBUG"/>
     <logger name="org.apache.catalina.startup.DigesterFactory" level="OFF"/>
 
-    <root level="WARN">
+    <root level="INFO">
         <appender-ref ref="CONSOLE"/>
     </root>
 
