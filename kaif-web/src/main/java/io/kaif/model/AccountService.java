@@ -72,21 +72,25 @@ public class AccountService {
    * io.kaif.model.account.AccountAccessToken#tryDecode(String, io.kaif.model.account.AccountSecret)}
    * if you want faster check.
    */
-  public boolean verifyAccessToken(String rawAccessToken) {
-    return verifyAccessTokenWithDao(rawAccessToken).isPresent();
-  }
-
-  private Optional<Account> verifyAccessTokenWithDao(String rawAccessToken) {
+  public Optional<AccountAccessToken> verifyAccessToken(String rawAccessToken) {
     return AccountAccessToken.tryDecode(rawAccessToken, accountSecret)
-        .flatMap(token -> accountDao.findByName(token.getName()).filter(account -> {
-          // verify database already change password or authorities
-          return account.getPasswordHash().equals(token.getPasswordHash())
-              && account.getAuthorities().equals(token.getAuthorities());
-        }));
+        .filter(token -> verifyTokenToAccount(token).isPresent());
   }
 
-  public Optional<AccountAuth> extendsAccessToken(String accessToken) {
-    return verifyAccessTokenWithDao(accessToken).map(this::createAccountAuth);
+  private Optional<Account> verifyTokenToAccount(AccountAccessToken token) {
+    return accountDao.findByName(token.getName()).filter(account -> {
+      // verify database already change password or authorities
+      return account.getPasswordHash().equals(token.getPasswordHash()) && account.getAuthorities()
+          .equals(token.getAuthorities());
+    });
+  }
+
+  public AccountAuth extendsAccessToken(AccountAccessToken accessToken) {
+    //TODO extendsAccessToken query dao twice (web controller query once)
+    return Optional.ofNullable(accessToken)
+        .flatMap(token -> accountDao.findByName(token.getName()))
+        .map(this::createAccountAuth)
+        .orElseThrow(IllegalStateException::new);
   }
 
   public boolean isNameAvailable(String name) {

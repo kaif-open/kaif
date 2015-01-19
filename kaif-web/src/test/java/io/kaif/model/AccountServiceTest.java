@@ -20,6 +20,7 @@ public class AccountServiceTest extends DbIntegrationTests {
 
   @Autowired
   private AccountService service;
+
   @Autowired
   private AccountSecret accountSecret;
 
@@ -30,7 +31,6 @@ public class AccountServiceTest extends DbIntegrationTests {
     assertEquals(account, loaded);
     assertEquals("foo@gmail.com", loaded.getEmail());
     assertFalse(loaded.isActivated());
-
   }
 
   @Test
@@ -59,20 +59,20 @@ public class AccountServiceTest extends DbIntegrationTests {
   public void verifyAccessToken() throws Exception {
     Account account = service.createViaEmail("abc99", "bar@gmail.com", "pppwww");
     AccountAuth accountAuth = service.authenticate("abc99", "pppwww").get();
-    assertTrue(service.verifyAccessToken(accountAuth.getAccessToken()));
+    assertTrue(service.verifyAccessToken(accountAuth.getAccessToken()).isPresent());
 
     String accountId = account.getAccountId().toString();
     //invalid case 1 bad token
-    assertFalse(service.verifyAccessToken("badtoken"));
+    assertFalse(service.verifyAccessToken("badtoken").isPresent());
 
     //invalid case 2, password changed
     service.updatePassword(accountId, "newPw123");
-    assertFalse(service.verifyAccessToken(accountAuth.getAccessToken()));
+    assertFalse(service.verifyAccessToken(accountAuth.getAccessToken()).isPresent());
 
     //invalid case 3, authorities changed
     accountAuth = service.authenticate("abc99", "newPw123").get();
     service.updateAuthorities(accountId, EnumSet.of(Authority.ZONE_ADMIN));
-    assertFalse(service.verifyAccessToken(accountAuth.getAccessToken()));
+    assertFalse(service.verifyAccessToken(accountAuth.getAccessToken()).isPresent());
   }
 
   @Test
@@ -101,10 +101,10 @@ public class AccountServiceTest extends DbIntegrationTests {
   public void extendsAccessToken() throws Exception {
     service.createViaEmail("bbbb99", "bar@gmail.com", "pppwww");
     AccountAuth accountAuth = service.authenticate("bbbb99", "pppwww").get();
-    AccountAuth extend = service.extendsAccessToken(accountAuth.getAccessToken()).get();
+    AccountAccessToken accountAccessToken = service.verifyAccessToken(accountAuth.getAccessToken())
+        .get();
+    AccountAuth extend = service.extendsAccessToken(accountAccessToken);
     assertFalse(extend.equals(accountAuth));
-    assertTrue(service.verifyAccessToken(extend.getAccessToken()));
-
-    assertFalse(service.extendsAccessToken("bbbbaaaddd").isPresent());
+    assertTrue(service.verifyAccessToken(extend.getAccessToken()).isPresent());
   }
 }
