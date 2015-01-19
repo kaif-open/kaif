@@ -2,7 +2,6 @@ package io.kaif.model.account;
 
 import static java.util.stream.Collectors.*;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +22,7 @@ public class AccountAccessToken {
         .collect(toSet());
     return Optional.of(new AccountAccessToken(fields.get(0), fields.get(1), auths));
   }
+
   private final String passwordHash;
   private final String name;
   private final Set<Authority> authorities;
@@ -33,13 +33,13 @@ public class AccountAccessToken {
     this.authorities = authorities;
   }
 
-  public String encode(Duration expire, AccountSecret secret) {
+  public String encode(Instant expireTime, AccountSecret secret) {
     List<byte[]> fields = Stream.of(passwordHash,
         name,
         authorities.stream().map(Authority::name).collect(Collectors.joining(",")))
         .map(String::getBytes)
         .collect(toList());
-    return secret.getCodec().encode(Instant.now().plus(expire).toEpochMilli(), fields);
+    return secret.getCodec().encode(expireTime.toEpochMilli(), fields);
   }
 
   @Override
@@ -90,5 +90,9 @@ public class AccountAccessToken {
 
   public String getPasswordHash() {
     return passwordHash;
+  }
+
+  public Set<Authority> getAuthorities() {
+    return authorities;
   }
 }

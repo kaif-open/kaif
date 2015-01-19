@@ -19,6 +19,9 @@ public class Account {
         false);
   }
 
+  public static boolean isValidPassword(String password) {
+    return password != null && password.length() >= 6;
+  }
   private final String name;
   private final UUID accountId;
   private final String email;

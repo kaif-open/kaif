@@ -2,6 +2,8 @@ package io.kaif.model;
 
 import static org.junit.Assert.*;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.EnumSet;
 
 import org.junit.Test;
@@ -48,17 +50,51 @@ public class AccountServiceTest extends DbIntegrationTests {
     assertEquals("myname", auth.getName());
     assertTrue(AccountAccessToken.tryDecode(auth.getAccessToken(), accountSecret).isPresent());
     assertEquals(EnumSet.of(Authority.NORMAL), auth.getAuthorities());
-
+    assertTrue(auth.getExpireTime().isAfter(Instant.now().plus(Duration.ofDays(7))));
     //failed case
     assertFalse(service.authenticate("myname", "wrong pass").isPresent());
   }
 
   @Test
   public void verifyAccessToken() throws Exception {
-    service.createViaEmail("abc99", "bar@gmail.com", "pppwww");
+    Account account = service.createViaEmail("abc99", "bar@gmail.com", "pppwww");
     AccountAuth accountAuth = service.authenticate("abc99", "pppwww").get();
     assertTrue(service.verifyAccessToken(accountAuth.getAccessToken()));
+
+    String accountId = account.getAccountId().toString();
+    //invalid case 1 bad token
     assertFalse(service.verifyAccessToken("badtoken"));
+
+    //invalid case 2, password changed
+    service.updatePassword(accountId, "newPw123");
+    assertFalse(service.verifyAccessToken(accountAuth.getAccessToken()));
+
+    //invalid case 3, authorities changed
+    accountAuth = service.authenticate("abc99", "newPw123").get();
+    service.updateAuthorities(accountId, EnumSet.of(Authority.ZONE_ADMIN));
+    assertFalse(service.verifyAccessToken(accountAuth.getAccessToken()));
+  }
+
+  @Test
+  public void updateAuthorities() throws Exception {
+    String accountId = service.createViaEmail("abc99", "bar@gmail.com", "pppwww")
+        .getAccountId()
+        .toString();
+    EnumSet<Authority> set = EnumSet.of(Authority.NORMAL, Authority.ROOT);
+    service.updateAuthorities(accountId, set);
+    assertEquals(set, service.findById(accountId).getAuthorities());
+  }
+
+  @Test
+  public void updatePassword() throws Exception {
+    String accountId = service.createViaEmail("abc99", "bar@gmail.com", "pppwww")
+        .getAccountId()
+        .toString();
+
+    service.updatePassword(accountId, "pw2123");
+
+    assertTrue(service.authenticate("abc99", "pw2123").isPresent());
+    assertFalse(service.authenticate("abc99", "pppwww").isPresent());
   }
 
   @Test

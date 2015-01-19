@@ -1,11 +1,13 @@
 package io.kaif.model.account;
 
+import java.sql.Array;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.EnumSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
@@ -39,7 +41,6 @@ public class AccountDao implements DaoOperations {
 
     final Account account = Account.create(name, email, passwordHash, Instant.now());
 
-    Stream<String> authString = account.getAuthorities().stream().map(Authority::name);
     jdbc().update(""
             + " INSERT "
             + "   INTO Account "
@@ -53,9 +54,13 @@ public class AccountDao implements DaoOperations {
         account.getName(),
         Timestamp.from(account.getCreateTime()),
         account.isActivated(),
-        createVarcharArray(authString));
+        authoritiesToVarcharArray(account.getAuthorities()));
 
     return account;
+  }
+
+  private Array authoritiesToVarcharArray(Set<Authority> authorities) {
+    return createVarcharArray(authorities.stream().map(Authority::name));
   }
 
   public Account findById(UUID accountId) {
@@ -67,5 +72,17 @@ public class AccountDao implements DaoOperations {
     return jdbc().query(" SELECT * FROM Account WHERE name = lower(?) ", accountMapper, name)
         .stream()
         .findAny();
+  }
+
+  public void updateAuthorities(UUID accountId, EnumSet<Authority> authorities) {
+    jdbc().update(" UPDATE Account SET authorities = ? WHERE accountId = ? ",
+        authoritiesToVarcharArray(authorities),
+        accountId);
+  }
+
+  public void updatePasswordHash(UUID accountId, String passwordHash) {
+    jdbc().update(" UPDATE Account SET passwordHash = ? WHERE accountId = ? ",
+        passwordHash,
+        accountId);
   }
 }
