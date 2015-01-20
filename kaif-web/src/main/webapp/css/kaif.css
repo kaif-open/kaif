@@ -58,32 +58,14 @@ label {
     font-size: 100%;
 }
 
-.pure-form input[type] {
+.pure-form input[type=text],
+.pure-form input[type=email],
+.pure-form input[type=password] {
     border: 2px solid #ddd;
-    box-shadow: none;
     font-size: 100%;
     width: 100%;
     margin-bottom: 1em;
 }
-
-/*
- * -- PURE BUTTON STYLES --
- * I want my pure-button elements to look a little different
- */
-.pure-button {
-    background-color: #1f8dd6;
-    color: white;
-    padding: 0.5em 2em;
-    border-radius: 5px;
-}
-
-a.pure-button-primary {
-    background: white;
-    color: #1f8dd6;
-    border-radius: 5px;
-    font-size: 120%;
-}
-
 
 /*
  * -- MENU STYLES --

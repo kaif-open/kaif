@@ -64,7 +64,7 @@ public class AccountService {
         account.getName(),
         accessToken,
         account.getAuthorities(),
-        expireTime);
+        expireTime.toEpochMilli());
   }
 
   /**

@@ -22,7 +22,7 @@
         <ul>
             <li class="pure-menu-selected"><a href="/">Home</a></li>
             <li><a href="/sign-up">Sign Up</a></li>
-            <li><a href="#">Sign In</a></li>
+            <li><a href="/login">Sign In</a></li>
         </ul>
     </div>
 </header>

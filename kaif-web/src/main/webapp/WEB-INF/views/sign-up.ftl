@@ -21,7 +21,7 @@
             <label for="confirmPasswordInput">Confirm Password</label>
             <input id="confirmPasswordInput" type="password" placeholder="Type Again">
 
-            <button type="submit" class="pure-button">Sign Up</button>
+            <button type="submit" class="pure-button pure-button-primary">Sign Up</button>
         </fieldset>
     </form>
   </div>

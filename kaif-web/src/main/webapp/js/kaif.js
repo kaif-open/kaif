@@ -49,7 +49,9 @@ var KaifWeb = function(config) {
         $.ajax({
             type   : 'POST',
             url    : this.serverType.getAccountUrl('/authenticate'),
-            data   : {'name': name,'password': password},
+            contentType: "application/json; charset=utf-8",
+            data   : JSON.stringify({'name': name,'password': password}),
+            dataType: "json",
             success: function(data) { callback(data); },
             error  : function() { callback(null); }
         });
@@ -59,7 +61,9 @@ var KaifWeb = function(config) {
             type   : 'POST',
             headers: {'X-KAIF-ACCESS-TOKEN':account.accessToken},
             url    : this.serverType.getAccountUrl('/extends-access-token'),
-            data   : {accountId: account.accountId}, // empty post result in 403 forbidden
+            contentType: "application/json; charset=utf-8",
+            data   : JSON.stringify({accountId: account.accountId}), // empty post result in 403 forbidden
+            dataType: "json",
             success: function(data) { callback(data); },
             error  : function() { callback(null); }
         });
@@ -202,7 +206,7 @@ var KaifWeb = function(config) {
             $.proxy(function(success) {
               if (success) {
                   //TODO show to check email then login later
-                  location.href = this.serverType.getUrl('/');
+                  location.href = this.serverType.getUrl('/login');
               } else {
                   this.alert.removeClass('hidden');
                   this.passwordInput.focus();
@@ -214,8 +218,8 @@ var KaifWeb = function(config) {
     var LoginFormController = function(form, serverType, accountManager) {
         this.form = form;
         this.nameInput = this.form.find('#nameInput');
-        this.passwordInput = this.form.find('input[type=password]');
-        this.rememberMe = this.form.find('input[type=checkbox]');
+        this.passwordInput = this.form.find('#passwordInput');
+        this.rememberMe = this.form.find('#rememberMeInput');
         this.alert = this.form.find('.alert');
         this.serverType = serverType;
         this.accountManager = accountManager;

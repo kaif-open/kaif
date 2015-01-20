@@ -50,7 +50,8 @@ public class AccountServiceTest extends DbIntegrationTests {
     assertEquals("myname", auth.getName());
     assertTrue(AccountAccessToken.tryDecode(auth.getAccessToken(), accountSecret).isPresent());
     assertEquals(EnumSet.of(Authority.NORMAL), auth.getAuthorities());
-    assertTrue(auth.getExpireTime().isAfter(Instant.now().plus(Duration.ofDays(7))));
+    assertTrue(Instant.ofEpochMilli(auth.getExpireTime())
+        .isAfter(Instant.now().plus(Duration.ofDays(7))));
     //failed case
     assertFalse(service.authenticate("myname", "wrong pass").isPresent());
   }

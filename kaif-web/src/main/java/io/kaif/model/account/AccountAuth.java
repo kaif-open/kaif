@@ -1,25 +1,27 @@
 package io.kaif.model.account;
 
-import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * authenticated and authorized account
  */
 public class AccountAuth {
 
+  @JsonProperty
   private final UUID accountId;
   private final String name;
   private final String accessToken;
   private final Set<Authority> authorities;
-  private final Instant expireTime;
+  private final long expireTime;
 
   public AccountAuth(UUID accountId,
       String name,
       String accessToken,
       Set<Authority> authorities,
-      Instant expireTime) {
+      long expireTime) {
     this.accountId = accountId;
     this.name = name;
     this.accessToken = accessToken;
@@ -27,7 +29,7 @@ public class AccountAuth {
     this.expireTime = expireTime;
   }
 
-  public Instant getExpireTime() {
+  public long getExpireTime() {
     return expireTime;
   }
 
@@ -64,6 +66,9 @@ public class AccountAuth {
 
     AccountAuth that = (AccountAuth) o;
 
+    if (expireTime != that.expireTime) {
+      return false;
+    }
     if (accessToken != null ? !accessToken.equals(that.accessToken) : that.accessToken != null) {
       return false;
     }
@@ -71,9 +76,6 @@ public class AccountAuth {
       return false;
     }
     if (authorities != null ? !authorities.equals(that.authorities) : that.authorities != null) {
-      return false;
-    }
-    if (expireTime != null ? !expireTime.equals(that.expireTime) : that.expireTime != null) {
       return false;
     }
     if (name != null ? !name.equals(that.name) : that.name != null) {
@@ -89,7 +91,7 @@ public class AccountAuth {
     result = 31 * result + (name != null ? name.hashCode() : 0);
     result = 31 * result + (accessToken != null ? accessToken.hashCode() : 0);
     result = 31 * result + (authorities != null ? authorities.hashCode() : 0);
-    result = 31 * result + (expireTime != null ? expireTime.hashCode() : 0);
+    result = 31 * result + (int) (expireTime ^ (expireTime >>> 32));
     return result;
   }
 }
