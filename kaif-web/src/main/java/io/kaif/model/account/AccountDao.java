@@ -63,9 +63,9 @@ public class AccountDao implements DaoOperations {
     return createVarcharArray(authorities.stream().map(Authority::name));
   }
 
-  public Account findById(UUID accountId) {
+  public Optional<Account> findById(UUID accountId) {
     final String sql = " SELECT * FROM Account WHERE accountId = ? ";
-    return jdbc().query(sql, accountMapper, accountId).stream().findAny().orElse(null);
+    return jdbc().query(sql, accountMapper, accountId).stream().findAny();
   }
 
   public Optional<Account> findByName(String name) {

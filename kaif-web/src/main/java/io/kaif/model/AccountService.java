@@ -44,7 +44,7 @@ public class AccountService {
 
   @VisibleForTesting
   Account findById(String accountId) {
-    return accountDao.findById(UUID.fromString(accountId));
+    return accountDao.findById(UUID.fromString(accountId)).get();
   }
 
   public Optional<AccountAuth> authenticate(String name, String password) {
@@ -57,8 +57,8 @@ public class AccountService {
   //TODO activate via email
   private AccountAuth createAccountAuth(Account account) {
     Instant expireTime = Instant.now().plus(ACCOUNT_TOKEN_EXPIRE);
-    String accessToken = new AccountAccessToken(account.getPasswordHash(),
-        account.getName(),
+    String accessToken = new AccountAccessToken(account.getAccountId(),
+        account.getPasswordHash(),
         account.getAuthorities()).encode(expireTime, accountSecret);
     return new AccountAuth(account.getAccountId(),
         account.getName(),
@@ -78,17 +78,16 @@ public class AccountService {
   }
 
   private Optional<Account> verifyTokenToAccount(AccountAccessToken token) {
-    return accountDao.findByName(token.getName()).filter(account -> {
+    return accountDao.findById(token.getAccountId()).filter(account -> {
       // verify database already change password or authorities
-      return account.getPasswordHash().equals(token.getPasswordHash()) && account.getAuthorities()
-          .equals(token.getAuthorities());
+      return token.matches(account.getPasswordHash(), account.getAuthorities());
     });
   }
 
   public AccountAuth extendsAccessToken(AccountAccessToken accessToken) {
     //TODO extendsAccessToken query dao twice (web controller query once)
     return Optional.ofNullable(accessToken)
-        .flatMap(token -> accountDao.findByName(token.getName()))
+        .flatMap(token -> accountDao.findById(token.getAccountId()))
         .map(this::createAccountAuth)
         .orElseThrow(IllegalStateException::new);
   }
