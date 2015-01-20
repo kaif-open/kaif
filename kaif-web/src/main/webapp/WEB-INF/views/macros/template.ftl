@@ -7,42 +7,36 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A layout example with a side menu that hides on mobile, just like the Pure website.">
+    <meta name="description" content="Kaif prototype">
 
     <title>kaif.io</title>
     <link rel="stylesheet" href="css/pure-0.5/pure-min.css">
-    <link rel="stylesheet" href="css/pure-0.5/layouts/side-menu.css">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+    <link rel="stylesheet" href="css/kaif.css">
 </head>
 <body>
-<div id="layout">
-    <!-- Menu toggle -->
-    <a href="#menu" id="menuLink" class="menu-link">
-        <!-- Hamburger icon -->
-        <span></span>
-    </a>
 
-    <div id="menu">
-        <div class="pure-menu pure-menu-open">
-            <a class="pure-menu-heading" href="#">Company</a>
-
-            <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">About</a></li>
-
-                <li class="menu-item-divided pure-menu-selected">
-                    <a href="#">Services</a>
-                </li>
-
-                <li><a href="#">Contact</a></li>
-            </ul>
-        </div>
+<header class="header">
+    <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal">
+        <a class="pure-menu-heading" href="/">Kaif.io</a>
+        <ul>
+            <li class="pure-menu-selected"><a href="/">Home</a></li>
+            <li><a href="/sign-up">Sign Up</a></li>
+            <li><a href="#">Sign In</a></li>
+        </ul>
     </div>
+</header>
 
-    <div id="main">
-        <#nested>
-    </div>
-</div>
-<script src="js/pure-0.5/ui.js"></script>
+<main class="content">
+    <#nested>
+</main>
+
+<footer class="footer l-box is-center">
+    Sample footer
+</footer>
+
+<script src="js/jquery-2.1.3.min.js"></script>
+<script src="js/kaif.js"></script>
 
 </body>
 </html>
