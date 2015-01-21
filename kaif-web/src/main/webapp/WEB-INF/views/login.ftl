@@ -15,8 +15,8 @@
             <label for="passwordInput">Password</label>
             <input id="passwordInput" type="password" placeholder="Your Password">
 
-            <label for="rememberInput" class="pure-checkbox">
-                <input id="rememberInput" type="checkbox" checked> Remember me
+            <label for="rememberMeInput" class="pure-checkbox">
+                <input id="rememberMeInput" type="checkbox" checked> Remember me
             </label>
 
             <button type="submit" class="pure-button pure-button-primary">Login</button>

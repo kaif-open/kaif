@@ -1,10 +1,13 @@
 library service;
 
-import 'package:kaif_web/service/server_type.dart';
 import 'package:kaif_web/model.dart';
 import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
+
+class ServerType {
+  String getAccountUrl(String path) => '/api/account$path';
+}
 
 abstract class _AbstractService {
   ServerType _serverType;
@@ -12,13 +15,22 @@ abstract class _AbstractService {
   _AbstractService(this._serverType);
 
   Future<HttpRequest> _postJson(String url, dynamic json, {Map<String, String> header}) {
-    return HttpRequest.request(url, method:'POST', mimeType:'applicaiton/json',
-    sendData:JSON.encode(json), requestHeaders:header);
+    return _requestJson('POST', url, json, header:header);
   }
 
-  Future<HttpRequest> _putJson(String url, dynamic json) {
-    return HttpRequest.request(url, method:'PUT', mimeType:'applicaiton/json',
-    sendData:JSON.encode(json));
+  Future<HttpRequest> _putJson(String url, dynamic json, {Map<String, String> header}) {
+    return _requestJson('PUT', url, json, header:header);
+  }
+
+  Future<HttpRequest> _requestJson(String method, String url, dynamic json,
+                                   {Map<String, String> header}) {
+    if (header == null) {
+      header = {
+      };
+    }
+    header['Content-Type'] = 'application/json';
+    return HttpRequest.request(url, method:method, sendData:JSON.encode(json),
+    requestHeaders:header);
   }
 }
 
@@ -29,7 +41,6 @@ class AccountService extends _AbstractService {
     var json = {
         'name':name, 'email':email, 'password':password
     };
-
     return _putJson(_serverType.getAccountUrl('/'), json).then((res) => null);
   }
 
