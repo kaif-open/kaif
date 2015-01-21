@@ -21,6 +21,14 @@ springBoot {
   mainClass = 'io.kaif.Application'
 }
 
+// dart
+task buildDart(dependsOn: classes, type: Exec) {
+  workingDir "src/main/dart"
+  commandLine "pub", "build", "-o", '../webapp/dart_dist'
+}
+
+war.dependsOn buildDart
+
 // hack to make `gradle bootRun` start with dev mode
 tasks.withType(org.springframework.boot.gradle.run.BootRunTask) {
   systemProperty('spring.profiles.active', 'dev')

@@ -35,8 +35,11 @@
     Sample footer
 </footer>
 
+<!--
 <script src="js/jquery-2.1.3.min.js"></script>
 <script src="js/kaif.js"></script>
+-->
+<script src="dart_dist/web/main.dart.js"></script>
 
 </body>
 </html>

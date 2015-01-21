@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TaskOptions>
+  <TaskOptions>
+    <option name="arguments" value="build --mode debug -o $ModuleFileDir$/src/main/webapp/dart_dist" />
+    <option name="checkSyntaxErrors" value="true" />
+    <option name="description" value="" />
+    <option name="exitCodeBehavior" value="ERROR" />
+    <option name="fileExtension" value="dart" />
+    <option name="immediateSync" value="true" />
+    <option name="name" value="dart pub build debug" />
+    <option name="output" value="" />
+    <option name="outputFilters">
+      <array />
+    </option>
+    <option name="outputFromStdout" value="false" />
+    <option name="passParentEnvs" value="true" />
+    <option name="program" value="/Users/ingram/develop/dart/dart-sdk/bin/pub" />
+    <option name="scopeName" value="dartsrc" />
+    <option name="trackOnlyRoot" value="false" />
+    <option name="workingDir" value="$ModuleFileDir$/src/main/dart" />
+    <envs />
+  </TaskOptions>
+</TaskOptions>
+

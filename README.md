@@ -27,6 +27,17 @@
  * `bootRun` will start a development embed tomcat, you can visit
    http://localhost:5980
 
+### Development with Dart
+
+ * download dart sdk, install to a path -- `/path/to/dart-sdk`
+ * export env in your shell `DART_SDK=/path/to/dart-sdk`
+ * set your execute path include `DART_SDK/bin`
+ * install Intellij Dart plugin
+ * install Intellij File watcher plugin
+ * import File watcher configs in `kaif/watchers.xml`
+ * after import file watcher, edit `dart pub build debug`
+ * in that watcher, change program path to your absolute path of dart-sdk
+ * open `pubspec.yaml` and click `Get Dependencies`
 
 ### Deploy to vagrant
 
