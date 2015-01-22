@@ -9,11 +9,11 @@
         <fieldset>
             <legend>Register new account</legend>
 
-            <label for="nameInput">Your Name</label>
+            <label for="nameInput">Your Name <span class="hint nameHint"></span></label>
             <input id="nameInput" type="text" placeholder="letter or number or underscore"
                    max-length="15" pattern="[a-zA-Z_0-9]{3,15}" required title="3 characters minimum">
 
-            <label for="emailInput">Your Email</label>
+            <label for="emailInput">Your Email </label>
             <input id="emailInput" type="email" placeholder="foo@gmail.com" required>
 
             <label for="passwordInput">Your Password</label>

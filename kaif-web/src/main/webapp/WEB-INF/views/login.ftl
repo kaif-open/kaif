@@ -5,6 +5,13 @@
 <div class="pure-g">
   <div class="pure-u-1-5"></div>
   <div class="pure-u-3-5">
+    <#-- check sign_up_form.dart for string `sign-up-success` -->
+    <#if springMacroRequestContext.getQueryString()!?contains('sign-up-success') >
+      <p class="alert alert-info">
+        <#-- TODO i18n -->
+        Verification email sent, please check your email to activate your account.
+      </p>
+    </#if>
     <form class="pure-form pure-form-stacked" login-form-controller>
         <fieldset>
             <legend>Login</legend>

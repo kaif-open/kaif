@@ -12,6 +12,7 @@ class ServerType {
 class RestErrorResponse extends Error {
   final int code;
   final String reason;
+
   static RestErrorResponse tryDecode(String text) {
     try {
       var json = JSON.decode(text);
@@ -25,6 +26,7 @@ class RestErrorResponse extends Error {
     }
     return null;
   }
+
   RestErrorResponse(this.code, this.reason);
 
   String toString() => "{code:$code, reason:$reason}";
@@ -43,6 +45,29 @@ abstract class _AbstractService {
     return _requestJson('PUT', url, json, header:header);
   }
 
+  Future<HttpRequest> _get(String url, {Map<String, Object> params:const {
+  }, Map<String, String> header}) {
+    var parts = [];
+    params.forEach((key, value) {
+      if (value != null) {
+        String strValue = value.toString();
+        parts.add('${Uri.encodeQueryComponent(key)}=' '${Uri.encodeQueryComponent(strValue)}');
+      }
+    });
+    var query = parts.join('&');
+    String getUrl = query.isEmpty ? url : '${url}?${query}';
+    return HttpRequest.request(getUrl, requestHeaders:header).catchError(_onHandleRequestError);
+  }
+
+  void _onHandleRequestError(ProgressEvent event) {
+    HttpRequest req = event.target;
+    var restErrorResponse = RestErrorResponse.tryDecode(req.responseText);
+    if (restErrorResponse == null) {
+      throw new RestErrorResponse(500, 'Unexpected error response');
+    }
+    throw restErrorResponse;
+  }
+
   Future<HttpRequest> _requestJson(String method, String url, dynamic json,
                                    {Map<String, String> header}) {
     if (header == null) {
@@ -51,14 +76,7 @@ abstract class _AbstractService {
     }
     header['Content-Type'] = 'application/json';
     return HttpRequest.request(url, method:method, sendData:JSON.encode(json),
-    requestHeaders:header).catchError((ProgressEvent event) {
-      HttpRequest req = event.target;
-      var restErrorResponse = RestErrorResponse.tryDecode(req.responseText);
-      if (restErrorResponse == null) {
-        throw new RestErrorResponse(500, 'Unexpected error response');
-      }
-      throw restErrorResponse;
-    });
+    requestHeaders:header).catchError(_onHandleRequestError);
   }
 }
 
@@ -70,6 +88,22 @@ class AccountService extends _AbstractService {
         'name':name, 'email':email, 'password':password
     };
     return _putJson(_serverType.getAccountUrl('/'), json).then((res) => null);
+  }
+
+  Future<bool> isNameAvailable(String name) {
+    var params = {
+        'name':name
+    };
+    return _get(_serverType.getAccountUrl('/name-available'), params:params).then((
+        req) => JSON.decode(req.responseText)).then((raw) => raw['data']);
+  }
+
+  Future<bool> isEmailAvailable(String email) {
+    var params = {
+        'email':email
+    };
+    return _get(_serverType.getAccountUrl('/email-available'), params:params).then((
+        req) => JSON.decode(req.responseText)).then((raw) => raw['data']);
   }
 
   Future<AccountAuth> authenticate(String name, String password) {

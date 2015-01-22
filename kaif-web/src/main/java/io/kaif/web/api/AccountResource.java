@@ -50,7 +50,7 @@ public class AccountResource {
   @RequestMapping(value = "/", method = RequestMethod.PUT, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
   public void create(@Valid @RequestBody AccountRequest request) {
-    accountService.createViaEmail(request.name, request.email, request.password);
+    accountService.createViaEmail(request.name.trim(), request.email.trim(), request.password);
   }
 
   static class Credential {
@@ -66,7 +66,7 @@ public class AccountResource {
   @RequestMapping(value = "/authenticate", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
   public AccountAuth authenticate(@Valid @RequestBody Credential credential) {
-    Optional<AccountAuth> accountAuth = accountService.authenticate(credential.name,
+    Optional<AccountAuth> accountAuth = accountService.authenticate(credential.name.trim(),
         credential.password);
     return accountAuth.orElseThrow(RestAccessDeniedException::new);
   }
