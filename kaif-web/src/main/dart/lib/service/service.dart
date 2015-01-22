@@ -9,6 +9,27 @@ class ServerType {
   String getAccountUrl(String path) => '/api/account$path';
 }
 
+class RestErrorResponse extends Error {
+  final int code;
+  final String reason;
+  static RestErrorResponse tryDecode(String text) {
+    try {
+      var json = JSON.decode(text);
+      if (json is Map) {
+        Map raw = json;
+        if (raw.containsKey('code') && raw.containsKey('reason')) {
+          return new RestErrorResponse(raw['code'], raw['reason']);
+        }
+      }
+    } catch (e) {
+    }
+    return null;
+  }
+  RestErrorResponse(this.code, this.reason);
+
+  String toString() => "{code:$code, reason:$reason}";
+}
+
 abstract class _AbstractService {
   ServerType _serverType;
 
@@ -30,7 +51,14 @@ abstract class _AbstractService {
     }
     header['Content-Type'] = 'application/json';
     return HttpRequest.request(url, method:method, sendData:JSON.encode(json),
-    requestHeaders:header);
+    requestHeaders:header).catchError((ProgressEvent event) {
+      HttpRequest req = event.target;
+      var restErrorResponse = RestErrorResponse.tryDecode(req.responseText);
+      if (restErrorResponse == null) {
+        throw new RestErrorResponse(500, 'Unexpected error response');
+      }
+      throw restErrorResponse;
+    });
   }
 }
 

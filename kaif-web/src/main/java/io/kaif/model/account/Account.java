@@ -9,6 +9,12 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public class Account {
+  public static final int PASSWORD_MIN = 6;
+  public static final int PASSWORD_MAX = 100;
+  public static final int NAME_MIN = 3;
+  public static final int NAME_MAX = 15;
+  public static final String NAME_PATTERN = "[a-zA-Z_0-9]{3,15}";
+
   public static Account create(String name, String email, String passwordHash, Instant createTime) {
     return new Account(UUID.randomUUID(),
         name,
@@ -20,8 +26,16 @@ public class Account {
   }
 
   public static boolean isValidPassword(String password) {
-    return password != null && password.length() >= 6;
+    return password != null
+        && password.length() >= PASSWORD_MIN
+        && password.length() <= PASSWORD_MAX;
   }
+
+  public static boolean isValidName(String name) {
+    return name != null && name.length() >= NAME_MIN && name.length() <= NAME_MAX && name.matches(
+        NAME_PATTERN);
+  }
+
   private final String name;
   private final UUID accountId;
   private final String email;

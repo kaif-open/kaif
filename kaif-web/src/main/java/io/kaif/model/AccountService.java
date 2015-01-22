@@ -35,10 +35,8 @@ public class AccountService {
 
   public Account createViaEmail(String name, String email, String password) {
     Preconditions.checkArgument(Account.isValidPassword(password));
-    Preconditions.checkArgument(name != null && name.length() >= 3);
+    Preconditions.checkArgument(Account.isValidName(name));
     Preconditions.checkNotNull(email);
-    //TODO duplicate name exception
-    //TODO duplicate email exception
     return accountDao.create(name, email, passwordEncoder.encode(password));
   }
 
@@ -85,15 +83,18 @@ public class AccountService {
   }
 
   public AccountAuth extendsAccessToken(AccountAccessToken accessToken) {
-    //TODO extendsAccessToken query dao twice (web controller query once)
     return Optional.ofNullable(accessToken)
         .flatMap(token -> accountDao.findById(token.getAccountId()))
         .map(this::createAccountAuth)
-        .orElseThrow(IllegalStateException::new);
+        .get();
   }
 
   public boolean isNameAvailable(String name) {
     return !accountDao.findByName(name).isPresent();
+  }
+
+  public boolean isEmailAvailable(String email) {
+    return accountDao.isEmailAvailable(email);
   }
 
   public void updateAuthorities(String accountId, EnumSet<Authority> authorities) {

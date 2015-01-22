@@ -20,16 +20,35 @@ class SignUpForm {
     TextInputElement emailInput = elem.querySelector('#emailInput');
     TextInputElement passwordInput = elem.querySelector('#passwordInput');
     TextInputElement confirmPasswordInput = elem.querySelector('#confirmPasswordInput');
+    Element alert = elem.querySelector('.alert');
+    Element loading = elem.querySelector('.loading');
 
-    //TODO validate input
-    //TODO show loading
+    alert.classes.add('hidden');
+    alert.text = '';
+
+    if (passwordInput.value != confirmPasswordInput.value) {
+      //TODO i18n
+      alert
+        ..classes.remove('hidden')
+        ..text = 'password not the same';
+      return;
+    }
+
+    loading.classes.remove('hidden');
     SubmitButtonInputElement submit = elem.querySelector('[type=submit]');
     submit.disabled = true;
 
     accountService.createAccount(nameInput.value, emailInput.value, passwordInput.value)//
     .then((_) {
       window.location.href = '/login?sign-up-success';
-    }).whenComplete(() => submit.disabled = false);
+    }).catchError((e) {
+      alert
+        ..classes.remove('hidden')
+        ..text = '${e}';
+    }).whenComplete(() {
+      submit.disabled = false;
+      loading.classes.add('hidden');
+    });
 
   }
 

@@ -49,7 +49,7 @@ public class AccountDao implements DaoOperations {
             + " VALUES "
             + questions(7),
         account.getAccountId(),
-        account.getEmail(),
+        account.getEmail().toLowerCase(),
         account.getPasswordHash(),
         account.getName(),
         Timestamp.from(account.getCreateTime()),
@@ -84,5 +84,10 @@ public class AccountDao implements DaoOperations {
     jdbc().update(" UPDATE Account SET passwordHash = ? WHERE accountId = ? ",
         passwordHash,
         accountId);
+  }
+
+  public boolean isEmailAvailable(String email) {
+    final String sql = " SELECT count(*) FROM Account WHERE email = ? ";
+    return jdbc().queryForObject(sql, Number.class, email.toLowerCase()).intValue() == 0;
   }
 }

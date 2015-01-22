@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Email;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,24 +13,35 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.kaif.model.AccountService;
+import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountAuth;
 import io.kaif.web.support.RestAccessDeniedException;
+import io.kaif.web.support.SingleWrapper;
 
 @RestController
 @RequestMapping("/api/account")
 public class AccountResource {
 
   static class AccountRequest {
+
+    @Size(min = Account.NAME_MIN, max = Account.NAME_MAX)
     @NotNull
+    @Pattern(regexp = Account.NAME_PATTERN)
     public String name;
+
+    @Size(min = Account.PASSWORD_MIN, max = Account.PASSWORD_MAX)
     @NotNull
     public String password;
+
     @Email
+    @NotNull
     public String email;
+
   }
 
   @Autowired
@@ -62,5 +75,15 @@ public class AccountResource {
       MediaType.APPLICATION_JSON_VALUE })
   public AccountAuth extendsAccessToken(AccountAccessToken token) {
     return accountService.extendsAccessToken(token);
+  }
+
+  @RequestMapping(value = "/email-available")
+  public SingleWrapper<Boolean> isEmailAvailable(@RequestParam("email") String email) {
+    return SingleWrapper.of(accountService.isEmailAvailable(email));
+  }
+
+  @RequestMapping(value = "/name-available")
+  public SingleWrapper<Boolean> isNameAvailable(@RequestParam("name") String name) {
+    return SingleWrapper.of(accountService.isNameAvailable(name));
   }
 }

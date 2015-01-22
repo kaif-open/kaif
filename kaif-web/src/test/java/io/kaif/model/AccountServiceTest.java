@@ -43,6 +43,15 @@ public class AccountServiceTest extends DbIntegrationTests {
   }
 
   @Test
+  public void isEmailAvailable() throws Exception {
+    assertTrue(service.isEmailAvailable("xyz123@foo.com"));
+    service.createViaEmail("xyz123", "xyz123@foo.com", "9999123");
+
+    assertFalse(service.isEmailAvailable("xyz123@foo.com"));
+    assertFalse(service.isEmailAvailable("XYZ123@Foo.com"));
+  }
+
+  @Test
   public void authenticate() {
     assertFalse(service.authenticate("notexist", "pwd123").isPresent());
     service.createViaEmail("myname", "foo@gmail.com", "pwd123");
