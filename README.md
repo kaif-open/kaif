@@ -4,7 +4,14 @@
 
 # Development
 
-### Prepare dev server
+### Prepare Dart
+
+ * download dart sdk, install to a path -- `/path/to/dart-sdk`
+ * export env in your shell `export DART_SDK=/path/to/dart-sdk`
+ * install Intellij Dart plugin
+ * open `pubspec.yaml` and click `Get Dependencies`
+
+### Prepare Vagrant
 
  * go to `kaif-deploy`, read README. Install vagrant and provision an VM
  * you may need to retry provision if failed
@@ -17,29 +24,27 @@
 
  * after vagrant complete, run `play_vagrant_recreate_db.sh` to initialize
    DB schema
- * go to `kaif-web`, execute gradle tomcat
+
+### Prepare dev web server
+
+ * go to `kaif-web`, execute gradle tomcat, and pub serve
 
 ```
    cd kaif-web
+   ../gradlew pubServe
    ../gradlew bootRun
 ```
 
  * `bootRun` will start a development embed tomcat, you can visit
    http://localhost:5980
 
-### Development with Dart
+ * `pubServe` will start pub server in 15980 port, which used by dev server
 
- * download dart sdk, install to a path -- `/path/to/dart-sdk`
- * export env in your shell `DART_SDK=/path/to/dart-sdk`
- * set your execute path include `DART_SDK/bin`
- * install Intellij Dart plugin
- * install Intellij File watcher plugin
- * import File watcher configs in `kaif/watchers.xml`
- * after import file watcher, edit `dart pub build debug`
- * in that watcher, change program path to your absolute path of dart-sdk
- * open `pubspec.yaml` and click `Get Dependencies`
+ * you can use gradle in Intellij to run `bootRun` and `pubServe`. For `pubServe`
+   you need to specify vm arguments: `-DDART_SDK=/path/to/dart-sdk`
 
-### Deploy to vagrant
+
+### Deploy web app to vagrant
 
  * build kaif-web.war then deploy to vagrant
 
@@ -55,4 +60,4 @@
   192.168.59.59  localdev.kaif.io
 ```
 
- * go visit https://localdev.kaif.io/  to check nginx is ready
+ * go visit https://localdev.kaif.io/ to check nginx is ready

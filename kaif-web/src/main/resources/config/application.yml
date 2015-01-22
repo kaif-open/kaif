@@ -5,6 +5,8 @@ server:
 ## freemarker
 spring.freemarker.cache: true
 spring.freemarker.templateLoaderPath: /WEB-INF/views
+spring.freemarker.settings.datetime_format: yyyy-MM-dd
+spring.freemarker.settings.number_format: 0.######
 
 ## actuator
 management.context-path: /actuate

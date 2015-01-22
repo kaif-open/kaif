@@ -8,11 +8,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Kaif prototype">
-
+    <meta name="profilesActive" content="${kaif.profilesActive}">
     <title>kaif.io</title>
     <link rel="stylesheet" href="css/pure-0.5/pure-min.css">
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
-    <link rel="stylesheet" href="css/kaif.css">
+    <link rel="stylesheet" href="css/kaif.css?${kaif.deployServerTime}">
 </head>
 <body>
 
@@ -35,12 +35,17 @@
     Sample footer
 </footer>
 
-<!--
+<#-- deprecated
 <script src="js/jquery-2.1.3.min.js"></script>
 <script src="js/kaif.js"></script>
 -->
-<script src="dart_dist/web/main.dart.js"></script>
 
+<#if kaif.profilesActive?contains('dev')>
+    <#-- require dart pub serve, please run `./gradlew pubServe` -->
+    <script src="//localhost:15980/main.dart.js"></script>
+<#else>
+    <script src="dart_dist/web/main.dart.js?${kaif.deployServerTime}"></script>
+</#if>
 </body>
 </html>
 

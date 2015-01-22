@@ -10,8 +10,10 @@ buildscript {
   }
 }
 
-apply plugin: 'spring-boot'
 apply plugin: 'war'
+
+/** spring boot begin **/
+apply plugin: 'spring-boot'
 
 bootRepackage {
   mainClass = 'io.kaif.Application'
@@ -21,18 +23,51 @@ springBoot {
   mainClass = 'io.kaif.Application'
 }
 
-// dart
-task buildDart(dependsOn: classes, type: Exec) {
-  workingDir "src/main/dart"
-  commandLine "pub", "build", "-o", '../webapp/dart_dist'
-}
-
-war.dependsOn buildDart
-
 // hack to make `gradle bootRun` start with dev mode
 tasks.withType(org.springframework.boot.gradle.run.BootRunTask) {
   systemProperty('spring.profiles.active', 'dev')
 }
+
+/** spring boot end **/
+
+/** dart configuration begin **/
+
+def getDartPub() {
+  def envDart = System.env['DART_SDK']
+  def propDart = System.properties['DART_SDK']
+  if (envDart == null && propDart == null) {
+    return null;
+  }
+  if (envDart != null) {
+    return "${System.env['DART_SDK']}/bin/pub"
+  }
+  return "${System.properties['DART_SDK']}/bin/pub"
+}
+
+task buildDart(dependsOn: classes, type: Exec) {
+  doFirst {
+    if (getDartPub() == null) {
+      throw new IllegalStateException('missing DART_SDK environment var., please install dart and set env first');
+    }
+  }
+  workingDir "src/main/dart"
+  commandLine getDartPub(), "build", "-o", '../webapp/dart_dist'
+}
+
+task pubServe(type: Exec) {
+  doFirst {
+    if (getDartPub() == null) {
+      throw new IllegalStateException('missing DART_SDK environment var., please install dart and set env first');
+    }
+  }
+  workingDir "src/main/dart"
+  commandLine getDartPub(), "serve", "--port", "15980", "--hostname", "localhost"
+}
+
+war.dependsOn buildDart
+
+/** dart configuration end **/
+
 
 jar {
   baseName = 'kaif-web'
