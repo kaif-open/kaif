@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
@@ -35,6 +36,12 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
   public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
     //noinspection unchecked
     return new Jackson2ObjectMapperBuilder().modulesToInstall(AfterburnerModule.class);
+  }
+
+  @Override
+  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    registry.addResourceHandler("/webjars/**")
+        .addResourceLocations("classpath:/META-INF/resources/webjars/");
   }
 
   @Autowired

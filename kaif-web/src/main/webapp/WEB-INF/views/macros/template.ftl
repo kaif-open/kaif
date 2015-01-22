@@ -10,8 +10,8 @@
     <meta name="description" content="Kaif prototype">
     <meta name="profilesActive" content="${kaif.profilesActive}">
     <title>kaif.io</title>
-    <link rel="stylesheet" href="css/pure-0.5/pure-min.css">
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+    <link rel='stylesheet' href='/webjars/yui-pure/0.5.0/pure-min.css'>
+    <link rel="stylesheet" href="/webjars/font-awesome/4.2.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="css/kaif.css?${kaif.deployServerTime}">
 </head>
 <body>

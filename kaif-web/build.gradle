@@ -61,7 +61,7 @@ task pubServe(type: Exec) {
     }
   }
   workingDir "src/main/dart"
-  commandLine getDartPub(), "serve", "--port", "15980", "--hostname", "localhost"
+  commandLine getDartPub(), "serve", "--port", "15980", "--hostname", "localhost", "--force-poll"
 }
 
 war.dependsOn buildDart
@@ -101,5 +101,10 @@ dependencies {
   compile 'com.google.code.findbugs:jsr305:3.0.0'
 
   compile 'com.fasterxml.jackson.module:jackson-module-afterburner:2.4.0'
+
+  // webjars
+  compile 'org.webjars:font-awesome:4.2.0'
+  compile 'org.webjars:yui-pure:0.5.0'
+
 }
 
