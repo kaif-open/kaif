@@ -1,0 +1,6 @@
+name: kaif_web
+description: Kaif Web
+dependencies:
+  browser: any
+dev_dependencies:
+  unittest: any
