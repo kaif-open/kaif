@@ -42,6 +42,10 @@
 
 <#if kaif.profilesActive?contains('dev')>
     <#-- require dart pub serve, please run `./gradlew pubServe` -->
+    <div id="waitingPubServe"
+         style="position: fixed; bottom:0; right:0px; padding: 3px 10px; background-color: rgba(92, 0, 0, 0.67); color:white">
+        Waiting Pub Serve...
+    </div>
     <script src="//localhost:15980/main.dart.js"></script>
 <#else>
     <script src="dart_dist/web/main.dart.js?${kaif.deployServerTime}"></script>
