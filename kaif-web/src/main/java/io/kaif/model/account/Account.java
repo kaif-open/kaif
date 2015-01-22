@@ -13,7 +13,9 @@ public class Account {
   public static final int PASSWORD_MAX = 100;
   public static final int NAME_MIN = 3;
   public static final int NAME_MAX = 15;
-  public static final String NAME_PATTERN = "[a-zA-Z_0-9]{3,15}";
+
+  //changing pattern should review sign_up_form.dart
+  public static final String NAME_PATTERN = "^[a-zA-Z_0-9]{3,15}$";
 
   public static Account create(String name, String email, String passwordHash, Instant createTime) {
     return new Account(UUID.randomUUID(),

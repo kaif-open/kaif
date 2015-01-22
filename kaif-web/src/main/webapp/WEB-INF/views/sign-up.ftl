@@ -11,7 +11,7 @@
 
             <label for="nameInput">Your Name <span class="hint nameHint"></span></label>
             <input id="nameInput" type="text" placeholder="letter or number or underscore"
-                   max-length="15" pattern="[a-zA-Z_0-9]{3,15}" required title="3 characters minimum">
+                   maxlength="15" pattern="${accountNamePattern}" required title="letter or number only, 3~15 characters">
 
             <label for="emailInput">Your Email </label>
             <input id="emailInput" type="email" placeholder="foo@gmail.com" required>

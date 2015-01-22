@@ -13,28 +13,28 @@ class SignUpForm {
     nameInput = elem.querySelector('#nameInput');
     emailInput = elem.querySelector('#emailInput');
     elem.onSubmit.listen(_signUp);
+    //pattern follow Account#NAME_PATTERN
+    var namePattern = new RegExp(r'^[a-zA-Z_0-9]{3,15}$');
 
-    nameInput.onKeyUp.map((e) => nameInput.value.trim()).where((partial) {
-      return partial.length >= 3;
-    }).listen((partial) {
+    nameInput.onKeyUp.map((e) => nameInput.value.trim()).listen((partial) {
+      //TODO i18n
+      if (!namePattern.hasMatch(partial)) {
+        _showHint('Invalid name', ok:false);
+        return;
+      }
       accountService.isNameAvailable(partial).then((available) {
-        _showHint(elem.querySelector('.nameHint'), available);
+        String hintText = available ? '&#10003; Available' : 'Already taken!';
+        _showHint(hintText, ok:available);
       });
     });
   }
 
-  void _showHint(Element hint, bool available) {
-    hint.classes.removeAll(['text-success', 'text-danger']);
-    //TODO i18n
-    if (available) {
-      hint
-        ..classes.add('text-success')
-        ..innerHtml = '&#10003; Available';
-    } else {
-      hint
-        ..classes.add('text-danger')
-        ..innerHtml = 'Already taken!';
-    }
+  void _showHint(String hintText, {bool ok}) {
+    var hint = elem.querySelector('.nameHint');
+    hint
+      ..classes.toggle('text-success', ok)
+      ..classes.toggle('text-danger', !ok)
+      ..innerHtml = hintText;
   }
 
   void _createAccount(Element loading, TextInputElement passwordInput, Element alert) {

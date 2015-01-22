@@ -29,7 +29,7 @@ class RestErrorResponse extends Error {
 
   RestErrorResponse(this.code, this.reason);
 
-  String toString() => "{code:$code, reason:$reason}";
+  String toString() => "$reason (code:$code)";
 }
 
 abstract class _AbstractService {

@@ -17,10 +17,10 @@
             <legend>Login</legend>
 
             <label for="nameInput">Your Name</label>
-            <input id="nameInput" type="text" placeholder="letter or number">
+            <input id="nameInput" type="text" placeholder="letter or number" required>
 
             <label for="passwordInput">Password</label>
-            <input id="passwordInput" type="password" placeholder="Your Password">
+            <input id="passwordInput" type="password" placeholder="Your Password" required>
 
             <label for="rememberMeInput" class="pure-checkbox">
                 <input id="rememberMeInput" type="checkbox" checked> Remember me
@@ -28,6 +28,7 @@
 
             <button type="submit" class="pure-button pure-button-primary">Login</button>
         </fieldset>
+        <p class="alert alert-danger hidden"></p>
     </form>
   </div>
   <div class="pure-u-3-5"></div>

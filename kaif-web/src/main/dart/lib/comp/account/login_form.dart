@@ -8,6 +8,7 @@ class LoginForm {
   final Element elem;
   final AccountService accountService;
   final AccountDao accountDao;
+
   LoginForm(this.elem, this.accountService, this.accountDao) {
     elem.onSubmit.listen(_login);
   }
@@ -20,9 +21,8 @@ class LoginForm {
     TextInputElement nameInput = elem.querySelector('#nameInput');
     TextInputElement passwordInput = elem.querySelector('#passwordInput');
     CheckboxInputElement rememberMeInput = elem.querySelector('#rememberMeInput');
-
-    //TODO validate input
-    //TODO show loading
+    Element alert = elem.querySelector('.alert');
+    alert.classes.add('hidden');
     SubmitButtonInputElement submit = elem.querySelector('[type=submit]');
     submit.disabled = true;
 
@@ -30,8 +30,16 @@ class LoginForm {
     .then((AccountAuth accountAuth) {
       accountDao.saveAccount(accountAuth, rememberMe:rememberMeInput.checked);
       //TODO handle ?from=
-      window.location.href = '/'  ;
-    }).whenComplete(() => submit.disabled = false);
+      window.location.href = '/' ;
+    }).catchError((e) {
+      //TODO i18n
+      alert
+        ..text = 'Authentication failed, please check name and password are correct.'
+        ..classes.remove('hidden');
+
+    }).whenComplete(() {
+      submit.disabled = false;
+    });
 
   }
 
