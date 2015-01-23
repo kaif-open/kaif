@@ -45,8 +45,10 @@ abstract class _AbstractService {
     return _requestJson('PUT', url, json, header:header);
   }
 
-  Future<HttpRequest> _get(String url, {Map<String, Object> params:const {
-  }, Map<String, String> header}) {
+  Future<HttpRequest> _get(String url,
+                           {Map<String, Object> params:const {
+                           },
+                           Map<String, String> header}) {
     var parts = [];
     params.forEach((key, value) {
       if (value != null) {
@@ -56,27 +58,34 @@ abstract class _AbstractService {
     });
     var query = parts.join('&');
     String getUrl = query.isEmpty ? url : '${url}?${query}';
-    return HttpRequest.request(getUrl, requestHeaders:header).catchError(_onHandleRequestError);
+    return HttpRequest.request(getUrl, requestHeaders:header)
+    .catchError(_onHandleRequestError);
   }
 
   void _onHandleRequestError(ProgressEvent event) {
     HttpRequest req = event.target;
     var restErrorResponse = RestErrorResponse.tryDecode(req.responseText);
     if (restErrorResponse == null) {
-      throw new RestErrorResponse(500, 'Unexpected error response');
+      throw new RestErrorResponse(500, 'Unexpected error response, status:${req.status}');
     }
     throw restErrorResponse;
   }
 
-  Future<HttpRequest> _requestJson(String method, String url, dynamic json,
+  Future<HttpRequest> _requestJson(String method,
+                                   String url,
+                                   dynamic json,
                                    {Map<String, String> header}) {
     if (header == null) {
       header = {
       };
     }
     header['Content-Type'] = 'application/json';
-    return HttpRequest.request(url, method:method, sendData:JSON.encode(json),
-    requestHeaders:header).catchError(_onHandleRequestError);
+    return HttpRequest.request(
+        url,
+        method:method,
+        sendData:JSON.encode(json),
+        requestHeaders:header)
+    .catchError(_onHandleRequestError);
   }
 }
 
@@ -87,39 +96,46 @@ class AccountService extends _AbstractService {
     var json = {
         'name':name, 'email':email, 'password':password
     };
-    return _putJson(_serverType.getAccountUrl('/'), json).then((res) => null);
+    return _putJson(_serverType.getAccountUrl('/'), json)
+    .then((res) => null);
   }
 
   Future<bool> isNameAvailable(String name) {
     var params = {
         'name':name
     };
-    return _get(_serverType.getAccountUrl('/name-available'), params:params).then((
-        req) => JSON.decode(req.responseText)).then((raw) => raw['data']);
+    return _get(_serverType.getAccountUrl('/name-available'), params:params)
+    .then((req) => JSON.decode(req.responseText))
+    .then((raw) => raw['data']);
   }
 
   Future<bool> isEmailAvailable(String email) {
     var params = {
         'email':email
     };
-    return _get(_serverType.getAccountUrl('/email-available'), params:params).then((
-        req) => JSON.decode(req.responseText)).then((raw) => raw['data']);
+    return _get(_serverType.getAccountUrl('/email-available'), params:params)
+    .then((req) => JSON.decode(req.responseText))
+    .then((raw) => raw['data']);
   }
 
   Future<AccountAuth> authenticate(String name, String password) {
     var json = {
         'name':name, 'password':password
     };
-    return _postJson(_serverType.getAccountUrl('/authenticate'), json).then((
-        req) => JSON.decode(req.responseText)).then((raw) => new AccountAuth.decode(raw));
+    return _postJson(_serverType.getAccountUrl('/authenticate'), json)
+    .then((req) => JSON.decode(req.responseText))
+    .then((raw) => new AccountAuth.decode(raw));
   }
 
   Future<AccountAuth> extendsAccessToken(String accessToken) {
     var headers = {
         'X-KAIF-ACCESS-TOKEN':accessToken
     };
-    return _postJson(_serverType.getAccountUrl('/extends-access-token'), {
-    }, header:headers).then((req) => JSON.decode(req.responseText)).then((
-        raw) => new AccountAuth.decode(raw));
+    return _postJson(
+        _serverType.getAccountUrl('/extends-access-token'), {
+        },
+        header:headers)
+    .then((req) => JSON.decode(req.responseText))
+    .then((raw) => new AccountAuth.decode(raw));
   }
 }

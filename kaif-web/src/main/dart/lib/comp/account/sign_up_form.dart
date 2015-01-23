@@ -42,7 +42,7 @@ class SignUpForm {
     SubmitButtonInputElement submit = elem.querySelector('[type=submit]');
     submit.disabled = true;
 
-    accountService.createAccount(nameInput.value, emailInput.value, passwordInput.value)//
+    accountService.createAccount(nameInput.value, emailInput.value, passwordInput.value)
     .then((_) {
       window.location.href = '/login?sign-up-success';
     }).catchError((e) {

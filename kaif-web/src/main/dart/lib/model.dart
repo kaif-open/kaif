@@ -32,9 +32,11 @@ class AccountAuth {
 
   AccountAuth(this.accountId, this.name, this.accessToken, this.authorities, this.expireTime);
 
-  AccountAuth.decode(Map raw) : this(//
-      raw['accountId'], raw['name'], raw['accessToken'], //
-      Authority.decodeSet(raw['authorities']), //
+  AccountAuth.decode(Map raw) : this(
+      raw['accountId'],
+      raw['name'],
+      raw['accessToken'],
+      Authority.decodeSet(raw['authorities']),
       new DateTime.fromMillisecondsSinceEpoch(raw['expireTime']));
 }
 
@@ -49,16 +51,20 @@ class Account {
   Account(this.accountId, this.name, this.accessToken, this.authorities, this.expireTime,
           this.lastExtend);
 
-  Account.decode(Map raw) : this(//
-      raw['accountId'], raw['name'], raw['accessToken'], //
-      Authority.decodeSet(raw['authorities']), //
+  Account.decode(Map raw) : this(
+      raw['accountId'],
+      raw['name'],
+      raw['accessToken'],
+      Authority.decodeSet(raw['authorities']),
       new DateTime.fromMillisecondsSinceEpoch(raw['expireTime']),
       new DateTime.fromMillisecondsSinceEpoch(raw['lastExtend']));
 
   toJson() => {
-      'accountId':accountId, 'name':name, 'accessToken':accessToken, //
-      'authorities':authorities.map((auth) => auth.toJson()).toList(), //
-      'expireTime':expireTime.millisecondsSinceEpoch, //
+      'accountId':accountId,
+      'name':name,
+      'accessToken':accessToken,
+      'authorities':authorities.map((auth) => auth.toJson()).toList(),
+      'expireTime':expireTime.millisecondsSinceEpoch,
       'lastExtend':lastExtend.millisecondsSinceEpoch
   };
 }
