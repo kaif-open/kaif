@@ -10,6 +10,9 @@ final ServerType serverType = new ServerType();
 
 //for dev server only:
 customizeDev() {
+  if (!serverType.isDevMode) {
+    return;
+  }
   querySelectorAll('#waitingPubServe').forEach((Element el) {
     el.text = 'Pub Serve Ready!';
     el.style.backgroundColor = '#006600';

@@ -12,8 +12,15 @@
     <title>kaif.io</title>
 
     <#-- meta data for dart, see ServerType for detail -->
-    <meta name="kaifProfilesActive" content="${kaif.profilesActive}">
-    <meta name="kaifLocale" content="${(request.getLocale().toString())!"en_US"}">
+    <#if kaif.profilesActive?contains('dev')>
+
+        <#-- for detect dev mode only, should not leak information to produciton -->
+        <meta name="kaifProfilesActive" content="${kaif.profilesActive}">
+
+        <#-- server locale is only used in dev mode, because the page will be cached for everyone
+        -->
+        <meta name="kaifLocale" content="${(request.getLocale().toString())!"en_US"}">
+    </#if>
 
     <link rel='stylesheet' href='/webjars/yui-pure/0.5.0/pure-min.css'>
     <link rel="stylesheet" href="/webjars/font-awesome/4.2.0/css/font-awesome.min.css">
