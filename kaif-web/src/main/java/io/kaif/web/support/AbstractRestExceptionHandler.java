@@ -4,9 +4,12 @@ import static java.util.stream.Collectors.*;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataAccessException;
@@ -23,8 +26,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 /**
  * common exception handler for restful controllers, allow convert common spring data access
@@ -51,15 +56,30 @@ public abstract class AbstractRestExceptionHandler extends ResponseEntityExcepti
 
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+  @Autowired
+  private MessageSource messageSource;
+
   @ExceptionHandler(DataAccessException.class)
   @ResponseBody
   public ResponseEntity<RestErrorResponse> handleDataAccessException(final DataAccessException ex,
       final WebRequest request) {
     final HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
     final RestErrorResponse errorResponse = new RestErrorResponse(status.value(),
-        "Could not access data:" + ex.getClass().getSimpleName());
+        i18n(request, "resterror.DataAccessException", ex.getClass().getSimpleName()));
     logException(ex, errorResponse, request);
     return new ResponseEntity<>(errorResponse, status);
+  }
+
+  protected final String i18n(WebRequest request, String key, Object... args) {
+    return messageSource.getMessage(key, args, "!" + key + "!", resolveLocale(request));
+  }
+
+  private Locale resolveLocale(WebRequest request) {
+    if (!(request instanceof ServletWebRequest)) {
+      return request.getLocale();
+    }
+    ServletWebRequest servletWebRequest = (ServletWebRequest) request;
+    return RequestContextUtils.getLocale(servletWebRequest.getRequest());
   }
 
   @ExceptionHandler(DataIntegrityViolationException.class)
@@ -68,7 +88,7 @@ public abstract class AbstractRestExceptionHandler extends ResponseEntityExcepti
       final WebRequest request) {
     final HttpStatus status = HttpStatus.CONFLICT;
     final RestErrorResponse errorResponse = new RestErrorResponse(status.value(),
-        "Data integrity violation");
+        i18n(request, "resterror.DataIntegrityViolationException"));
     logException(ex, errorResponse, request);
     return new ResponseEntity<>(errorResponse, status);
   }
@@ -79,7 +99,7 @@ public abstract class AbstractRestExceptionHandler extends ResponseEntityExcepti
       final WebRequest request) {
     final HttpStatus status = HttpStatus.CONFLICT;
     final RestErrorResponse errorResponse = new RestErrorResponse(status.value(),
-        "Data already exist");
+        i18n(request, "resterror.DuplicateKeyException"));
     logException(ex, errorResponse, request);
     return new ResponseEntity<>(errorResponse, status);
   }
@@ -93,7 +113,7 @@ public abstract class AbstractRestExceptionHandler extends ResponseEntityExcepti
     final RestErrorResponse errorResponse = new RestErrorResponse(status.value(),
         status.getReasonPhrase());
     logException(ex, errorResponse, request);
-    return new ResponseEntity<Object>(errorResponse, status);
+    return new ResponseEntity<>(errorResponse, status);
   }
 
   @Override
@@ -101,12 +121,15 @@ public abstract class AbstractRestExceptionHandler extends ResponseEntityExcepti
       HttpHeaders headers,
       HttpStatus status,
       WebRequest request) {
+
+    //TODO detail i18n and missing parameter name
     final String detail = ex.getBindingResult()
         .getAllErrors()
         .stream()
         .map(objError -> objError.getDefaultMessage())
-        .collect(joining(","));
-    final RestErrorResponse errorResponse = new RestErrorResponse(status.value(), detail);
+        .collect(joining(", "));
+    final RestErrorResponse errorResponse = new RestErrorResponse(status.value(),
+        i18n(request, "resterror.MethodArgumentNotValidException", detail));
     logException(ex, errorResponse, request);
     return new ResponseEntity<>(errorResponse, status);
   }
@@ -143,7 +166,8 @@ public abstract class AbstractRestExceptionHandler extends ResponseEntityExcepti
   public ResponseEntity<RestErrorResponse> handleOptimisticLockingFailureException(final OptimisticLockingFailureException ex,
       final WebRequest request) {
     final HttpStatus status = HttpStatus.LOCKED;
-    final RestErrorResponse errorResponse = new RestErrorResponse(status.value(), "Data locked");
+    final RestErrorResponse errorResponse = new RestErrorResponse(status.value(),
+        i18n(request, "resterror.OptimisticLockingFailureException"));
     logException(ex, errorResponse, request);
     return new ResponseEntity<>(errorResponse, status);
   }
@@ -152,9 +176,10 @@ public abstract class AbstractRestExceptionHandler extends ResponseEntityExcepti
   @ResponseBody
   public ResponseEntity<RestErrorResponse> handleOtherException(final Exception ex,
       final WebRequest request) {
-    // Domain exception or IOException ...etc
-    final HttpStatus status = HttpStatus.BAD_REQUEST;
-    final RestErrorResponse errorResponse = new RestErrorResponse(status.value(), ex.getMessage());
+    // IOException ...etc
+    final HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+    final RestErrorResponse errorResponse = new RestErrorResponse(status.value(),
+        i18n(request, "resterror.Exception", ex.getClass().getSimpleName()));
     logException(ex, errorResponse, request);
     return new ResponseEntity<>(errorResponse, status);
   }
@@ -165,7 +190,7 @@ public abstract class AbstractRestExceptionHandler extends ResponseEntityExcepti
       final WebRequest request) {
     final HttpStatus status = HttpStatus.UNAUTHORIZED;
     final RestErrorResponse errorResponse = new RestErrorResponse(status.value(),
-        "Permission denied");
+        i18n(request, "resterror.PermissionDeniedDataAccessException"));
     logException(ex, errorResponse, request);
     return new ResponseEntity<>(errorResponse, status);
   }
@@ -175,7 +200,8 @@ public abstract class AbstractRestExceptionHandler extends ResponseEntityExcepti
   public ResponseEntity<RestErrorResponse> handlePessimisticLockingFailureException(final PessimisticLockingFailureException ex,
       final WebRequest request) {
     final HttpStatus status = HttpStatus.LOCKED;
-    final RestErrorResponse errorResponse = new RestErrorResponse(status.value(), "Data locked");
+    final RestErrorResponse errorResponse = new RestErrorResponse(status.value(),
+        i18n(request, "resterror.PessimisticLockingFailureException"));
     logException(ex, errorResponse, request);
     return new ResponseEntity<>(errorResponse, status);
   }
@@ -186,7 +212,7 @@ public abstract class AbstractRestExceptionHandler extends ResponseEntityExcepti
       final WebRequest request) {
     final HttpStatus status = HttpStatus.REQUEST_TIMEOUT;
     final RestErrorResponse errorResponse = new RestErrorResponse(status.value(),
-        "Request timeout");
+        i18n(request, "resterror.QueryTimeoutException"));
     logException(ex, errorResponse, request);
     return new ResponseEntity<>(errorResponse, status);
   }
@@ -196,7 +222,8 @@ public abstract class AbstractRestExceptionHandler extends ResponseEntityExcepti
   public ResponseEntity<RestErrorResponse> handleRestApiAccessDeniedException(final RestAccessDeniedException ex,
       final WebRequest request) {
     final HttpStatus status = HttpStatus.UNAUTHORIZED;
-    final RestErrorResponse errorResponse = new RestErrorResponse(status.value(), ex.getMessage());
+    final RestErrorResponse errorResponse = new RestErrorResponse(status.value(),
+        i18n(request, "resterror.RestAccessDeniedException"));
     logException(ex, errorResponse, request);
     return new ResponseEntity<>(errorResponse, status);
   }
@@ -208,7 +235,7 @@ public abstract class AbstractRestExceptionHandler extends ResponseEntityExcepti
     // Runtime Exception always hidden, we should not leak internal Exception stacktrace
     final HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
     final RestErrorResponse errorResponse = new RestErrorResponse(status.value(),
-        "Internal Server Error:" + ex.getClass().getSimpleName());
+        i18n(request, "resterror.RuntimeException", ex.getClass().getSimpleName()));
     logException(ex, errorResponse, request);
     return new ResponseEntity<>(errorResponse, status);
   }
