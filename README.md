@@ -41,8 +41,16 @@
  * `pubServe` will start pub server in 15980 port, which used by dev server
 
  * you can use gradle in Intellij to run `bootRun` and `pubServe`. For `pubServe`
-   you need to specify vm arguments: `-DDART_SDK=/path/to/dart-sdk`
+   you need to specify vm arguments: `-DDART_SDK=/absolute/path/to/dart-sdk`
 
+### Intellij IDEA configuration
+
+ * import code style in tools/idea_settings.jar (scheme select `lambda_idea`)
+
+### Development tips
+
+ * append `?kaif-locale=en` can force change locale in bootRun server, default
+   value is zh_TW
 
 ### Deploy web app to vagrant
 

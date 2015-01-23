@@ -24,6 +24,9 @@ spring.datasource.password: changeme
 ## jmx
 spring.jmx.enabled: false
 
+## messages
+spring.messages.basename: i18n/messages
+
 ## model
 account:
     mac: n7LOo9kKqSqM-fshf_T3xw
