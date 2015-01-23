@@ -2,5 +2,10 @@ name: kaif_web
 description: Kaif Web
 dependencies:
   browser: any
+  barback: any
+  intl: any
 dev_dependencies:
   unittest: any
+transformers:
+  - kaif_web:
+     $include: ["lib/intl/messages_*.dart", "lib/i18n_link/messages_*.properties"]
