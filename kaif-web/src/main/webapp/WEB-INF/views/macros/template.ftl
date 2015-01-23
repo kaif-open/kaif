@@ -8,14 +8,18 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Kaif prototype">
-    <meta name="profilesActive" content="${kaif.profilesActive}">
+
     <title>kaif.io</title>
+
+    <#-- meta data for dart, see ServerType for detail -->
+    <meta name="kaifProfilesActive" content="${kaif.profilesActive}">
+    <meta name="kaifLocale" content="${(request.getLocale().toString())!"en_US"}">
+
     <link rel='stylesheet' href='/webjars/yui-pure/0.5.0/pure-min.css'>
     <link rel="stylesheet" href="/webjars/font-awesome/4.2.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="css/kaif.css?${kaif.deployServerTime}">
 </head>
 <body>
-
 <header class="header">
     <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal">
         <a class="pure-menu-heading" href="/">Kaif.io</a>

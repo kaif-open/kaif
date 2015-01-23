@@ -5,9 +5,13 @@ import "package:intl/intl.dart";
 import "package:kaif_web/intl/lookup.dart";
 
 class I18n {
-  static Future<String> initialize() {
-    return findSystemLocale().then((locale) {
-      return initializeMessages(locale).then((_) => locale);
+  static Future<String> initialize(String serverLocale) {
+    if (serverLocale != null) {
+      Intl.systemLocale = Intl.canonicalizedLocale(serverLocale);
+      return initializeMessages(serverLocale).then((_) => serverLocale);
+    }
+    return findSystemLocale().then((clientLocale) {
+      return initializeMessages(clientLocale).then((_) => clientLocale);
     });
   }
 

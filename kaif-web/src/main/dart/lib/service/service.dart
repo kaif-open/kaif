@@ -6,6 +6,20 @@ import 'dart:convert';
 import 'dart:async';
 
 class ServerType {
+  String _locale;
+  List<String> _profilesActive;
+
+  String get locale => _locale;
+
+  List<String> get profilesActive => _profilesActive;
+
+  ServerType() {
+    MetaElement localeEl = querySelector('meta[name=kaifLocale]');
+    _locale = localeEl.content;
+    MetaElement modeEl = querySelector('meta[name=kaifProfilesActive]');
+    _profilesActive = modeEl.content.split(',').toList();
+  }
+
   String getAccountUrl(String path) => '/api/account$path';
 }
 

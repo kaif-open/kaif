@@ -6,6 +6,8 @@ import 'package:kaif_web/comp/account/login_form.dart';
 import 'dart:html';
 import 'dart:async';
 
+final ServerType serverType = new ServerType();
+
 //for dev server only:
 customizeDev() {
   querySelectorAll('#waitingPubServe').forEach((Element el) {
@@ -16,7 +18,6 @@ customizeDev() {
 }
 
 appStart(String locale) {
-  var serverType = new ServerType();
   var accountService = new AccountService(serverType);
   var accountDao = new AccountDao();
   querySelectorAll('[sign-up-form-controller]').forEach((el) {
@@ -28,6 +29,7 @@ appStart(String locale) {
 }
 
 main() {
-  I18n.initialize().then(appStart);
+
+  I18n.initialize(serverType.locale).then(appStart);
   customizeDev();
 }

@@ -2,7 +2,7 @@ library sign_up_form;
 
 import 'dart:html';
 import 'package:kaif_web/service/service.dart';
-
+import 'package:kaif_web/intl/i18n.dart';
 class SignUpForm {
   final Element elem;
   final AccountService accountService;
@@ -17,14 +17,13 @@ class SignUpForm {
     var namePattern = new RegExp(r'^[a-zA-Z_0-9]{3,15}$');
 
     nameInput.onKeyUp.map((e) => nameInput.value.trim()).listen((partial) {
-      //TODO i18n
       if (!namePattern.hasMatch(partial)) {
-        _showHint('Invalid name', ok:false);
+        _showHint(I18n.key('signup.invalid_name'), ok:false);
         return;
       }
       accountService.isNameAvailable(partial).then((available) {
-        String hintText = available ? '&#10003; Available' : 'Already taken!';
-        _showHint(hintText, ok:available);
+        String hintText = available ? 'signup.available': 'signup.name_already_taken';
+        _showHint(I18n.key(hintText), ok:available);
       });
     });
   }
@@ -69,10 +68,9 @@ class SignUpForm {
     alert.text = '';
 
     if (passwordInput.value != confirmPasswordInput.value) {
-      //TODO i18n
       alert
         ..classes.remove('hidden')
-        ..text = 'Passwords are not the same';
+        ..text = I18n.key('signup.password_not_same');
       return;
     }
 
@@ -80,10 +78,9 @@ class SignUpForm {
       if (available) {
         _createAccount(loading, passwordInput, alert);
       } else {
-        //TODO i18n
         alert
           ..classes.remove('hidden')
-          ..text = 'Email is already taken';
+          ..text = I18n.key('signup.email_already_taken');
       }
     });
 
