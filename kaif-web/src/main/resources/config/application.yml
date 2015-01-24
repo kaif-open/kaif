@@ -4,7 +4,7 @@ server:
 
 ## freemarker
 spring.freemarker.cache: true
-spring.freemarker.templateLoaderPath: /WEB-INF/views
+spring.freemarker.templateLoaderPath: /WEB-INF/views,/mail
 spring.freemarker.settings.datetime_format: yyyy-MM-dd
 spring.freemarker.settings.number_format: 0.######
 # expose `request` so it is accessible in ftl
@@ -30,6 +30,11 @@ spring.jmx.enabled: false
 
 ## messages
 spring.messages.basename: i18n/messages
+
+## aws ses mail
+aws.ses-sender-email:
+aws.ses-secret-key:
+aws.ses-access-key:
 
 ## model
 account:

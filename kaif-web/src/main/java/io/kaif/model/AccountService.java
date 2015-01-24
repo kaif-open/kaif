@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 
+import io.kaif.mail.MailAgent;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountAuth;
@@ -32,6 +33,9 @@ public class AccountService {
   private PasswordEncoder passwordEncoder;
   @Autowired
   private AccountSecret accountSecret;
+
+  @Autowired
+  private MailAgent mailAgent;
 
   public Account createViaEmail(String name, String email, String password) {
     Preconditions.checkArgument(Account.isValidPassword(password));

@@ -119,5 +119,7 @@ dependencies {
   compile 'org.webjars:font-awesome:4.2.0'
   compile 'org.webjars:yui-pure:0.5.0'
 
+  // aws will depends on jackson/joda/httpclient
+  compile 'com.amazonaws:aws-java-sdk-ses:1.9.16'
 }
 

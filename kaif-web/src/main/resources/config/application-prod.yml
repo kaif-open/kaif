@@ -7,6 +7,8 @@ spring.datasource.url: jdbc:postgresql://localhost:5432/kaif
 
 logging.config: classpath:logback-prod.xml
 
+spring.mail.host: localhost
+
 account:
     mac: ${accountmac}
     key: ${accountkey}

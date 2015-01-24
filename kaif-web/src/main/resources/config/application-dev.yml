@@ -9,3 +9,5 @@ logging.config: classpath:logback-dev.xml
 spring.messages.cache-seconds: 0
 
 endpoints.enabled: true
+
+spring.mail.host: 192.168.59.59
