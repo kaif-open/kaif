@@ -1,32 +1,10 @@
-library service;
+library model_service;
 
-import 'package:kaif_web/model.dart';
+import 'account.dart';
+import 'package:kaif_web/util.dart';
 import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
-
-class ServerType {
-  String _locale;
-  List<String> _profilesActive;
-
-  /**
-   * server detected client locale (may not same as browser locale)
-   *
-   * only available in dev mode. production return null
-   */
-  String get locale => _locale;
-  List<String> get profilesActive => _profilesActive;
-  bool get isDevMode => _profilesActive.contains('dev');
-
-  ServerType() {
-    MetaElement localeEl = querySelector('meta[name=kaifLocale]');
-    _locale = localeEl == null ? null : localeEl.content;
-    MetaElement modeEl = querySelector('meta[name=kaifProfilesActive]');
-    _profilesActive = modeEl == null ? 'prod' : modeEl.content.split(',').toList();
-  }
-
-  String getAccountUrl(String path) => '/api/account$path';
-}
 
 class RestErrorResponse extends Error {
   final int code;
@@ -55,6 +33,8 @@ abstract class _AbstractService {
   ServerType _serverType;
 
   _AbstractService(this._serverType);
+
+  String getAccountUrl(String path) => '/api/account$path';
 
   Future<HttpRequest> _postJson(String url, dynamic json, {Map<String, String> header}) {
     return _requestJson('POST', url, json, header:header);
@@ -115,7 +95,7 @@ class AccountService extends _AbstractService {
     var json = {
         'name':name, 'email':email, 'password':password
     };
-    return _putJson(_serverType.getAccountUrl('/'), json)
+    return _putJson(getAccountUrl('/'), json)
     .then((res) => null);
   }
 
@@ -123,7 +103,7 @@ class AccountService extends _AbstractService {
     var params = {
         'name':name
     };
-    return _get(_serverType.getAccountUrl('/name-available'), params:params)
+    return _get(getAccountUrl('/name-available'), params:params)
     .then((req) => JSON.decode(req.responseText))
     .then((raw) => raw['data']);
   }
@@ -132,7 +112,7 @@ class AccountService extends _AbstractService {
     var params = {
         'email':email
     };
-    return _get(_serverType.getAccountUrl('/email-available'), params:params)
+    return _get(getAccountUrl('/email-available'), params:params)
     .then((req) => JSON.decode(req.responseText))
     .then((raw) => raw['data']);
   }
@@ -141,7 +121,7 @@ class AccountService extends _AbstractService {
     var json = {
         'name':name, 'password':password
     };
-    return _postJson(_serverType.getAccountUrl('/authenticate'), json)
+    return _postJson(getAccountUrl('/authenticate'), json)
     .then((req) => JSON.decode(req.responseText))
     .then((raw) => new AccountAuth.decode(raw));
   }
@@ -151,7 +131,7 @@ class AccountService extends _AbstractService {
         'X-KAIF-ACCESS-TOKEN':accessToken
     };
     return _postJson(
-        _serverType.getAccountUrl('/extends-access-token'), {
+        getAccountUrl('/extends-access-token'), {
         },
         header:headers)
     .then((req) => JSON.decode(req.responseText))

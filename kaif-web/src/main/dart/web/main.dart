@@ -1,6 +1,5 @@
 import 'package:kaif_web/model.dart';
-import 'package:kaif_web/service/service.dart';
-import 'package:kaif_web/intl/i18n.dart';
+import 'package:kaif_web/util.dart';
 import 'package:kaif_web/comp/account/sign_up_form.dart';
 import 'package:kaif_web/comp/account/sign_in_form.dart';
 import 'package:kaif_web/comp/account/account_menu.dart';
@@ -35,7 +34,6 @@ appStart(String locale) {
 }
 
 main() {
-
   initializeI18n(serverType.locale).then(appStart);
   customizeDev();
 }

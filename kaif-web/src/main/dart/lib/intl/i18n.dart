@@ -1,9 +1,9 @@
-library i18n;
+library intl_i18n;
 
 import 'dart:async';
 import "package:intl/intl_browser.dart";
 import "package:intl/intl.dart";
-import "package:kaif_web/intl/lookup.dart";
+import "lookup.dart";
 
 /**
  * call once when app start

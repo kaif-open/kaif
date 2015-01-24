@@ -1,11 +1,8 @@
 library account_menu;
 
 import 'dart:html';
-import 'package:kaif_web/service/service.dart';
 import 'package:kaif_web/model.dart';
-import 'package:kaif_web/intl/i18n.dart';
-import 'package:kaif_web/view.dart';
-import 'package:kaif_web/route.dart';
+import 'package:kaif_web/util.dart';
 
 class AccountMenu {
 

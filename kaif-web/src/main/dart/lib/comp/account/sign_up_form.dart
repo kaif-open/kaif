@@ -1,9 +1,8 @@
 library sign_up_form;
 
 import 'dart:html';
-import 'package:kaif_web/service/service.dart';
-import 'package:kaif_web/intl/i18n.dart';
-import 'package:kaif_web/route.dart';
+import 'package:kaif_web/util.dart';
+import 'package:kaif_web/model.dart';
 
 class SignUpForm {
   final Element elem;

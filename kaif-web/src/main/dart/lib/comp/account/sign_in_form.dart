@@ -1,9 +1,8 @@
 library sign_in_form;
 
 import 'dart:html';
-import 'package:kaif_web/service/service.dart';
 import 'package:kaif_web/model.dart';
-import 'package:kaif_web/route.dart';
+import 'package:kaif_web/util.dart';
 
 class SignInForm {
   final Element elem;
