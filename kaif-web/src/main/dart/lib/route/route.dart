@@ -17,6 +17,8 @@ class Router {
 
   String get home => '/' ;
 
+  reload() => window.location.href = window.location.href;
+
   gotoHome([String queryString]) => _gotoWithQuery(home, queryString);
 
   gotoSignInWithSignUpSuccess() => _gotoWithQuery(signIn, 'sign-up-success');

@@ -7,3 +7,5 @@ spring.freemarker.cache: false
 logging.config: classpath:logback-dev.xml
 
 spring.messages.cache-seconds: 0
+
+endpoints.enabled: true

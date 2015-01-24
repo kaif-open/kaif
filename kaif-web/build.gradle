@@ -81,24 +81,37 @@ dependencies {
   // compile("org.springframework.boot:spring-boot-starter-data-elasticsearch")
   // compile("org.springframework.boot:spring-boot-starter-websocket")
 
-  compile("org.springframework.boot:spring-boot-starter-jdbc")
+  compile("org.springframework.boot:spring-boot-starter-jdbc") {
+    // uncomment if you want to remove tomcat jdbc pool
+    exclude group: 'org.apache.tomcat';
+  }
   compile("org.springframework.boot:spring-boot-starter-freemarker")
-  compile("org.springframework.boot:spring-boot-starter-web")
+  compile("org.springframework.boot:spring-boot-starter-web") {
+    exclude module: 'spring-boot-starter-tomcat'
+  }
 
-  //TODO remove tomcat jdbc, use better connection pool
   //exclude embed tomcat in production
   providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
+  // spring boot now use 8.0.15
+  providedRuntime 'org.apache.tomcat:tomcat-jdbc:8.0.15'
 
-  compile("org.springframework.boot:spring-boot-starter-social-twitter")
+  // compile("org.springframework.boot:spring-boot-starter-social-twitter")
   compile("org.springframework.boot:spring-boot-starter-actuator")
   compile("org.springframework.boot:spring-boot-starter-remote-shell")
   testCompile("org.springframework.boot:spring-boot-starter-test")
 
+  compile 'org.springframework.security:spring-security-crypto:3.2.5.RELEASE';
+
   compile 'org.postgresql:postgresql:9.3-1102-jdbc41'
   compile 'com.google.guava:guava:18.0'
 
+  // postgresql driver not better fit HikariCP
+  // compile 'com.zaxxer:HikariCP:2.3.0'
+
+
   // note that guava depends on jsr305 1.3.8
   compile 'com.google.code.findbugs:jsr305:3.0.0'
+  compile 'javax.inject:javax.inject:1'
 
   compile 'com.fasterxml.jackson.module:jackson-module-afterburner:2.4.0'
 

@@ -13,11 +13,12 @@ spring.freemarker.request-context-attribute: request
 
 ## actuator
 management.context-path: /actuate
+endpoints.enabled: false
+endpoints.info.enabled: true
+endpoints.health.enabled: true
 
 ## database
 spring.datasource.initialize: false
-spring.datasource.schema: db
-spring.datasource.data: db
 
 spring.datasource.driver-class-name: org.postgresql.Driver
 spring.datasource.url: jdbc:postgresql://192.168.59.59:5432/kaif

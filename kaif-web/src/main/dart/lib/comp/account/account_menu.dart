@@ -32,7 +32,7 @@ class AccountMenu {
       // should means invalid token
       // TODO show error ?
       accountSession.signOut();
-      route.gotoHome();
+      route.reload();
     });
   }
 

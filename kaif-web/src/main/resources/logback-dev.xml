@@ -9,7 +9,7 @@
     </appender>
     <logger name="io.kaif" level="DEBUG"/>
     <logger name="org.apache.catalina.startup.DigesterFactory" level="OFF"/>
-
+    <logger name="com.zaxxer.hikari.HikariConfig" level="DEBUG"/>
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
     </root>
