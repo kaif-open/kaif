@@ -38,6 +38,7 @@ class AccountAuth {
 }
 
 class Account {
+
   final String accountId;
   final String name;
   final String accessToken;
@@ -64,4 +65,14 @@ class Account {
       'expireTime':expireTime.millisecondsSinceEpoch,
       'lastExtend':lastExtend.millisecondsSinceEpoch
   };
+
+  bool isRequireExtends() {
+    var now = new DateTime.now();
+    return now.isAfter(lastExtend.add(const Duration(days:1)));
+  }
+
+  bool isExpired() {
+    var now = new DateTime.now();
+    return now.isAfter(expireTime);
+  }
 }

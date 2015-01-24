@@ -6,12 +6,18 @@ import 'dart:convert';
 
 class AccountDao {
   static const String KEY = 'ACCOUNT';
+  bool _useLocalStorage = false;
 
   void saveAccount(AccountAuth auth, {bool rememberMe}) {
+
+    if (rememberMe != null) {
+      _useLocalStorage = rememberMe ;
+    }
+
     var account = new Account(auth.accountId, auth.name, auth.accessToken, auth.authorities,
     auth.expireTime, new DateTime.now());
 
-    var storage = rememberMe ? window.localStorage : window.sessionStorage;
+    var storage = _useLocalStorage ? window.localStorage : window.sessionStorage;
     storage[KEY] = JSON.encode(account);
   }
 
@@ -20,7 +26,6 @@ class AccountDao {
     window.sessionStorage.remove(KEY);
   }
 
-  //TODO loadAccount should extends accessToken
   //nullable
   Account loadAccount() {
     Account load(Storage storage) {
@@ -31,14 +36,16 @@ class AccountDao {
     }
     var account = load(window.localStorage);
     if (account == null) {
+      _useLocalStorage = false;
       account = load(window.sessionStorage);
       if (account == null) {
         return null;
       }
+    } else {
+      _useLocalStorage = true;
     }
 
-    var now = new DateTime.now();
-    if (now.isAfter(account.expireTime)) {
+    if (account.isExpired()) {
       removeAccount();
       return null;
     }

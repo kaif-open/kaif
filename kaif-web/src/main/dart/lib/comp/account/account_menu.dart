@@ -18,12 +18,22 @@ class AccountMenu {
   }
 
   final Element elem;
-  final AccountService accountService;
-  final AccountDao accountDao;
+  final AccountSession accountSession ;
 
-  AccountMenu(this.elem, this.accountService, this.accountDao) {
-    var localAccount = accountDao.loadAccount();
+  AccountMenu(this.elem, this.accountSession) {
+    var localAccount = accountSession.current;
     _render(localAccount);
+
+    accountSession.extendsTokenIfRequired().then((extended) {
+      if (extended) {
+        //refresh render?
+      }
+    }).catchError((permissionError) {
+      // should means invalid token
+      // TODO show error ?
+      accountSession.signOut();
+      route.gotoHome();
+    });
   }
 
   Element _createSignOut() {
@@ -32,7 +42,7 @@ class AccountMenu {
       e
         ..preventDefault()
         ..stopImmediatePropagation();
-      accountDao.removeAccount();
+      accountSession.signOut();
       route.gotoHome();
     });
     return signOut;

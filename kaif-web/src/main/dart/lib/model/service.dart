@@ -29,10 +29,20 @@ class RestErrorResponse extends Error {
   String toString() => "$reason (code:$code)";
 }
 
-abstract class _AbstractService {
-  ServerType _serverType;
+typedef String accessTokenProvider();
 
-  _AbstractService(this._serverType);
+abstract class _AbstractService {
+  _populateAccessToken(Map<String, String> headers) {
+    String token = _accessTokenProvider();
+    if (token != null) {
+      headers['X-KAIF-ACCESS-TOKEN'] = token;
+    }
+  }
+
+  ServerType _serverType;
+  accessTokenProvider _accessTokenProvider;
+
+  _AbstractService(this._serverType, this._accessTokenProvider);
 
   String getAccountUrl(String path) => '/api/account$path';
 
@@ -57,7 +67,11 @@ abstract class _AbstractService {
     });
     var query = parts.join('&');
     String getUrl = query.isEmpty ? url : '${url}?${query}';
-    return HttpRequest.request(getUrl, requestHeaders:header)
+
+    var requestHeaders = header == null ? {
+    } : header;
+    _populateAccessToken(requestHeaders);
+    return HttpRequest.request(getUrl, requestHeaders:requestHeaders)
     .catchError(_onHandleRequestError);
   }
 
@@ -74,22 +88,23 @@ abstract class _AbstractService {
                                    String url,
                                    dynamic json,
                                    {Map<String, String> header}) {
-    if (header == null) {
-      header = {
-      };
-    }
-    header['Content-Type'] = 'application/json';
+    var requestHeaders = header == null ? {
+    } : header;
+    requestHeaders['Content-Type'] = 'application/json';
+    _populateAccessToken(requestHeaders);
     return HttpRequest.request(
         url,
         method:method,
         sendData:JSON.encode(json),
-        requestHeaders:header)
+        requestHeaders:requestHeaders)
     .catchError(_onHandleRequestError);
   }
+
 }
 
 class AccountService extends _AbstractService {
-  AccountService(ServerType serverType) : super(serverType);
+  AccountService(ServerType serverType, accessTokenProvider _provider)
+  : super(serverType, _provider);
 
   Future createAccount(String name, String email, String password) {
     var json = {
@@ -126,15 +141,4 @@ class AccountService extends _AbstractService {
     .then((raw) => new AccountAuth.decode(raw));
   }
 
-  Future<AccountAuth> extendsAccessToken(String accessToken) {
-    var headers = {
-        'X-KAIF-ACCESS-TOKEN':accessToken
-    };
-    return _postJson(
-        getAccountUrl('/extends-access-token'), {
-        },
-        header:headers)
-    .then((req) => JSON.decode(req.responseText))
-    .then((raw) => new AccountAuth.decode(raw));
-  }
 }

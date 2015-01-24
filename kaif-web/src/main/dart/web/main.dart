@@ -21,10 +21,10 @@ customizeDev() {
 }
 
 appStart(String locale) {
-  var accountService = new AccountService(serverType);
   var accountDao = new AccountDao();
-
-  new AccountMenu(querySelector('[account-menu]'), accountService, accountDao);
+  var accountSession = new AccountSession(accountDao);
+  var accountService = new AccountService(serverType, accountSession.provideAccessToken);
+  new AccountMenu(querySelector('[account-menu]'), accountSession);
   querySelectorAll('[sign-up-form]').forEach((el) {
     new SignUpForm(el, accountService);
   });

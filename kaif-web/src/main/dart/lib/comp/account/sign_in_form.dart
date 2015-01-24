@@ -32,9 +32,8 @@ class SignInForm {
       //TODO handle ?from=
       route.gotoHome();
     }).catchError((e) {
-      //TODO i18n
       alert
-        ..text = 'Authentication failed, please check name and password are correct.'
+        ..text = i18n('sign-in.authentication_failed')
         ..classes.remove('hidden');
 
     }).whenComplete(() {
