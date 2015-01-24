@@ -16,7 +16,6 @@ import javax.mail.internet.InternetAddress;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 
 import com.amazonaws.auth.AWSCredentials;
@@ -42,14 +41,8 @@ public class AwsSesMailAgent implements MailAgent {
   private final ExecutorService executor = Executors.newFixedThreadPool(5,
       new ThreadFactoryBuilder().setNameFormat("aws-ses-mail-agent-pool-%d").build());
 
-  @Value("aws.ses-sender-email")
-  private String senderEmail;
-
-  @Value("aws.ses-secret-key")
-  private String secretKey;
-
-  @Value("aws.ses-access-key")
-  private String accessKey;
+  @Autowired
+  private MailProperties mailProperties;
 
   @Autowired
   private MailComposer mailComposer;
@@ -59,14 +52,16 @@ public class AwsSesMailAgent implements MailAgent {
     return mailComposer;
   }
 
+  //TODO adjust rate limiter if our aws ses mail passed
   private final RateLimiter rateLimiter = RateLimiter.create(5.0);
 
   @PostConstruct
   public void afterPropertiesSet() {
-    AWSCredentials awsSesCredentials = new BasicAWSCredentials(accessKey, secretKey);
+    AWSCredentials awsSesCredentials = new BasicAWSCredentials(mailProperties.getAwsAccessKey(),
+        mailProperties.getAwsSecretKey());
     this.client = new AmazonSimpleEmailServiceClient(awsSesCredentials);
     logger.info("mail agent ready, sender:"
-        + senderEmail
+        + mailProperties.getAwsSenderAddress()
         + ", access key:"
         + awsSesCredentials.getAWSAccessKeyId());
   }
@@ -132,9 +127,9 @@ public class AwsSesMailAgent implements MailAgent {
   private InternetAddress composeSource(Mail mailMessage) {
     try {
       if (mailMessage.getFromName() == null) {
-        return new InternetAddress(senderEmail);
+        return new InternetAddress(mailProperties.getAwsSenderAddress());
       } else {
-        return new InternetAddress(senderEmail,
+        return new InternetAddress(mailProperties.getAwsSenderAddress(),
             mailMessage.getFromName(),
             Charsets.UTF_8.toString());
       }

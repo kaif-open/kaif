@@ -41,7 +41,8 @@ public class AccountService {
     Preconditions.checkArgument(Account.isValidPassword(password));
     Preconditions.checkArgument(Account.isValidName(name));
     Preconditions.checkNotNull(email);
-    return accountDao.create(name, email, passwordEncoder.encode(password));
+    Account account = accountDao.create(name, email, passwordEncoder.encode(password));
+    return account;
   }
 
   @VisibleForTesting

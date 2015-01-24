@@ -13,7 +13,7 @@ import org.springframework.mail.MailException;
 
 import io.kaif.model.account.Account;
 
-public class MailAgentTest extends MailTestCase {
+public class MailAgentTest extends MailTestCases {
 
   private MailAgent mockMailAgent;
   private MailAgent mailAgent;

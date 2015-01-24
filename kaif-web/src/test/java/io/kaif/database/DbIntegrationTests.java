@@ -38,10 +38,10 @@ public abstract class DbIntegrationTests extends AbstractTransactionalJUnit4Spri
   }
 
   @Autowired
-  private MailAgent mailAgent;
+  protected MailAgent mockMailAgent;
 
   @Before
   public void integrationSetUp() throws Exception {
-    Mockito.reset(mailAgent);
+    Mockito.reset(mockMailAgent);
   }
 }

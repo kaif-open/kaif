@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 
-public class MailComposerTest extends MailTestCase {
+public class MailComposerTest extends MailTestCases {
 
   private MailComposer composer;
 

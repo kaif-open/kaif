@@ -7,13 +7,13 @@ class Router {
 
   const Router._();
 
-  String get signUp => '/sign-up';
+  String get signUp => '/account/sign-up';
 
-  String get settings => '/settings';
+  String get settings => '/account/settings';
 
-  String get signOut => '/sign-out';
+  String get signOut => '/account/sign-out';
 
-  String get signIn => '/sign-in';
+  String get signIn => '/account/sign-in';
 
   String get home => '/' ;
 

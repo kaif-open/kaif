@@ -6,10 +6,7 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 
-/**
- * Created by ingram on 1/25/15.
- */
-public class MailTestCase {
+public abstract class MailTestCases {
   protected Configuration configuration;
   protected ResourceBundleMessageSource messageSource;
 
