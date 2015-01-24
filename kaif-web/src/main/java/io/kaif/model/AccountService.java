@@ -58,11 +58,7 @@ public class AccountService {
     String accessToken = new AccountAccessToken(account.getAccountId(),
         account.getPasswordHash(),
         account.getAuthorities()).encode(expireTime, accountSecret);
-    return new AccountAuth(account.getAccountId(),
-        account.getName(),
-        accessToken,
-        account.getAuthorities(),
-        expireTime.toEpochMilli());
+    return new AccountAuth(account.getName(), accessToken, expireTime.toEpochMilli());
   }
 
   /**

@@ -14,8 +14,7 @@ class AccountDao {
       _useLocalStorage = rememberMe ;
     }
 
-    var account = new Account(auth.accountId, auth.name, auth.accessToken, auth.authorities,
-    auth.expireTime, new DateTime.now());
+    var account = new Account(auth.name, auth.accessToken, auth.expireTime, new DateTime.now());
 
     var storage = _useLocalStorage ? window.localStorage : window.sessionStorage;
     storage[KEY] = JSON.encode(account);

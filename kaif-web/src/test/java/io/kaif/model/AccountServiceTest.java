@@ -58,7 +58,6 @@ public class AccountServiceTest extends DbIntegrationTests {
     AccountAuth auth = service.authenticate("myName", "pwd123").get();
     assertEquals("myname", auth.getName());
     assertTrue(AccountAccessToken.tryDecode(auth.getAccessToken(), accountSecret).isPresent());
-    assertEquals(EnumSet.of(Authority.NORMAL), auth.getAuthorities());
     assertTrue(Instant.ofEpochMilli(auth.getExpireTime())
         .isAfter(Instant.now().plus(Duration.ofDays(7))));
     //failed case

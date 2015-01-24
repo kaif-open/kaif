@@ -46,8 +46,10 @@ class AccountSession {
         'X-KAIF-ACCESS-TOKEN':exist.accessToken,
         'Content-Type': 'application/json'
     };
+
+    //empty json body may cause problem, so fill some garbage
     var json = {
-        'accountId': exist.accountId
+        'name': exist.name
     };
 
     return HttpRequest.request(
