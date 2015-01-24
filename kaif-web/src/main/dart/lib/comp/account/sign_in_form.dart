@@ -1,15 +1,16 @@
-library login_form;
+library sign_in_form;
 
 import 'dart:html';
 import 'package:kaif_web/service/service.dart';
 import 'package:kaif_web/model.dart';
+import 'package:kaif_web/route.dart';
 
-class LoginForm {
+class SignInForm {
   final Element elem;
   final AccountService accountService;
   final AccountDao accountDao;
 
-  LoginForm(this.elem, this.accountService, this.accountDao) {
+  SignInForm(this.elem, this.accountService, this.accountDao) {
     elem.onSubmit.listen(_login);
   }
 
@@ -30,7 +31,7 @@ class LoginForm {
     .then((AccountAuth accountAuth) {
       accountDao.saveAccount(accountAuth, rememberMe:rememberMeInput.checked);
       //TODO handle ?from=
-      window.location.href = '/' ;
+      route.gotoHome();
     }).catchError((e) {
       //TODO i18n
       alert

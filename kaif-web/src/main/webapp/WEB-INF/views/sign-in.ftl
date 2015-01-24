@@ -12,7 +12,7 @@
         Verification email sent, please check your email to activate your account.
       </p>
     </#if>
-    <form class="pure-form pure-form-stacked" login-form-controller>
+    <form class="pure-form pure-form-stacked" sign-in-form>
         <fieldset>
             <legend>Login</legend>
 

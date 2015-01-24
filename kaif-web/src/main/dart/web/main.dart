@@ -2,7 +2,8 @@ import 'package:kaif_web/model.dart';
 import 'package:kaif_web/service/service.dart';
 import 'package:kaif_web/intl/i18n.dart';
 import 'package:kaif_web/comp/account/sign_up_form.dart';
-import 'package:kaif_web/comp/account/login_form.dart';
+import 'package:kaif_web/comp/account/sign_in_form.dart';
+import 'package:kaif_web/comp/account/account_menu.dart';
 import 'dart:html';
 import 'dart:async';
 
@@ -23,16 +24,18 @@ customizeDev() {
 appStart(String locale) {
   var accountService = new AccountService(serverType);
   var accountDao = new AccountDao();
-  querySelectorAll('[sign-up-form-controller]').forEach((el) {
+
+  new AccountMenu(querySelector('[account-menu]'), accountService, accountDao);
+  querySelectorAll('[sign-up-form]').forEach((el) {
     new SignUpForm(el, accountService);
   });
-  querySelectorAll('[login-form-controller]').forEach((el) {
-    new LoginForm(el, accountService, accountDao);
+  querySelectorAll('[sign-in-form]').forEach((el) {
+    new SignInForm(el, accountService, accountDao);
   });
 }
 
 main() {
 
-  I18n.initialize(serverType.locale).then(appStart);
+  initializeI18n(serverType.locale).then(appStart);
   customizeDev();
 }

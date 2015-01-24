@@ -21,8 +21,8 @@ public class HomeController {
     return modelAndView;
   }
 
-  @RequestMapping("/login")
-  public String login() {
-    return "login";
+  @RequestMapping("/sign-in")
+  public String signIn() {
+    return "sign-in";
   }
 }

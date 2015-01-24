@@ -5,7 +5,7 @@
 <div class="pure-g">
   <div class="pure-u-1-5"></div>
   <div class="pure-u-3-5">
-    <form class="pure-form pure-form-stacked" sign-up-form-controller>
+    <form class="pure-form pure-form-stacked" sign-up-form>
         <fieldset>
             <legend>Register new account</legend>
 

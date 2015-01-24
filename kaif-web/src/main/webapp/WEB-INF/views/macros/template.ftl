@@ -30,10 +30,13 @@
 <header class="header">
     <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal">
         <a class="pure-menu-heading" href="/">Kaif.io</a>
-        <ul>
-            <li class="pure-menu-selected"><a href="/">Home</a></li>
+        <ul account-menu>
+            <#-- mock
             <li><a href="/sign-up">Sign Up</a></li>
-            <li><a href="/login">Sign In</a></li>
+            <li><a href="/sign-in">Sign In</a></li>
+            <li><a href="/settings">myname</a></li>
+            <li><a href="/sign-out">Sign Out</a></li>
+            -->
         </ul>
     </div>
 </header>
