@@ -1,5 +1,0 @@
-Dear all,
-
-  foo
-
-regards

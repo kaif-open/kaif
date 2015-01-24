@@ -6,26 +6,16 @@ import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.context.support.ResourceBundleMessageSource;
 
 import com.google.common.collect.ImmutableMap;
 
-import freemarker.cache.ClassTemplateLoader;
-import freemarker.template.Configuration;
-
-public class MailComposerTest {
+public class MailComposerTest extends MailTestCase {
 
   private MailComposer composer;
 
   @Before
   public void setUp() throws Exception {
-    Configuration configuration = new Configuration(Configuration.VERSION_2_3_21);
-    configuration.setDefaultEncoding("UTF-8");
-    configuration.setTemplateLoader(new ClassTemplateLoader(MailComposer.class, "/mail"));
-    ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-    messageSource.setBasename("i18n/messages");
-    messageSource.setDefaultEncoding("UTF-8");
-    composer = new MailComposer(messageSource, configuration);
+    composer = new MailComposer(messageSource, configuration, new MailProperties());
   }
 
   @Test

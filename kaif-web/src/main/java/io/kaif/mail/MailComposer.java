@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -32,14 +33,27 @@ public class MailComposer {
   @Autowired
   private Configuration configuration;
 
+  @Autowired
+  private MailProperties mailProperties;
+
   public MailComposer() {
     //spring
   }
 
+  public Mail createMail() {
+    Mail mail = new Mail();
+    mail.setFrom(mailProperties.getSenderAddress());
+    mail.setFromName(mailProperties.getSenderName());
+    return mail;
+  }
+
   @VisibleForTesting
-  MailComposer(MessageSource messageSource, Configuration configuration) {
+  MailComposer(MessageSource messageSource,
+      Configuration configuration,
+      MailProperties mailProperties) {
     this.messageSource = messageSource;
     this.configuration = configuration;
+    this.mailProperties = mailProperties;
   }
 
   public String i18n(Locale locale, String key, Object... args) {
@@ -92,14 +106,16 @@ public class MailComposer {
 
     @Override
     public Object exec(List arguments) throws TemplateModelException {
-      if (arguments.size() != 1) {
+      if (arguments.size() == 0) {
         throw new TemplateModelException("Wrong number of arguments");
       }
       SimpleScalar simpleScalar = (SimpleScalar) arguments.get(0);
       if (simpleScalar == null || Strings.isNullOrEmpty(simpleScalar.getAsString())) {
         throw new TemplateModelException("Invalid code value '" + simpleScalar + "'");
       }
-      return messageSource.getMessage(simpleScalar.getAsString(), null, locale);
+      @SuppressWarnings("unchecked")
+      Object[] args = arguments.stream().skip(1).map(Objects::toString).toArray(String[]::new);
+      return messageSource.getMessage(simpleScalar.getAsString(), args, locale);
     }
   }
 }
