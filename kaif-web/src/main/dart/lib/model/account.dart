@@ -1,5 +1,8 @@
 library model_account;
 
+class PermissionError extends Error {
+}
+
 class Authority {
   static const Authority NORMAL = const Authority._('NORMAL');
   static const Authority ZONE_ADMIN = const Authority._('ZONE_ADMIN');

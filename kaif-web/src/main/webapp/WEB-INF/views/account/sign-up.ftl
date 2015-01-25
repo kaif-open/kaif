@@ -25,7 +25,7 @@
                    pattern=".{6,100}" required title="at least 6 characters">
 
             <button type="submit" class="pure-button pure-button-primary">Sign Up</button>
-            <i class="fa fa-spinner fa-spin loading hidden"></i>
+            <i class="fa fa-cog fa-spin loading hidden"></i>
         </fieldset>
         <p class="alert alert-danger hidden"></p>
     </form>

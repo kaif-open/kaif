@@ -1,20 +1,21 @@
 package io.kaif.web.support;
 
-public class RestAccessDeniedException extends RuntimeException {
+public class AccessDeniedException extends RuntimeException {
 
   private static final long serialVersionUID = 6132085454559031915L;
 
-  public RestAccessDeniedException() {}
+  public AccessDeniedException() {
+  }
 
-  public RestAccessDeniedException(final String message) {
+  public AccessDeniedException(final String message) {
     super(message);
   }
 
-  public RestAccessDeniedException(final String message, final Throwable cause) {
+  public AccessDeniedException(final String message, final Throwable cause) {
     super(message, cause);
   }
 
-  public RestAccessDeniedException(final String message,
+  public AccessDeniedException(final String message,
       final Throwable cause,
       final boolean enableSuppression,
       final boolean writableStackTrace) {
@@ -22,7 +23,7 @@ public class RestAccessDeniedException extends RuntimeException {
 
   }
 
-  public RestAccessDeniedException(final Throwable cause) {
+  public AccessDeniedException(final Throwable cause) {
     super(cause);
   }
 

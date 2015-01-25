@@ -56,7 +56,10 @@ class AppModule {
     _initializeComponents(window.document);
 
     // if server page use part-template.ftl, auto load
-    serverPartLoader.tryLoadInto('#__part_template', route.currentPartTemplatePath());
+    serverPartLoader.tryLoadInto(
+        '#__part_template',
+        route.currentPartTemplatePath(),
+        loadingType:ServerPartLoader.LOADING_LARGE);
   }
 }
 

@@ -6,8 +6,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:html';
 
-class PermissionError extends Error {
-}
 
 class AccountSession {
 

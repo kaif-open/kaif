@@ -13,19 +13,18 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import io.kaif.model.AccountService;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountSecret;
-import io.kaif.web.support.RestAccessDeniedException;
+import io.kaif.web.support.AccessDeniedException;
 
 public class AccountAccessTokenArgumentResolver implements HandlerMethodArgumentResolver {
 
   private final AccountSecret accountSecret;
+  private final AccountService accountService;
 
   public AccountAccessTokenArgumentResolver(AccountSecret accountSecret,
       AccountService accountService) {
     this.accountSecret = accountSecret;
     this.accountService = accountService;
   }
-
-  private final AccountService accountService;
 
   @Override
   public boolean supportsParameter(MethodParameter parameter) {
@@ -49,6 +48,6 @@ public class AccountAccessTokenArgumentResolver implements HandlerMethodArgument
       //for other mutation operation, always check in db
       verified = accountService.verifyAccessToken(token);
     }
-    return verified.orElseThrow(RestAccessDeniedException::new);
+    return verified.orElseThrow(AccessDeniedException::new);
   }
 }

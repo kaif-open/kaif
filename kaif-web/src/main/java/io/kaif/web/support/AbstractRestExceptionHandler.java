@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataAccessException;
@@ -126,7 +127,7 @@ public abstract class AbstractRestExceptionHandler extends ResponseEntityExcepti
     final String detail = ex.getBindingResult()
         .getAllErrors()
         .stream()
-        .map(objError -> objError.getDefaultMessage())
+        .map(DefaultMessageSourceResolvable::getDefaultMessage)
         .collect(joining(", "));
     final RestErrorResponse errorResponse = new RestErrorResponse(status.value(),
         i18n(request, "rest-error.MethodArgumentNotValidException", detail));
@@ -213,17 +214,6 @@ public abstract class AbstractRestExceptionHandler extends ResponseEntityExcepti
     final HttpStatus status = HttpStatus.REQUEST_TIMEOUT;
     final RestErrorResponse errorResponse = new RestErrorResponse(status.value(),
         i18n(request, "rest-error.QueryTimeoutException"));
-    logException(ex, errorResponse, request);
-    return new ResponseEntity<>(errorResponse, status);
-  }
-
-  @ExceptionHandler(RestAccessDeniedException.class)
-  @ResponseBody
-  public ResponseEntity<RestErrorResponse> handleRestApiAccessDeniedException(final RestAccessDeniedException ex,
-      final WebRequest request) {
-    final HttpStatus status = HttpStatus.UNAUTHORIZED;
-    final RestErrorResponse errorResponse = new RestErrorResponse(status.value(),
-        i18n(request, "rest-error.RestAccessDeniedException"));
     logException(ex, errorResponse, request);
     return new ResponseEntity<>(errorResponse, status);
   }

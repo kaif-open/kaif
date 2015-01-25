@@ -75,6 +75,13 @@ abstract class _AbstractService {
     .catchError(_onHandleRequestError);
   }
 
+  Future<HttpRequest> _getPlanTextWithoutHandleError(String url) {
+    var requestHeaders = {
+    };
+    _populateAccessToken(requestHeaders);
+    return HttpRequest.request(url, requestHeaders:requestHeaders);
+  }
+
   void _onHandleRequestError(ProgressEvent event) {
     HttpRequest req = event.target;
     var restErrorResponse = RestErrorResponse.tryDecode(req.responseText);
@@ -106,10 +113,23 @@ class PartService extends _AbstractService {
   PartService(ServerType serverType, accessTokenProvider _provider)
   : super(serverType, _provider);
 
+  /**
+   * throw PermissionError if auth failed
+   * or StateError if any server render problem
+   */
   Future<String> loadPart(String partPath) {
-    //TODO RestErrorResponse dosen't work, should change to status code mode
-    return _get(partPath).then((req) {
-      return req.responseText;
+    return _getPlanTextWithoutHandleError(partPath)
+    .then((req) => req.responseText)
+    .catchError((ProgressEvent event) {
+      HttpRequest request = event.target;
+      if (request.status == 401 || request.status == 403) {
+        throw new PermissionError();
+      } else {
+        if (_serverType.isDevMode) {
+          throw new StateError('[DEBUG] render $partPath error, response:\n ${request.responseText}');
+        }
+        throw new StateError('Unexpected error, status:${request.status}');
+      }
     });
   }
 }

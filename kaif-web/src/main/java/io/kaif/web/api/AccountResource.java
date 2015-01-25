@@ -21,7 +21,7 @@ import io.kaif.model.AccountService;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountAuth;
-import io.kaif.web.support.RestAccessDeniedException;
+import io.kaif.web.support.AccessDeniedException;
 import io.kaif.web.support.SingleWrapper;
 
 @RestController
@@ -51,6 +51,7 @@ public class AccountResource {
     @NotNull
     public String password;
   }
+
   @Autowired
   private AccountService accountService;
 
@@ -71,7 +72,7 @@ public class AccountResource {
   public AccountAuth authenticate(@Valid @RequestBody Credential credential) {
     Optional<AccountAuth> accountAuth = accountService.authenticate(credential.name.trim(),
         credential.password);
-    return accountAuth.orElseThrow(RestAccessDeniedException::new);
+    return accountAuth.orElseThrow(AccessDeniedException::new);
   }
 
   @RequestMapping(value = "/extends-access-token", method = RequestMethod.POST, consumes = {
