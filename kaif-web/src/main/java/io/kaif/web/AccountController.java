@@ -31,7 +31,7 @@ public class AccountController {
 
   @RequestMapping("/settings")
   public ModelAndView settings() {
-    return PartTemplate.fullLayout();
+    return PartTemplate.smallLayout();
   }
 
   //TODO check permission

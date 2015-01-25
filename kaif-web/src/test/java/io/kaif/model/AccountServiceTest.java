@@ -58,6 +58,21 @@ public class AccountServiceTest extends DbIntegrationTests {
   }
 
   @Test
+  public void resendActivation() {
+    Account account = service.createViaEmail("myname", "foo@gmail.com", "pwd123", lc);
+
+    Mockito.reset(mockMailAgent);
+
+    service.resendActivation(account.getAccountId(), lc);
+
+    verify(mockMailAgent).sendAccountActivation(eq(lc),
+        eq(account),
+        Mockito.matches("[a-z\\-0-9]{36}"));
+
+    assertEquals(2, accountDao.listOnceTokens().size());
+  }
+
+  @Test
   public void activate() throws Exception {
     Account account = service.createViaEmail("xyz", "xyz@gmail.com", "595959", lc);
     AccountOnceToken token = accountDao.listOnceTokens().get(0);

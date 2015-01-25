@@ -135,6 +135,7 @@ class PartService extends _AbstractService {
 }
 
 class AccountService extends _AbstractService {
+
   AccountService(ServerType serverType, accessTokenProvider _provider)
   : super(serverType, _provider);
 
@@ -173,4 +174,8 @@ class AccountService extends _AbstractService {
     .then((raw) => new AccountAuth.decode(raw));
   }
 
+  Future resendActivation() {
+    return _postJson(_getAccountUrl('/resend-activatiton'), {
+    }).then((req) => null);
+  }
 }

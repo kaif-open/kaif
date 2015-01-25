@@ -51,7 +51,7 @@ label {
 /*
  * -- PURE FORM STYLES --
  * Style the form inputs and labels
- */
+
 .pure-form label {
     margin: 1em 0 0;
     font-weight: bold;
@@ -71,7 +71,7 @@ label {
     width: 100%;
     margin-bottom: 1em;
 }
-
+ */
 /*
  * -- MENU STYLES --
  * I want to customize how my .pure-menu looks at the top of the page
@@ -360,6 +360,12 @@ main {
   display: none;
 }
 
+.pure-form input[type=text],
+.pure-form input[type=email],
+.pure-form input[type=password] {
+  min-width: 50%;
+}
+
 /** dart lib/view **/
 
 .lg-center-loading {
@@ -388,7 +394,7 @@ main {
   left: 25%;
 }
 
-.toast-error {
+.toast {
   position: fixed;
   z-index: 10000;
   top: 1em;

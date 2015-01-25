@@ -3,6 +3,7 @@ import 'package:kaif_web/util.dart';
 import 'package:kaif_web/comp/account/sign_up_form.dart';
 import 'package:kaif_web/comp/account/sign_in_form.dart';
 import 'package:kaif_web/comp/account/account_menu.dart';
+import 'package:kaif_web/comp/account/account_settings.dart';
 import 'package:kaif_web/comp/server_part_loader.dart';
 import 'dart:html';
 import 'dart:async';
@@ -45,6 +46,9 @@ class AppModule {
     });
     parent.querySelectorAll('[sign-in-form]').forEach((el) {
       new SignInForm(el, accountService, accountDao);
+    });
+    parent.querySelectorAll('[account-settings]').forEach((el) {
+      new AccountSettings(el, accountService);
     });
   }
 

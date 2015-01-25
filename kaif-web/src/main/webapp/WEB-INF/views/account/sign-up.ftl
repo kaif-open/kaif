@@ -7,25 +7,39 @@
 
     <form class="pure-form pure-form-stacked" sign-up-form>
         <fieldset>
-            <legend>Register new account</legend>
 
-            <label for="nameInput">Your Name <span class="hint nameHint"></span></label>
-            <input id="nameInput" type="text" placeholder="letter or number or underscore"
-                   maxlength="15" pattern="${accountNamePattern}" required title="letter or number only, 3~15 characters">
+            <legend>註冊新帳號</legend>
 
-            <label for="emailInput">Your Email </label>
-            <input id="emailInput" type="email" placeholder="foo@gmail.com" required>
+            <div class="pure-control-group">
+                <label for="nameInput">帳號  <span class="hint nameHint"></span></label>
+                <input id="nameInput" type="text" placeholder="英文字、數字、底線"
+                       maxlength="15" pattern="${accountNamePattern}" required title="英文字、數字、底線，3~15 個字">
+            </div>
 
-            <label for="passwordInput">Your Password</label>
-            <input id="passwordInput" type="password" placeholder="Your Password"
-                   pattern=".{6,100}" required title="at least 6 characters">
+            <div class="pure-control-group">
+                <label for="emailInput">Email </label>
+                <input id="emailInput" type="email" placeholder="foo@gmail.com" required>
+            </div>
 
-            <label for="confirmPasswordInput">Confirm Password</label>
-            <input id="confirmPasswordInput" type="password" placeholder="Type Again"
-                   pattern=".{6,100}" required title="at least 6 characters">
+            <div class="pure-control-group">
+                <label for="passwordInput">密碼</label>
+                <input id="passwordInput" type="password" placeholder="最少六個字"
+                       pattern=".{6,100}" required title="最少六個字">
+            </div>
 
-            <button type="submit" class="pure-button pure-button-primary">Sign Up</button>
-            <i class="fa fa-cog fa-spin loading hidden"></i>
+            <div class="pure-control-group">
+                <label for="confirmPasswordInput">確認密碼</label>
+                <input id="confirmPasswordInput" type="password" placeholder="再次確認"
+                       pattern=".{6,100}" required title="最少六個字">
+            </div>
+
+            <div class="pure-controls">
+                <button type="submit" class="pure-button pure-button-primary">
+                   <@spring.messageText "account-menu.sign_up" "Sign Up" />
+                </button>
+                <i class="fa fa-cog fa-spin loading hidden"></i>
+            </div>
+
         </fieldset>
         <p class="alert alert-danger hidden"></p>
     </form>

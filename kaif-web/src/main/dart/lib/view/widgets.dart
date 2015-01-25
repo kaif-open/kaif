@@ -43,13 +43,20 @@ class LargeErrorModal {
 class Toast {
   final String message;
   final Duration duration;
+  String _type;
 
-  Toast.error(this.message, this.duration);
+  Toast.error(this.message, this.duration) {
+    _type = 'danger';
+  }
+
+  Toast.success(this.message, this.duration) {
+    _type = 'success';
+  }
 
   void render() {
     var el = trustHtml(
         """
-     <div class="alert alert-danger toast-error">
+     <div class="alert alert-${_type} toast">
        ${message}
      </div>
     """);

@@ -116,4 +116,15 @@ public class Account {
   public boolean isActivated() {
     return authorities.contains(Authority.CITIZEN);
   }
+
+  @Override
+  public String toString() {
+    return "Account{" +
+        "name='" + name + '\'' +
+        ", accountId=" + accountId +
+        ", email='" + email + '\'' +
+        ", createTime=" + createTime +
+        ", authorities=" + authorities +
+        '}';
+  }
 }

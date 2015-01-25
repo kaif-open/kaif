@@ -48,13 +48,17 @@ public class AccountService {
     Preconditions.checkNotNull(email);
     Instant now = Instant.now(clock);
     Account account = accountDao.create(name, email, passwordEncoder.encode(password), now);
+    sendOnceAccountActivation(account, locale, now);
+    return account;
+  }
+
+  private void sendOnceAccountActivation(Account account, Locale locale, Instant now) {
     AccountOnceToken token = accountDao.createOnceToken(account,
         AccountOnceToken.Type.ACTIVATION,
         now);
 
     //async send email, no wait
     mailAgent.sendAccountActivation(locale, account, token.getToken());
-    return account;
   }
 
   public Account findById(UUID accountId) {
@@ -134,5 +138,11 @@ public class AccountService {
   @VisibleForTesting
   void setClock(Clock clock) {
     this.clock = clock;
+  }
+
+  public void resendActivation(UUID accountId, Locale locale) {
+    accountDao.findById(accountId).ifPresent(account -> {
+      sendOnceAccountActivation(account, locale, Instant.now(clock));
+    });
   }
 }

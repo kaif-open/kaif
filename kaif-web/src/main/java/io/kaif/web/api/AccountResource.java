@@ -81,6 +81,12 @@ public class AccountResource {
     return accountService.extendsAccessToken(token);
   }
 
+  @RequestMapping(value = "/resend-activatiton", method = RequestMethod.POST, consumes = {
+      MediaType.APPLICATION_JSON_VALUE })
+  public void resendActivation(AccountAccessToken token, Locale locale) {
+    accountService.resendActivation(token.getAccountId(), locale);
+  }
+
   @RequestMapping(value = "/email-available")
   public SingleWrapper<Boolean> isEmailAvailable(@RequestParam("email") String email) {
     return SingleWrapper.of(accountService.isEmailAvailable(email));
