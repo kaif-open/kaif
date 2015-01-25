@@ -23,9 +23,14 @@ class SignUpForm {
         return;
       }
       accountService.isNameAvailable(partial).then((available) {
-        String hintText = available ? 'sign-up.available': 'sign-up.name_already_taken';
+        String hintText = available ? 'sign-up.available' : 'sign-up.name_already_taken';
         _showHint(i18n(hintText), ok:available);
       });
+    });
+
+    elem.querySelector('#consentInput').onClick.first.then((e) {
+      e.target.disabled = true;
+      elem.querySelector('#consentLabel').text = 'X的！這個站還沒有條款，你同意什麼！';
     });
   }
 

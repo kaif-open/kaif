@@ -34,6 +34,10 @@
             </div>
 
             <div class="pure-controls">
+                <label for="consentInput" class="pure-checkbox">
+                    <input id="consentInput" type="checkbox" >
+                    <span id="consentLabel" >我同意本站使用條款</span>
+                </label>
                 <button type="submit" class="pure-button pure-button-primary">
                    <@spring.messageText "account-menu.sign_up" "Sign Up" />
                 </button>
