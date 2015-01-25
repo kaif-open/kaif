@@ -26,7 +26,7 @@ class ConvertSpringI18n extends Transformer {
 
   Future apply(Transform transform) {
     if (transform.primaryInput.id.extension == '.dart') {
-      //remove original messages_foo.dart file
+      //exclude original messages_foo.dart file
       transform.consumePrimary();
       return new Future.value(null);
     }
@@ -41,6 +41,9 @@ class ConvertSpringI18n extends Transformer {
       var newId = new AssetId(assetId.package, newPath);
       String newContent = resolveTemplate(locale, convertPropertiesToDart(content));
       transform.addOutput(new Asset.fromString(newId, newContent));
+
+      //exclude messages_foo.properties
+      transform.consumePrimary();
     });
   }
 }

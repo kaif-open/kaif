@@ -32,6 +32,8 @@ tasks.withType(org.springframework.boot.gradle.run.BootRunTask) {
 
 /** dart configuration begin **/
 
+def dartDist = "dart_dist"
+
 def getDartPub() {
   def envDart = System.env['DART_SDK']
   def propDart = System.properties['DART_SDK']
@@ -51,7 +53,7 @@ task buildDart(dependsOn: classes, type: Exec) {
     }
   }
   workingDir "src/main/dart"
-  commandLine getDartPub(), "build", "-o", '../webapp/dart_dist'
+  commandLine getDartPub(), "build", "-o", "${buildDir}/${dartDist}"
 }
 
 task pubServe(type: Exec) {
@@ -75,6 +77,9 @@ jar {
 
 war {
   baseName = 'kaif-web'
+  from ("${buildDir}/$dartDist") {
+    into "${dartDist}"
+  }
 }
 
 dependencies {
