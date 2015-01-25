@@ -1,18 +1,24 @@
 package io.kaif.model;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.EnumSet;
+import java.util.Locale;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.kaif.database.DbIntegrationTests;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountAuth;
+import io.kaif.model.account.AccountDao;
+import io.kaif.model.account.AccountOnceToken;
 import io.kaif.model.account.AccountSecret;
 import io.kaif.model.account.Authority;
 
@@ -24,19 +30,34 @@ public class AccountServiceTest extends DbIntegrationTests {
   @Autowired
   private AccountSecret accountSecret;
 
+  @Autowired
+  private AccountDao accountDao;
+
+  private Locale lc = Locale.TAIWAN;
+
   @Test
   public void createViaEmail() {
-    Account account = service.createViaEmail("myname", "foo@gmail.com", "pwd123");
+    Account account = service.createViaEmail("myname", "foo@gmail.com", "pwd123", lc);
     Account loaded = service.findById(account.getAccountId().toString());
     assertEquals(account, loaded);
     assertEquals("foo@gmail.com", loaded.getEmail());
     assertFalse(loaded.isActivated());
+    verify(mockMailAgent).sendAccountActivation(eq(lc),
+        eq(account),
+        Mockito.matches("[a-z\\-0-9]{36}"));
+
+    AccountOnceToken token = accountDao.listOnceTokens().get(0);
+
+    assertEquals(account.getAccountId(), token.getAccountId());
+    assertEquals(AccountOnceToken.Type.ACTIVATION, token.getType());
+    assertFalse(token.isExpired(Instant.now().plus(Duration.ofHours(23))));
+    assertFalse(token.isComplete());
   }
 
   @Test
   public void isNameAvailable() throws Exception {
     assertTrue(service.isNameAvailable("xyz123"));
-    service.createViaEmail("xyz123", "foobar@gmail.com", "9999123");
+    service.createViaEmail("xyz123", "foobar@gmail.com", "9999123", lc);
 
     assertFalse(service.isNameAvailable("xyz123"));
     assertFalse(service.isNameAvailable("XYZ123"));
@@ -45,7 +66,7 @@ public class AccountServiceTest extends DbIntegrationTests {
   @Test
   public void isEmailAvailable() throws Exception {
     assertTrue(service.isEmailAvailable("xyz123@foo.com"));
-    service.createViaEmail("xyz123", "xyz123@foo.com", "9999123");
+    service.createViaEmail("xyz123", "xyz123@foo.com", "9999123", lc);
 
     assertFalse(service.isEmailAvailable("xyz123@foo.com"));
     assertFalse(service.isEmailAvailable("XYZ123@Foo.com"));
@@ -54,7 +75,7 @@ public class AccountServiceTest extends DbIntegrationTests {
   @Test
   public void authenticate() {
     assertFalse(service.authenticate("notexist", "pwd123").isPresent());
-    service.createViaEmail("myname", "foo@gmail.com", "pwd123");
+    service.createViaEmail("myname", "foo@gmail.com", "pwd123", lc);
     AccountAuth auth = service.authenticate("myName", "pwd123").get();
     assertEquals("myname", auth.getName());
     assertTrue(AccountAccessToken.tryDecode(auth.getAccessToken(), accountSecret).isPresent());
@@ -66,7 +87,7 @@ public class AccountServiceTest extends DbIntegrationTests {
 
   @Test
   public void verifyAccessToken() throws Exception {
-    Account account = service.createViaEmail("abc99", "bar@gmail.com", "pppwww");
+    Account account = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc);
     AccountAuth accountAuth = service.authenticate("abc99", "pppwww").get();
     assertTrue(service.verifyAccessToken(accountAuth.getAccessToken()).isPresent());
 
@@ -86,7 +107,7 @@ public class AccountServiceTest extends DbIntegrationTests {
 
   @Test
   public void updateAuthorities() throws Exception {
-    String accountId = service.createViaEmail("abc99", "bar@gmail.com", "pppwww")
+    String accountId = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc)
         .getAccountId()
         .toString();
     EnumSet<Authority> set = EnumSet.of(Authority.NORMAL, Authority.ROOT);
@@ -96,7 +117,7 @@ public class AccountServiceTest extends DbIntegrationTests {
 
   @Test
   public void updatePassword() throws Exception {
-    String accountId = service.createViaEmail("abc99", "bar@gmail.com", "pppwww")
+    String accountId = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc)
         .getAccountId()
         .toString();
 
@@ -108,7 +129,7 @@ public class AccountServiceTest extends DbIntegrationTests {
 
   @Test
   public void extendsAccessToken() throws Exception {
-    service.createViaEmail("bbbb99", "bar@gmail.com", "pppwww");
+    service.createViaEmail("bbbb99", "bar@gmail.com", "pppwww", lc);
     AccountAuth accountAuth = service.authenticate("bbbb99", "pppwww").get();
     AccountAccessToken accountAccessToken = service.verifyAccessToken(accountAuth.getAccessToken())
         .get();

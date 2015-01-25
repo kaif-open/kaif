@@ -1,5 +1,6 @@
 package io.kaif.web.api;
 
+import java.util.Locale;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -44,20 +45,22 @@ public class AccountResource {
 
   }
 
-  @Autowired
-  private AccountService accountService;
-
-  @RequestMapping(value = "/", method = RequestMethod.PUT, consumes = {
-      MediaType.APPLICATION_JSON_VALUE })
-  public void create(@Valid @RequestBody AccountRequest request) {
-    accountService.createViaEmail(request.name.trim(), request.email.trim(), request.password);
-  }
-
   static class Credential {
     @NotNull
     public String name;
     @NotNull
     public String password;
+  }
+  @Autowired
+  private AccountService accountService;
+
+  @RequestMapping(value = "/", method = RequestMethod.PUT, consumes = {
+      MediaType.APPLICATION_JSON_VALUE })
+  public void create(@Valid @RequestBody AccountRequest request, Locale locale) {
+    accountService.createViaEmail(request.name.trim(),
+        request.email.trim(),
+        request.password,
+        locale);
   }
 
   /**

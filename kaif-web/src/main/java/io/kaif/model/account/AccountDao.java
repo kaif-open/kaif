@@ -4,6 +4,7 @@ import java.sql.Array;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import com.google.common.annotations.VisibleForTesting;
 
 import io.kaif.database.DaoOperations;
 
@@ -29,6 +32,13 @@ public class AccountDao implements DaoOperations {
           .collect(Collectors.toSet()),
       rs.getBoolean("activated"));
 
+  private final RowMapper<AccountOnceToken> tokenMapper = (rs,
+      rowNum) -> new AccountOnceToken(rs.getString("token"),
+      UUID.fromString(rs.getString("accountId")),
+      AccountOnceToken.Type.valueOf(rs.getString("type")),
+      rs.getBoolean("complete"),
+      rs.getTimestamp("createTime").toInstant());
+
   @Autowired
   private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -37,9 +47,9 @@ public class AccountDao implements DaoOperations {
     return namedParameterJdbcTemplate;
   }
 
-  public Account create(String name, String email, String passwordHash) {
+  public Account create(String name, String email, String passwordHash, Instant now) {
 
-    final Account account = Account.create(name, email, passwordHash, Instant.now());
+    final Account account = Account.create(name, email, passwordHash, now);
 
     jdbc().update(""
             + " INSERT "
@@ -89,5 +99,30 @@ public class AccountDao implements DaoOperations {
   public boolean isEmailAvailable(String email) {
     final String sql = " SELECT count(*) FROM Account WHERE email = ? ";
     return jdbc().queryForObject(sql, Number.class, email.toLowerCase()).intValue() == 0;
+  }
+
+  @VisibleForTesting
+  public List<AccountOnceToken> listOnceTokens() {
+    final String sql = " SELECT * FROM AccountOnceToken ";
+    return jdbc().query(sql, tokenMapper);
+  }
+
+  public AccountOnceToken createOnceToken(Account account,
+      AccountOnceToken.Type tokenType,
+      Instant now) {
+    AccountOnceToken onceToken = AccountOnceToken.create(account.getAccountId(), tokenType, now);
+    jdbc().update(""
+            + " INSERT "
+            + "   INTO AccountOnceToken "
+            + "        (token, accountId, type, "
+            + "         complete, createTime ) "
+            + " VALUES "
+            + questions(5),
+        onceToken.getToken(),
+        onceToken.getAccountId(),
+        onceToken.getType().name(),
+        onceToken.isComplete(),
+        Timestamp.from(onceToken.getCreateTime()));
+    return onceToken;
   }
 }

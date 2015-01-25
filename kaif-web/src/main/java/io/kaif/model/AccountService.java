@@ -3,6 +3,7 @@ package io.kaif.model;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.EnumSet;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,6 +20,7 @@ import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountAuth;
 import io.kaif.model.account.AccountDao;
+import io.kaif.model.account.AccountOnceToken;
 import io.kaif.model.account.AccountSecret;
 import io.kaif.model.account.Authority;
 
@@ -37,11 +39,18 @@ public class AccountService {
   @Autowired
   private MailAgent mailAgent;
 
-  public Account createViaEmail(String name, String email, String password) {
+  public Account createViaEmail(String name, String email, String password, Locale locale) {
     Preconditions.checkArgument(Account.isValidPassword(password));
     Preconditions.checkArgument(Account.isValidName(name));
     Preconditions.checkNotNull(email);
-    Account account = accountDao.create(name, email, passwordEncoder.encode(password));
+    Instant now = Instant.now();
+    Account account = accountDao.create(name, email, passwordEncoder.encode(password), now);
+    AccountOnceToken token = accountDao.createOnceToken(account,
+        AccountOnceToken.Type.ACTIVATION,
+        now);
+
+    //async send email, no wait
+    mailAgent.sendAccountActivation(locale, account, token.getToken());
     return account;
   }
 

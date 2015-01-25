@@ -10,3 +10,11 @@ CREATE TABLE Account (
 
 CREATE UNIQUE INDEX AccountNameIndex ON Account (LOWER(name));
 CREATE UNIQUE INDEX AccountEmailIndex ON Account (LOWER(email));
+
+CREATE TABLE AccountOnceToken (
+    token varchar(4095) PRIMARY KEY NOT NULL,
+    accountId uuid NOT NULL REFERENCES Account(accountId),
+    complete boolean NOT NULL,
+    type varchar(4095) NOT NULL,
+    createTime timestamp NOT NULL
+);
