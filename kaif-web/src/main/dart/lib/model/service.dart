@@ -44,7 +44,7 @@ abstract class _AbstractService {
 
   _AbstractService(this._serverType, this._accessTokenProvider);
 
-  String getAccountUrl(String path) => '/api/account$path';
+  String _getAccountUrl(String path) => '/api/account$path';
 
   Future<HttpRequest> _postJson(String url, dynamic json, {Map<String, String> header}) {
     return _requestJson('POST', url, json, header:header);
@@ -102,6 +102,18 @@ abstract class _AbstractService {
 
 }
 
+class PartService extends _AbstractService {
+  PartService(ServerType serverType, accessTokenProvider _provider)
+  : super(serverType, _provider);
+
+  Future<String> loadPart(String partPath) {
+    //TODO RestErrorResponse dosen't work, should change to status code mode
+    return _get(partPath).then((req) {
+      return req.responseText;
+    });
+  }
+}
+
 class AccountService extends _AbstractService {
   AccountService(ServerType serverType, accessTokenProvider _provider)
   : super(serverType, _provider);
@@ -110,7 +122,7 @@ class AccountService extends _AbstractService {
     var json = {
         'name':name, 'email':email, 'password':password
     };
-    return _putJson(getAccountUrl('/'), json)
+    return _putJson(_getAccountUrl('/'), json)
     .then((res) => null);
   }
 
@@ -118,7 +130,7 @@ class AccountService extends _AbstractService {
     var params = {
         'name':name
     };
-    return _get(getAccountUrl('/name-available'), params:params)
+    return _get(_getAccountUrl('/name-available'), params:params)
     .then((req) => JSON.decode(req.responseText))
     .then((raw) => raw['data']);
   }
@@ -127,7 +139,7 @@ class AccountService extends _AbstractService {
     var params = {
         'email':email
     };
-    return _get(getAccountUrl('/email-available'), params:params)
+    return _get(_getAccountUrl('/email-available'), params:params)
     .then((req) => JSON.decode(req.responseText))
     .then((raw) => raw['data']);
   }
@@ -136,7 +148,7 @@ class AccountService extends _AbstractService {
     var json = {
         'name':name, 'password':password
     };
-    return _postJson(getAccountUrl('/authenticate'), json)
+    return _postJson(_getAccountUrl('/authenticate'), json)
     .then((req) => JSON.decode(req.responseText))
     .then((raw) => new AccountAuth.decode(raw));
   }

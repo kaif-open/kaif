@@ -8,6 +8,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import io.kaif.model.AccountService;
 import io.kaif.model.account.Account;
+import io.kaif.model.account.AccountAccessToken;
+import io.kaif.web.support.PartTemplate;
 
 @Controller
 @RequestMapping("/account")
@@ -18,9 +20,8 @@ public class AccountController {
 
   @RequestMapping("/sign-up")
   public ModelAndView signUp() {
-    ModelAndView modelAndView = new ModelAndView("account/sign-up");
-    modelAndView.addObject("accountNamePattern", Account.NAME_PATTERN);
-    return modelAndView;
+    return new ModelAndView("account/sign-up").addObject("accountNamePattern",
+        Account.NAME_PATTERN);
   }
 
   @RequestMapping("/sign-in")
@@ -28,11 +29,21 @@ public class AccountController {
     return "account/sign-in";
   }
 
+  @RequestMapping("/settings")
+  public ModelAndView settings() {
+    return PartTemplate.fullLayout();
+  }
+
+  //TODO check permission
+  @RequestMapping("/settings.part")
+  public ModelAndView settingsPart(AccountAccessToken accountAccessToken) {
+    Account account = accountService.findById(accountAccessToken.getAccountId());
+    return new ModelAndView("account/settings.part").addObject("account", account);
+  }
+
   @RequestMapping("/activation")
   public ModelAndView activation(@RequestParam("key") String key) {
     boolean success = accountService.activate(key);
-    ModelAndView modelAndView = new ModelAndView("account/activation");
-    modelAndView.addObject("success", success);
-    return modelAndView;
+    return new ModelAndView("account/activation").addObject("success", success);
   }
 }

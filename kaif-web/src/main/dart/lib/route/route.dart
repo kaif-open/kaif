@@ -30,4 +30,9 @@ class Router {
     }
     window.location.href = "${path}?${queryString}";
   }
+
+  // change /account/foo to /account/foo.part
+  String currentPartTemplatePath() {
+    return '${window.location.pathname}.part';
+  }
 }

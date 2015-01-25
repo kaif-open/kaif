@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.EnumSet;
 import java.util.Locale;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -39,7 +40,7 @@ public class AccountServiceTest extends DbIntegrationTests {
   @Test
   public void createViaEmail() {
     Account account = service.createViaEmail("myname", "foo@gmail.com", "pwd123", lc);
-    Account loaded = service.findById(account.getAccountId().toString());
+    Account loaded = service.findById(account.getAccountId());
     assertEquals(account, loaded);
     assertEquals("foo@gmail.com", loaded.getEmail());
     assertFalse(loaded.isActivated());
@@ -62,7 +63,7 @@ public class AccountServiceTest extends DbIntegrationTests {
     AccountOnceToken token = accountDao.listOnceTokens().get(0);
 
     assertTrue(service.activate(token.getToken()));
-    Account loaded = service.findById(account.getAccountId().toString());
+    Account loaded = service.findById(account.getAccountId());
     assertTrue(loaded.isActivated());
     assertTrue(loaded.getAuthorities().contains(Authority.CITIZEN));
 
@@ -78,7 +79,7 @@ public class AccountServiceTest extends DbIntegrationTests {
 
     service.setClock(Clock.systemDefaultZone());
     assertFalse("expired token should invalid", service.activate(token.getToken()));
-    Account loaded = service.findById(account.getAccountId().toString());
+    Account loaded = service.findById(account.getAccountId());
     assertFalse(loaded.isActivated());
   }
 
@@ -119,7 +120,7 @@ public class AccountServiceTest extends DbIntegrationTests {
     AccountAuth accountAuth = service.authenticate("abc99", "pppwww").get();
     assertTrue(service.verifyAccessToken(accountAuth.getAccessToken()).isPresent());
 
-    String accountId = account.getAccountId().toString();
+    UUID accountId = account.getAccountId();
     //invalid case 1 bad token
     assertFalse(service.verifyAccessToken("badtoken").isPresent());
 
@@ -135,9 +136,7 @@ public class AccountServiceTest extends DbIntegrationTests {
 
   @Test
   public void updateAuthorities() throws Exception {
-    String accountId = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc)
-        .getAccountId()
-        .toString();
+    UUID accountId = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc).getAccountId();
     EnumSet<Authority> set = EnumSet.of(Authority.CITIZEN, Authority.ROOT);
     service.updateAuthorities(accountId, set);
     assertEquals(set, service.findById(accountId).getAuthorities());
@@ -145,9 +144,7 @@ public class AccountServiceTest extends DbIntegrationTests {
 
   @Test
   public void updatePassword() throws Exception {
-    String accountId = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc)
-        .getAccountId()
-        .toString();
+    UUID accountId = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc).getAccountId();
 
     service.updatePassword(accountId, "pw2123");
 

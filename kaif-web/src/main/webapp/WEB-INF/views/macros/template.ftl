@@ -59,17 +59,18 @@ sample configs:
 
 <main class="content">
   <#if (config.layout)! == 'small'>
-      <div class="pure-g">
-        <div class="pure-u-1-5"></div>
-        <div class="pure-u-3-5">
-           <#nested>
-        </div>
-        <div class="pure-u-3-5"></div>
-      </div>
+     <div class="pure-g">
+       <div class="pure-u-1-5"></div>
+       <div class="pure-u-3-5">
+         <#nested>
+       </div>
+       <div class="pure-u-3-5"></div>
+     </div>
   <#elseif (config.layout)! == 'full'>
-     <#-- TODO grid 24 layout-->
+     <#-- full layout let nested take full control -->
      <#nested>
   <#else>
+     <#-- TODO other grid 24 layout-->
      <#nested>
   </#if>
 </main>

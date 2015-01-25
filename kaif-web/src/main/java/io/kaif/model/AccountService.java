@@ -57,9 +57,8 @@ public class AccountService {
     return account;
   }
 
-  @VisibleForTesting
-  Account findById(String accountId) {
-    return accountDao.findById(UUID.fromString(accountId)).get();
+  public Account findById(UUID accountId) {
+    return accountDao.findById(accountId).orElse(null);
   }
 
   public Optional<AccountAuth> authenticate(String name, String password) {
@@ -108,13 +107,13 @@ public class AccountService {
     return accountDao.isEmailAvailable(email);
   }
 
-  public void updateAuthorities(String accountId, EnumSet<Authority> authorities) {
-    accountDao.updateAuthorities(UUID.fromString(accountId), authorities);
+  public void updateAuthorities(UUID accountId, EnumSet<Authority> authorities) {
+    accountDao.updateAuthorities(accountId, authorities);
   }
 
-  public void updatePassword(String accountId, String password) {
+  public void updatePassword(UUID accountId, String password) {
     Preconditions.checkArgument(Account.isValidPassword(password));
-    accountDao.updatePasswordHash(UUID.fromString(accountId), passwordEncoder.encode(password));
+    accountDao.updatePasswordHash(accountId, passwordEncoder.encode(password));
   }
 
   public boolean activate(String token) {

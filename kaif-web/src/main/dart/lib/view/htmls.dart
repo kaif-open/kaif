@@ -22,3 +22,7 @@ class _NullTreeSanitizer implements NodeTreeSanitizer {
 Element trustHtml(String rawHtml) {
   return new Element.html(rawHtml, treeSanitizer:_NULL_TREE_SANITIZER);
 }
+
+void trustInnerHtml(Element parent, String rawInnerHtml) {
+  parent.setInnerHtml(rawInnerHtml, treeSanitizer:_NULL_TREE_SANITIZER);
+}
