@@ -23,8 +23,7 @@ public class Account {
         email,
         passwordHash,
         createTime,
-        EnumSet.of(Authority.NORMAL),
-        false);
+        EnumSet.of(Authority.TOURIST));
   }
 
   public static boolean isValidPassword(String password) {
@@ -44,22 +43,19 @@ public class Account {
   private final String passwordHash;
   private final Instant createTime;
   private final Set<Authority> authorities;
-  private final boolean activated;
 
   Account(UUID accountId,
       String name,
       String email,
       String passwordHash,
       Instant createTime,
-      Set<Authority> authorities,
-      boolean activated) {
+      Set<Authority> authorities) {
     this.name = name;
     this.accountId = accountId;
     this.email = email;
     this.passwordHash = passwordHash;
     this.createTime = createTime;
     this.authorities = authorities;
-    this.activated = activated;
   }
 
   public String getName() {
@@ -89,17 +85,6 @@ public class Account {
   /**
    * do not include password hash in toString
    */
-  @Override
-  public String toString() {
-    return "Account{" +
-        "name='" + name + '\'' +
-        ", accountId=" + accountId +
-        ", email='" + email + '\'' +
-        ", createTime=" + createTime +
-        ", authorities=" + authorities +
-        ", activated=" + activated +
-        '}';
-  }
 
   /**
    * equals and hashCode use `name` instead of accountId for easier testing.
@@ -129,6 +114,6 @@ public class Account {
   }
 
   public boolean isActivated() {
-    return activated;
+    return authorities.contains(Authority.CITIZEN);
   }
 }

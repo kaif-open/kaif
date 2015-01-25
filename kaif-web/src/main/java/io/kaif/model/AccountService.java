@@ -1,5 +1,6 @@
 package io.kaif.model;
 
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.EnumSet;
@@ -39,11 +40,13 @@ public class AccountService {
   @Autowired
   private MailAgent mailAgent;
 
+  private Clock clock = Clock.systemDefaultZone();
+
   public Account createViaEmail(String name, String email, String password, Locale locale) {
     Preconditions.checkArgument(Account.isValidPassword(password));
     Preconditions.checkArgument(Account.isValidName(name));
     Preconditions.checkNotNull(email);
-    Instant now = Instant.now();
+    Instant now = Instant.now(clock);
     Account account = accountDao.create(name, email, passwordEncoder.encode(password), now);
     AccountOnceToken token = accountDao.createOnceToken(account,
         AccountOnceToken.Type.ACTIVATION,
@@ -63,12 +66,10 @@ public class AccountService {
     return accountDao.findByName(name)
         .filter(account -> passwordEncoder.matches(password, account.getPasswordHash()))
         .map(this::createAccountAuth);
-    //TODO not activate treat as fail
   }
 
-  //TODO activate via email
   private AccountAuth createAccountAuth(Account account) {
-    Instant expireTime = Instant.now().plus(ACCOUNT_TOKEN_EXPIRE);
+    Instant expireTime = Instant.now(clock).plus(ACCOUNT_TOKEN_EXPIRE);
     String accessToken = new AccountAccessToken(account.getAccountId(),
         account.getPasswordHash(),
         account.getAuthorities()).encode(expireTime, accountSecret);
@@ -114,5 +115,25 @@ public class AccountService {
   public void updatePassword(String accountId, String password) {
     Preconditions.checkArgument(Account.isValidPassword(password));
     accountDao.updatePasswordHash(UUID.fromString(accountId), passwordEncoder.encode(password));
+  }
+
+  public boolean activate(String token) {
+    return accountDao.findOnceToken(token, AccountOnceToken.Type.ACTIVATION)
+        .filter(onceToken -> !onceToken.isComplete())
+        .filter(onceToken -> !onceToken.isExpired(Instant.now(clock)))
+        .map(onceToken -> {
+          Account account = accountDao.findById(onceToken.getAccountId()).get();
+          EnumSet<Authority> newAuth = EnumSet.copyOf(account.getAuthorities());
+          newAuth.add(Authority.CITIZEN);
+          accountDao.updateAuthorities(account.getAccountId(), newAuth);
+          accountDao.completeOnceToken(onceToken);
+          return true;
+        })
+        .orElse(false);
+  }
+
+  @VisibleForTesting
+  void setClock(Clock clock) {
+    this.clock = clock;
   }
 }

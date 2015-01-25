@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.EnumSet;
@@ -42,6 +43,7 @@ public class AccountServiceTest extends DbIntegrationTests {
     assertEquals(account, loaded);
     assertEquals("foo@gmail.com", loaded.getEmail());
     assertFalse(loaded.isActivated());
+    assertEquals(EnumSet.of(Authority.TOURIST), loaded.getAuthorities());
     verify(mockMailAgent).sendAccountActivation(eq(lc),
         eq(account),
         Mockito.matches("[a-z\\-0-9]{36}"));
@@ -52,6 +54,32 @@ public class AccountServiceTest extends DbIntegrationTests {
     assertEquals(AccountOnceToken.Type.ACTIVATION, token.getType());
     assertFalse(token.isExpired(Instant.now().plus(Duration.ofHours(23))));
     assertFalse(token.isComplete());
+  }
+
+  @Test
+  public void activate() throws Exception {
+    Account account = service.createViaEmail("xyz", "xyz@gmail.com", "595959", lc);
+    AccountOnceToken token = accountDao.listOnceTokens().get(0);
+
+    assertTrue(service.activate(token.getToken()));
+    Account loaded = service.findById(account.getAccountId().toString());
+    assertTrue(loaded.isActivated());
+    assertTrue(loaded.getAuthorities().contains(Authority.CITIZEN));
+
+    assertFalse("activate twice should invalid", service.activate(token.getToken()));
+    assertFalse("not exist token should invalid", service.activate("not exist"));
+  }
+
+  @Test
+  public void activate_skip_token_expired() throws Exception {
+    service.setClock(Clock.offset(Clock.systemDefaultZone(), Duration.ofDays(-2)));
+    Account account = service.createViaEmail("xyz", "xyz@gmail.com", "595959", lc);
+    AccountOnceToken token = accountDao.listOnceTokens().get(0);
+
+    service.setClock(Clock.systemDefaultZone());
+    assertFalse("expired token should invalid", service.activate(token.getToken()));
+    Account loaded = service.findById(account.getAccountId().toString());
+    assertFalse(loaded.isActivated());
   }
 
   @Test
@@ -110,7 +138,7 @@ public class AccountServiceTest extends DbIntegrationTests {
     String accountId = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc)
         .getAccountId()
         .toString();
-    EnumSet<Authority> set = EnumSet.of(Authority.NORMAL, Authority.ROOT);
+    EnumSet<Authority> set = EnumSet.of(Authority.CITIZEN, Authority.ROOT);
     service.updateAuthorities(accountId, set);
     assertEquals(set, service.findById(accountId).getAuthorities());
   }

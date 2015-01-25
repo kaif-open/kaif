@@ -29,8 +29,7 @@ public class AccountDao implements DaoOperations {
       rs.getString("passwordHash"),
       rs.getTimestamp("createTime").toInstant(),
       convertVarcharArray(rs.getArray("authorities")).map(Authority::valueOf)
-          .collect(Collectors.toSet()),
-      rs.getBoolean("activated"));
+          .collect(Collectors.toSet()));
 
   private final RowMapper<AccountOnceToken> tokenMapper = (rs,
       rowNum) -> new AccountOnceToken(rs.getString("token"),
@@ -55,15 +54,14 @@ public class AccountDao implements DaoOperations {
             + " INSERT "
             + "   INTO Account "
             + "        (accountId, email, passwordHash, name, "
-            + "         createTime, activated, authorities) "
+            + "         createTime, authorities) "
             + " VALUES "
-            + questions(7),
+            + questions(6),
         account.getAccountId(),
         account.getEmail().toLowerCase(),
         account.getPasswordHash(),
         account.getName(),
         Timestamp.from(account.getCreateTime()),
-        account.isActivated(),
         authoritiesToVarcharArray(account.getAuthorities()));
 
     return account;
@@ -124,5 +122,16 @@ public class AccountDao implements DaoOperations {
         onceToken.isComplete(),
         Timestamp.from(onceToken.getCreateTime()));
     return onceToken;
+  }
+
+  public Optional<AccountOnceToken> findOnceToken(String token, AccountOnceToken.Type tokenType) {
+    final String sql = " SELECT * FROM AccountOnceToken WHERE token = ? AND type = ? ";
+    return jdbc().query(sql, tokenMapper, token, tokenType.name()).stream().findFirst();
+  }
+
+  public void completeOnceToken(AccountOnceToken onceToken) {
+    jdbc().update(" UPDATE AccountOnceToken SET complete = ? WHERE token = ? ",
+        true,
+        onceToken.getToken());
   }
 }
