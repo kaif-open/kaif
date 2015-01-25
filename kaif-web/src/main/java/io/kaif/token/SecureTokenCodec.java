@@ -24,6 +24,7 @@ public class SecureTokenCodec {
   private static class LazyHolder {
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
   }
+
   private static final Charset UTF8 = Charset.forName("UTF-8");
   private static final byte[] EMPTY_BYTES = new byte[0];
   private static final int RANDOM_IV_LENGTH = 16;
@@ -93,6 +94,7 @@ public class SecureTokenCodec {
     payloadBuf.get(fieldBytes);
     return fieldBytes;
   }
+
   private final byte[] macKey;
 
   private final byte[] secretKey;
@@ -192,7 +194,12 @@ public class SecureTokenCodec {
       return null;
     }
 
-    final byte[] target = Base64.getUrlDecoder().decode(targetToken);
+    final byte[] target;
+    try {
+      target = Base64.getUrlDecoder().decode(targetToken);
+    } catch (RuntimeException e) {
+      return null;
+    }
     if (target.length < MAC_LENGTH + RANDOM_IV_LENGTH) {
       return null;
     }

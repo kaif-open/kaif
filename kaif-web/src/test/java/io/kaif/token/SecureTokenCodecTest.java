@@ -176,4 +176,11 @@ public class SecureTokenCodecTest {
     assertNull(codec.tryDecode(
         "qSruSGAIYINH3y461ZjQX3xM08nCPXKp10punG7t15W6ixNivb5aSZUlY5XapiamKY8PsETguAHV4AFoOZx7DSjdEcjqqmrtZqgiXgZgNR3LgujbpBuO1mejxcq3HAS"));
   }
+
+  @Test
+  public void tryDecode_failed_invalid_base64() throws Exception {
+    final SecureTokenCodec codec = SecureTokenCodec.create(macKey, secretKey);
+    assertNull(codec.tryDecode(
+        "Ahde3Wy_r4JG0fhsH_NAvZ9StbzAk6nIDUCP_FcTOkEz1QqWVCPStlCpgXEy8NVgzbWOGHzha6enVThKuwlB2dg8SSa1Bme3P6Mh6t7x4tA9SU6sA"));
+  }
 }
