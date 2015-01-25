@@ -2,13 +2,31 @@ spring:
     profiles:
         active: prod
 
+## freemarker
+
+
+## actuator
+
+
+## database
 spring.datasource.password: ${dbpassword}
 spring.datasource.url: jdbc:postgresql://localhost:5432/kaif
 
-logging.config: classpath:logback-prod.xml
+## jmx
 
+
+## messages
+
+
+## mail
 spring.mail.host: localhost
 
+
+## model
 account:
     mac: ${accountmac}
     key: ${accountkey}
+
+
+## logback
+logging.config: classpath:logback-prod.xml

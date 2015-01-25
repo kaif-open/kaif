@@ -1,10 +1,10 @@
 <#import "/spring.ftl" as spring />
 <#import "/macros/template.ftl" as template>
 
-<@template.page {}>
-<div class="pure-g">
-  <div class="pure-u-1-5"></div>
-  <div class="pure-u-3-5">
+<@template.page {
+  'layout':'small'
+}>
+
     <form class="pure-form pure-form-stacked" sign-up-form>
         <fieldset>
             <legend>Register new account</legend>
@@ -29,7 +29,5 @@
         </fieldset>
         <p class="alert alert-danger hidden"></p>
     </form>
-  </div>
-  <div class="pure-u-3-5"></div>
-</div>
+
 </@template.page>

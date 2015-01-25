@@ -1,15 +1,20 @@
 package io.kaif.web;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import io.kaif.model.AccountService;
 import io.kaif.model.account.Account;
 
 @Controller
 @RequestMapping("/account")
 public class AccountController {
+
+  @Autowired
+  private AccountService accountService;
 
   @RequestMapping("/sign-up")
   public ModelAndView signUp() {
@@ -24,7 +29,10 @@ public class AccountController {
   }
 
   @RequestMapping("/activation")
-  public String activation(@RequestParam("key") String key) {
-    return "account/activation";
+  public ModelAndView activation(@RequestParam("key") String key) {
+    boolean success = accountService.activate(key);
+    ModelAndView modelAndView = new ModelAndView("account/activation");
+    modelAndView.addObject("success", success);
+    return modelAndView;
   }
 }

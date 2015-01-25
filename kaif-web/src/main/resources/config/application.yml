@@ -17,6 +17,7 @@ endpoints.enabled: false
 endpoints.info.enabled: true
 endpoints.health.enabled: true
 
+
 ## database
 spring.datasource.initialize: false
 
@@ -25,11 +26,14 @@ spring.datasource.url: jdbc:postgresql://192.168.59.59:5432/kaif
 spring.datasource.username: kaif
 spring.datasource.password: changeme
 
+
 ## jmx
 spring.jmx.enabled: false
 
+
 ## messages
 spring.messages.basename: i18n/messages
+
 
 ## mail, see MailProperties.java
 mail.sender-address: noreply@kaif.io
@@ -39,7 +43,11 @@ mail.aws-sender-address:
 mail.aws-secret-key:
 mail.aws-access-key:
 
+
 ## model, see AccountSecret.java
 account:
     mac: n7LOo9kKqSqM-fshf_T3xw
     key: dnXAz2u6mn4L_vZyiW0hHA
+
+
+## logback

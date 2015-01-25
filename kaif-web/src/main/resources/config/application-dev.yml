@@ -2,12 +2,30 @@ spring:
     profiles:
         active: dev
 
+## freemarker
 spring.freemarker.cache: false
 
-logging.config: classpath:logback-dev.xml
 
-spring.messages.cache-seconds: 0
-
+## actuator
 endpoints.enabled: true
 
+
+## database
+
+
+## jmx
+
+
+## messages
+spring.messages.cache-seconds: 0
+
+
+## mail
 spring.mail.host: 192.168.59.59
+
+
+## model
+
+
+## logback
+logging.config: classpath:logback-dev.xml

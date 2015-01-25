@@ -76,12 +76,18 @@ public class JavaMailAgent implements MailAgent {
   private JavaMailSender mailSender;
 
   private ExecutorService executorService = Executors.newFixedThreadPool(5);
+  @Autowired
+  private MailComposer mailComposer;
 
   public CompletableFuture<Boolean> send(final Mail message) {
     return CompletableFuture.supplyAsync(() -> {
       //TODO timeout ?
       mailSender.send(new EncodingMimeMessagePreparator(message));
-      logger.debug("mail message sent: " + Arrays.toString(message.getTo()));
+      if (logger.isDebugEnabled()) {
+        logger.debug("mail message sent:\n{}", message);
+      } else {
+        logger.info("mail message sent to:{} ", Arrays.toString(message.getTo()));
+      }
       return true;
     }).handle((result, e) -> {
       logger.error("mail message sent failed:"
@@ -91,9 +97,6 @@ public class JavaMailAgent implements MailAgent {
       return false;
     });
   }
-
-  @Autowired
-  private MailComposer mailComposer;
 
   @Override
   public MailComposer mailComposer() {

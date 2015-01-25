@@ -1,5 +1,21 @@
 <#import "/spring.ftl" as spring />
 
+<#--
+sample configs:
+
+1)
+
+<@template.page {
+  'layout':'small'
+}>
+
+2)
+
+<@template.page {
+  'layout':'full'
+}>
+
+-->
 <#macro page config>
 
 <!doctype html>
@@ -32,17 +48,30 @@
         <a class="pure-menu-heading" href="/">Kaif.io</a>
         <ul account-menu>
             <#-- mock
-            <li><a href="/sign-up">Sign Up</a></li>
-            <li><a href="/sign-in">Sign In</a></li>
-            <li><a href="/settings">myname</a></li>
-            <li><a href="/sign-out">Sign Out</a></li>
+            <li><a href="/account/sign-up">Sign Up</a></li>
+            <li><a href="/account/sign-in">Sign In</a></li>
+            <li><a href="/account/settings">myname</a></li>
+            <li><a href="/account/sign-out">Sign Out</a></li>
             -->
         </ul>
     </div>
 </header>
 
 <main class="content">
-    <#nested>
+  <#if (config.layout)! == 'small'>
+      <div class="pure-g">
+        <div class="pure-u-1-5"></div>
+        <div class="pure-u-3-5">
+           <#nested>
+        </div>
+        <div class="pure-u-3-5"></div>
+      </div>
+  <#elseif (config.layout)! == 'full'>
+     <#-- TODO grid 24 layout-->
+     <#nested>
+  <#else>
+     <#nested>
+  </#if>
 </main>
 
 <footer class="footer l-box is-center">

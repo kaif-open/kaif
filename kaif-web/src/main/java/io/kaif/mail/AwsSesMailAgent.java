@@ -14,7 +14,8 @@ import javax.annotation.PreDestroy;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 
@@ -35,7 +36,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 // @Component
 public class AwsSesMailAgent implements MailAgent {
 
-  private static final Logger logger = Logger.getLogger(AwsSesMailAgent.class);
+  private static final Logger logger = LoggerFactory.getLogger(AwsSesMailAgent.class);
 
   private AmazonSimpleEmailServiceClient client;
   private final ExecutorService executor = Executors.newFixedThreadPool(5,
@@ -46,14 +47,13 @@ public class AwsSesMailAgent implements MailAgent {
 
   @Autowired
   private MailComposer mailComposer;
+  //TODO adjust rate limiter if our aws ses mail passed
+  private final RateLimiter rateLimiter = RateLimiter.create(5.0);
 
   @Override
   public MailComposer mailComposer() {
     return mailComposer;
   }
-
-  //TODO adjust rate limiter if our aws ses mail passed
-  private final RateLimiter rateLimiter = RateLimiter.create(5.0);
 
   @PostConstruct
   public void afterPropertiesSet() {
@@ -107,10 +107,11 @@ public class AwsSesMailAgent implements MailAgent {
         logger.warn("rate limit wait too long: " + totalWait + " seconds");
       }
       SendEmailResult emailResult = client.sendEmail(sendEmailRequest);
-      logger.debug("sent mail to "
-          + destination
-          + " done. messageId:"
-          + emailResult.getMessageId());
+      if (logger.isDebugEnabled()) {
+        logger.debug("sent mail messageId:{}, body:\n{}", emailResult.getMessageId(), mailMessage);
+      } else {
+        logger.info("sent mail to {}, messageId:{}", destination, emailResult.getMessageId());
+      }
       return true;
     }, executor).handle((result, e) -> {
       if (e != null) {

@@ -2,6 +2,12 @@
 server:
     port: 25980
 
+## freemarker
+
+
+## actuator
+
+
 ## database
 spring.datasource.initialize: true
 spring.datasource.schema: classpath:db/recreate_schema.sql,classpath:db/schema.sql
@@ -12,8 +18,23 @@ spring.datasource.url: jdbc:postgresql://192.168.59.59:5432/ci_kaif
 spring.datasource.username: ci_kaif
 spring.datasource.password: changeme
 
+
 ## jmx
 spring.jmx.enabled: false
+
+
+## messages
+
+
+## mail
+
+
+## model
+
+
+## logback
+# logback will pick logback-test.xml first automatically
+
 
 ## misc
 spring.main.show_banner: false

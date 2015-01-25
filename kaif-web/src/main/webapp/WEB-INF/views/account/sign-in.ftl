@@ -1,10 +1,10 @@
 <#import "/spring.ftl" as spring />
 <#import "/macros/template.ftl" as template>
 
-<@template.page {}>
-<div class="pure-g">
-  <div class="pure-u-1-5"></div>
-  <div class="pure-u-3-5">
+<@template.page {
+  'layout':'small'
+}>
+
     <#-- check sign_up_form.dart for string `sign-up-success` -->
     <#if springMacroRequestContext.getQueryString()!?contains('sign-up-success') >
       <p class="alert alert-info">
@@ -30,7 +30,5 @@
         </fieldset>
         <p class="alert alert-danger hidden"></p>
     </form>
-  </div>
-  <div class="pure-u-3-5"></div>
-</div>
+
 </@template.page>
