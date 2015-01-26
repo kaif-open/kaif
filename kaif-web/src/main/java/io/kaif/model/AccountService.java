@@ -8,6 +8,8 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,9 @@ import io.kaif.model.account.Authority;
 public class AccountService {
 
   private static final Duration ACCOUNT_TOKEN_EXPIRE = Duration.ofDays(30);
+
+  private static final Logger logger = LoggerFactory.getLogger(AccountService.class);
+
   @Autowired
   private AccountDao accountDao;
   @Autowired
@@ -144,5 +149,18 @@ public class AccountService {
     accountDao.findById(accountId).ifPresent(account -> {
       sendOnceAccountActivation(account, locale, Instant.now(clock));
     });
+  }
+
+  public void resetPassword(String name, String email, Locale locale) {
+    logger.info("begin reset password: {}, {}", name, email);
+    accountDao.findByName(name)
+        .filter(account -> account.getEmail().equals(email))
+        .ifPresent(account -> {
+          AccountOnceToken token = accountDao.createOnceToken(account,
+              AccountOnceToken.Type.FORGET_PASSWORD,
+              Instant.now(clock));
+          mailAgent.sendResetPassword(locale, account, token.getToken());
+        });
+
   }
 }

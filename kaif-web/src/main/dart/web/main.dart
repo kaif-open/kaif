@@ -2,6 +2,7 @@ import 'package:kaif_web/model.dart';
 import 'package:kaif_web/util.dart';
 import 'package:kaif_web/comp/account/sign_up_form.dart';
 import 'package:kaif_web/comp/account/sign_in_form.dart';
+import 'package:kaif_web/comp/account/forget_password_form.dart';
 import 'package:kaif_web/comp/account/account_menu.dart';
 import 'package:kaif_web/comp/account/account_settings.dart';
 import 'package:kaif_web/comp/server_part_loader.dart';
@@ -49,6 +50,9 @@ class AppModule {
     });
     parent.querySelectorAll('[account-settings]').forEach((el) {
       new AccountSettings(el, accountService);
+    });
+    parent.querySelectorAll('[forget-password-form]').forEach((el) {
+      new ForgetPasswordForm(el, accountService);
     });
   }
 

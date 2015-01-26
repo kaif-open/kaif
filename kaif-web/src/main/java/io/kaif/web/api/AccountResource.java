@@ -52,6 +52,16 @@ public class AccountResource {
     public String password;
   }
 
+
+  static class ResetPasswordRequest {
+    @NotNull
+    public String name;
+
+    @Email
+    @NotNull
+    public String email;
+  }
+
   @Autowired
   private AccountService accountService;
 
@@ -81,7 +91,7 @@ public class AccountResource {
     return accountService.extendsAccessToken(token);
   }
 
-  @RequestMapping(value = "/resend-activatiton", method = RequestMethod.POST, consumes = {
+  @RequestMapping(value = "/resend-activation", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
   public void resendActivation(AccountAccessToken token, Locale locale) {
     accountService.resendActivation(token.getAccountId(), locale);
@@ -95,5 +105,11 @@ public class AccountResource {
   @RequestMapping(value = "/name-available")
   public SingleWrapper<Boolean> isNameAvailable(@RequestParam("name") String name) {
     return SingleWrapper.of(accountService.isNameAvailable(name));
+  }
+
+  @RequestMapping(value = "/reset-password", method = RequestMethod.POST, consumes = {
+      MediaType.APPLICATION_JSON_VALUE })
+  public void resetPassword(@Valid @RequestBody ResetPasswordRequest request, Locale locale) {
+    accountService.resetPassword(request.name, request.email, locale);
   }
 }

@@ -175,7 +175,15 @@ class AccountService extends _AbstractService {
   }
 
   Future resendActivation() {
-    return _postJson(_getAccountUrl('/resend-activatiton'), {
+    return _postJson(_getAccountUrl('/resend-activation'), {
     }).then((req) => null);
+  }
+
+  Future resetPassword(String name, String email) {
+    var json = {
+        'name':name, 'email':email
+    };
+    return _postJson(_getAccountUrl('/reset-password'), json)
+    .then((req) => null);
   }
 }

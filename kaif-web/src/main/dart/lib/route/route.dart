@@ -23,6 +23,8 @@ class Router {
 
   gotoSignInWithSignUpSuccess() => _gotoWithQuery(signIn, 'sign-up-success');
 
+  gotoSignInWithSendResetPasswordSuccess() => _gotoWithQuery(signIn, 'send-reset-password-success');
+
   void _gotoWithQuery(String path, String queryString) {
     if (queryString == null) {
       window.location.href = path;

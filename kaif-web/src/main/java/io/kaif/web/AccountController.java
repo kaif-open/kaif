@@ -29,6 +29,12 @@ public class AccountController {
     return "account/sign-in";
   }
 
+
+  @RequestMapping("/forget-password")
+  public String forgetPassword() {
+    return "account/forget-password";
+  }
+
   @RequestMapping("/settings")
   public ModelAndView settings() {
     return PartTemplate.smallLayout();

@@ -73,6 +73,41 @@ public class AccountServiceTest extends DbIntegrationTests {
   }
 
   @Test
+  public void resetPassword_noSuchAccount() {
+    //case 1: no account
+    service.resetPassword("myname", "foo@gmail.com", lc);
+    verifyZeroInteractions(mockMailAgent);
+    assertEquals(0, accountDao.listOnceTokens().size());
+  }
+
+  @Test
+  public void resetPassword_emailNotMatch() {
+    service.createViaEmail("myname", "foo@gmail.com", "pwd123", lc);
+    Mockito.reset(mockMailAgent);
+
+    service.resetPassword("myname", "wrong@gmail.com", lc);
+    verifyZeroInteractions(mockMailAgent);
+    assertEquals(1, accountDao.listOnceTokens().size());
+  }
+
+  @Test
+  public void resetPassword() {
+    Account account = service.createViaEmail("myname", "foo@gmail.com", "pwd123", lc);
+
+    Mockito.reset(mockMailAgent);
+
+    service.resetPassword("myname", "foo@gmail.com", lc);
+
+    verify(mockMailAgent).sendResetPassword(eq(lc),
+        eq(account),
+        Mockito.matches("[a-z\\-0-9]{36}"));
+
+    assertTrue(accountDao.listOnceTokens()
+        .stream()
+        .anyMatch(token -> token.getType() == AccountOnceToken.Type.FORGET_PASSWORD));
+  }
+
+  @Test
   public void activate() throws Exception {
     Account account = service.createViaEmail("xyz", "xyz@gmail.com", "595959", lc);
     AccountOnceToken token = accountDao.listOnceTokens().get(0);

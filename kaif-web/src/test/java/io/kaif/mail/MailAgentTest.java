@@ -61,4 +61,24 @@ public class MailAgentTest extends MailTestCases {
     mailMessage.setTo("foo@gmail.com");
     verify(mockMailAgent).send(mailMessage);
   }
+
+  @Test
+  public void sendResetPassword() throws Exception {
+    Account account = Account.create("aName", "foo@gmail.com", "pw", Instant.now());
+    mailAgent.sendResetPassword(Locale.ENGLISH, account, "myToken");
+    Mail mailMessage = new Mail();
+    mailMessage.setFrom("noreply@kaif.io");
+    mailMessage.setSubject("kaif account password reset");
+    mailMessage.setText("Dear aName\n"
+        + "\n"
+        + "You have been requested password reset, please click on the URL below to reset it:\n"
+        + "\n"
+        + "  http://kaif.io/account/reset-password?key=myToken\n"
+        + "\n"
+        + "Regards,\n"
+        + "\n"
+        + "- kaif Team.");
+    mailMessage.setTo("foo@gmail.com");
+    verify(mockMailAgent).send(mailMessage);
+  }
 }
