@@ -33,7 +33,7 @@ public class AccountResource {
     @Size(min = Account.NAME_MIN, max = Account.NAME_MAX)
     @NotNull
     @Pattern(regexp = Account.NAME_PATTERN)
-    public String name;
+    public String username;
 
     @Size(min = Account.PASSWORD_MIN, max = Account.PASSWORD_MAX)
     @NotNull
@@ -47,7 +47,7 @@ public class AccountResource {
 
   static class Credential {
     @NotNull
-    public String name;
+    public String username;
     @NotNull
     public String password;
   }
@@ -55,7 +55,7 @@ public class AccountResource {
 
   static class ResetPasswordRequest {
     @NotNull
-    public String name;
+    public String username;
 
     @Email
     @NotNull
@@ -68,7 +68,7 @@ public class AccountResource {
   @RequestMapping(value = "/", method = RequestMethod.PUT, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
   public void create(@Valid @RequestBody AccountRequest request, Locale locale) {
-    accountService.createViaEmail(request.name.trim(),
+    accountService.createViaEmail(request.username.trim(),
         request.email.trim(),
         request.password,
         locale);
@@ -80,7 +80,7 @@ public class AccountResource {
   @RequestMapping(value = "/authenticate", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
   public AccountAuth authenticate(@Valid @RequestBody Credential credential) {
-    Optional<AccountAuth> accountAuth = accountService.authenticate(credential.name.trim(),
+    Optional<AccountAuth> accountAuth = accountService.authenticate(credential.username.trim(),
         credential.password);
     return accountAuth.orElseThrow(AccessDeniedException::new);
   }
@@ -103,13 +103,13 @@ public class AccountResource {
   }
 
   @RequestMapping(value = "/name-available")
-  public SingleWrapper<Boolean> isNameAvailable(@RequestParam("name") String name) {
-    return SingleWrapper.of(accountService.isNameAvailable(name));
+  public SingleWrapper<Boolean> isNameAvailable(@RequestParam("username") String username) {
+    return SingleWrapper.of(accountService.isUsernameAvailable(username));
   }
 
   @RequestMapping(value = "/reset-password", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
   public void resetPassword(@Valid @RequestBody ResetPasswordRequest request, Locale locale) {
-    accountService.resetPassword(request.name, request.email, locale);
+    accountService.resetPassword(request.username, request.email, locale);
   }
 }

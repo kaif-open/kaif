@@ -52,7 +52,7 @@ public class AccountServiceTest extends DbIntegrationTests {
     AccountOnceToken token = accountDao.listOnceTokens().get(0);
 
     assertEquals(account.getAccountId(), token.getAccountId());
-    assertEquals(AccountOnceToken.Type.ACTIVATION, token.getType());
+    assertEquals(AccountOnceToken.Type.ACTIVATION, token.getTokenType());
     assertFalse(token.isExpired(Instant.now().plus(Duration.ofHours(23))));
     assertFalse(token.isComplete());
   }
@@ -104,7 +104,7 @@ public class AccountServiceTest extends DbIntegrationTests {
 
     assertTrue(accountDao.listOnceTokens()
         .stream()
-        .anyMatch(token -> token.getType() == AccountOnceToken.Type.FORGET_PASSWORD));
+        .anyMatch(token -> token.getTokenType() == AccountOnceToken.Type.FORGET_PASSWORD));
   }
 
   @Test
@@ -135,11 +135,11 @@ public class AccountServiceTest extends DbIntegrationTests {
 
   @Test
   public void isNameAvailable() throws Exception {
-    assertTrue(service.isNameAvailable("xyz123"));
+    assertTrue(service.isUsernameAvailable("xyz123"));
     service.createViaEmail("xyz123", "foobar@gmail.com", "9999123", lc);
 
-    assertFalse(service.isNameAvailable("xyz123"));
-    assertFalse(service.isNameAvailable("XYZ123"));
+    assertFalse(service.isUsernameAvailable("xyz123"));
+    assertFalse(service.isUsernameAvailable("XYZ123"));
   }
 
   @Test
@@ -156,7 +156,7 @@ public class AccountServiceTest extends DbIntegrationTests {
     assertFalse(service.authenticate("notexist", "pwd123").isPresent());
     service.createViaEmail("myname", "foo@gmail.com", "pwd123", lc);
     AccountAuth auth = service.authenticate("myName", "pwd123").get();
-    assertEquals("myname", auth.getName());
+    assertEquals("myname", auth.getUsername());
     assertTrue(AccountAccessToken.tryDecode(auth.getAccessToken(), accountSecret).isPresent());
     assertTrue(Instant.ofEpochMilli(auth.getExpireTime())
         .isAfter(Instant.now().plus(Duration.ofDays(7))));

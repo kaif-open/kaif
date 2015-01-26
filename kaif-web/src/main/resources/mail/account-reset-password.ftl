@@ -1,4 +1,4 @@
-${message('email.reset_password.greeting', account.name)}
+${message('email.reset_password.greeting', account.username)}
 
 ${message('email.reset_password.text1')}
 

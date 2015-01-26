@@ -7,12 +7,12 @@ package io.kaif.model.account;
  */
 public class AccountAuth {
 
-  private final String name;
+  private final String username;
   private final String accessToken;
   private final long expireTime;
 
-  public AccountAuth(String name, String accessToken, long expireTime) {
-    this.name = name;
+  public AccountAuth(String username, String accessToken, long expireTime) {
+    this.username = username;
     this.accessToken = accessToken;
     this.expireTime = expireTime;
   }
@@ -21,8 +21,8 @@ public class AccountAuth {
     return expireTime;
   }
 
-  public String getName() {
-    return name;
+  public String getUsername() {
+    return username;
   }
 
   public String getAccessToken() {
@@ -32,7 +32,7 @@ public class AccountAuth {
   @Override
   public String toString() {
     return "AccountAuth{" +
-        ", name='" + name + '\'' +
+        ", username='" + username + '\'' +
         ", expireTime=" + expireTime +
         '}';
   }
@@ -54,7 +54,7 @@ public class AccountAuth {
     if (accessToken != null ? !accessToken.equals(that.accessToken) : that.accessToken != null) {
       return false;
     }
-    if (name != null ? !name.equals(that.name) : that.name != null) {
+    if (username != null ? !username.equals(that.username) : that.username != null) {
       return false;
     }
 
@@ -63,7 +63,7 @@ public class AccountAuth {
 
   @Override
   public int hashCode() {
-    int result = name != null ? name.hashCode() : 0;
+    int result = username != null ? username.hashCode() : 0;
     result = 31 * result + (accessToken != null ? accessToken.hashCode() : 0);
     result = 31 * result + (int) (expireTime ^ (expireTime >>> 32));
     return result;

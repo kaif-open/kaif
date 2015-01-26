@@ -24,36 +24,36 @@ class Authority {
 }
 
 class AccountAuth {
-  final String name;
+  final String username;
   final String accessToken;
   final DateTime expireTime;
 
-  AccountAuth(this.name, this.accessToken, this.expireTime);
+  AccountAuth(this.username, this.accessToken, this.expireTime);
 
   AccountAuth.decode(Map raw) : this(
-      raw['name'],
+      raw['username'],
       raw['accessToken'],
       new DateTime.fromMillisecondsSinceEpoch(raw['expireTime']));
 }
 
 class Account {
 
-  final String name;
+  final String username;
   final String accessToken;
   final DateTime expireTime;
   final DateTime lastExtend;
 
-  Account(this.name, this.accessToken, this.expireTime,
+  Account(this.username, this.accessToken, this.expireTime,
           this.lastExtend);
 
   Account.decode(Map raw) : this(
-      raw['name'],
+      raw['username'],
       raw['accessToken'],
       new DateTime.fromMillisecondsSinceEpoch(raw['expireTime']),
       new DateTime.fromMillisecondsSinceEpoch(raw['lastExtend']));
 
   toJson() => {
-      'name':name,
+      'username':username,
       'accessToken':accessToken,
       'expireTime':expireTime.millisecondsSinceEpoch,
       'lastExtend':lastExtend.millisecondsSinceEpoch

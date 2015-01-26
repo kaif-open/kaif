@@ -47,7 +47,7 @@ class AccountSession {
 
     //empty json body may cause problem, so fill some garbage
     var json = {
-        'name': exist.name
+        'username': exist.username
     };
 
     return HttpRequest.request(

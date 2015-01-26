@@ -12,7 +12,7 @@ class AccountMenu {
       elem.nodes.add(trustHtml('<li><a href="${route.signIn}">${i18n('account-menu.sign_in')}</a></li>'));
       elem.nodes.add(trustHtml('<li><a href="${route.signUp}">${i18n('account-menu.sign_up')}</a></li>'));
     } else {
-      elem.nodes.add(trustHtml('<li><a href="${route.settings}">${account.name}</a></li>'));
+      elem.nodes.add(trustHtml('<li><a href="${route.settings}">${account.username}</a></li>'));
       elem.nodes.add(_createSignOut());
     }
   }

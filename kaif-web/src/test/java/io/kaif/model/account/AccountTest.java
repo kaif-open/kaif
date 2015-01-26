@@ -8,11 +8,11 @@ public class AccountTest {
 
   @Test
   public void validName() throws Exception {
-    assertFalse(Account.isValidName("a"));
-    assertFalse(Account.isValidName(null));
-    assertFalse(Account.isValidName("abc de"));
-    assertFalse(Account.isValidName("1234567890123456"));
-    assertTrue(Account.isValidName("abc_de"));
-    assertTrue(Account.isValidName("__AAA"));
+    assertFalse(Account.isValidUsername("a"));
+    assertFalse(Account.isValidUsername(null));
+    assertFalse(Account.isValidUsername("abc de"));
+    assertFalse(Account.isValidUsername("1234567890123456"));
+    assertTrue(Account.isValidUsername("abc_de"));
+    assertTrue(Account.isValidUsername("__AAA"));
   }
 }

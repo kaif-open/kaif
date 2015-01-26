@@ -17,9 +17,12 @@ public class Account {
   //changing pattern should review sign_up_form.dart
   public static final String NAME_PATTERN = "^[a-zA-Z_0-9]{3,15}$";
 
-  public static Account create(String name, String email, String passwordHash, Instant createTime) {
+  public static Account create(String username,
+      String email,
+      String passwordHash,
+      Instant createTime) {
     return new Account(UUID.randomUUID(),
-        name,
+        username,
         email,
         passwordHash,
         createTime,
@@ -32,12 +35,14 @@ public class Account {
         && password.length() <= PASSWORD_MAX;
   }
 
-  public static boolean isValidName(String name) {
-    return name != null && name.length() >= NAME_MIN && name.length() <= NAME_MAX && name.matches(
-        NAME_PATTERN);
+  public static boolean isValidUsername(String username) {
+    return username != null
+        && username.length() >= NAME_MIN
+        && username.length() <= NAME_MAX
+        && username.matches(NAME_PATTERN);
   }
 
-  private final String name;
+  private final String username;
   private final UUID accountId;
   private final String email;
   private final String passwordHash;
@@ -45,12 +50,12 @@ public class Account {
   private final Set<Authority> authorities;
 
   Account(UUID accountId,
-      String name,
+      String username,
       String email,
       String passwordHash,
       Instant createTime,
       Set<Authority> authorities) {
-    this.name = name;
+    this.username = username;
     this.accountId = accountId;
     this.email = email;
     this.passwordHash = passwordHash;
@@ -58,8 +63,8 @@ public class Account {
     this.authorities = authorities;
   }
 
-  public String getName() {
-    return name;
+  public String getUsername() {
+    return username;
   }
 
   public UUID getAccountId() {
@@ -87,8 +92,8 @@ public class Account {
    */
 
   /**
-   * equals and hashCode use `name` instead of accountId for easier testing.
-   * Name is unique so it is safe
+   * equals and hashCode use `username` instead of accountId for easier testing.
+   * username is unique so it is safe
    */
   @Override
   public boolean equals(Object o) {
@@ -101,7 +106,7 @@ public class Account {
 
     Account account = (Account) o;
 
-    if (name != null ? !name.equals(account.name) : account.name != null) {
+    if (username != null ? !username.equals(account.username) : account.username != null) {
       return false;
     }
 
@@ -110,7 +115,7 @@ public class Account {
 
   @Override
   public int hashCode() {
-    return name != null ? name.hashCode() : 0;
+    return username != null ? username.hashCode() : 0;
   }
 
   public boolean isActivated() {
@@ -120,7 +125,7 @@ public class Account {
   @Override
   public String toString() {
     return "Account{" +
-        "name='" + name + '\'' +
+        "username='" + username + '\'' +
         ", accountId=" + accountId +
         ", email='" + email + '\'' +
         ", createTime=" + createTime +

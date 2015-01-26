@@ -139,17 +139,17 @@ class AccountService extends _AbstractService {
   AccountService(ServerType serverType, accessTokenProvider _provider)
   : super(serverType, _provider);
 
-  Future createAccount(String name, String email, String password) {
+  Future createAccount(String username, String email, String password) {
     var json = {
-        'name':name, 'email':email, 'password':password
+        'username':username, 'email':email, 'password':password
     };
     return _putJson(_getAccountUrl('/'), json)
     .then((res) => null);
   }
 
-  Future<bool> isNameAvailable(String name) {
+  Future<bool> isNameAvailable(String username) {
     var params = {
-        'name':name
+        'username':username
     };
     return _get(_getAccountUrl('/name-available'), params:params)
     .then((req) => JSON.decode(req.responseText))
@@ -165,9 +165,9 @@ class AccountService extends _AbstractService {
     .then((raw) => raw['data']);
   }
 
-  Future<AccountAuth> authenticate(String name, String password) {
+  Future<AccountAuth> authenticate(String username, String password) {
     var json = {
-        'name':name, 'password':password
+        'username':username, 'password':password
     };
     return _postJson(_getAccountUrl('/authenticate'), json)
     .then((req) => JSON.decode(req.responseText))
@@ -179,9 +179,9 @@ class AccountService extends _AbstractService {
     }).then((req) => null);
   }
 
-  Future resetPassword(String name, String email) {
+  Future resetPassword(String username, String email) {
     var json = {
-        'name':name, 'email':email
+        'username':username, 'email':email
     };
     return _postJson(_getAccountUrl('/reset-password'), json)
     .then((req) => null);

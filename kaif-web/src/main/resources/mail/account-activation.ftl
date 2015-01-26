@@ -1,4 +1,4 @@
-${message('email.activation.greeting', account.name)}
+${message('email.activation.greeting', account.username)}
 
 ${message('email.activation.text1')}
 

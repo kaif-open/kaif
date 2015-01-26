@@ -47,12 +47,12 @@ public class AccountService {
 
   private Clock clock = Clock.systemDefaultZone();
 
-  public Account createViaEmail(String name, String email, String password, Locale locale) {
+  public Account createViaEmail(String username, String email, String password, Locale locale) {
     Preconditions.checkArgument(Account.isValidPassword(password));
-    Preconditions.checkArgument(Account.isValidName(name));
+    Preconditions.checkArgument(Account.isValidUsername(username));
     Preconditions.checkNotNull(email);
     Instant now = Instant.now(clock);
-    Account account = accountDao.create(name, email, passwordEncoder.encode(password), now);
+    Account account = accountDao.create(username, email, passwordEncoder.encode(password), now);
     sendOnceAccountActivation(account, locale, now);
     return account;
   }
@@ -70,8 +70,8 @@ public class AccountService {
     return accountDao.findById(accountId).orElse(null);
   }
 
-  public Optional<AccountAuth> authenticate(String name, String password) {
-    return accountDao.findByName(name)
+  public Optional<AccountAuth> authenticate(String username, String password) {
+    return accountDao.findByUsername(username)
         .filter(account -> passwordEncoder.matches(password, account.getPasswordHash()))
         .map(this::createAccountAuth);
   }
@@ -81,7 +81,7 @@ public class AccountService {
     String accessToken = new AccountAccessToken(account.getAccountId(),
         account.getPasswordHash(),
         account.getAuthorities()).encode(expireTime, accountSecret);
-    return new AccountAuth(account.getName(), accessToken, expireTime.toEpochMilli());
+    return new AccountAuth(account.getUsername(), accessToken, expireTime.toEpochMilli());
   }
 
   /**
@@ -108,8 +108,8 @@ public class AccountService {
         .get();
   }
 
-  public boolean isNameAvailable(String name) {
-    return !accountDao.findByName(name).isPresent();
+  public boolean isUsernameAvailable(String username) {
+    return !accountDao.findByUsername(username).isPresent();
   }
 
   public boolean isEmailAvailable(String email) {
@@ -151,9 +151,9 @@ public class AccountService {
     });
   }
 
-  public void resetPassword(String name, String email, Locale locale) {
-    logger.info("begin reset password: {}, {}", name, email);
-    accountDao.findByName(name)
+  public void resetPassword(String username, String email, Locale locale) {
+    logger.info("begin reset password: {}, {}", username, email);
+    accountDao.findByUsername(username)
         .filter(account -> account.getEmail().equals(email))
         .ifPresent(account -> {
           AccountOnceToken token = accountDao.createOnceToken(account,

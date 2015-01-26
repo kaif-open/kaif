@@ -7,7 +7,7 @@
 
         <div class="pure-control-group">
             <label for="accountName">帳號名</label>
-            <input id="accountName" type="text" value="${account.name}" readonly
+            <input id="accountName" type="text" value="${account.username}" readonly
                    class="pure-input-1-2">
         </div>
 

@@ -23,17 +23,22 @@ public class AccountOnceToken {
   public static AccountOnceToken create(UUID accountId, Type tokenType, Instant now) {
     return new AccountOnceToken(UUID.randomUUID().toString(), accountId, tokenType, false, now);
   }
+
   private final String token;
   private final UUID accountId;
   private final Instant createTime;
-  private final Type type;
+  private final Type tokenType;
   private final boolean complete;
 
-  AccountOnceToken(String token, UUID accountId, Type type, boolean complete, Instant createTime) {
+  AccountOnceToken(String token,
+      UUID accountId,
+      Type tokenType,
+      boolean complete,
+      Instant createTime) {
     this.token = token;
     this.accountId = accountId;
     this.createTime = createTime;
-    this.type = type;
+    this.tokenType = tokenType;
     this.complete = complete;
   }
 
@@ -61,7 +66,7 @@ public class AccountOnceToken {
         "token='" + token + '\'' +
         ", accountId=" + accountId +
         ", createTime=" + createTime +
-        ", type=" + type +
+        ", type=" + tokenType +
         ", complete=" + complete +
         '}';
   }
@@ -75,12 +80,12 @@ public class AccountOnceToken {
     return accountId;
   }
 
-  public Type getType() {
-    return type;
+  public Type getTokenType() {
+    return tokenType;
   }
 
   public boolean isExpired(Instant now) {
-    return now.isAfter(createTime.plus(type.getDuration()));
+    return now.isAfter(createTime.plus(tokenType.getDuration()));
   }
 
   public boolean isComplete() {

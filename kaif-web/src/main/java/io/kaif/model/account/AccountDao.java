@@ -24,7 +24,7 @@ public class AccountDao implements DaoOperations {
 
   private final RowMapper<Account> accountMapper = (rs,
       rowNum) -> new Account(UUID.fromString(rs.getString("accountId")),
-      rs.getString("name"),
+      rs.getString("username"),
       rs.getString("email"),
       rs.getString("passwordHash"),
       rs.getTimestamp("createTime").toInstant(),
@@ -34,7 +34,7 @@ public class AccountDao implements DaoOperations {
   private final RowMapper<AccountOnceToken> tokenMapper = (rs,
       rowNum) -> new AccountOnceToken(rs.getString("token"),
       UUID.fromString(rs.getString("accountId")),
-      AccountOnceToken.Type.valueOf(rs.getString("type")),
+      AccountOnceToken.Type.valueOf(rs.getString("tokenType")),
       rs.getBoolean("complete"),
       rs.getTimestamp("createTime").toInstant());
 
@@ -46,21 +46,21 @@ public class AccountDao implements DaoOperations {
     return namedParameterJdbcTemplate;
   }
 
-  public Account create(String name, String email, String passwordHash, Instant now) {
+  public Account create(String username, String email, String passwordHash, Instant now) {
 
-    final Account account = Account.create(name, email, passwordHash, now);
+    final Account account = Account.create(username, email, passwordHash, now);
 
     jdbc().update(""
             + " INSERT "
             + "   INTO Account "
-            + "        (accountId, email, passwordHash, name, "
+            + "        (accountId, email, passwordHash, username, "
             + "         createTime, authorities) "
             + " VALUES "
             + questions(6),
         account.getAccountId(),
         account.getEmail().toLowerCase(),
         account.getPasswordHash(),
-        account.getName(),
+        account.getUsername(),
         Timestamp.from(account.getCreateTime()),
         authoritiesToVarcharArray(account.getAuthorities()));
 
@@ -76,10 +76,10 @@ public class AccountDao implements DaoOperations {
     return jdbc().query(sql, accountMapper, accountId).stream().findAny();
   }
 
-  public Optional<Account> findByName(String name) {
-    return jdbc().query(" SELECT * FROM Account WHERE name = lower(?) ", accountMapper, name)
-        .stream()
-        .findAny();
+  public Optional<Account> findByUsername(String username) {
+    return jdbc().query(" SELECT * FROM Account WHERE username = lower(?) ",
+        accountMapper,
+        username).stream().findAny();
   }
 
   public void updateAuthorities(UUID accountId, EnumSet<Authority> authorities) {
@@ -112,20 +112,20 @@ public class AccountDao implements DaoOperations {
     jdbc().update(""
             + " INSERT "
             + "   INTO AccountOnceToken "
-            + "        (token, accountId, type, "
+            + "        (token, accountId, tokenType, "
             + "         complete, createTime ) "
             + " VALUES "
             + questions(5),
         onceToken.getToken(),
         onceToken.getAccountId(),
-        onceToken.getType().name(),
+        onceToken.getTokenType().name(),
         onceToken.isComplete(),
         Timestamp.from(onceToken.getCreateTime()));
     return onceToken;
   }
 
   public Optional<AccountOnceToken> findOnceToken(String token, AccountOnceToken.Type tokenType) {
-    final String sql = " SELECT * FROM AccountOnceToken WHERE token = ? AND type = ? ";
+    final String sql = " SELECT * FROM AccountOnceToken WHERE token = ? AND tokenType = ? ";
     return jdbc().query(sql, tokenMapper, token, tokenType.name()).stream().findFirst();
   }
 
