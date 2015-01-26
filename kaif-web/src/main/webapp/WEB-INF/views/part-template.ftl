@@ -2,7 +2,7 @@
 <#import "macros/template.ftl" as template>
 
 <@template.page {
-  'layout': part.layout
+'layout': part.layout
 }>
 
 <#-- dart will search #__part_template and set innerHtml with part

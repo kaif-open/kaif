@@ -1,22 +1,56 @@
 part of view;
 
-class LargeCenterLoading {
-  void renderInto(Element el) {
-    trustInnerHtml(el,
-    """
+class Loading {
+
+  Element _el;
+
+  factory Loading.none() {
+    return const _NoneLoading();
+  }
+
+  Loading.small() {
+    _el = trustHtml("""
+      <i class="fa fa-cog fa-spin"></i>
+    """);
+  }
+
+  Loading.largeCenter() {
+    _el = trustHtml("""
       <div class="large-center-loading">
         <i class="fa fa-cog fa-spin"></i>
       </div>
     """);
   }
+
+  void renderAfter(Element sibling) {
+    sibling.parent.append(_el);
+  }
+
+  void renderAppend(Element parent) {
+    parent.append(_el);
+  }
+
+  void remove() {
+    _el.remove();
+  }
 }
 
-class SmallLoading {
-  void renderInto(Element el) {
-    trustInnerHtml(el,
-    """
-      <i class="fa fa-cog fa-spin"></i>
-    """);
+class _NoneLoading implements Loading {
+
+  void set _el(_) {
+  }
+
+  Element get _el => null;
+
+  const _NoneLoading();
+
+  void renderAfter(Element parent) {
+  }
+
+  void renderAppend(Element sibling) {
+  }
+
+  void remove() {
   }
 }
 
@@ -36,7 +70,7 @@ class LargeErrorModal {
       </div>
     """);
 
-    (window.document as HtmlDocument).body.nodes.add(el);
+    (window.document as HtmlDocument).body.append(el);
   }
 }
 
@@ -61,7 +95,7 @@ class Toast {
      </div>
     """);
 
-    (window.document as HtmlDocument).body.nodes.add(el);
+    (window.document as HtmlDocument).body.append(el);
 
     new Timer(duration, () {
       //TODO fade out
@@ -74,15 +108,15 @@ class Alert {
 
   Element _elem;
 
-  factory Alert.append(Element parent) {
+  factory Alert.append(Element sibling) {
     var alert = new Alert._();
-    parent.append(alert._elem);
+    sibling.append(alert._elem);
     return alert;
   }
 
-  factory Alert.addInto(Element parent) {
+  factory Alert.after(Element sibling) {
     var alert = new Alert._();
-    parent.nodes.add(alert._elem);
+    sibling.parent.append(alert._elem);
     return alert;
   }
 

@@ -67,7 +67,7 @@ class AppModule {
     serverPartLoader.tryLoadInto(
         '#__part_template',
         route.currentPartTemplatePath(),
-        loadingType:ServerPartLoader.LOADING_LARGE);
+        loading:new Loading.largeCenter());
   }
 }
 

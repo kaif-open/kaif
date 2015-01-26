@@ -27,18 +27,19 @@ sample configs:
 
     <title>kaif.io</title>
 
-    <#-- meta data for dart, see ServerType for detail -->
+<#-- meta data for dart, see ServerType for detail -->
     <#if kaif.profilesActive?contains('dev')>
 
-        <#-- for detect dev mode only, should not leak information to produciton -->
+    <#-- for detect dev mode only, should not leak information to produciton -->
         <meta name="kaifProfilesActive" content="${kaif.profilesActive}">
 
-        <#-- server locale is only used in dev mode, because the page will be cached for everyone
-        -->
+    <#-- server locale is only used in dev mode, because the page will be cached for everyone
+    -->
         <meta name="kaifLocale" content="${(request.getLocale().toString())!"en_US"}">
     </#if>
 
     <link rel='stylesheet' href='/webjars/yui-pure/0.5.0/pure-min.css'>
+    <link rel='stylesheet' href='/webjars/yui-pure/0.5.0/grids-responsive-min.css'>
     <link rel="stylesheet" href="/webjars/font-awesome/4.2.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/css/kaif.css?${kaif.deployServerTime}">
 </head>
@@ -47,7 +48,7 @@ sample configs:
     <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal">
         <a class="pure-menu-heading" href="/">Kaif.io</a>
         <ul account-menu>
-            <#-- mock
+        <#-- mock
             <li><a href="/account/sign-up">Sign Up</a></li>
             <li><a href="/account/sign-in">Sign In</a></li>
             <li><a href="/account/settings">myname</a></li>
@@ -58,37 +59,37 @@ sample configs:
 </header>
 
 <main class="content">
-  <#if (config.layout)! == 'small'>
-     <div class="pure-g">
-       <div class="pure-u-1-5"></div>
-       <div class="pure-u-3-5">
-         <#nested>
-       </div>
-       <div class="pure-u-3-5"></div>
-     </div>
-  <#elseif (config.layout)! == 'full'>
-     <#-- full layout let nested take full control -->
-     <#nested>
-  <#else>
-     <#-- TODO other grid 24 layout-->
-     <#nested>
-  </#if>
+    <#if (config.layout)! == 'small'>
+        <div class="pure-g">
+            <div class="pure-u pure-u-md-1-5"></div>
+            <div class="pure-u-1 pure-u-md-3-5 l-box">
+                <#nested>
+            </div>
+            <div class="pure-u pure-u-md-1-5"></div>
+        </div>
+    <#elseif (config.layout)! == 'full'>
+    <#-- full layout let nested take full control -->
+        <#nested>
+    <#else>
+    <#-- TODO other grid 24 layout-->
+        <#nested>
+    </#if>
 </main>
 
-<footer class="footer l-box is-center">
+<footer class="footer l-box">
     Sample footer
 </footer>
 
-<#if kaif.profilesActive?contains('dev')>
+    <#if kaif.profilesActive?contains('dev')>
     <#-- require dart pub serve, please run `./gradlew pubServe` -->
     <div id="waitingPubServe"
          style="position: fixed; bottom:0; right:0px; padding: 3px 10px; background-color: rgba(92, 0, 0, 0.67); color:white">
         Waiting Pub Serve...
     </div>
     <script src="//localhost:15980/main.dart.js"></script>
-<#else>
+    <#else>
     <script src="/dart_dist/web/main.dart.js?${kaif.deployServerTime}"></script>
-</#if>
+    </#if>
 </body>
 </html>
 

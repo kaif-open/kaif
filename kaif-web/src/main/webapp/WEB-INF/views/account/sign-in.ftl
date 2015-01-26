@@ -5,7 +5,7 @@
 'layout':'small'
 }>
 
-    <#-- check sign_up_form.dart for string `sign-up-success` -->
+<#-- check sign_up_form.dart for string `sign-up-success` -->
     <#if springMacroRequestContext.getQueryString()!?contains('sign-up-success') >
     <p class="alert alert-info">
         認證信已經寄出，請檢查你的信箱並啟用你的帳號
@@ -18,16 +18,19 @@
         重置信件已經寄出，請檢查你的信箱並修改你的密碼
     </p>
     </#if>
+
 <form class="pure-form pure-form-aligned" sign-in-form>
     <fieldset>
+
         <legend><@spring.messageText "account-menu.sign_in" "Sign In" /></legend>
         <div class="pure-control-group">
             <label for="nameInput">帳號</label>
-            <input id="nameInput" type="text" placeholder="coder" required>
+            <input id="nameInput" type="text" placeholder="coder" required class="pure-input-1-2">
         </div>
         <div class="pure-control-group">
             <label for="passwordInput">密碼</label>
-            <input id="passwordInput" type="password" placeholder="你的密碼" required>
+            <input id="passwordInput" type="password" placeholder="你的密碼" required
+                   class="pure-input-1-2">
         </div>
         <div class="pure-controls">
             <label for="rememberMeInput" class="pure-checkbox">
@@ -37,13 +40,13 @@
             <button type="submit" class="pure-button pure-button-primary">
                 <@spring.messageText "account-menu.sign_in" "Sign In" />
             </button>
-
-            <p>
-                <a href="/account/forget-password" >忘記密碼 ?</a>
+            <p class="pure-form-message">
+                <a class="" href="/account/forget-password">忘記密碼 ?</a>
             </p>
         </div>
+
     </fieldset>
-    <p class="alert alert-danger hidden"></p>
+
 </form>
 
 </@template.page>

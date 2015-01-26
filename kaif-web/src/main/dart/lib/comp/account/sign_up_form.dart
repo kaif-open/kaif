@@ -5,12 +5,15 @@ import 'package:kaif_web/util.dart';
 import 'package:kaif_web/model.dart';
 
 class SignUpForm {
+
   final Element elem;
   final AccountService accountService;
   TextInputElement nameInput;
   TextInputElement emailInput;
+  Alert alert;
 
   SignUpForm(this.elem, this.accountService) {
+    alert = new Alert.append(elem);
     nameInput = elem.querySelector('#nameInput');
     emailInput = elem.querySelector('#emailInput');
     elem.onSubmit.listen(_signUp);
@@ -42,21 +45,20 @@ class SignUpForm {
       ..innerHtml = hintText;
   }
 
-  void _createAccount(Element loading, TextInputElement passwordInput, Element alert) {
-    loading.classes.remove('hidden');
+  void _createAccount(TextInputElement passwordInput) {
+
     SubmitButtonInputElement submit = elem.querySelector('[type=submit]');
     submit.disabled = true;
 
+    var loading = new Loading.small()..renderAfter(submit);
     accountService.createAccount(nameInput.value, emailInput.value, passwordInput.value)
     .then((_) {
       route.gotoSignInWithSignUpSuccess();
     }).catchError((e) {
-      alert
-        ..classes.remove('hidden')
-        ..text = '${e}';
+      alert.renderError('${e}');
     }).whenComplete(() {
       submit.disabled = false;
-      loading.classes.add('hidden');
+      loading.remove();
     });
   }
 
@@ -67,26 +69,18 @@ class SignUpForm {
 
     TextInputElement passwordInput = elem.querySelector('#passwordInput');
     TextInputElement confirmPasswordInput = elem.querySelector('#confirmPasswordInput');
-    Element alert = elem.querySelector('.alert');
-    Element loading = elem.querySelector('.loading');
-
-    alert.classes.add('hidden');
-    alert.text = '';
+    alert.hide();
 
     if (passwordInput.value != confirmPasswordInput.value) {
-      alert
-        ..classes.remove('hidden')
-        ..text = i18n('sign-up.password_not_same');
+      alert.renderError(i18n('sign-up.password_not_same'));
       return;
     }
 
     accountService.isEmailAvailable(emailInput.value.trim()).then((available) {
       if (available) {
-        _createAccount(loading, passwordInput, alert);
+        _createAccount(passwordInput);
       } else {
-        alert
-          ..classes.remove('hidden')
-          ..text = i18n('sign-up.email_already_taken');
+        alert.renderError(i18n('sign-up.email_already_taken'));
       }
     });
 

@@ -24,54 +24,6 @@ label {
     color: #34495e;
 }
 
-.pure-img-responsive {
-    max-width: 100%;
-    height: auto;
-}
-
-/*
- * -- LAYOUT STYLES --
- * These are some useful classes which I will need
- */
-.l-box {
-    padding: 1em;
-}
-
-.l-box-lrg {
-    padding: 2em;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
-}
-
-.is-center {
-    text-align: center;
-}
-
-
-
-/*
- * -- PURE FORM STYLES --
- * Style the form inputs and labels
-
-.pure-form label {
-    margin: 1em 0 0;
-    font-weight: bold;
-    font-size: 100%;
-}
-
-.pure-form label .hint {
-    font-weight: normal;
-    margin: 0 0 0 1em;
-}
-
-.pure-form input[type=text],
-.pure-form input[type=email],
-.pure-form input[type=password] {
-    border: 2px solid #ddd;
-    font-size: 100%;
-    width: 100%;
-    margin-bottom: 1em;
-}
- */
 /*
  * -- MENU STYLES --
  * I want to customize how my .pure-menu looks at the top of the page
@@ -80,11 +32,13 @@ label {
 .home-menu {
     padding: 0.5em;
     text-align: center;
-    box-shadow: 0 1px 1px rgba(0,0,0, 0.10);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.10);
 }
+
 .home-menu.pure-menu-open {
     background: #2d3e50;
 }
+
 .pure-menu.pure-menu-open.pure-menu-fixed {
     /* Fixed menus normally have a border at the bottom. */
     border-bottom: none;
@@ -105,6 +59,7 @@ label {
 .home-menu a {
     color: #6FBEF3;
 }
+
 .home-menu li a:hover,
 .home-menu li a:focus {
     background: none;
@@ -112,51 +67,10 @@ label {
     color: #AECFE5;
 }
 
-/*
- * -- CONTENT STYLES --
- * This represents the content area (everything below the blue section)
- */
-.content-wrapper {
-    /* These styles are required for the "scroll-over" effect */
-    position: absolute;
-    top: 87%;
-    width: 100%;
-    min-height: 12%;
-    z-index: 2;
-    background: white;
-
-}
-
-/* This is the class used for the main content headers (<h2>) */
-.content-head {
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin: 2em 0 1em;
-}
-
-/* This is a modifier class used when the content-head is inside a ribbon */
-.content-head-ribbon {
-    color: white;
-}
-
-/* This is the class used for the content sub-headers (<h3>) */
-.content-subhead {
-    color: #1f8dd6;
-}
-    .content-subhead i {
-        margin-right: 7px;
-    }
-
-/* This is the class used for the dark-background areas. */
-.ribbon {
-    background: #2d3e50;
-    color: #aaa;
-}
-
 /* This is the class used for the footer */
 .footer {
     background: #111;
+    text-align: center;
 }
 
 /*
@@ -170,6 +84,7 @@ label {
     body {
         font-size: 16px;
     }
+
     /* We want to give the content area some more padding */
     .content {
         padding: 1em;
@@ -183,11 +98,6 @@ label {
 
     .home-menu ul {
         float: right;
-    }
-
-    /* We remove the border-separator assigned to .l-box-lrg */
-    .l-box-lrg {
-        border: none;
     }
 
 }
@@ -205,200 +115,238 @@ label {
 
 /* alert */
 .alert {
-  padding: 15px;
-  margin-bottom: 20px;
-  border: 1px solid transparent;
-  border-radius: 2px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 2px;
 }
+
 .alert h4 {
-  margin-top: 0;
-  color: inherit;
+    margin-top: 0;
+    color: inherit;
 }
+
 .alert .alert-link {
-  font-weight: bold;
+    font-weight: bold;
 }
+
 .alert > p,
 .alert > ul {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
+
 .alert > p + p {
-  margin-top: 5px;
+    margin-top: 5px;
 }
+
 .alert-dismissable,
 .alert-dismissible {
-  padding-right: 35px;
+    padding-right: 35px;
 }
+
 .alert-dismissable .close,
 .alert-dismissible .close {
-  position: relative;
-  top: -2px;
-  right: -21px;
-  color: inherit;
+    position: relative;
+    top: -2px;
+    right: -21px;
+    color: inherit;
 }
+
 .alert-success {
-  color: #3c763d;
-  background-color: #dff0d8;
-  border-color: #d6e9c6;
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
 }
+
 .alert-success hr {
-  border-top-color: #c9e2b3;
+    border-top-color: #c9e2b3;
 }
+
 .alert-success .alert-link {
-  color: #2b542c;
+    color: #2b542c;
 }
+
 .alert-info {
-  color: #31708f;
-  background-color: #d9edf7;
-  border-color: #bce8f1;
+    color: #31708f;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
 }
+
 .alert-info hr {
-  border-top-color: #a6e1ec;
+    border-top-color: #a6e1ec;
 }
+
 .alert-info .alert-link {
-  color: #245269;
+    color: #245269;
 }
+
 .alert-warning {
-  color: #8a6d3b;
-  background-color: #fcf8e3;
-  border-color: #faebcc;
+    color: #8a6d3b;
+    background-color: #fcf8e3;
+    border-color: #faebcc;
 }
+
 .alert-warning hr {
-  border-top-color: #f7e1b5;
+    border-top-color: #f7e1b5;
 }
+
 .alert-warning .alert-link {
-  color: #66512c;
+    color: #66512c;
 }
+
 .alert-danger {
-  color: #a94442;
-  background-color: #f2dede;
-  border-color: #ebccd1;
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
 }
+
 .alert-danger hr {
-  border-top-color: #e4b9c0;
+    border-top-color: #e4b9c0;
 }
+
 .alert-danger .alert-link {
-  color: #843534;
+    color: #843534;
 }
 
 .text-primary {
-  color: #337ab7;
+    color: #337ab7;
 }
+
 a.text-primary:hover {
-  color: #286090;
+    color: #286090;
 }
+
 .text-success {
-  color: #3c763d;
+    color: #3c763d;
 }
+
 a.text-success:hover {
-  color: #2b542c;
+    color: #2b542c;
 }
+
 .text-info {
-  color: #31708f;
+    color: #31708f;
 }
+
 a.text-info:hover {
-  color: #245269;
+    color: #245269;
 }
+
 .text-warning {
-  color: #8a6d3b;
+    color: #8a6d3b;
 }
+
 a.text-warning:hover {
-  color: #66512c;
+    color: #66512c;
 }
+
 .text-danger {
-  color: #a94442;
+    color: #a94442;
 }
+
 a.text-danger:hover {
-  color: #843534;
+    color: #843534;
 }
+
 .bg-primary {
-  color: #fff;
-  background-color: #337ab7;
+    color: #fff;
+    background-color: #337ab7;
 }
+
 a.bg-primary:hover {
-  background-color: #286090;
+    background-color: #286090;
 }
+
 .bg-success {
-  background-color: #dff0d8;
+    background-color: #dff0d8;
 }
+
 a.bg-success:hover {
-  background-color: #c1e2b3;
+    background-color: #c1e2b3;
 }
+
 .bg-info {
-  background-color: #d9edf7;
+    background-color: #d9edf7;
 }
+
 a.bg-info:hover {
-  background-color: #afd9ee;
+    background-color: #afd9ee;
 }
+
 .bg-warning {
-  background-color: #fcf8e3;
+    background-color: #fcf8e3;
 }
+
 a.bg-warning:hover {
-  background-color: #f7ecb5;
+    background-color: #f7ecb5;
 }
+
 .bg-danger {
-  background-color: #f2dede;
+    background-color: #f2dede;
 }
+
 a.bg-danger:hover {
-  background-color: #e4b9b9;
+    background-color: #e4b9b9;
 }
 
 /** bootstrap end **/
 
 /** custom **/
+
 /* make footer stay bottom */
 body {
-  display: flex;
-  min-height: 100vh;
-  flex-direction: column;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
 }
 
 main {
-  flex: 1;
+    flex: 1;
 }
+
+/** utility **/
 
 .hidden {
-  display: none;
+    display: none;
 }
 
-.pure-form input[type=text],
-.pure-form input[type=email],
-.pure-form input[type=password] {
-  min-width: 50%;
+.l-box {
+    padding: 1em;
 }
 
 /** dart lib/view **/
 
 .large-center-loading {
-  font-size: 400%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* this is not truely center, it just work in our template */
-  min-height: 70vh;
+    font-size: 400%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* this is not truely center, it just work in our template */
+    min-height: 70vh;
 }
 
 .large-error-modal {
-  position: fixed;
-  z-index: 10000;
-  background-color: rgba(0, 0, 0, 0.4);
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+    position: fixed;
+    z-index: 10000;
+    background-color: rgba(0, 0, 0, 0.4);
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 .large-error-modal > .alert {
-  position: relative;
-  top: 2em;
-  width: 50%;
-  left: 25%;
+    position: relative;
+    top: 2em;
+    width: 50%;
+    left: 25%;
 }
 
 .toast {
-  position: fixed;
-  z-index: 10000;
-  top: 1em;
-  width: 50%;
-  left: 25%;
-  right: 0;
+    position: fixed;
+    z-index: 10000;
+    top: 1em;
+    width: 50%;
+    left: 25%;
+    right: 0;
 }

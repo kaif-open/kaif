@@ -7,30 +7,23 @@ import 'package:kaif_web/model.dart';
 typedef componentsInitializer(dynamic parentElement);
 
 class ServerPartLoader {
-  static const String LOADING_LARGE = 'LOADING_LARGE';
-  static const String LOADING_SMALL = 'LOADING_SMALL';
-  static const String LOADING_NONE = 'LOADING_NONE';
+
   PartService _partService;
   var _componentsInitializer;
 
   ServerPartLoader(this._partService, this._componentsInitializer);
 
-  Future tryLoadInto(String selector, String partPath, {String loadingType:LOADING_NONE}) {
+  Future tryLoadInto(String selector, String partPath, {Loading loading}) {
     Element found = querySelector(selector);
     if (found == null) {
       return new Future.value(null);
     }
-    switch (loadingType) {
-      case LOADING_LARGE:
-        new LargeCenterLoading().renderInto(found);
-        break;
-      case LOADING_SMALL:
-        new SmallLoading().renderInto(found);
-        break;
-      default:
-        break;
-    }
+
+    Loading progress = loading == null ? new Loading.none() : loading;
+    progress.renderAppend(found);
+
     return _partService.loadPart(partPath).then((htmlText) {
+      progress.remove();
       trustInnerHtml(found, htmlText);
       return found;
     }).then(_componentsInitializer)
