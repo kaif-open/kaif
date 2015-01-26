@@ -7,9 +7,10 @@ import 'package:kaif_web/util.dart';
 class ForgetPasswordForm {
   final Element elem;
   final AccountService accountService;
-
+  Alert alert;
   ForgetPasswordForm(this.elem, this.accountService) {
     elem.onSubmit.listen(_submit);
+    alert = new Alert.append(elem);
   }
 
   void _submit(Event e) {
@@ -19,19 +20,15 @@ class ForgetPasswordForm {
 
     TextInputElement nameInput = elem.querySelector('#nameInput');
     TextInputElement emailInput = elem.querySelector('#emailInput');
-    Element alert = elem.querySelector('.alert');
-    alert.classes.add('hidden');
     SubmitButtonInputElement submit = elem.querySelector('[type=submit]');
     submit.disabled = true;
 
+    alert.hide();
     accountService.resetPassword(nameInput.value, emailInput.value)
     .then((_) {
       route.gotoSignInWithSendResetPasswordSuccess();
     }).catchError((e) {
-      alert
-        ..text = '${e}'
-        ..classes.remove('hidden');
-
+      alert.renderError('${e}');
     }).whenComplete(() {
       submit.disabled = false;
     });

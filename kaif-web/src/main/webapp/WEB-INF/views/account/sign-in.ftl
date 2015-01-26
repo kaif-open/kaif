@@ -1,5 +1,5 @@
 <#import "/spring.ftl" as spring />
-<#import "/macros/template.ftl" as template>
+<#import "../macros/template.ftl" as template>
 
 <@template.page {
 'layout':'small'

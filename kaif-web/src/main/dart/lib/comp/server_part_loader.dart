@@ -22,10 +22,10 @@ class ServerPartLoader {
     }
     switch (loadingType) {
       case LOADING_LARGE:
-        new LargeCenterLoading().renderInTo(found);
+        new LargeCenterLoading().renderInto(found);
         break;
       case LOADING_SMALL:
-        new SmallLoading().renderInTo(found);
+        new SmallLoading().renderInto(found);
         break;
       default:
         break;
