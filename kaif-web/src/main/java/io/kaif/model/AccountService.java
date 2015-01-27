@@ -80,11 +80,15 @@ public class AccountService {
   }
 
   private AccountAuth createAccountAuth(Account account) {
-    Instant expireTime = Instant.now(clock).plus(ACCOUNT_TOKEN_EXPIRE);
+    Instant now = Instant.now(clock);
+    Instant expireTime = now.plus(ACCOUNT_TOKEN_EXPIRE);
     String accessToken = new AccountAccessToken(account.getAccountId(),
         account.getPasswordHash(),
         account.getAuthorities()).encode(expireTime, accountSecret);
-    return new AccountAuth(account.getUsername(), accessToken, expireTime.toEpochMilli());
+    return new AccountAuth(account.getUsername(),
+        accessToken,
+        expireTime.toEpochMilli(),
+        now.toEpochMilli());
   }
 
   /**

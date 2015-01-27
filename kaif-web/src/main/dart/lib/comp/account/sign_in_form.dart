@@ -29,7 +29,7 @@ class SignInForm {
     alert.hide();
     accountService.authenticate(nameInput.value, passwordInput.value)//
     .then((AccountAuth accountAuth) {
-      accountSession.saveAccount(accountAuth, rememberMe:rememberMeInput.checked);
+      accountSession.save(accountAuth, rememberMe:rememberMeInput.checked);
       //TODO handle ?from=
       route.gotoHome();
     }).catchError((e) {

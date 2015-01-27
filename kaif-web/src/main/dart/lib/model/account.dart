@@ -27,41 +27,30 @@ class AccountAuth {
   final String username;
   final String accessToken;
   final DateTime expireTime;
-
-  AccountAuth(this.username, this.accessToken, this.expireTime);
+  final DateTime generateTime;
+  AccountAuth(this.username, this.accessToken, this.expireTime, this.generateTime) {
+    if (username == null || accessToken == null || expireTime == null || generateTime == null) {
+      //someone corrupt data, force abort
+      throw new PermissionError();
+    }
+  }
 
   AccountAuth.decode(Map raw) : this(
       raw['username'],
       raw['accessToken'],
-      new DateTime.fromMillisecondsSinceEpoch(raw['expireTime']));
-}
-
-class Account {
-
-  final String username;
-  final String accessToken;
-  final DateTime expireTime;
-  final DateTime lastExtend;
-
-  Account(this.username, this.accessToken, this.expireTime,
-          this.lastExtend);
-
-  Account.decode(Map raw) : this(
-      raw['username'],
-      raw['accessToken'],
       new DateTime.fromMillisecondsSinceEpoch(raw['expireTime']),
-      new DateTime.fromMillisecondsSinceEpoch(raw['lastExtend']));
+      new DateTime.fromMillisecondsSinceEpoch(raw['generateTime']));
 
   toJson() => {
       'username':username,
       'accessToken':accessToken,
       'expireTime':expireTime.millisecondsSinceEpoch,
-      'lastExtend':lastExtend.millisecondsSinceEpoch
+      'generateTime':generateTime.millisecondsSinceEpoch
   };
 
   bool isRequireExtends() {
     var now = new DateTime.now();
-    return now.isAfter(lastExtend.add(const Duration(days:1)));
+    return now.isAfter(generateTime.add(const Duration(days:1)));
   }
 
   bool isExpired() {
@@ -69,3 +58,4 @@ class Account {
     return now.isAfter(expireTime);
   }
 }
+

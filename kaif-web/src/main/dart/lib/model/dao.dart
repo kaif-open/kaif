@@ -5,50 +5,57 @@ import 'dart:html';
 import 'dart:convert';
 
 class AccountDao {
-  static const String KEY = 'ACCOUNT';
+  static const String KEY = 'ACCOUNT_AUTH';
   bool _useLocalStorage = false;
 
-  void saveAccount(AccountAuth auth, {bool permanent}) {
+  void save(AccountAuth auth, {bool permanent}) {
 
     if (permanent != null) {
       _useLocalStorage = permanent ;
     }
 
-    var account = new Account(auth.username, auth.accessToken, auth.expireTime, new DateTime.now());
-
     var storage = _useLocalStorage ? window.localStorage : window.sessionStorage;
-    storage[KEY] = JSON.encode(account);
+    storage[KEY] = JSON.encode(auth);
   }
 
-  void removeAccount() {
+  void remove() {
     window.localStorage.remove(KEY);
     window.sessionStorage.remove(KEY);
   }
 
   //nullable
-  Account loadAccount() {
-    Account load(Storage storage) {
+  AccountAuth load() {
+    AccountAuth loadFromStorage(Storage storage) {
       if (!storage.containsKey(KEY)) {
         return null;
       }
-      return new Account.decode(JSON.decode(storage[KEY]));
+      try {
+        return new AccountAuth.decode(JSON.decode(storage[KEY]));
+      } catch (error) {
+        // possible cause of decode error:
+        //
+        // case 1: user manually update localStorage, and it cause data corrupted
+        // case 2: we update protocol (different serialization format or different json fields...etc)
+        remove();
+        return null;
+      }
     }
-    var account = load(window.localStorage);
-    if (account == null) {
+    var auth = loadFromStorage(window.localStorage);
+    if (auth == null) {
       _useLocalStorage = false;
-      account = load(window.sessionStorage);
-      if (account == null) {
+      auth = loadFromStorage(window.sessionStorage);
+      if (auth == null) {
         return null;
       }
     } else {
       _useLocalStorage = true;
     }
 
-    if (account.isExpired()) {
-      removeAccount();
+    if (auth.isExpired()) {
+      remove();
       return null;
     }
 
-    return account;
+    return auth;
   }
 }

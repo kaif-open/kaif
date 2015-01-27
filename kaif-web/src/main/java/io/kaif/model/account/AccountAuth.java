@@ -10,11 +10,13 @@ public class AccountAuth {
   private final String username;
   private final String accessToken;
   private final long expireTime;
+  private final long generateTime;
 
-  public AccountAuth(String username, String accessToken, long expireTime) {
+  public AccountAuth(String username, String accessToken, long expireTime, long generateTime) {
     this.username = username;
     this.accessToken = accessToken;
     this.expireTime = expireTime;
+    this.generateTime = generateTime;
   }
 
   public long getExpireTime() {
@@ -29,11 +31,16 @@ public class AccountAuth {
     return accessToken;
   }
 
+  public long getGenerateTime() {
+    return generateTime;
+  }
+
   @Override
   public String toString() {
     return "AccountAuth{" +
-        ", username='" + username + '\'' +
+        "username='" + username + '\'' +
         ", expireTime=" + expireTime +
+        ", generateTime=" + generateTime +
         '}';
   }
 
@@ -51,6 +58,9 @@ public class AccountAuth {
     if (expireTime != that.expireTime) {
       return false;
     }
+    if (generateTime != that.generateTime) {
+      return false;
+    }
     if (accessToken != null ? !accessToken.equals(that.accessToken) : that.accessToken != null) {
       return false;
     }
@@ -66,6 +76,7 @@ public class AccountAuth {
     int result = username != null ? username.hashCode() : 0;
     result = 31 * result + (accessToken != null ? accessToken.hashCode() : 0);
     result = 31 * result + (int) (expireTime ^ (expireTime >>> 32));
+    result = 31 * result + (int) (generateTime ^ (generateTime >>> 32));
     return result;
   }
 }

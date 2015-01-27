@@ -6,13 +6,13 @@ import 'package:kaif_web/util.dart';
 
 class AccountMenu {
 
-  void _render(Account account) {
+  void _render(AccountAuth auth) {
     elem.nodes.clear();
-    if (account == null) {
+    if (auth == null) {
       elem.nodes.add(trustHtml('<li><a href="${route.signIn}">${i18n('account-menu.sign-in')}</a></li>'));
       elem.nodes.add(trustHtml('<li><a href="${route.signUp}">${i18n('account-menu.sign-up')}</a></li>'));
     } else {
-      elem.nodes.add(trustHtml('<li><a href="${route.settings}">${account.username}</a></li>'));
+      elem.nodes.add(trustHtml('<li><a href="${route.settings}">${auth.username}</a></li>'));
       elem.nodes.add(_createSignOut());
     }
   }

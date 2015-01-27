@@ -73,7 +73,7 @@ class _UpdateNewPasswordForm {
       ..renderAfter(submit);
     accountService.updateNewPassword(oldPasswordInput.value, passwordInput.value)
     .then((AccountAuth auth) {
-      accountSession.saveAccount(auth);
+      accountSession.save(auth);
       elem.remove();
       alert.hide();
       new Toast.success(i18n('account-settings.update-new-password-success'), seconds:3)

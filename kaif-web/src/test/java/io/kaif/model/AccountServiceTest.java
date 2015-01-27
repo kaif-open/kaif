@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.EnumSet;
 import java.util.Locale;
 import java.util.UUID;
@@ -182,13 +183,16 @@ public class AccountServiceTest extends DbIntegrationTests {
 
   @Test
   public void authenticate() {
+    Instant now = Instant.now();
+    service.setClock(Clock.fixed(now, ZoneOffset.UTC));
+
     assertFalse(service.authenticate("notexist", "pwd123").isPresent());
     service.createViaEmail("myname", "foo@gmail.com", "pwd123", lc);
     AccountAuth auth = service.authenticate("myName", "pwd123").get();
     assertEquals("myname", auth.getUsername());
     assertTrue(AccountAccessToken.tryDecode(auth.getAccessToken(), accountSecret).isPresent());
-    assertTrue(Instant.ofEpochMilli(auth.getExpireTime())
-        .isAfter(Instant.now().plus(Duration.ofDays(7))));
+    assertTrue(Instant.ofEpochMilli(auth.getExpireTime()).isAfter(now.plus(Duration.ofDays(7))));
+    assertEquals(now.toEpochMilli(), auth.getGenerateTime());
     //failed case
     assertFalse(service.authenticate("myname", "wrong pass").isPresent());
   }

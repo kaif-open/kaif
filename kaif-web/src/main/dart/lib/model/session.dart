@@ -10,15 +10,15 @@ import 'dart:html';
 class AccountSession {
 
   final AccountDao accountDao;
-  Account _current;
+  AccountAuth _current;
 
   AccountSession(this.accountDao) {
-    _current = accountDao.loadAccount();
+    _current = accountDao.load();
   }
 
-  void saveAccount(AccountAuth auth, {bool rememberMe}) {
-    accountDao.saveAccount(auth, permanent:rememberMe);
-    _current = accountDao.loadAccount();
+  void save(AccountAuth auth, {bool rememberMe}) {
+    accountDao.save(auth, permanent:rememberMe);
+    _current = accountDao.load();
   }
 
   /**
@@ -31,19 +31,19 @@ class AccountSession {
 
     //TODO broadcast changed ?
     return _extendsAccessToken(_current).then((renewAuth) {
-      saveAccount(renewAuth);
+      save(renewAuth);
       return true;
     }).catchError((error) => false, test:(error) => error is! PermissionError);
   }
 
   //null if not sign in
-  Account get current => _current;
+  AccountAuth get current => _current;
 
   String provideAccessToken() {
     return _current != null ? _current.accessToken : null;
   }
 
-  Future<AccountAuth> _extendsAccessToken(Account exist) {
+  Future<AccountAuth> _extendsAccessToken(AccountAuth exist) {
     var headers = {
         'X-KAIF-ACCESS-TOKEN':exist.accessToken,
         'Content-Type': 'application/json'
@@ -72,6 +72,6 @@ class AccountSession {
 
   void signOut() {
     _current = null;
-    accountDao.removeAccount();
+    accountDao.remove();
   }
 }
