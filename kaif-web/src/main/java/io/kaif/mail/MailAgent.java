@@ -43,7 +43,7 @@ public interface MailAgent {
 
     Mail mail = mailComposer().createMail();
     mail.setTo(account.getEmail());
-    mail.setSubject(mailComposer().i18n(locale, "email.reset_password.title"));
+    mail.setSubject(mailComposer().i18n(locale, "email.reset-password.title"));
     String body = mailComposer().compose(locale,
         "/account-reset-password.ftl",
         ImmutableMap.of("account", account, "token", onceToken));

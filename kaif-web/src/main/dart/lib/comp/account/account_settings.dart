@@ -32,7 +32,7 @@ class AccountSettings {
         ..stopPropagation();
       found.disabled = true;
       accountService.resendActivation().then((_) {
-        new Toast.success(i18n('account-settings.reactivation_sent'),
+        new Toast.success(i18n('account-settings.reactivation-sent'),
         const Duration(seconds:5)).render();
       }).catchError((e) {
         new Toast.error(e.toString(), const Duration(seconds:10)).render();
@@ -63,7 +63,7 @@ class _UpdateNewPasswordForm {
     alert.hide();
 
     if (passwordInput.value != confirmPasswordInput.value) {
-      alert.renderError(i18n('sign-up.password_not_same'));
+      alert.renderError(i18n('sign-up.password-not-same'));
       return;
     }
 
@@ -75,7 +75,7 @@ class _UpdateNewPasswordForm {
     accountService.updateNewPassword(oldPasswordInput.value, passwordInput.value)
     .then((AccountAuth auth) {
       accountSession.saveAccount(auth);
-      new Toast.success(i18n('account-settings.update_new_password_success'),
+      new Toast.success(i18n('account-settings.update-new-password-success'),
       const Duration(seconds:3)).render();
       elem.remove();
       alert.hide();

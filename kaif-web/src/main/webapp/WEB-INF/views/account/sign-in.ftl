@@ -28,7 +28,7 @@
 <form class="pure-form pure-form-aligned" sign-in-form>
     <fieldset>
 
-        <legend><@spring.messageText "account-menu.sign_in" "Sign In" /></legend>
+        <legend><@spring.messageText "account-menu.sign-in" "Sign In" /></legend>
         <div class="pure-control-group">
             <label for="nameInput">帳號</label>
             <input id="nameInput" type="text" placeholder="coder" required class="pure-input-1-2">
@@ -44,7 +44,7 @@
             </label>
 
             <button type="submit" class="pure-button pure-button-primary">
-                <@spring.messageText "account-menu.sign_in" "Sign In" />
+                <@spring.messageText "account-menu.sign-in" "Sign In" />
             </button>
             <p class="pure-form-message">
                 <a class="" href="/account/forget-password">忘記密碼 ?</a>

@@ -28,7 +28,7 @@ class ServerPartLoader {
       return found;
     }).then(_componentsInitializer)
     .catchError((permissionError) {
-      new LargeErrorModal(i18n('part-loader.permission_error')).render();
+      new LargeErrorModal(i18n('part-loader.permission-error')).render();
       return null;
     }, test:(error) => error is PermissionError)
     .catchError((StateError stateError) {

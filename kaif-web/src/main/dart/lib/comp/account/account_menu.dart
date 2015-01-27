@@ -9,8 +9,8 @@ class AccountMenu {
   void _render(Account account) {
     elem.nodes.clear();
     if (account == null) {
-      elem.nodes.add(trustHtml('<li><a href="${route.signIn}">${i18n('account-menu.sign_in')}</a></li>'));
-      elem.nodes.add(trustHtml('<li><a href="${route.signUp}">${i18n('account-menu.sign_up')}</a></li>'));
+      elem.nodes.add(trustHtml('<li><a href="${route.signIn}">${i18n('account-menu.sign-in')}</a></li>'));
+      elem.nodes.add(trustHtml('<li><a href="${route.signUp}">${i18n('account-menu.sign-up')}</a></li>'));
     } else {
       elem.nodes.add(trustHtml('<li><a href="${route.settings}">${account.username}</a></li>'));
       elem.nodes.add(_createSignOut());
@@ -37,7 +37,7 @@ class AccountMenu {
   }
 
   Element _createSignOut() {
-    var signOut = trustHtml('<li><a href="#">${i18n('account-menu.sign_out')}</a></li>');
+    var signOut = trustHtml('<li><a href="#">${i18n('account-menu.sign-out')}</a></li>');
     signOut.querySelector('a').onClick.first.then((e) {
       e
         ..preventDefault()

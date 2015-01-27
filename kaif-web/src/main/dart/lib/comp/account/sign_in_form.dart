@@ -33,7 +33,7 @@ class SignInForm {
       //TODO handle ?from=
       route.gotoHome();
     }).catchError((e) {
-      alert.renderError(i18n('sign-in.authentication_failed'));
+      alert.renderError(i18n('sign-in.authentication-failed'));
     }).whenComplete(() {
       submit.disabled = false;
     });

@@ -25,7 +25,7 @@ class ResetPasswordForm {
     alert.hide();
 
     if (passwordInput.value != confirmPasswordInput.value) {
-      alert.renderError(i18n('sign-up.password_not_same'));
+      alert.renderError(i18n('sign-up.password-not-same'));
       return;
     }
 

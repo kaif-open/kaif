@@ -22,11 +22,11 @@ class SignUpForm {
 
     nameInput.onKeyUp.map((e) => nameInput.value.trim()).listen((partial) {
       if (!namePattern.hasMatch(partial)) {
-        _showHint(i18n('sign-up.invalid_name'), ok:false);
+        _showHint(i18n('sign-up.invalid-name'), ok:false);
         return;
       }
       accountService.isNameAvailable(partial).then((available) {
-        String hintText = available ? 'sign-up.available' : 'sign-up.name_already_taken';
+        String hintText = available ? 'sign-up.available' : 'sign-up.name-already-taken';
         _showHint(i18n(hintText), ok:available);
       });
     });
@@ -72,7 +72,7 @@ class SignUpForm {
     alert.hide();
 
     if (passwordInput.value != confirmPasswordInput.value) {
-      alert.renderError(i18n('sign-up.password_not_same'));
+      alert.renderError(i18n('sign-up.password-not-same'));
       return;
     }
 
@@ -80,7 +80,7 @@ class SignUpForm {
       if (available) {
         _createAccount(passwordInput);
       } else {
-        alert.renderError(i18n('sign-up.email_already_taken'));
+        alert.renderError(i18n('sign-up.email-already-taken'));
       }
     });
 
