@@ -120,7 +120,7 @@ public class AccountService {
     accountDao.updateAuthorities(accountId, authorities);
   }
 
-  public void updatePassword(UUID accountId, String password) {
+  private void updatePassword(UUID accountId, String password, Locale locale) {
     Preconditions.checkArgument(Account.isValidPassword(password));
     accountDao.updatePasswordHash(accountId, passwordEncoder.encode(password));
     //TODO send password changed email
@@ -172,7 +172,22 @@ public class AccountService {
   public void updatePasswordWithToken(String token, String password, Locale locale) {
     findValidResetPasswordToken(token).ifPresent(onceToken -> {
       accountDao.completeOnceToken(onceToken);
-      updatePassword(onceToken.getAccountId(), password);
+      updatePassword(onceToken.getAccountId(), password, locale);
     });
+  }
+
+  public AccountAuth updateNewPassword(UUID accountId,
+      String oldPassword,
+      String newPassword,
+      Locale locale) {
+    return accountDao.findById(accountId)
+        .filter(account -> passwordEncoder.matches(oldPassword, account.getPasswordHash()))
+        .flatMap(accountWithOldPassword -> {
+          updatePassword(accountId, newPassword, locale);
+          Optional<Account> accountWithNewPassword = accountDao.findById(accountId);
+          return accountWithNewPassword;
+        })
+        .map(this::createAccountAuth)
+        .orElseThrow(RuntimeException::new);
   }
 }

@@ -21,6 +21,7 @@ import io.kaif.model.AccountService;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountAuth;
+import io.kaif.model.account.AccountOnceToken;
 import io.kaif.web.support.AccessDeniedException;
 import io.kaif.web.support.SingleWrapper;
 
@@ -69,6 +70,18 @@ public class AccountResource {
 
     @NotNull
     public String token;
+
+  }
+
+  static class UpdatePasswordRequest {
+
+    @Size(min = Account.PASSWORD_MIN, max = Account.PASSWORD_MAX)
+    @NotNull
+    public String oldPassword;
+
+    @Size(min = Account.PASSWORD_MIN, max = Account.PASSWORD_MAX)
+    @NotNull
+    public String newPassword;
 
   }
 
@@ -123,12 +136,22 @@ public class AccountResource {
       Locale locale) {
     accountService.sendResetPassword(request.username, request.email, locale);
   }
-  //update-password-with-token
 
   @RequestMapping(value = "/update-password-with-token", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
   public void updatePasswordWithToken(@Valid @RequestBody UpdatePasswordWithTokenRequest request,
       Locale locale) {
     accountService.updatePasswordWithToken(request.token, request.password, locale);
+  }
+
+  @RequestMapping(value = "/update-password", method = RequestMethod.POST, consumes = {
+      MediaType.APPLICATION_JSON_VALUE })
+  public AccountAuth updatePassword(AccountAccessToken accessToken,
+      @Valid @RequestBody UpdatePasswordRequest request,
+      Locale locale) {
+    return accountService.updateNewPassword(accessToken.getAccountId(),
+        request.oldPassword,
+        request.newPassword,
+        locale);
   }
 }

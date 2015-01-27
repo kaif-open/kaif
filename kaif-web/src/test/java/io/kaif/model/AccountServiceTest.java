@@ -203,7 +203,7 @@ public class AccountServiceTest extends DbIntegrationTests {
     assertFalse(service.verifyAccessToken("badtoken").isPresent());
 
     //invalid case 2, password changed
-    service.updatePassword(accountId, "newPw123");
+    service.updateNewPassword(accountId, "pppwww", "newPw123", lc);
     assertFalse(service.verifyAccessToken(accountAuth.getAccessToken()).isPresent());
 
     //invalid case 3, authorities changed
@@ -221,13 +221,11 @@ public class AccountServiceTest extends DbIntegrationTests {
   }
 
   @Test
-  public void updatePassword() throws Exception {
+  public void updateNewPassword() throws Exception {
     UUID accountId = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc).getAccountId();
-
-    service.updatePassword(accountId, "pw2123");
-
-    assertTrue(service.authenticate("abc99", "pw2123").isPresent());
-    assertFalse(service.authenticate("abc99", "pppwww").isPresent());
+    AccountAuth accountAuth = service.updateNewPassword(accountId, "pppwww", "123456", lc);
+    assertNotNull(accountAuth);
+    assertTrue(service.authenticate("abc99", "123456").isPresent());
   }
 
   @Test

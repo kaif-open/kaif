@@ -136,7 +136,6 @@ class PartService extends _AbstractService {
 
 class AccountService extends _AbstractService {
 
-
   AccountService(ServerType serverType, accessTokenProvider _provider)
   : super(serverType, _provider);
 
@@ -188,6 +187,14 @@ class AccountService extends _AbstractService {
     .then((req) => null);
   }
 
+  Future<AccountAuth> updatePassword(String oldPassword, String newPassword) {
+    var json = {
+        'oldPassword':oldPassword, 'newPassword':newPassword
+    };
+    return _postJson(_getAccountUrl('/update-password'), json)
+    .then((req) => JSON.decode(req.responseText))
+    .then((raw) => new AccountAuth.decode(raw));
+  }
 
   Future sendResetPassword(String username, String email) {
     var json = {
