@@ -38,8 +38,10 @@ public class AccountService {
 
   @Autowired
   private AccountDao accountDao;
+
   @Autowired
   private PasswordEncoder passwordEncoder;
+
   @Autowired
   private AccountSecret accountSecret;
 
@@ -67,8 +69,8 @@ public class AccountService {
     mailAgent.sendAccountActivation(locale, account, token.getToken());
   }
 
-  public Account findById(UUID accountId) {
-    return accountDao.findById(accountId).orElse(null);
+  public Optional<Account> findById(UUID accountId) {
+    return accountDao.findById(accountId);
   }
 
   public Optional<AccountAuth> authenticate(String username, String password) {

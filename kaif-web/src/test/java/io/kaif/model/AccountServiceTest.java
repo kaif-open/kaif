@@ -41,7 +41,7 @@ public class AccountServiceTest extends DbIntegrationTests {
   @Test
   public void createViaEmail() {
     Account account = service.createViaEmail("myname", "foo@gmail.com", "pwd123", lc);
-    Account loaded = service.findById(account.getAccountId());
+    Account loaded = service.findById(account.getAccountId()).get();
     assertEquals(account, loaded);
     assertEquals("foo@gmail.com", loaded.getEmail());
     assertFalse(loaded.isActivated());
@@ -142,7 +142,7 @@ public class AccountServiceTest extends DbIntegrationTests {
     AccountOnceToken token = accountDao.listOnceTokens().get(0);
 
     assertTrue(service.activate(token.getToken()));
-    Account loaded = service.findById(account.getAccountId());
+    Account loaded = service.findById(account.getAccountId()).get();
     assertTrue(loaded.isActivated());
     assertTrue(loaded.getAuthorities().contains(Authority.CITIZEN));
 
@@ -158,7 +158,7 @@ public class AccountServiceTest extends DbIntegrationTests {
 
     service.setClock(Clock.systemDefaultZone());
     assertFalse("expired token should invalid", service.activate(token.getToken()));
-    Account loaded = service.findById(account.getAccountId());
+    Account loaded = service.findById(account.getAccountId()).get();
     assertFalse(loaded.isActivated());
   }
 
@@ -218,7 +218,7 @@ public class AccountServiceTest extends DbIntegrationTests {
     UUID accountId = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc).getAccountId();
     EnumSet<Authority> set = EnumSet.of(Authority.CITIZEN, Authority.ROOT);
     service.updateAuthorities(accountId, set);
-    assertEquals(set, service.findById(accountId).getAuthorities());
+    assertEquals(set, service.findById(accountId).get().getAuthorities());
   }
 
   @Test
