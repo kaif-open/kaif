@@ -26,6 +26,7 @@ import io.kaif.model.account.AccountDao;
 import io.kaif.model.account.AccountOnceToken;
 import io.kaif.model.account.AccountSecret;
 import io.kaif.model.account.Authority;
+import io.kaif.model.exception.OldPasswordNotMatchException;
 
 @Service
 @Transactional
@@ -179,7 +180,7 @@ public class AccountService {
   public AccountAuth updateNewPassword(UUID accountId,
       String oldPassword,
       String newPassword,
-      Locale locale) {
+      Locale locale) throws OldPasswordNotMatchException {
     return accountDao.findById(accountId)
         .filter(account -> passwordEncoder.matches(oldPassword, account.getPasswordHash()))
         .flatMap(accountWithOldPassword -> {
@@ -188,6 +189,6 @@ public class AccountService {
           return accountWithNewPassword;
         })
         .map(this::createAccountAuth)
-        .orElseThrow(RuntimeException::new);
+        .orElseThrow(OldPasswordNotMatchException::new);
   }
 }

@@ -55,7 +55,7 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 @Order(Ordered.LOWEST_PRECEDENCE)
 public abstract class AbstractRestExceptionHandler extends ResponseEntityExceptionHandler {
 
-  private final Logger logger = LoggerFactory.getLogger(this.getClass());
+  protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   @Autowired
   private MessageSource messageSource;

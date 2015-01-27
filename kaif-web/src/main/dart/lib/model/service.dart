@@ -9,6 +9,7 @@ import 'dart:async';
 class RestErrorResponse extends Error {
   final int code;
   final String reason;
+  final bool translated;
 
   static RestErrorResponse tryDecode(String text) {
     try {
@@ -16,7 +17,8 @@ class RestErrorResponse extends Error {
       if (json is Map) {
         Map raw = json;
         if (raw.containsKey('code') && raw.containsKey('reason')) {
-          return new RestErrorResponse(raw['code'], raw['reason']);
+          var tx = raw['translated'] == null ? false : raw['translated'];
+          return new RestErrorResponse(raw['code'], raw['reason'], tx);
         }
       }
     } catch (e) {
@@ -24,9 +26,16 @@ class RestErrorResponse extends Error {
     return null;
   }
 
-  RestErrorResponse(this.code, this.reason);
+  RestErrorResponse(this.code, this.reason, this.translated);
 
-  String toString() => "$reason (code:$code)";
+  String toString() {
+    if (translated) {
+      //translated response is domain exception in server side.
+      //we can display `reason` to user because it is translated.
+      return reason;
+    }
+    return "$reason (code:$code)";
+  }
 }
 
 typedef String accessTokenProvider();
@@ -86,7 +95,7 @@ abstract class _AbstractService {
     HttpRequest req = event.target;
     var restErrorResponse = RestErrorResponse.tryDecode(req.responseText);
     if (restErrorResponse == null) {
-      throw new RestErrorResponse(500, 'Unexpected error response, status:${req.status}');
+      throw new RestErrorResponse(500, 'Unexpected error response, status:${req.status}', false);
     }
     throw restErrorResponse;
   }

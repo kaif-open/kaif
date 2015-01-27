@@ -23,6 +23,7 @@ import io.kaif.model.account.AccountDao;
 import io.kaif.model.account.AccountOnceToken;
 import io.kaif.model.account.AccountSecret;
 import io.kaif.model.account.Authority;
+import io.kaif.model.exception.OldPasswordNotMatchException;
 
 public class AccountServiceTest extends DbIntegrationTests {
 
@@ -226,6 +227,12 @@ public class AccountServiceTest extends DbIntegrationTests {
     AccountAuth accountAuth = service.updateNewPassword(accountId, "pppwww", "123456", lc);
     assertNotNull(accountAuth);
     assertTrue(service.authenticate("abc99", "123456").isPresent());
+  }
+
+  @Test(expected = OldPasswordNotMatchException.class)
+  public void updateNewPassword_oldPasswordNotMatch() throws Exception {
+    UUID accountId = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc).getAccountId();
+    service.updateNewPassword(accountId, "wrong old pw", "123456", lc);
   }
 
   @Test
