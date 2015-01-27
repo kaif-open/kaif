@@ -9,3 +9,5 @@ dev_dependencies:
 transformers:
   - kaif_web:
      $include: ["lib/intl/messages_*.dart", "lib/i18n_link/messages_*.properties"]
+  - $dart2js:
+     commandLineOptions: [--show-package-warnings]
