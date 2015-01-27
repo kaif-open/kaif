@@ -32,10 +32,9 @@ class AccountSettings {
         ..stopPropagation();
       found.disabled = true;
       accountService.resendActivation().then((_) {
-        new Toast.success(i18n('account-settings.reactivation-sent'),
-        const Duration(seconds:5)).render();
+        new Toast.success(i18n('account-settings.reactivation-sent')).render();
       }).catchError((e) {
-        new Toast.error(e.toString(), const Duration(seconds:10)).render();
+        new Toast.error(e.toString()).render();
       });
     });
   }
@@ -75,11 +74,10 @@ class _UpdateNewPasswordForm {
     accountService.updateNewPassword(oldPasswordInput.value, passwordInput.value)
     .then((AccountAuth auth) {
       accountSession.saveAccount(auth);
-      new Toast.success(i18n('account-settings.update-new-password-success'),
-      const Duration(seconds:3)).render();
       elem.remove();
       alert.hide();
-      //TODO refresh after toast done
+      new Toast.success(i18n('account-settings.update-new-password-success'), seconds:3)
+      .render().then((_) => route.reload());
     }).catchError((e) {
       alert.renderError('${e}');
     }).whenComplete(() {

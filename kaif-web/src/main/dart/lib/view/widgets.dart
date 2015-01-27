@@ -76,18 +76,20 @@ class LargeErrorModal {
 
 class Toast {
   final String message;
-  final Duration duration;
+  Duration _duration;
   String _type;
 
-  Toast.error(this.message, this.duration) {
+  Toast.error(this.message, {int seconds:10}) {
     _type = 'danger';
+    _duration = new Duration(seconds:seconds);
   }
 
-  Toast.success(this.message, this.duration) {
+  Toast.success(this.message, {int seconds:5}) {
     _type = 'success';
+    _duration = new Duration(seconds:seconds);
   }
 
-  void render() {
+  Future render() {
     var el = trustHtml(
         """
      <div class="alert alert-${_type} toast">
@@ -97,8 +99,7 @@ class Toast {
 
     (window.document as HtmlDocument).body.append(el);
 
-    new Timer(duration, () {
-      //TODO fade out
+    return new Future.delayed(_duration, () {
       el.remove();
     });
   }

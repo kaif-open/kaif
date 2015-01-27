@@ -32,7 +32,7 @@ class ServerPartLoader {
       return null;
     }, test:(error) => error is PermissionError)
     .catchError((StateError stateError) {
-      new Toast.error(stateError.message, const Duration(seconds:10)).render();
+      new Toast.error(stateError.message).render();
       return null;
     });
   }
