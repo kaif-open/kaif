@@ -33,7 +33,10 @@ class SignInForm {
       //TODO handle ?from=
       route.gotoHome();
     }).catchError((e) {
-      alert.renderError(i18n('sign-in.authentication-failed'));
+      // server should use `account.AuthenticateFailException` too because domain exception
+      // but if server has some internal runtime exception (should be bug). we still
+      // need to hide the root cause (because use may find our weak point)
+      alert.renderError(i18n('account.AuthenticateFailException'));
     }).whenComplete(() {
       submit.disabled = false;
     });

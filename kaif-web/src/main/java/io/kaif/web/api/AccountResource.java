@@ -1,7 +1,6 @@
 package io.kaif.web.api;
 
 import java.util.Locale;
-import java.util.Optional;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -21,7 +20,7 @@ import io.kaif.model.AccountService;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountAuth;
-import io.kaif.web.support.AccessDeniedException;
+import io.kaif.model.exception.AuthenticateFailException;
 import io.kaif.web.support.SingleWrapper;
 
 @RestController
@@ -102,9 +101,8 @@ public class AccountResource {
   @RequestMapping(value = "/authenticate", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
   public AccountAuth authenticate(@Valid @RequestBody Credential credential) {
-    Optional<AccountAuth> accountAuth = accountService.authenticate(credential.username.trim(),
-        credential.password);
-    return accountAuth.orElseThrow(AccessDeniedException::new);
+    return accountService.authenticate(credential.username.trim(), credential.password)
+        .orElseThrow(AuthenticateFailException::new);
   }
 
   @RequestMapping(value = "/extends-access-token", method = RequestMethod.POST, consumes = {
