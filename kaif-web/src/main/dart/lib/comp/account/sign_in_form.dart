@@ -7,9 +7,10 @@ import 'package:kaif_web/util.dart';
 class SignInForm {
   final Element elem;
   final AccountService accountService;
-  final AccountDao accountDao;
+  final AccountSession accountSession;
   Alert alert;
-  SignInForm(this.elem, this.accountService, this.accountDao) {
+
+  SignInForm(this.elem, this.accountService, this.accountSession) {
     elem.onSubmit.listen(_login);
     alert = new Alert.append(elem);
   }
@@ -28,7 +29,7 @@ class SignInForm {
     alert.hide();
     accountService.authenticate(nameInput.value, passwordInput.value)//
     .then((AccountAuth accountAuth) {
-      accountDao.saveAccount(accountAuth, rememberMe:rememberMeInput.checked);
+      accountSession.saveAccount(accountAuth, rememberMe:rememberMeInput.checked);
       //TODO handle ?from=
       route.gotoHome();
     }).catchError((e) {

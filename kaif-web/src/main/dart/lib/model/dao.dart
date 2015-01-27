@@ -8,10 +8,10 @@ class AccountDao {
   static const String KEY = 'ACCOUNT';
   bool _useLocalStorage = false;
 
-  void saveAccount(AccountAuth auth, {bool rememberMe}) {
+  void saveAccount(AccountAuth auth, {bool permanent}) {
 
-    if (rememberMe != null) {
-      _useLocalStorage = rememberMe ;
+    if (permanent != null) {
+      _useLocalStorage = permanent ;
     }
 
     var account = new Account(auth.username, auth.accessToken, auth.expireTime, new DateTime.now());

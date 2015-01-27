@@ -8,11 +8,15 @@ class AccountSettings {
 
   final Element elem;
   final AccountService accountService;
+  final AccountSession accountSession;
 
-  AccountSettings(this.elem, this.accountService) {
+  AccountSettings(this.elem, this.accountService, this.accountSession) {
     _createReactivateIfRequire();
-    new _UpdatePasswordForm(elem.querySelector('[update-password-form]'), accountService);
 
+    new _UpdateNewPasswordForm(
+        elem.querySelector('[update-new-password-form]'),
+        accountService,
+        accountSession);
   }
 
   void _createReactivateIfRequire() {
@@ -38,12 +42,13 @@ class AccountSettings {
 }
 
 
-class _UpdatePasswordForm {
+class _UpdateNewPasswordForm {
   final Element elem;
+  final AccountSession accountSession;
   final AccountService accountService;
   Alert alert;
 
-  _UpdatePasswordForm(this.elem, this.accountService) {
+  _UpdateNewPasswordForm(this.elem, this.accountService, this.accountSession) {
     alert = new Alert.append(elem);
     elem.onSubmit.listen(_onSubmit);
   }
@@ -67,11 +72,13 @@ class _UpdatePasswordForm {
 
     var loading = new Loading.small()
       ..renderAfter(submit);
-    accountService.updatePassword(oldPasswordInput.value, passwordInput.value)
-    .then((_) {
-      new Toast.success(i18n('account-settings.update_password_success'),
+    accountService.updateNewPassword(oldPasswordInput.value, passwordInput.value)
+    .then((AccountAuth auth) {
+      accountSession.saveAccount(auth);
+      new Toast.success(i18n('account-settings.update_new_password_success'),
       const Duration(seconds:3)).render();
-      //TODO save to accountSession
+      elem.remove();
+      alert.hide();
       //TODO refresh after toast done
     }).catchError((e) {
       alert.renderError('${e}');

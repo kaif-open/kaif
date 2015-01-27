@@ -16,6 +16,11 @@ class AccountSession {
     _current = accountDao.loadAccount();
   }
 
+  void saveAccount(AccountAuth auth, {bool rememberMe}) {
+    accountDao.saveAccount(auth, permanent:rememberMe);
+    _current = accountDao.loadAccount();
+  }
+
   /**
    * return true if extends, false if unchanged. caller should handle PermissionError
    */
@@ -26,8 +31,7 @@ class AccountSession {
 
     //TODO broadcast changed ?
     return _extendsAccessToken(_current).then((renewAuth) {
-      accountDao.saveAccount(renewAuth);
-      _current = accountDao.loadAccount();
+      saveAccount(renewAuth);
       return true;
     }).catchError((error) => false, test:(error) => error is! PermissionError);
   }

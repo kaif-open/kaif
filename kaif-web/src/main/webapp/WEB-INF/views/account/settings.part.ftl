@@ -41,7 +41,7 @@
 
         </fieldset>
     </div>
-    <form class="pure-form pure-form-aligned" update-password-form>
+    <form class="pure-form pure-form-aligned" update-new-password-form>
         <fieldset>
 
             <legend>修改密碼</legend>

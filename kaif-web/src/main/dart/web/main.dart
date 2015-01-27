@@ -47,10 +47,10 @@ class AppModule {
       new SignUpForm(el, accountService);
     });
     parent.querySelectorAll('[sign-in-form]').forEach((el) {
-      new SignInForm(el, accountService, accountDao);
+      new SignInForm(el, accountService, accountSession);
     });
     parent.querySelectorAll('[account-settings]').forEach((el) {
-      new AccountSettings(el, accountService);
+      new AccountSettings(el, accountService, accountSession);
     });
     parent.querySelectorAll('[forget-password-form]').forEach((el) {
       new ForgetPasswordForm(el, accountService);

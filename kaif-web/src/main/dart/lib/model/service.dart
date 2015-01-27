@@ -187,11 +187,11 @@ class AccountService extends _AbstractService {
     .then((req) => null);
   }
 
-  Future<AccountAuth> updatePassword(String oldPassword, String newPassword) {
+  Future<AccountAuth> updateNewPassword(String oldPassword, String newPassword) {
     var json = {
         'oldPassword':oldPassword, 'newPassword':newPassword
     };
-    return _postJson(_getAccountUrl('/update-password'), json)
+    return _postJson(_getAccountUrl('/update-new-password'), json)
     .then((req) => JSON.decode(req.responseText))
     .then((raw) => new AccountAuth.decode(raw));
   }
