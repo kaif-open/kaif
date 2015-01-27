@@ -73,30 +73,58 @@ public class AccountServiceTest extends DbIntegrationTests {
   }
 
   @Test
-  public void resetPassword_noSuchAccount() {
+  public void findValidResetPasswordToken() throws Exception {
+    service.createViaEmail("myname", "foo@gmail.com", "pwd123", lc);
+    service.sendResetPassword("myname", "foo@gmail.com", lc);
+    AccountOnceToken resetToken = accountDao.listOnceTokens().get(1);
+    assertTrue(service.findValidResetPasswordToken(resetToken.getToken()).isPresent());
+
+    accountDao.completeOnceToken(resetToken);
+
+    assertFalse(service.findValidResetPasswordToken(resetToken.getToken()).isPresent());
+  }
+
+  @Test
+  public void updatePasswordWithToken() throws Exception {
+    service.createViaEmail("myname", "foo@gmail.com", "pwd123", lc);
+    service.sendResetPassword("myname", "foo@gmail.com", lc);
+    AccountOnceToken resetToken = accountDao.listOnceTokens().get(1);
+
+    service.updatePasswordWithToken(resetToken.getToken(), "pwd456", lc);
+
+    assertFalse(service.findValidResetPasswordToken(resetToken.getToken()).isPresent());
+    assertTrue(service.authenticate("myname", "pwd456").isPresent());
+
+    //update again takes no effect
+    service.updatePasswordWithToken(resetToken.getToken(), "pw ignored", lc);
+    assertFalse(service.authenticate("myname", "pw ignored").isPresent());
+  }
+
+  @Test
+  public void sendResetPassword_noSuchAccount() {
     //case 1: no account
-    service.resetPassword("myname", "foo@gmail.com", lc);
+    service.sendResetPassword("myname", "foo@gmail.com", lc);
     verifyZeroInteractions(mockMailAgent);
     assertEquals(0, accountDao.listOnceTokens().size());
   }
 
   @Test
-  public void resetPassword_emailNotMatch() {
+  public void sendResetPassword_emailNotMatch() {
     service.createViaEmail("myname", "foo@gmail.com", "pwd123", lc);
     Mockito.reset(mockMailAgent);
 
-    service.resetPassword("myname", "wrong@gmail.com", lc);
+    service.sendResetPassword("myname", "wrong@gmail.com", lc);
     verifyZeroInteractions(mockMailAgent);
     assertEquals(1, accountDao.listOnceTokens().size());
   }
 
   @Test
-  public void resetPassword() {
+  public void sendResetPassword() {
     Account account = service.createViaEmail("myname", "foo@gmail.com", "pwd123", lc);
 
     Mockito.reset(mockMailAgent);
 
-    service.resetPassword("myname", "foo@gmail.com", lc);
+    service.sendResetPassword("myname", "foo@gmail.com", lc);
 
     verify(mockMailAgent).sendResetPassword(eq(lc),
         eq(account),

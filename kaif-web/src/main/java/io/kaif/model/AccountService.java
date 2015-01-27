@@ -123,12 +123,12 @@ public class AccountService {
   public void updatePassword(UUID accountId, String password) {
     Preconditions.checkArgument(Account.isValidPassword(password));
     accountDao.updatePasswordHash(accountId, passwordEncoder.encode(password));
+    //TODO send password changed email
   }
 
   public boolean activate(String token) {
     return accountDao.findOnceToken(token, AccountOnceToken.Type.ACTIVATION)
-        .filter(onceToken -> !onceToken.isComplete())
-        .filter(onceToken -> !onceToken.isExpired(Instant.now(clock)))
+        .filter(onceToken -> onceToken.isValid(Instant.now(clock)))
         .map(onceToken -> {
           Account account = accountDao.findById(onceToken.getAccountId()).get();
           EnumSet<Authority> newAuth = EnumSet.copyOf(account.getAuthorities());
@@ -151,7 +151,7 @@ public class AccountService {
     });
   }
 
-  public void resetPassword(String username, String email, Locale locale) {
+  public void sendResetPassword(String username, String email, Locale locale) {
     logger.info("begin reset password: {}, {}", username, email);
     accountDao.findByUsername(username)
         .filter(account -> account.getEmail().equals(email))
@@ -162,5 +162,17 @@ public class AccountService {
           mailAgent.sendResetPassword(locale, account, token.getToken());
         });
 
+  }
+
+  public Optional<AccountOnceToken> findValidResetPasswordToken(String token) {
+    return accountDao.findOnceToken(token, AccountOnceToken.Type.FORGET_PASSWORD)
+        .filter(onceToken -> onceToken.isValid(Instant.now(clock)));
+  }
+
+  public void updatePasswordWithToken(String token, String password, Locale locale) {
+    findValidResetPasswordToken(token).ifPresent(onceToken -> {
+      accountDao.completeOnceToken(onceToken);
+      updatePassword(onceToken.getAccountId(), password);
+    });
   }
 }

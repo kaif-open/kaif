@@ -5,6 +5,7 @@ const Router route = const Router._();
 
 class Router {
 
+
   const Router._();
 
   String get signUp => '/account/sign-up';
@@ -17,13 +18,16 @@ class Router {
 
   String get home => '/' ;
 
-  reload() => window.location.href = window.location.href;
+  void reload() => window.location.href = window.location.href;
 
-  gotoHome([String queryString]) => _gotoWithQuery(home, queryString);
+  void gotoHome([String queryString]) => _gotoWithQuery(home, queryString);
 
-  gotoSignInWithSignUpSuccess() => _gotoWithQuery(signIn, 'sign-up-success');
+  void gotoSignInWithSignUpSuccess() => _gotoWithQuery(signIn, 'sign-up-success');
 
-  gotoSignInWithSendResetPasswordSuccess() => _gotoWithQuery(signIn, 'send-reset-password-success');
+  void gotoSignInWithSendResetPasswordSuccess() => _gotoWithQuery(signIn,
+  'send-reset-password-success');
+
+  void gotoSignInWithUpdatePasswordSuccess() => _gotoWithQuery(signIn, 'update-password-success');
 
   void _gotoWithQuery(String path, String queryString) {
     if (queryString == null) {

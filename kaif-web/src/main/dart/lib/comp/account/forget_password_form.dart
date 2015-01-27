@@ -8,6 +8,7 @@ class ForgetPasswordForm {
   final Element elem;
   final AccountService accountService;
   Alert alert;
+
   ForgetPasswordForm(this.elem, this.accountService) {
     elem.onSubmit.listen(_submit);
     alert = new Alert.append(elem);
@@ -24,7 +25,7 @@ class ForgetPasswordForm {
     submit.disabled = true;
 
     alert.hide();
-    accountService.resetPassword(nameInput.value, emailInput.value)
+    accountService.sendResetPassword(nameInput.value, emailInput.value)
     .then((_) {
       route.gotoSignInWithSendResetPasswordSuccess();
     }).catchError((e) {

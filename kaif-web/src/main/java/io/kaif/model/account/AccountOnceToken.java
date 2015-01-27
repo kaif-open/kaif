@@ -88,6 +88,10 @@ public class AccountOnceToken {
     return now.isAfter(createTime.plus(tokenType.getDuration()));
   }
 
+  public boolean isValid(Instant now) {
+    return !isComplete() && !isExpired(now);
+  }
+
   public boolean isComplete() {
     return complete;
   }

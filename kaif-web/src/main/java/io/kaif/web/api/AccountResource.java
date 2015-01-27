@@ -52,14 +52,24 @@ public class AccountResource {
     public String password;
   }
 
-
-  static class ResetPasswordRequest {
+  static class SendResetPasswordRequest {
     @NotNull
     public String username;
 
     @Email
     @NotNull
     public String email;
+  }
+
+  static class UpdatePasswordWithTokenRequest {
+
+    @Size(min = Account.PASSWORD_MIN, max = Account.PASSWORD_MAX)
+    @NotNull
+    public String password;
+
+    @NotNull
+    public String token;
+
   }
 
   @Autowired
@@ -107,9 +117,18 @@ public class AccountResource {
     return SingleWrapper.of(accountService.isUsernameAvailable(username));
   }
 
-  @RequestMapping(value = "/reset-password", method = RequestMethod.POST, consumes = {
+  @RequestMapping(value = "/send-reset-password", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
-  public void resetPassword(@Valid @RequestBody ResetPasswordRequest request, Locale locale) {
-    accountService.resetPassword(request.username, request.email, locale);
+  public void sendResetPassword(@Valid @RequestBody SendResetPasswordRequest request,
+      Locale locale) {
+    accountService.sendResetPassword(request.username, request.email, locale);
+  }
+  //update-password-with-token
+
+  @RequestMapping(value = "/update-password-with-token", method = RequestMethod.POST, consumes = {
+      MediaType.APPLICATION_JSON_VALUE })
+  public void updatePasswordWithToken(@Valid @RequestBody UpdatePasswordWithTokenRequest request,
+      Locale locale) {
+    accountService.updatePasswordWithToken(request.token, request.password, locale);
   }
 }

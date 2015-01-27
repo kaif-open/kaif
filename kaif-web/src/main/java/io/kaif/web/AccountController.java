@@ -1,5 +1,7 @@
 package io.kaif.web;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import io.kaif.model.AccountService;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
+import io.kaif.model.account.AccountOnceToken;
 import io.kaif.web.support.PartTemplate;
 
 @Controller
@@ -29,10 +32,15 @@ public class AccountController {
     return "account/sign-in";
   }
 
-
   @RequestMapping("/forget-password")
   public String forgetPassword() {
     return "account/forget-password";
+  }
+
+  @RequestMapping("/reset-password")
+  public ModelAndView resetPassword(@RequestParam("key") String key) {
+    Optional<AccountOnceToken> token = accountService.findValidResetPasswordToken(key);
+    return new ModelAndView("account/reset-password").addObject("valid", token.isPresent());
   }
 
   @RequestMapping("/settings")

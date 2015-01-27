@@ -19,6 +19,12 @@
     </p>
     </#if>
 
+<#-- check reset_password_form.dart for string `update-password-success -->
+    <#if springMacroRequestContext.getQueryString()!?contains('update-password-success') >
+    <p class="alert alert-info">
+        密碼修改成功，請使用新密碼登入
+    </p>
+    </#if>
 <form class="pure-form pure-form-aligned" sign-in-form>
     <fieldset>
 
