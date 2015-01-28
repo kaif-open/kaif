@@ -25,4 +25,15 @@ public class Bytes {
     bb.putInt(value);
     return bb.array();
   }
+
+  public static byte[] longToBytes(long value) {
+    ByteBuffer bb = ByteBuffer.wrap(new byte[8]);
+    bb.putLong(value);
+    return bb.array();
+  }
+
+  public static long longFromBytes(byte[] raw) {
+    return ByteBuffer.wrap(raw).getLong();
+  }
 }
+

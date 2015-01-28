@@ -22,4 +22,11 @@ public class BytesTest {
     byte[] bytes = Bytes.intToBytes(value);
     assertEquals(value, Bytes.intFromBytes(bytes));
   }
+
+  @Test
+  public void longBytes() throws Exception {
+    long value = new Random().nextLong();
+    byte[] bytes = Bytes.longToBytes(value);
+    assertEquals(value, Bytes.longFromBytes(bytes));
+  }
 }
