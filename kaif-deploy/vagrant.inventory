@@ -11,9 +11,18 @@ kaif
 
 [web_slaves]
 
+
 [webs:children]
 web_masters
 web_slaves
+
+[web_masters:vars]
+# all web servers should use diff node id
+inv_flake_node_id="1"
+
+[web_slaves:vars]
+# all web servers should use diff node id
+inv_flake_node_id="20"
 
 [webs:vars]
 # this should change in production, by a secret file that not commit to git

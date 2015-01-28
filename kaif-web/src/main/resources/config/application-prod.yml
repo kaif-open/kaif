@@ -28,5 +28,9 @@ account:
     key: ${accountkey}
 
 
+## flake node id, every web server should use it's own unique node id
+flake.node-id: ${flake.node-id}
+
+
 ## logback
 logging.config: classpath:logback-prod.xml

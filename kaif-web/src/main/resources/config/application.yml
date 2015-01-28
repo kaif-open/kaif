@@ -50,4 +50,8 @@ account:
     key: dnXAz2u6mn4L_vZyiW0hHA
 
 
+## flake node id
+flake.node-id: 99
+
+
 ## logback

@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
+import io.kaif.config.ModelConfiguration;
 import io.kaif.config.SpringProfile;
 import io.kaif.config.UtilConfiguration;
 import io.kaif.mail.MailAgent;
@@ -23,8 +24,8 @@ public abstract class DbIntegrationTests extends AbstractTransactionalJUnit4Spri
 
   @ComponentScan(basePackages = "io.kaif.model")
   @Import(value = { DataSourceAutoConfiguration.class,
-      DataSourceTransactionManagerAutoConfiguration.class, UtilConfiguration.class,
-      MockTestConfig.class })
+      DataSourceTransactionManagerAutoConfiguration.class, ModelConfiguration.class,
+      UtilConfiguration.class, MockTestConfig.class })
   public static class JdbcTestApplication {
 
   }
