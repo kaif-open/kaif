@@ -19,6 +19,21 @@ import com.google.common.base.Preconditions;
 
 public interface DaoOperations {
 
+  @FunctionalInterface
+  public interface CheckedBiFunction<T, U, R> {
+
+    /**
+     * Applies this function to the given arguments.
+     *
+     * @param t
+     *     the first function argument
+     * @param u
+     *     the second function argument
+     * @return the function result
+     */
+    R apply(T t, U u) throws SQLException;
+  }
+
   NamedParameterJdbcTemplate namedJdbc();
 
   default JdbcOperations jdbc() {
@@ -43,18 +58,27 @@ public interface DaoOperations {
   }
 
   default Array createVarcharArray(Stream<String> collection) {
+    return createArray(collection, "varchar");
+  }
+
+  default Array createUuidArray(Stream<UUID> collection) {
+    return createArray(collection, "uuid");
+  }
+
+  default <T> Array createArray(Stream<T> collection, String sqlType) {
     return jdbc().execute((Connection con) -> {
-      final String[] strings = collection.toArray(String[]::new);
-      return con.createArrayOf("varchar", strings);
+      return con.createArrayOf(sqlType, collection.toArray());
     });
   }
 
-  default Stream<String> convertVarcharArray(Array array) {
+  default <T> Stream<T> convertArray(Array array,
+      CheckedBiFunction<ResultSet, Integer, T> extract) {
     try {
-      Stream.Builder<String> builder = Stream.builder();
+      Stream.Builder<T> builder = Stream.builder();
       try (ResultSet arrayRs = array.getResultSet()) {
         while (arrayRs.next()) {
-          builder.add(arrayRs.getString(2)); // index 1 is array index number
+          // index 1 is array index number, so extract should use 2
+          builder.add(extract.apply(arrayRs, 2));
         }
       }
       return builder.build();
@@ -63,6 +87,16 @@ public interface DaoOperations {
       throw ((JdbcTemplate) jdbc()).getExceptionTranslator()
           .translate("could not convert array: " + array, null, e);
     }
+
+  }
+
+  default Stream<String> convertVarcharArray(Array array) {
+    return convertArray(array, ResultSet::getString);
+  }
+
+  default Stream<UUID> convertUuidArray(Array array) {
+    return convertArray(array,
+        (resultSet, columnIndex) -> UUID.fromString(resultSet.getString(columnIndex)));
   }
 
   /**
