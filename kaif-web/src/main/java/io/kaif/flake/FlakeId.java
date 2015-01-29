@@ -56,7 +56,7 @@ public final class FlakeId implements Comparable<FlakeId> {
   }
 
   /**
-   * create a psuedo FlakeId with min value on specified epochMilli time. created FlakeId can use
+   * create a pseudo FlakeId with min value on specified epochMilli time. created FlakeId can use
    * to query time range in database
    */
   public static FlakeId startOf(long epochMilli) {
@@ -65,7 +65,7 @@ public final class FlakeId implements Comparable<FlakeId> {
   }
 
   /**
-   * create a psuedo FlakeId which max value on specified epochMilli time. created FlakeId can use
+   * create a pseudo FlakeId which max value on specified epochMilli time. created FlakeId can use
    * to query time range in database
    */
   public static FlakeId endOf(long epochMilli) {
@@ -90,7 +90,7 @@ public final class FlakeId implements Comparable<FlakeId> {
     return value >> NODE_ID_BITS;
   }
 
-  public int nodeId() {
+  int nodeId() {
     return (int) (value % (1L << NODE_ID_BITS));
   }
 

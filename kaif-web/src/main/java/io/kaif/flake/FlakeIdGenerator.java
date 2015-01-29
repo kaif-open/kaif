@@ -59,6 +59,8 @@ public abstract class FlakeIdGenerator {
   }
 
   /*
+   * ingram: The code copy from cassandra driver UUIDs class
+   *
    * Note that currently we use System.currentTimeMillis() for a base time in
    * milliseconds, and then if we are in the same milliseconds that the
    * previous generation, we increment the number of sub milli second.
