@@ -1,11 +1,11 @@
 package io.kaif.model.article;
 
 public enum ArticleContentType {
-  // content is a link url
-  LINK,
+  // content is a url
+  URL,
 
   // content is a mark down article
-  NORMAL,
+  MARK_DOWN,
 
   // content is matome (richer mark down)
   MATOME;

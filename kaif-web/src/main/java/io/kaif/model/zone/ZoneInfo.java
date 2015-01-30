@@ -17,8 +17,8 @@ public class ZoneInfo {
   // theme used in site related zone, like Blog or FAQ
   public static final String THEME_SITE = "zone-site";
 
-  //TODO uni test
-  private static final Pattern ZONE_PATTERN = Pattern.compile("[a-z0-9\\-_]{2,30}");
+  //TODO unit test
+  private static final Pattern ZONE_PATTERN = Pattern.compile("^[a-z0-9\\-]{3,30}$");
 
   public static ZoneInfo create(String zone,
       String aliasName,
@@ -29,6 +29,7 @@ public class ZoneInfo {
     Preconditions.checkArgument(ZONE_PATTERN.matcher(zone).matches());
     return new ZoneInfo(zone, aliasName, theme, read, write, Collections.emptyList(), now);
   }
+
   //zone are always lowercase and URL friendly
   private final String zone;
   //display name of zone, may include Upper case or even Chinese

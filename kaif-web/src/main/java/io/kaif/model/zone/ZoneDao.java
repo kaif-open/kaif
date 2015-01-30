@@ -4,6 +4,8 @@ import static java.util.stream.Collectors.*;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
@@ -18,13 +20,16 @@ public class ZoneDao implements DaoOperations {
 
   @Autowired
   private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
   private final RowMapper<ZoneInfo> zoneInfoMapper = (rs, n) -> {
-    return new ZoneInfo(rs.getString("zone"),
+    List<UUID> adminAccountIds = convertUuidArray(rs.getArray("adminAccountIds")).collect(toList());
+    return new ZoneInfo(//
+        rs.getString("zone"),
         rs.getString("aliasName"),
         rs.getString("theme"),
         Authority.valueOf(rs.getString("readAuthority")),
         Authority.valueOf(rs.getString("writeAuthority")),
-        convertUuidArray(rs.getArray("adminAccountIds")).collect(toList()),
+        adminAccountIds,
         rs.getTimestamp("createTime").toInstant());
   };
 

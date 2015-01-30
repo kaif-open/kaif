@@ -22,21 +22,27 @@ import io.kaif.database.DaoOperations;
 @Repository
 public class AccountDao implements DaoOperations {
 
-  private final RowMapper<Account> accountMapper = (rs,
-      rowNum) -> new Account(UUID.fromString(rs.getString("accountId")),
-      rs.getString("username"),
-      rs.getString("email"),
-      rs.getString("passwordHash"),
-      rs.getTimestamp("createTime").toInstant(),
-      convertVarcharArray(rs.getArray("authorities")).map(Authority::valueOf)
-          .collect(Collectors.toSet()));
+  private final RowMapper<Account> accountMapper = (rs, rowNum) -> {
+    Set<Authority> authorities = convertVarcharArray(rs.getArray("authorities")).map(Authority::valueOf)
+        .collect(Collectors.toSet());
+    return new Account(//
+        UUID.fromString(rs.getString("accountId")),
+        rs.getString("username"),
+        rs.getString("email"),
+        rs.getString("passwordHash"),
+        rs.getTimestamp("createTime").toInstant(),
+        authorities);
+  };
 
-  private final RowMapper<AccountOnceToken> tokenMapper = (rs,
-      rowNum) -> new AccountOnceToken(rs.getString("token"),
-      UUID.fromString(rs.getString("accountId")),
-      AccountOnceToken.Type.valueOf(rs.getString("tokenType")),
-      rs.getBoolean("complete"),
-      rs.getTimestamp("createTime").toInstant());
+  private final RowMapper<AccountOnceToken> tokenMapper = (rs, rowNum) -> {
+    AccountOnceToken.Type tokenType = AccountOnceToken.Type.valueOf(rs.getString("tokenType"));
+    return new AccountOnceToken(//
+        rs.getString("token"),
+        UUID.fromString(rs.getString("accountId")),
+        tokenType,
+        rs.getBoolean("complete"),
+        rs.getTimestamp("createTime").toInstant());
+  };
 
   @Autowired
   private NamedParameterJdbcTemplate namedParameterJdbcTemplate;

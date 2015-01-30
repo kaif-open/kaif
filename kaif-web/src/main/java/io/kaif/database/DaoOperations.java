@@ -20,7 +20,7 @@ import com.google.common.base.Preconditions;
 public interface DaoOperations {
 
   @FunctionalInterface
-  public interface CheckedBiFunction<T, U, R> {
+  public interface CheckedSqlBiFunction<T, U, R> {
 
     /**
      * Applies this function to the given arguments.
@@ -38,10 +38,6 @@ public interface DaoOperations {
 
   default JdbcOperations jdbc() {
     return namedJdbc().getJdbcOperations();
-  }
-
-  default UUID uuid(String id) {
-    return UUID.fromString(id);
   }
 
   default PGobject pgJson(final String rawJson) {
@@ -72,7 +68,7 @@ public interface DaoOperations {
   }
 
   default <T> Stream<T> convertArray(Array array,
-      CheckedBiFunction<ResultSet, Integer, T> extract) {
+      CheckedSqlBiFunction<ResultSet, Integer, T> extract) {
     try {
       Stream.Builder<T> builder = Stream.builder();
       try (ResultSet arrayRs = array.getResultSet()) {
