@@ -9,7 +9,7 @@ spring.freemarker.settings.datetime_format: yyyy-MM-dd
 spring.freemarker.settings.number_format: 0.######
 # expose `request` so it is accessible in ftl
 spring.freemarker.request-context-attribute: request
-
+error.whitelabel.enabled: false
 
 ## actuator
 management.context-path: /actuate

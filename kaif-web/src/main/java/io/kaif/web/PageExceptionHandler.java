@@ -1,12 +1,15 @@
 package io.kaif.web;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.context.request.ServletWebRequest;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import io.kaif.web.support.AccessDeniedException;
@@ -15,13 +18,19 @@ import io.kaif.web.support.AccessDeniedException;
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class PageExceptionHandler {
 
-  @org.springframework.web.bind.annotation.ExceptionHandler(AccessDeniedException.class)
-  public ModelAndView handleRestAccessDeniedException(final AccessDeniedException ex,
-      final WebRequest request) {
-    final HttpStatus status = HttpStatus.UNAUTHORIZED;
-    if (request instanceof ServletWebRequest) {
-      ((ServletWebRequest) request).getResponse().setStatus(status.value());
-    }
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  @ExceptionHandler(AccessDeniedException.class)
+  public ModelAndView handleAccessDeniedException(final AccessDeniedException ex) {
     return new ModelAndView("access-denied");
   }
+
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler(EmptyResultDataAccessException.class)
+  public ModelAndView handleEmptyResultDataAccessException(EmptyResultDataAccessException e,
+      HttpServletRequest request) {
+    //see error.ftl and spring's BasicErrorController
+    request.setAttribute("status", HttpStatus.NOT_FOUND.value());
+    return new ModelAndView("error");
+  }
+
 }

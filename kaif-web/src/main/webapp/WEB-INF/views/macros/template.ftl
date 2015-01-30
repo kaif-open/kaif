@@ -15,6 +15,12 @@ sample configs:
   'layout':'full'
 }>
 
+3) for error page
+
+<@template.page {
+  'layout':'small',
+  'errorPage': true
+}>
 -->
 <#macro page config>
 
@@ -31,7 +37,7 @@ sample configs:
     <#if kaif.profilesActive?contains('dev')>
 
     <#-- for detect dev mode only, should not leak information to produciton -->
-        <meta name="kaifProfilesActive" content="${kaif.profilesActive}">
+        <meta name="kaifProfilesActive" content="${(kaif.profilesActive)!"prod"}">
 
     <#-- server locale is only used in dev mode, because the page will be cached for everyone
     -->
@@ -41,7 +47,8 @@ sample configs:
     <link rel='stylesheet' href='/webjars/yui-pure/0.5.0/pure-min.css'>
     <link rel='stylesheet' href='/webjars/yui-pure/0.5.0/grids-responsive-min.css'>
     <link rel="stylesheet" href="/webjars/font-awesome/4.2.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/kaif.css?${kaif.deployServerTime}">
+    <link rel="stylesheet" href="/css/kaif.css?${(kaif.deployServerTime)!0}">
+
 </head>
 <body>
 <header class="header">
@@ -79,16 +86,18 @@ sample configs:
 <footer class="footer l-box">
     Sample footer
 </footer>
-
-    <#if kaif.profilesActive?contains('dev')>
-    <#-- require dart pub serve, please run `./gradlew pubServe` -->
-    <div id="waitingPubServe"
-         style="position: fixed; bottom:0; right:0px; padding: 3px 10px; background-color: rgba(92, 0, 0, 0.67); color:white">
-        Waiting Pub Serve...
-    </div>
-    <script src="//localhost:15980/main.dart.js"></script>
-    <#else>
-    <script src="/dart_dist/web/main.dart.js?${kaif.deployServerTime}"></script>
+<#-- Error page will not enable js, for security reason -->
+    <#if !((config.errorPage)!false) >
+        <#if kaif.profilesActive?contains('dev')>
+        <#-- require dart pub serve, please run `./gradlew pubServe` -->
+        <div id="waitingPubServe"
+             style="position: fixed; bottom:0; right:0px; padding: 3px 10px; background-color: rgba(92, 0, 0, 0.67); color:white">
+            Waiting Pub Serve...
+        </div>
+        <script src="//localhost:15980/main.dart.js"></script>
+        <#else>
+        <script src="/dart_dist/web/main.dart.js?${kaif.deployServerTime}"></script>
+        </#if>
     </#if>
 </body>
 </html>

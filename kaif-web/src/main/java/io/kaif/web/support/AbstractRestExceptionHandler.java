@@ -16,6 +16,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.dao.PessimisticLockingFailureException;
@@ -67,6 +68,17 @@ public abstract class AbstractRestExceptionHandler extends ResponseEntityExcepti
     final HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
     final RestErrorResponse errorResponse = new RestErrorResponse(status.value(),
         i18n(request, "rest-error.DataAccessException", ex.getClass().getSimpleName()));
+    logException(ex, errorResponse, request);
+    return new ResponseEntity<>(errorResponse, status);
+  }
+
+  @ExceptionHandler(EmptyResultDataAccessException.class)
+  @ResponseBody
+  public ResponseEntity<RestErrorResponse> handleEmptyResultDataAccessException(final EmptyResultDataAccessException ex,
+      final WebRequest request) {
+    final HttpStatus status = HttpStatus.NOT_FOUND;
+    final RestErrorResponse errorResponse = new RestErrorResponse(status.value(),
+        i18n(request, "rest-error.EmptyResultDataAccessException", ex.getClass().getSimpleName()));
     logException(ex, errorResponse, request);
     return new ResponseEntity<>(errorResponse, status);
   }
