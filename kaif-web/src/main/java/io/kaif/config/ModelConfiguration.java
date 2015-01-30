@@ -3,11 +3,13 @@ package io.kaif.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
 
 import io.kaif.model.article.ArticleFlakeIdGenerator;
 
 @Configuration
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class ModelConfiguration {
 
   @Component

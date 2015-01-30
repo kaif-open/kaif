@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -15,7 +17,11 @@ import org.springframework.stereotype.Repository;
 import io.kaif.database.DaoOperations;
 import io.kaif.model.account.Authority;
 
+/**
+ * @see io.kaif.config.UtilConfiguration#zoneInfoCacheManager()
+ */
 @Repository
+@CacheConfig(cacheNames = "ZoneInfo")
 public class ZoneDao implements DaoOperations {
 
   @Autowired
@@ -65,5 +71,11 @@ public class ZoneDao implements DaoOperations {
 
   public ZoneInfo getZoneWithoutCache(String zone) {
     return jdbc().queryForObject("SELECT * FROM ZoneInfo WHERE zone = ? ", zoneInfoMapper, zone);
+  }
+
+  //use argument `zone` as cache key
+  @Cacheable
+  public ZoneInfo getZone(String zone) {
+    return getZoneWithoutCache(zone);
   }
 }

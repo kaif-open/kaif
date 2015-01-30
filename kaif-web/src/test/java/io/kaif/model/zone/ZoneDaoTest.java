@@ -33,4 +33,17 @@ public class ZoneDaoTest extends DbIntegrationTests {
     assertEquals(ZoneInfo.THEME_DEFAULT, loaded.getTheme());
     assertEquals(0, loaded.getAdminAccountIds().size());
   }
+
+  @Test
+  public void getZone_cached() throws Exception {
+    ZoneInfo zone = dao.create("def",
+        "dddd",
+        ZoneInfo.THEME_DEFAULT,
+        Authority.TOURIST,
+        Authority.CITIZEN,
+        Instant.now());
+
+    ZoneInfo cached = dao.getZone("def");
+    assertSame(cached, dao.getZone("def"));
+  }
 }
