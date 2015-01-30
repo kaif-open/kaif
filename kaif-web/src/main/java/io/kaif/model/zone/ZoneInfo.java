@@ -26,7 +26,7 @@ public class ZoneInfo {
       Authority read,
       Authority write,
       Instant now) {
-    Preconditions.checkArgument(ZONE_PATTERN.matcher(zone).matches());
+    Preconditions.checkArgument(zone != null && ZONE_PATTERN.matcher(zone).matches());
     return new ZoneInfo(zone, aliasName, theme, read, write, Collections.emptyList(), now);
   }
 

@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -77,5 +78,10 @@ public class ZoneDao implements DaoOperations {
   @Cacheable
   public ZoneInfo getZone(String zone) {
     return getZoneWithoutCache(zone);
+  }
+
+  @CacheEvict(key = "#a0") //a0 is first argument
+  public void updateTheme(String zone, String theme) {
+    jdbc().update("UPDATE ZoneInfo SET theme = ? WHERE zone = ? ", theme, zone);
   }
 }
