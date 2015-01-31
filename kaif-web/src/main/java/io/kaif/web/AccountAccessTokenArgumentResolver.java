@@ -10,19 +10,15 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import io.kaif.model.AccountService;
+import io.kaif.service.AccountService;
 import io.kaif.model.account.AccountAccessToken;
-import io.kaif.model.account.AccountSecret;
 import io.kaif.web.support.AccessDeniedException;
 
 public class AccountAccessTokenArgumentResolver implements HandlerMethodArgumentResolver {
 
-  private final AccountSecret accountSecret;
   private final AccountService accountService;
 
-  public AccountAccessTokenArgumentResolver(AccountSecret accountSecret,
-      AccountService accountService) {
-    this.accountSecret = accountSecret;
+  public AccountAccessTokenArgumentResolver(AccountService accountService) {
     this.accountService = accountService;
   }
 
@@ -43,7 +39,7 @@ public class AccountAccessTokenArgumentResolver implements HandlerMethodArgument
 
     //GET operation are calculated in memory only
     if (nativeRequest.getMethod().equalsIgnoreCase("GET")) {
-      verified = AccountAccessToken.tryDecode(token, accountSecret);
+      verified = accountService.tryDecodeAccessToken(token);
     } else {
       //for other mutation operation, always check in db
       verified = accountService.verifyAccessToken(token);

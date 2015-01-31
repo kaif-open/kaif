@@ -9,6 +9,8 @@
     </appender>
     <logger name="io.kaif" level="DEBUG"/>
     <logger name="org.apache.catalina.startup.DigesterFactory" level="OFF"/>
+    <logger name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"
+            level="WARN"/>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>

@@ -1,4 +1,4 @@
-package io.kaif.model;
+package io.kaif.service.impl;
 
 import static org.junit.Assert.*;
 
@@ -6,11 +6,12 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.kaif.database.DbIntegrationTests;
+import io.kaif.service.ZoneService;
 import io.kaif.model.account.Authority;
 import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
 
-public class ZoneServiceTest extends DbIntegrationTests {
+public class ZoneServiceImplTest extends DbIntegrationTests {
 
   @Autowired
   private ZoneService service;

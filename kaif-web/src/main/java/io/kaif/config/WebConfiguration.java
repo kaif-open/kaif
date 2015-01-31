@@ -28,8 +28,7 @@ import com.google.common.collect.ImmutableMap;
 
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateModelException;
-import io.kaif.model.AccountService;
-import io.kaif.model.account.AccountSecret;
+import io.kaif.service.AccountService;
 import io.kaif.web.AccountAccessTokenArgumentResolver;
 
 @Configuration
@@ -53,14 +52,11 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
   }
 
   @Autowired
-  private AccountSecret accountSecret;
-
-  @Autowired
   private AccountService accountService;
 
   @Override
   public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-    argumentResolvers.add(new AccountAccessTokenArgumentResolver(accountSecret, accountService));
+    argumentResolvers.add(new AccountAccessTokenArgumentResolver(accountService));
   }
 
   // change locale only enable in dev mode, see {@link #addInterceptors}

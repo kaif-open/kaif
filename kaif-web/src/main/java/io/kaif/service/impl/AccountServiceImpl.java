@@ -1,4 +1,4 @@
-package io.kaif.model;
+package io.kaif.service.impl;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -19,6 +19,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 
 import io.kaif.mail.MailAgent;
+import io.kaif.service.AccountService;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountAuth;
@@ -30,11 +31,11 @@ import io.kaif.model.exception.OldPasswordNotMatchException;
 
 @Service
 @Transactional
-public class AccountService {
+public class AccountServiceImpl implements AccountService {
 
   private static final Duration ACCOUNT_TOKEN_EXPIRE = Duration.ofDays(30);
 
-  private static final Logger logger = LoggerFactory.getLogger(AccountService.class);
+  private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
 
   @Autowired
   private AccountDao accountDao;
@@ -50,6 +51,7 @@ public class AccountService {
 
   private Clock clock = Clock.systemDefaultZone();
 
+  @Override
   public Account createViaEmail(String username, String email, String password, Locale locale) {
     Preconditions.checkArgument(Account.isValidPassword(password));
     Preconditions.checkArgument(Account.isValidUsername(username));
@@ -69,10 +71,12 @@ public class AccountService {
     mailAgent.sendAccountActivation(locale, account, token.getToken());
   }
 
+  @Override
   public Optional<Account> findById(UUID accountId) {
     return accountDao.findById(accountId);
   }
 
+  @Override
   public Optional<AccountAuth> authenticate(String username, String password) {
     return accountDao.findByUsername(username)
         .filter(account -> passwordEncoder.matches(password, account.getPasswordHash()))
@@ -93,9 +97,10 @@ public class AccountService {
 
   /**
    * the verification go against database, so it is slow. using {@link
-   * io.kaif.model.account.AccountAccessToken#tryDecode(String, io.kaif.model.account.AccountSecret)}
+   * #tryDecodeAccessToken(String)}
    * if you want faster check.
    */
+  @Override
   public Optional<AccountAccessToken> verifyAccessToken(String rawAccessToken) {
     return AccountAccessToken.tryDecode(rawAccessToken, accountSecret)
         .filter(token -> verifyTokenToAccount(token).isPresent());
@@ -108,6 +113,7 @@ public class AccountService {
     });
   }
 
+  @Override
   public AccountAuth extendsAccessToken(AccountAccessToken accessToken) {
     return Optional.ofNullable(accessToken)
         .flatMap(token -> accountDao.findById(token.getAccountId()))
@@ -115,14 +121,17 @@ public class AccountService {
         .get();
   }
 
+  @Override
   public boolean isUsernameAvailable(String username) {
     return !accountDao.findByUsername(username).isPresent();
   }
 
+  @Override
   public boolean isEmailAvailable(String email) {
     return accountDao.isEmailAvailable(email);
   }
 
+  @Override
   public void updateAuthorities(UUID accountId, EnumSet<Authority> authorities) {
     accountDao.updateAuthorities(accountId, authorities);
   }
@@ -133,6 +142,7 @@ public class AccountService {
     //TODO send password changed email
   }
 
+  @Override
   public boolean activate(String token) {
     return accountDao.findOnceToken(token, AccountOnceToken.Type.ACTIVATION)
         .filter(onceToken -> onceToken.isValid(Instant.now(clock)))
@@ -152,12 +162,14 @@ public class AccountService {
     this.clock = clock;
   }
 
+  @Override
   public void resendActivation(UUID accountId, Locale locale) {
     accountDao.findById(accountId).ifPresent(account -> {
       sendOnceAccountActivation(account, locale, Instant.now(clock));
     });
   }
 
+  @Override
   public void sendResetPassword(String username, String email, Locale locale) {
     logger.info("begin reset password: {}, {}", username, email);
     accountDao.findByUsername(username)
@@ -171,11 +183,13 @@ public class AccountService {
 
   }
 
+  @Override
   public Optional<AccountOnceToken> findValidResetPasswordToken(String token) {
     return accountDao.findOnceToken(token, AccountOnceToken.Type.FORGET_PASSWORD)
         .filter(onceToken -> onceToken.isValid(Instant.now(clock)));
   }
 
+  @Override
   public void updatePasswordWithToken(String token, String password, Locale locale) {
     findValidResetPasswordToken(token).ifPresent(onceToken -> {
       accountDao.completeOnceToken(onceToken);
@@ -183,6 +197,7 @@ public class AccountService {
     });
   }
 
+  @Override
   public AccountAuth updateNewPassword(UUID accountId,
       String oldPassword,
       String newPassword,
@@ -196,5 +211,10 @@ public class AccountService {
         })
         .map(this::createAccountAuth)
         .orElseThrow(OldPasswordNotMatchException::new);
+  }
+
+  @Override
+  public Optional<AccountAccessToken> tryDecodeAccessToken(String token) {
+    return AccountAccessToken.tryDecode(token, accountSecret);
   }
 }
