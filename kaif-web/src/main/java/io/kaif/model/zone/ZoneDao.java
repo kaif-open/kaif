@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -70,13 +71,13 @@ public class ZoneDao implements DaoOperations {
     return zoneInfo;
   }
 
-  public ZoneInfo getZoneWithoutCache(String zone) {
+  public ZoneInfo getZoneWithoutCache(String zone) throws EmptyResultDataAccessException {
     return jdbc().queryForObject("SELECT * FROM ZoneInfo WHERE zone = ? ", zoneInfoMapper, zone);
   }
 
   //use argument `zone` as cache key
   @Cacheable
-  public ZoneInfo getZone(String zone) {
+  public ZoneInfo getZone(String zone) throws EmptyResultDataAccessException {
     return getZoneWithoutCache(zone);
   }
 

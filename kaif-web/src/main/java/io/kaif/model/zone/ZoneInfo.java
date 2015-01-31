@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 
 import io.kaif.model.account.Authority;
 
@@ -17,8 +18,25 @@ public class ZoneInfo {
   // theme used in site related zone, like Blog or FAQ
   public static final String THEME_KAIF = "z-theme-kaif";
 
-  //TODO unit test
-  private static final Pattern ZONE_PATTERN = Pattern.compile("^[a-z0-9\\-]{3,30}$");
+  /**
+   * - must start with az09, end with az09, no dash
+   * - must use dash to separate
+   * - 3~30 chars.
+   * - not allow concat multiple dash (use code to validate, not regex)
+   */
+  private static final Pattern ZONE_PATTERN = Pattern.compile("^[a-z0-9][a-z0-9\\-]{1,28}[a-z0-9]$");
+
+  /**
+   * fallback to valid zone name whenever possible (user is easily typo)
+   * <p>
+   * fallback rule is follow valid zone pattern
+   */
+  public static String zoneFallback(String rawZone) {
+    if (Strings.isNullOrEmpty(rawZone)) {
+      return "";
+    }
+    return rawZone.toLowerCase().replaceAll("[\\-_]+", "-");
+  }
 
   public static ZoneInfo create(String zone,
       String aliasName,
@@ -26,8 +44,12 @@ public class ZoneInfo {
       Authority read,
       Authority write,
       Instant now) {
-    Preconditions.checkArgument(zone != null && ZONE_PATTERN.matcher(zone).matches());
+    Preconditions.checkArgument(validateZone(zone));
     return new ZoneInfo(zone, aliasName, theme, read, write, Collections.emptyList(), now);
+  }
+
+  private static boolean validateZone(String zone) {
+    return zone != null && ZONE_PATTERN.matcher(zone).matches() && !zone.contains("--");
   }
 
   //zone are always lowercase and URL friendly
@@ -110,5 +132,6 @@ public class ZoneInfo {
   public Instant getCreateTime() {
     return createTime;
   }
+
 }
 
