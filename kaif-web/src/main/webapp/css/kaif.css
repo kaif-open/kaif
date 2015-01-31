@@ -73,6 +73,26 @@ label {
     text-align: center;
 }
 
+ul.footer-item {
+    margin: 0;
+}
+
+ul.footer-item li {
+    display: inline-block;
+    padding: 0 0.5em;
+}
+
+.footer-item li a,
+.footer-item li a:visited {
+    color: #6FBEF3;
+    text-decoration: none;
+}
+
+.footer-item li a:hover,
+.footer-item li a:focus {
+    color: #AECFE5;
+}
+
 /*
  * -- TABLET (AND UP) MEDIA QUERIES --
  * On tablets and other medium-sized devices, we want to customize some
@@ -349,4 +369,10 @@ main {
     width: 50%;
     left: 25%;
     right: 0;
+}
+
+/** zone articles **/
+
+.zone {
+
 }

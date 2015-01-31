@@ -12,10 +12,10 @@ import io.kaif.model.account.Authority;
 
 public class ZoneInfo {
 
-  public static final String THEME_DEFAULT = "zone-default";
+  public static final String THEME_DEFAULT = "z-theme-default";
 
   // theme used in site related zone, like Blog or FAQ
-  public static final String THEME_SITE = "zone-site";
+  public static final String THEME_KAIF = "z-theme-kaif";
 
   //TODO unit test
   private static final Pattern ZONE_PATTERN = Pattern.compile("^[a-z0-9\\-]{3,30}$");

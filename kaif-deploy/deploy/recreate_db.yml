@@ -11,11 +11,17 @@
     ignore_errors: yes
     sudo: yes
 
+  - name: restart postgres to disconnect all clients
+    command: /usr/sbin/service postgresql restart 
+    ignore_errors: yes
+    sudo: yes
+
   - name: destroy and recreate database and schema
     shell: "{{ item }}"
     with_items:
       - psql < /tmp/db/recreate_db.sql
       - psql -U kaif < /tmp/db/schema.sql
+      - psql -U kaif < /tmp/db/data.sql
       - psql < /tmp/db/recreate_db_ci.sql
     sudo_user: postgres
     sudo: yes

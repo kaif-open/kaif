@@ -11,7 +11,7 @@ server:
 ## database
 spring.datasource.initialize: true
 spring.datasource.schema: classpath:db/recreate_schema.sql,classpath:db/schema.sql
-spring.datasource.data: db/data.sql
+spring.datasource.data:
 
 spring.datasource.driver-class-name: org.postgresql.Driver
 spring.datasource.url: jdbc:postgresql://192.168.59.59:5432/ci_kaif

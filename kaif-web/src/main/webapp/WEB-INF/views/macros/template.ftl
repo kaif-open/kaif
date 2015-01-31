@@ -49,6 +49,9 @@ sample configs:
     <link rel="stylesheet" href="/webjars/font-awesome/4.2.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/css/kaif.css?${(kaif.deployServerTime)!0}">
 
+    <#if zoneInfo?? >
+        <link rel="stylesheet" href="/css/${zoneInfo.theme}.css?${(kaif.deployServerTime)!0}">
+    </#if>
 </head>
 <body>
 <header class="header">
@@ -84,7 +87,14 @@ sample configs:
 </main>
 
 <footer class="footer l-box">
-    Sample footer
+    <ul class="footer-item">
+        <li>
+            &#169; 2015
+        </li>
+        <li>
+            <a href="/z/kaif-faq">常見問題</a>
+        </li>
+    </ul>
 </footer>
 <#-- Error page will not enable js, for security reason -->
     <#if !((config.errorPage)!false) >

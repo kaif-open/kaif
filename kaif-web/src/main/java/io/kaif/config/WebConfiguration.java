@@ -38,9 +38,9 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
   /**
    * add module Java 8 Time and AfterBurner in class path
    */
+  @SuppressWarnings("unchecked")
   @Bean
   public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
-    //noinspection unchecked
     return new Jackson2ObjectMapperBuilder().modulesToInstall(AfterburnerModule.class);
   }
 

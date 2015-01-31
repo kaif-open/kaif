@@ -48,7 +48,7 @@ public class ZoneServiceTest extends DbIntegrationTests {
   public void updateTheme() throws Exception {
     service.create("twfaq", "TW FAQ", ZoneInfo.THEME_DEFAULT, Authority.TOURIST, Authority.CITIZEN);
     service.getZone("twfaq");//populate cache
-    service.updateTheme("twfaq", ZoneInfo.THEME_SITE);
-    assertEquals(ZoneInfo.THEME_SITE, service.getZone("twfaq").getTheme());
+    service.updateTheme("twfaq", ZoneInfo.THEME_KAIF);
+    assertEquals(ZoneInfo.THEME_KAIF, service.getZone("twfaq").getTheme());
   }
 }
