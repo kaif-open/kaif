@@ -11,6 +11,7 @@ spring.freemarker.settings.number_format: 0.######
 spring.freemarker.request-context-attribute: request
 error.whitelabel.enabled: false
 
+
 ## actuator
 management.context-path: /actuate
 endpoints.enabled: false

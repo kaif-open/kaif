@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
@@ -22,7 +23,8 @@ import io.kaif.mail.MailAgent;
 @SpringApplicationConfiguration(classes = DbIntegrationTests.JdbcTestApplication.class)
 public abstract class DbIntegrationTests extends AbstractTransactionalJUnit4SpringContextTests {
 
-  @ComponentScan(basePackages = "io.kaif.model")
+  @Profile(SpringProfile.TEST)
+  @ComponentScan(basePackages = { "io.kaif.model", "io.kaif.service" })
   @Import(value = { DataSourceAutoConfiguration.class,
       DataSourceTransactionManagerAutoConfiguration.class, ModelConfiguration.class,
       UtilConfiguration.class, MockTestConfig.class })
@@ -30,8 +32,9 @@ public abstract class DbIntegrationTests extends AbstractTransactionalJUnit4Spri
 
   }
 
+  @Profile(SpringProfile.TEST)
   @Configuration
-  public static class MockTestConfig {
+  static class MockTestConfig {
     @Bean
     public MailAgent mailAgent() {
       return Mockito.mock(MailAgent.class);

@@ -1,4 +1,4 @@
-package io.kaif.model;
+package io.kaif.service.impl;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.eq;
@@ -26,10 +26,10 @@ import io.kaif.model.account.AccountSecret;
 import io.kaif.model.account.Authority;
 import io.kaif.model.exception.OldPasswordNotMatchException;
 
-public class AccountServiceTest extends DbIntegrationTests {
+public class AccountServiceImplTest extends DbIntegrationTests {
 
   @Autowired
-  private AccountService service;
+  private AccountServiceImpl service;
 
   @Autowired
   private AccountSecret accountSecret;

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import io.kaif.model.ZoneService;
+import io.kaif.service.ZoneService;
 import io.kaif.model.zone.ZoneInfo;
 
 @Controller
