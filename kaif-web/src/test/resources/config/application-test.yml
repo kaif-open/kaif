@@ -7,8 +7,8 @@ server:
     port: 25980
 
 ## freemarker
-# note that /views is symbolic link to WEB-INF/views, MvcIntegraitonTests could
-# not detect it via file system, only classpath
+# note that /views_link is symbolic link to WEB-INF/views, because MvcIntegraitonTests could
+# not detect template via file system, only classpath
 spring.freemarker.templateLoaderPath: classpath:/views_link
 
 ## actuator

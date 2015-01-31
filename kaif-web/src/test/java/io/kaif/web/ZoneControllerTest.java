@@ -6,10 +6,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import java.time.Instant;
 
 import org.junit.Test;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import io.kaif.model.zone.ZoneInfo;
 
@@ -31,5 +33,14 @@ public class ZoneControllerTest extends MvcIntegrationTests {
     mockMvc.perform(get("/z/Programming?xyz"))
         .andExpect(status().isPermanentRedirect())
         .andExpect(redirectedUrl("http://localhost/z/programming?xyz"));
+  }
+
+  @Test
+  public void notExistZone_404() throws Exception {
+    when(zoneService.getZone("not-exist")).thenThrow(new EmptyResultDataAccessException("fake", 1));
+    mockMvc.perform(get("/z/not-exist"))
+        .andExpect(status().isNotFound())
+        .andExpect(view().name("error"))
+        .andExpect(content().string(containsString("404")));
   }
 }

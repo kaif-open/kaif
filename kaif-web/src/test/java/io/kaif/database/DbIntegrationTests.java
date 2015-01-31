@@ -28,6 +28,7 @@ public abstract class DbIntegrationTests extends AbstractTransactionalJUnit4Spri
   @Import(value = { DataSourceAutoConfiguration.class,
       DataSourceTransactionManagerAutoConfiguration.class, ModelConfiguration.class,
       UtilConfiguration.class, MockTestConfig.class })
+  @Configuration
   public static class JdbcTestApplication {
 
   }

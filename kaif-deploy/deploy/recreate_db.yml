@@ -2,7 +2,7 @@
   tasks:
 
   - name: copy schema files
-    copy: src=db dest=/tmp force=yes
+    copy: src=db_link dest=/tmp force=yes
     sudo_user: postgres
     sudo: yes
 
@@ -19,10 +19,10 @@
   - name: destroy and recreate database and schema
     shell: "{{ item }}"
     with_items:
-      - psql < /tmp/db/recreate_db.sql
-      - psql -U kaif < /tmp/db/schema.sql
-      - psql -U kaif < /tmp/db/data.sql
-      - psql < /tmp/db/recreate_db_ci.sql
+      - psql < /tmp/db_link/recreate_db.sql
+      - psql -U kaif < /tmp/db_link/schema.sql
+      - psql -U kaif < /tmp/db_link/data.sql
+      - psql < /tmp/db_link/recreate_db_ci.sql
     sudo_user: postgres
     sudo: yes
 
