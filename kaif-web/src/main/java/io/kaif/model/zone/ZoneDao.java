@@ -3,7 +3,6 @@ package io.kaif.model.zone;
 import static java.util.stream.Collectors.*;
 
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,9 +34,11 @@ public class ZoneDao implements DaoOperations {
         rs.getString("zone"),
         rs.getString("aliasName"),
         rs.getString("theme"),
-        Authority.valueOf(rs.getString("readAuthority")),
+        Authority.valueOf(rs.getString("voteAuthority")),
         Authority.valueOf(rs.getString("writeAuthority")),
         adminAccountIds,
+        rs.getBoolean("allowDownVote"),
+        rs.getBoolean("hideFromTop"),
         rs.getTimestamp("createTime").toInstant());
   };
 
@@ -46,28 +47,23 @@ public class ZoneDao implements DaoOperations {
     return namedParameterJdbcTemplate;
   }
 
-  public ZoneInfo create(String zone,
-      String aliasName,
-      String theme,
-      Authority read,
-      Authority write,
-      Instant now) {
-    ZoneInfo zoneInfo = ZoneInfo.create(zone, aliasName, theme, read, write, now);
-
+  public ZoneInfo create(ZoneInfo zoneInfo) {
     jdbc().update(""
             + " INSERT "
             + "   INTO ZoneInfo "
-            + "        (zone, aliasName, theme, readAuthority, writeAuthority, "
-            + "         createTime, adminAccountIds) "
+            + "        (zone, aliasName, theme, voteAuthority, writeAuthority, "
+            + "         createTime, adminAccountIds, allowDownVote, hideFromTop) "
             + " VALUES "
-            + questions(7),
+            + questions(9),
         zoneInfo.getZone(),
         zoneInfo.getAliasName(),
         zoneInfo.getTheme(),
-        zoneInfo.getReadAuthority().name(),
+        zoneInfo.getVoteAuthority().name(),
         zoneInfo.getWriteAuthority().name(),
         Timestamp.from(zoneInfo.getCreateTime()),
-        createUuidArray(zoneInfo.getAdminAccountIds().stream()));
+        createUuidArray(zoneInfo.getAdminAccountIds().stream()),
+        zoneInfo.isAllowDownVote(),
+        zoneInfo.isHideFromTop());
     return zoneInfo;
   }
 

@@ -213,14 +213,14 @@ public class AccountServiceTest extends DbIntegrationTests {
 
     //invalid case 3, authorities changed
     accountAuth = service.authenticate("abc99", "newPw123").get();
-    service.updateAuthorities(accountId, EnumSet.of(Authority.ZONE_ADMIN));
+    service.updateAuthorities(accountId, EnumSet.of(Authority.SUFFRAGE));
     assertFalse(service.verifyAccessToken(accountAuth.getAccessToken()).isPresent());
   }
 
   @Test
   public void updateAuthorities() throws Exception {
     UUID accountId = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc).getAccountId();
-    EnumSet<Authority> set = EnumSet.of(Authority.CITIZEN, Authority.ROOT);
+    EnumSet<Authority> set = EnumSet.of(Authority.CITIZEN, Authority.SYSOP);
     service.updateAuthorities(accountId, set);
     assertEquals(set, service.findById(accountId).get().getAuthorities());
   }

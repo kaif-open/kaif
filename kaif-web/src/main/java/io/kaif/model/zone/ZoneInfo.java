@@ -3,11 +3,13 @@ package io.kaif.model.zone;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 
 import io.kaif.model.account.Authority;
 
@@ -38,47 +40,99 @@ public class ZoneInfo {
     return rawZone.toLowerCase().replaceAll("[\\-_]+", "-");
   }
 
-  public static ZoneInfo create(String zone,
-      String aliasName,
-      String theme,
-      Authority read,
-      Authority write,
-      Instant now) {
+  public static ZoneInfo createKaif(String zone, String aliasName, Instant now) {
     Preconditions.checkArgument(validateZone(zone));
-    return new ZoneInfo(zone, aliasName, theme, read, write, Collections.emptyList(), now);
+    boolean allowDownVote = true;
+    boolean hideFromTopRanking = true;
+    return new ZoneInfo(zone,
+        aliasName,
+        THEME_KAIF,
+        Authority.CITIZEN,
+        Authority.SYSOP,
+        Collections.emptyList(),
+        allowDownVote,
+        hideFromTopRanking,
+        now);
+  }
+
+  public static ZoneInfo createDefault(String zone, String aliasName, Instant now) {
+    Preconditions.checkArgument(validateZone(zone));
+    boolean allowDownVote = true;
+    boolean hideFromTopRanking = false;
+    return new ZoneInfo(zone,
+        aliasName,
+        THEME_DEFAULT,
+        Authority.CITIZEN,
+        Authority.CITIZEN,
+        Collections.emptyList(),
+        allowDownVote,
+        hideFromTopRanking,
+        now);
   }
 
   private static boolean validateZone(String zone) {
     return zone != null && ZONE_PATTERN.matcher(zone).matches() && !zone.contains("--");
   }
 
-  //zone are always lowercase and URL friendly
+  /**
+   * zone are always lowercase and URL friendly
+   */
   private final String zone;
-  //display name of zone, may include Upper case or even Chinese
+
+  /**
+   * display name of zone, may include Upper case or even Chinese
+   */
   private final String aliasName;
-  // css theme class name
+
+  /**
+   * css theme class name
+   */
   private final String theme;
-  // which authority can see this zone
-  private final Authority readAuthority;
-  // which authority can write article in this zone
+
+  /**
+   * which authority can vote this zone
+   */
+  private final Authority voteAuthority;
+
+  /**
+   * which authority can write article in this zone
+   */
   private final Authority writeAuthority;
-  // ZONE_ADMIN accountId
+
+  /**
+   * accountId can do everything about this zone, he ignore all authority check
+   */
   private final List<UUID> adminAccountIds;
+
+  /**
+   * specify the zone is up vote only
+   */
+  private final boolean allowDownVote;
+
+  /**
+   * hide this zone in home page top ranking
+   */
+  private final boolean hideFromTop;
+
   private final Instant createTime;
 
   ZoneInfo(String zone,
       String aliasName,
       String theme,
-      Authority readAuthority,
+      Authority voteAuthority,
       Authority writeAuthority,
       List<UUID> adminAccountIds,
+      boolean allowDownVote,
+      boolean hideFromTop,
       Instant createTime) {
     this.zone = zone;
     this.aliasName = aliasName;
     this.theme = theme;
-    this.readAuthority = readAuthority;
+    this.voteAuthority = voteAuthority;
     this.writeAuthority = writeAuthority;
     this.adminAccountIds = adminAccountIds;
+    this.allowDownVote = allowDownVote;
+    this.hideFromTop = hideFromTop;
     this.createTime = createTime;
   }
 
@@ -113,8 +167,8 @@ public class ZoneInfo {
     return aliasName;
   }
 
-  public Authority getReadAuthority() {
-    return readAuthority;
+  public Authority getVoteAuthority() {
+    return voteAuthority;
   }
 
   public String getTheme() {
@@ -133,5 +187,60 @@ public class ZoneInfo {
     return createTime;
   }
 
+  public boolean canUpVote(UUID accountId, Set<Authority> authorities) {
+    if (adminAccountIds.contains(accountId)) {
+      return true;
+    }
+    return authorities.contains(voteAuthority);
+  }
+
+  public boolean canDownVote(UUID accountId, Set<Authority> authorities) {
+    if (!allowDownVote) {
+      return false;
+    }
+    if (adminAccountIds.contains(accountId)) {
+      return true;
+    }
+    return authorities.contains(voteAuthority);
+  }
+
+  public boolean canWriteArticle(UUID accountId, Set<Authority> authorities) {
+    if (adminAccountIds.contains(accountId)) {
+      return true;
+    }
+    return authorities.contains(writeAuthority);
+  }
+
+  public boolean isAllowDownVote() {
+    return allowDownVote;
+  }
+
+  public boolean isHideFromTop() {
+    return hideFromTop;
+  }
+
+  public ZoneInfo withAdmins(List<UUID> accountIds) {
+    return new ZoneInfo(zone,
+        aliasName,
+        theme,
+        voteAuthority,
+        writeAuthority,
+        ImmutableList.copyOf(accountIds),
+        allowDownVote,
+        hideFromTop,
+        createTime);
+  }
+
+  public ZoneInfo withAllowDownVote(boolean allow) {
+    return new ZoneInfo(zone,
+        aliasName,
+        theme,
+        voteAuthority,
+        writeAuthority,
+        adminAccountIds,
+        allow,
+        hideFromTop,
+        createTime);
+  }
 }
 

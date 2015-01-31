@@ -1,16 +1,11 @@
 package io.kaif.model.account;
 
-import static java.util.stream.Collectors.*;
-
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Stream;
-
-import com.google.common.annotations.VisibleForTesting;
 
 import io.kaif.token.Bytes;
 
@@ -41,35 +36,31 @@ public class AccountAccessToken {
   }
 
   private static byte[] authoritiesToBytes(Set<Authority> authorities) {
-    return Bytes.intToBytes(authoritiesToInt(authorities));
+    return Bytes.longToBytes(Authority.toBits(authorities));
   }
 
-  /**
-   * digest to int must be stable between Java version, so we could not rely on hashCode(). so
-   * compute bit mask instead
-   */
-  @VisibleForTesting
-  static int authoritiesToInt(Set<Authority> authorities) {
-    return authorities.stream().mapToInt(Authority::bit).reduce(0, (p, n) -> p | n);
-  }
   private final UUID accountId;
-  private final byte[] authoritiesDigest;
+  private final byte[] authoritiesBits;
   private final byte[] passwordHashDigest;
 
   public AccountAccessToken(UUID accountId, String passwordHash, Set<Authority> authorities) {
     this(accountId, passwordHashToBytes(passwordHash), authoritiesToBytes(authorities));
   }
 
-  private AccountAccessToken(UUID accountId, byte[] passwordHashDigest, byte[] authoritiesDigest) {
+  private AccountAccessToken(UUID accountId, byte[] passwordHashDigest, byte[] authoritiesBits) {
     this.accountId = accountId;
     this.passwordHashDigest = passwordHashDigest;
-    this.authoritiesDigest = authoritiesDigest;
+    this.authoritiesBits = authoritiesBits;
+  }
+
+  public Set<Authority> getAuthorities() {
+    return Authority.fromBits(Bytes.longFromBytes(authoritiesBits));
   }
 
   public String encode(Instant expireTime, AccountSecret secret) {
-    List<byte[]> fields = Stream.of(Bytes.uuidToBytes(accountId),
+    List<byte[]> fields = Arrays.asList(Bytes.uuidToBytes(accountId),
         passwordHashDigest,
-        authoritiesDigest).collect(toList());
+        authoritiesBits);
     return secret.getCodec().encode(expireTime.toEpochMilli(), fields);
   }
 
@@ -79,7 +70,7 @@ public class AccountAccessToken {
    */
   public boolean matches(String passwordHash, Set<Authority> authorities) {
     return Arrays.equals(this.passwordHashDigest, passwordHashToBytes(passwordHash))
-        && Arrays.equals(this.authoritiesDigest, authoritiesToBytes(authorities));
+        && Arrays.equals(this.authoritiesBits, authoritiesToBytes(authorities));
   }
 
   @Override
@@ -93,7 +84,7 @@ public class AccountAccessToken {
 
     AccountAccessToken that = (AccountAccessToken) o;
 
-    if (!Arrays.equals(authoritiesDigest, that.authoritiesDigest)) {
+    if (!Arrays.equals(authoritiesBits, that.authoritiesBits)) {
       return false;
     }
     if (accountId != null ? !accountId.equals(that.accountId) : that.accountId != null) {
@@ -110,7 +101,7 @@ public class AccountAccessToken {
   public int hashCode() {
     int result = passwordHashDigest != null ? Arrays.hashCode(passwordHashDigest) : 0;
     result = 31 * result + (accountId != null ? accountId.hashCode() : 0);
-    result = 31 * result + (authoritiesDigest != null ? Arrays.hashCode(authoritiesDigest) : 0);
+    result = 31 * result + (authoritiesBits != null ? Arrays.hashCode(authoritiesBits) : 0);
     return result;
   }
 

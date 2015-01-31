@@ -22,10 +22,18 @@ CREATE TABLE ZoneInfo (
   zone            VARCHAR(4096) NOT NULL PRIMARY KEY,
   aliasName       VARCHAR(4096) NULL,
   theme           VARCHAR(4096) NULL,
-  readAuthority   VARCHAR(4096) NOT NULL,
+  voteAuthority   VARCHAR(4096) NOT NULL,
   writeAuthority  VARCHAR(4096) NOT NULL,
   adminAccountIds UUID []       NOT NULL,
+  hideFromTop     BOOLEAN       NOT NULL,
+  allowDownVote   BOOLEAN       NOT NULL,
   createTime      TIMESTAMP     NOT NULL
+);
+
+CREATE TABLE ZoneAdmin (
+  accountId UUID          NOT NULL,
+  zone      VARCHAR(4096) NOT NULL,
+  PRIMARY KEY (accountId, zone)
 );
 
 CREATE TABLE Article (
@@ -39,7 +47,7 @@ CREATE TABLE Article (
   contentType VARCHAR(4096)  NOT NULL,
   authorId    UUID           NOT NULL REFERENCES Account (accountId),
   authorName  VARCHAR(4096)  NOT NULL,
-  deleted     BOOL           NOT NULL DEFAULT FALSE,
+  deleted     BOOLEAN        NOT NULL DEFAULT FALSE,
   upVote      BIGINT         NOT NULL DEFAULT 0,
   downVote    BIGINT         NOT NULL DEFAULT 0,
   PRIMARY KEY (zone, articleId)
@@ -74,14 +82,14 @@ CREATE TABLE DebateHistory (
 );
 
 CREATE TABLE ArticleVoter (
-  voterId   UUID   NOT NULL PRIMARY KEY,
-  articleId BIGINT NOT NULL,
-  upVote    BOOL   NOT NULL
+  voterId   UUID    NOT NULL PRIMARY KEY,
+  articleId BIGINT  NOT NULL,
+  upVote    BOOLEAN NOT NULL
 );
 
 CREATE TABLE DebateVoter (
-  voterId  UUID   NOT NULL PRIMARY KEY,
-  debateId BIGINT NOT NULL,
-  upVote   BOOL   NOT NULL
+  voterId  UUID    NOT NULL PRIMARY KEY,
+  debateId BIGINT  NOT NULL,
+  upVote   BOOLEAN NOT NULL
 );
 
