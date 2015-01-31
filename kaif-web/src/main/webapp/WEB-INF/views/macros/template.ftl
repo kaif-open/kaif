@@ -29,8 +29,9 @@ sample configs:
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Kaif prototype">
 
+    <#-- TODO description and title for zone -->
+    <meta name="description" content="Kaif prototype">
     <title>kaif.io</title>
 
 <#-- meta data for dart, see ServerType for detail -->
@@ -89,7 +90,7 @@ sample configs:
 <footer class="footer l-box">
     <ul class="footer-item">
         <li>
-            &#169; 2015
+            &#169; 2015 All Rights Reserved
         </li>
         <li>
             <a href="/z/kaif-faq">常見問題</a>
@@ -114,3 +115,7 @@ sample configs:
 
 </#macro>
 
+<#macro menuLink href name>
+    <#assign selected = (springMacroRequestContext.getRequestUri() == href) />
+<li class="${selected?string('pure-menu-selected','')}"><a href="${href}">${name}</a></li>
+</#macro>

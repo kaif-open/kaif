@@ -1,3 +1,15 @@
 .z-theme-kaif {
-   color: darkred;
+    color: darkred;
+}
+
+.z-theme-kaif .zone-menu .pure-menu-heading {
+    color: darkred;
+}
+
+.z-theme-kaif .zone-menu .pure-menu-selected {
+    background-color: #f2dede;
+}
+
+.z-theme-kaif .zone-menu li a:hover {
+    background-color: #f2dede;
 }

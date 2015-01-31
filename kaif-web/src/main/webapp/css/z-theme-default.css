@@ -1,3 +1,15 @@
 .z-theme-default {
-   color: darkslateblue;
+    color: darkblue;
+}
+
+.z-theme-default .zone-menu .pure-menu-heading {
+    color: darkblue;
+}
+
+.z-theme-default .zone-menu .pure-menu-selected {
+    background-color: #eee;
+}
+
+.z-theme-default .zone-menu li a:hover {
+    background-color: #eee;
 }

@@ -376,3 +376,12 @@ main {
 .zone {
 
 }
+
+.zone-menu {
+    padding: 0;
+    margin: 0;
+}
+
+.zone-menu .pure-menu-heading {
+    font-weight: bold;
+}
