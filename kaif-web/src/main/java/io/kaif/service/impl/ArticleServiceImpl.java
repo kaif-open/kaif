@@ -14,7 +14,8 @@ import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountDao;
 import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleDao;
-import io.kaif.model.article.ArticleFlakeIdGenerator;
+import io.kaif.model.debate.Debate;
+import io.kaif.model.debate.DebateFlakeIdGenerator;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
@@ -31,9 +32,6 @@ public class ArticleServiceImpl implements ArticleService {
   private AccountDao accountDao;
 
   @Autowired
-  private ArticleFlakeIdGenerator articleFlakeIdGenerator;
-
-  @Autowired
   private ArticleDao articleDao;
 
   @Autowired
@@ -48,9 +46,7 @@ public class ArticleServiceImpl implements ArticleService {
             account.getAuthorities()))
         .orElseThrow(() -> new AccessDeniedException("no write to create article at zone:" + zone));
 
-    FlakeId flakeId = articleFlakeIdGenerator.next();
-    Article article = Article.createExternalLink(zone, flakeId, author, title, url, Instant.now());
-    return articleDao.createArticle(article);
+    return articleDao.createExternalLink(zone, author, title, url, Instant.now());
   }
 
   public Optional<Article> findArticle(Zone zone, FlakeId articleId) {
@@ -60,5 +56,25 @@ public class ArticleServiceImpl implements ArticleService {
   @Override
   public List<Article> listLatestArticles(Zone zone, int page) {
     return articleDao.listArticlesDesc(zone, page * PAGE_SIZE, PAGE_SIZE);
+  }
+
+  public Debate debate(Zone zone,
+      FlakeId articleId,
+      FlakeId parentDebateId,
+      UUID debaterId,
+      String content) {
+    //TODO handle null
+    Article article = articleDao.findArticle(zone, articleId).get();
+    //TODO filter auth
+    Account debater = accountDao.findById(debaterId)
+        .orElseThrow(() -> new AccessDeniedException("no write to debate at zone:"
+            + article.getZone()));
+    // TODO handle parent, flakeId
+    return Debate.create(article,
+        new DebateFlakeIdGenerator(10).next(),
+        null,
+        content,
+        debater,
+        Instant.now());
   }
 }

@@ -24,6 +24,8 @@ import io.kaif.mail.MailAgent;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountDao;
 import io.kaif.model.account.Authority;
+import io.kaif.model.article.Article;
+import io.kaif.model.article.ArticleDao;
 import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
 
@@ -60,6 +62,9 @@ public abstract class DbIntegrationTests extends AbstractTransactionalJUnit4Spri
   @Autowired
   private AccountDao accountDao;
 
+  @Autowired
+  private ArticleDao articleDao;
+
   @Before
   public void integrationSetUp() throws Exception {
     Mockito.reset(mockMailAgent);
@@ -78,5 +83,15 @@ public abstract class DbIntegrationTests extends AbstractTransactionalJUnit4Spri
 
   protected final Account savedAccountTourist(String username) {
     return accountDao.create(username, username + "@example.com", username + "pwd", Instant.now());
+  }
+
+  protected final Article savedArticle(String zone, String title) {
+    ZoneInfo zoneInfo = savedZoneDefault(zone);
+    Account author = savedAccountCitizen(title + "-author");
+    return articleDao.createExternalLink(zoneInfo.getZone(),
+        author,
+        title,
+        "http://example.com/" + title,
+        Instant.now());
   }
 }

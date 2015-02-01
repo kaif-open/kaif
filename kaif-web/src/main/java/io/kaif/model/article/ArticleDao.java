@@ -1,6 +1,7 @@
 package io.kaif.model.article;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import io.kaif.database.DaoOperations;
 import io.kaif.flake.FlakeId;
+import io.kaif.model.account.Account;
 import io.kaif.model.zone.Zone;
 
 @Repository
@@ -19,6 +21,9 @@ public class ArticleDao implements DaoOperations {
 
   @Autowired
   private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+  @Autowired
+  private ArticleFlakeIdGenerator articleFlakeIdGenerator;
 
   private final RowMapper<Article> articleMapper = (rs, rowNum) -> {
     return new Article(//
@@ -43,7 +48,7 @@ public class ArticleDao implements DaoOperations {
     return namedParameterJdbcTemplate;
   }
 
-  public Article createArticle(Article article) {
+  private Article insertArticle(Article article) {
     jdbc().update(""
             + " INSERT "
             + "   INTO Article "
@@ -76,5 +81,14 @@ public class ArticleDao implements DaoOperations {
   public List<Article> listArticlesDesc(Zone zone, int offset, int limit) {
     final String sql = " SELECT * FROM Article WHERE zone = ? ORDER BY articleId DESC OFFSET ? LIMIT ? ";
     return jdbc().query(sql, articleMapper, zone.value(), offset, limit);
+  }
+
+  public Article createExternalLink(Zone zone,
+      Account author,
+      String title,
+      String url,
+      Instant now) {
+    FlakeId flakeId = articleFlakeIdGenerator.next();
+    return insertArticle(Article.createExternalLink(zone, flakeId, author, title, url, now));
   }
 }

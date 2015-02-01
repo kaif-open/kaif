@@ -10,6 +10,8 @@ import io.kaif.model.account.Account;
 import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleContentType;
 import io.kaif.model.article.ArticleLinkType;
+import io.kaif.model.debate.Debate;
+import io.kaif.model.debate.DebateContentType;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.test.DbIntegrationTests;
@@ -19,6 +21,28 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
   @Autowired
   private ArticleServiceImpl service;
+
+  @Test
+  public void debate() throws Exception {
+    Article article = savedArticle("fun", "art 1");
+    Account debater = savedAccountCitizen("debater1");
+    Debate debate = service.debate(article.getZone(),
+        article.getArticleId(),
+        null,
+        debater.getAccountId(),
+        "pixel art is better");
+
+    assertEquals(DebateContentType.MARK_DOWN, debate.getContentType());
+    assertEquals("debater1", debate.getDebaterName());
+    assertEquals(debater.getAccountId(), debate.getDebaterId());
+    assertNull(debate.getParentDebateId());
+    assertEquals(1, debate.getLevel());
+    assertEquals("pixel art is better", debate.getContent());
+    assertEquals(0L, debate.getDownVote());
+    assertEquals(0L, debate.getUpVote());
+    assertNotNull(debate.getCreateTime());
+    assertNotNull(debate.getLastUpdateTime());
+  }
 
   @Test
   public void listNewArticles() throws Exception {
