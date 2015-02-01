@@ -5,17 +5,17 @@ import java.util.UUID;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
-import io.kaif.model.zone.ZoneInfo;
+import io.kaif.model.zone.Zone;
 
 public class Article {
 
-  public static Article createExternalLink(ZoneInfo zoneInfo,
+  public static Article createExternalLink(Zone zone,
       FlakeId articleId,
       Account author,
       String title,
       String url,
       Instant now) {
-    return new Article(zoneInfo.getZone(),
+    return new Article(zone,
         articleId,
         title,
         null,
@@ -30,7 +30,8 @@ public class Article {
         0);
 
   }
-  private final String zone;
+
+  private final Zone zone;
   private final FlakeId articleId;
   private final String title;
   private final String urlName;
@@ -44,7 +45,7 @@ public class Article {
   private final long upVote;
   private final long downVote;
 
-  Article(String zone,
+  Article(Zone zone,
       FlakeId articleId,
       String title,
       String urlName,
@@ -72,7 +73,7 @@ public class Article {
     this.downVote = downVote;
   }
 
-  public String getZone() {
+  public Zone getZone() {
     return zone;
   }
 

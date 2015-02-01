@@ -31,7 +31,7 @@ public class ZoneDao implements DaoOperations {
   private final RowMapper<ZoneInfo> zoneInfoMapper = (rs, n) -> {
     List<UUID> adminAccountIds = convertUuidArray(rs.getArray("adminAccountIds")).collect(toList());
     return new ZoneInfo(//
-        rs.getString("zone"),
+        Zone.valueOf(rs.getString("zone")),
         rs.getString("aliasName"),
         rs.getString("theme"),
         Authority.valueOf(rs.getString("voteAuthority")),
@@ -55,7 +55,7 @@ public class ZoneDao implements DaoOperations {
             + "         createTime, adminAccountIds, allowDownVote, hideFromTop) "
             + " VALUES "
             + questions(9),
-        zoneInfo.getZone(),
+        zoneInfo.getZone().value(),
         zoneInfo.getAliasName(),
         zoneInfo.getTheme(),
         zoneInfo.getVoteAuthority().name(),
@@ -67,18 +67,20 @@ public class ZoneDao implements DaoOperations {
     return zoneInfo;
   }
 
-  public ZoneInfo getZoneWithoutCache(String zone) throws EmptyResultDataAccessException {
-    return jdbc().queryForObject("SELECT * FROM ZoneInfo WHERE zone = ? ", zoneInfoMapper, zone);
+  public ZoneInfo getZoneWithoutCache(Zone zone) throws EmptyResultDataAccessException {
+    return jdbc().queryForObject("SELECT * FROM ZoneInfo WHERE zone = ? ",
+        zoneInfoMapper,
+        zone.value());
   }
 
   //use argument `zone` as cache key
   @Cacheable
-  public ZoneInfo getZone(String zone) throws EmptyResultDataAccessException {
+  public ZoneInfo getZone(Zone zone) throws EmptyResultDataAccessException {
     return getZoneWithoutCache(zone);
   }
 
   @CacheEvict(key = "#a0") //a0 is first argument
-  public void updateTheme(String zone, String theme) {
-    jdbc().update("UPDATE ZoneInfo SET theme = ? WHERE zone = ? ", theme, zone);
+  public void updateTheme(Zone zone, String theme) {
+    jdbc().update("UPDATE ZoneInfo SET theme = ? WHERE zone = ? ", theme, zone.value());
   }
 }

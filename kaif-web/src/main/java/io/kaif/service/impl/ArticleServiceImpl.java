@@ -14,6 +14,7 @@ import io.kaif.model.account.AccountDao;
 import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleDao;
 import io.kaif.model.article.ArticleFlakeIdGenerator;
+import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.ArticleService;
 
@@ -34,7 +35,7 @@ public class ArticleServiceImpl implements ArticleService {
     //TODO no write authority throw AccessDenied
     Account author = accountDao.findById(accountId).get();
     FlakeId flakeId = articleFlakeIdGenerator.next();
-    Article article = Article.createExternalLink(zoneInfo,
+    Article article = Article.createExternalLink(zoneInfo.getZone(),
         flakeId,
         author,
         title,
@@ -43,7 +44,7 @@ public class ArticleServiceImpl implements ArticleService {
     return articleDao.createArticle(article);
   }
 
-  public Optional<Article> findArticle(String zone, String articleId) {
-    return articleDao.findArticle(zone, FlakeId.fromString(articleId));
+  public Optional<Article> findArticle(Zone zone, FlakeId articleId) {
+    return articleDao.findArticle(zone, articleId);
   }
 }

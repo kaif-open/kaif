@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.kaif.model.account.Authority;
+import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.ZoneService;
@@ -21,10 +22,10 @@ public class ZoneServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void createDefault() throws Exception {
-    ZoneInfo zone = service.createDefault("abc", "Abc");
-    ZoneInfo loaded = zoneDao.getZoneWithoutCache("abc");
-    assertEquals(zone, loaded);
-    assertEquals("abc", loaded.getZone());
+    ZoneInfo zoneInfo = service.createDefault("abc", "Abc");
+    ZoneInfo loaded = zoneDao.getZoneWithoutCache(Zone.valueOf("abc"));
+    assertEquals(zoneInfo, loaded);
+    assertEquals("abc", loaded.getName());
     assertEquals("Abc", loaded.getAliasName());
     assertEquals(Authority.CITIZEN, loaded.getVoteAuthority());
     assertEquals(Authority.CITIZEN, loaded.getWriteAuthority());
@@ -36,10 +37,10 @@ public class ZoneServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void createKaif() throws Exception {
-    ZoneInfo zone = service.createKaif("faq", "FAQ");
-    ZoneInfo loaded = zoneDao.getZoneWithoutCache("faq");
-    assertEquals(zone, loaded);
-    assertEquals("faq", loaded.getZone());
+    ZoneInfo zoneInfo = service.createKaif("faq", "FAQ");
+    ZoneInfo loaded = zoneDao.getZoneWithoutCache(Zone.valueOf("faq"));
+    assertEquals(zoneInfo, loaded);
+    assertEquals("faq", loaded.getZone().value());
     assertEquals("FAQ", loaded.getAliasName());
     assertEquals(Authority.CITIZEN, loaded.getVoteAuthority());
     assertEquals(Authority.SYSOP, loaded.getWriteAuthority());
@@ -53,15 +54,15 @@ public class ZoneServiceImplTest extends DbIntegrationTests {
   public void getZone_cached() throws Exception {
     service.createDefault("def", "dddd");
 
-    ZoneInfo cached = service.getZone("def");
-    assertSame(cached, service.getZone("def"));
+    ZoneInfo cached = service.getZone(Zone.valueOf("def"));
+    assertSame(cached, service.getZone(Zone.valueOf("def")));
   }
 
   @Test
   public void updateTheme() throws Exception {
     service.createDefault("twfaq", "TW FAQ");
-    service.getZone("twfaq");//populate cache
-    service.updateTheme("twfaq", ZoneInfo.THEME_KAIF);
-    assertEquals(ZoneInfo.THEME_KAIF, service.getZone("twfaq").getTheme());
+    service.getZone(Zone.valueOf("twfaq"));//populate cache
+    service.updateTheme(Zone.valueOf("twfaq"), ZoneInfo.THEME_KAIF);
+    assertEquals(ZoneInfo.THEME_KAIF, service.getZone(Zone.valueOf("twfaq")).getTheme());
   }
 }

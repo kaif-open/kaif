@@ -1,5 +1,16 @@
 package io.kaif.flake;
 
+import java.io.IOException;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Preconditions;
 
 import io.kaif.token.Base62;
@@ -17,7 +28,11 @@ import io.kaif.token.Base62;
  * the timestamp part start from 2015-01-01T00:00:00Z. thus FlakeId could not use time before 2015.
  * <p>
  * for each node, FlakeId can generate 4096000 number of unique id per second
+ * <p>
+ * jackson serialize format is base62 string
  */
+@JsonSerialize(using = FlakeIdSerializer.class)
+@JsonDeserialize(using = FlakeIdDeserilaizer.class)
 public final class FlakeId implements Comparable<FlakeId> {
 
   // 2015-01-01T00:00:00Z
@@ -139,3 +154,22 @@ public final class FlakeId implements Comparable<FlakeId> {
   }
 }
 
+class FlakeIdSerializer extends JsonSerializer<FlakeId> {
+
+  @Override
+  public void serialize(FlakeId id, JsonGenerator jgen, SerializerProvider provider)
+      throws IOException, JsonProcessingException {
+    jgen.writeString(id.toString());
+  }
+
+}
+
+class FlakeIdDeserilaizer extends JsonDeserializer<FlakeId> {
+
+  @Override
+  public FlakeId deserialize(JsonParser jp, DeserializationContext ctxt)
+      throws IOException, JsonProcessingException {
+    String value = jp.readValueAs(String.class);
+    return FlakeId.fromString(value);
+  }
+}

@@ -9,6 +9,7 @@ import io.kaif.model.account.Account;
 import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleContentType;
 import io.kaif.model.article.ArticleLinkType;
+import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.test.DbIntegrationTests;
 
@@ -25,9 +26,9 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         account.getAccountId(),
         "title1",
         "http://foo.com");
-    Article article = service.findArticle(created.getZone(), created.getArticleId().toString())
+    Article article = service.findArticle(created.getZone(), created.getArticleId())
         .get();
-    assertEquals("fun", article.getZone());
+    assertEquals(Zone.valueOf("fun"), article.getZone());
     assertEquals("title1", article.getTitle());
     assertNull(article.getUrlName());
     assertNotNull(article.getCreateTime());

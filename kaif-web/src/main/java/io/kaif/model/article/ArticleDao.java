@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import io.kaif.database.DaoOperations;
 import io.kaif.flake.FlakeId;
+import io.kaif.model.zone.Zone;
 
 @Repository
 public class ArticleDao implements DaoOperations {
@@ -20,7 +21,7 @@ public class ArticleDao implements DaoOperations {
 
   private final RowMapper<Article> articleMapper = (rs, rowNum) -> {
     return new Article(//
-        rs.getString("zone"),
+        Zone.valueOf(rs.getString("zone")),
         FlakeId.valueOf(rs.getLong("articleId")),
         rs.getString("title"),
         rs.getString("urlName"),
@@ -48,7 +49,7 @@ public class ArticleDao implements DaoOperations {
             + "         contenttype, authorid, authorname, deleted, upvote, downvote)"
             + " VALUES "
             + questions(13),
-        article.getZone(),
+        article.getZone().value(),
         article.getArticleId().value(),
         article.getTitle(),
         article.getUrlName(),
@@ -64,9 +65,9 @@ public class ArticleDao implements DaoOperations {
     return article;
   }
 
-  public Optional<Article> findArticle(String zone, FlakeId articleId) {
+  public Optional<Article> findArticle(Zone zone, FlakeId articleId) {
     final String sql = " SELECT * FROM Article WHERE zone = ? AND articleId = ? LIMIT 1 ";
-    return jdbc().query(sql, articleMapper, zone, articleId.value()).stream().findAny();
+    return jdbc().query(sql, articleMapper, zone.value(), articleId.value()).stream().findAny();
   }
 
 }

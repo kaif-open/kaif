@@ -6,9 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.kaif.service.ZoneService;
+import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
+import io.kaif.service.ZoneService;
 
 @Service
 @Transactional
@@ -18,7 +19,7 @@ public class ZoneServiceImpl implements ZoneService {
   private ZoneDao zoneDao;
 
   @Override
-  public ZoneInfo getZone(String zone) {
+  public ZoneInfo getZone(Zone zone) {
     return zoneDao.getZone(zone);
   }
 
@@ -33,7 +34,7 @@ public class ZoneServiceImpl implements ZoneService {
   }
 
   @Override
-  public void updateTheme(String zone, String theme) {
+  public void updateTheme(Zone zone, String theme) {
     zoneDao.updateTheme(zone, theme);
   }
 }

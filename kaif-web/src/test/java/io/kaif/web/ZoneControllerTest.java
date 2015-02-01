@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.test.MvcIntegrationTests;
 
@@ -20,7 +21,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
 
   @Test
   public void hot() throws Exception {
-    when(zoneService.getZone("programming")).thenReturn(zoneInfo);
+    when(zoneService.getZone(Zone.valueOf("programming"))).thenReturn(zoneInfo);
     mockMvc.perform(get("/z/programming"))
         .andExpect(content().encoding("UTF-8"))
         .andExpect(content().string(containsString("programming-alias")));
@@ -28,7 +29,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
 
   @Test
   public void hot_redirectFallback() throws Exception {
-    when(zoneService.getZone("programming")).thenReturn(zoneInfo);
+    when(zoneService.getZone(Zone.valueOf("programming"))).thenReturn(zoneInfo);
     mockMvc.perform(get("/z/Programming?xyz"))
         .andExpect(status().isPermanentRedirect())
         .andExpect(redirectedUrl("http://localhost/z/programming?xyz"));
@@ -36,8 +37,18 @@ public class ZoneControllerTest extends MvcIntegrationTests {
 
   @Test
   public void notExistZone_404() throws Exception {
-    when(zoneService.getZone("not-exist")).thenThrow(new EmptyResultDataAccessException("fake", 1));
+    when(zoneService.getZone(Zone.valueOf("not-exist"))).thenThrow(new EmptyResultDataAccessException(
+        "fake",
+        1));
     mockMvc.perform(get("/z/not-exist"))
+        .andExpect(status().isNotFound())
+        .andExpect(view().name("error"))
+        .andExpect(content().string(containsString("404")));
+  }
+
+  @Test
+  public void invalidZone_404() throws Exception {
+    mockMvc.perform(get("/z/BAD!!!NAME"))
         .andExpect(status().isNotFound())
         .andExpect(view().name("error"))
         .andExpect(content().string(containsString("404")));

@@ -5,10 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 
 import io.kaif.model.account.Authority;
@@ -20,31 +17,10 @@ public class ZoneInfo {
   // theme used in site related zone, like Blog or FAQ
   public static final String THEME_KAIF = "z-theme-kaif";
 
-  /**
-   * - must start with az09, end with az09, no dash
-   * - must use dash to separate
-   * - 3~30 chars.
-   * - not allow concat multiple dash (use code to validate, not regex)
-   */
-  private static final Pattern ZONE_PATTERN = Pattern.compile("^[a-z0-9][a-z0-9\\-]{1,28}[a-z0-9]$");
-
-  /**
-   * fallback to valid zone name whenever possible (user is easily typo)
-   * <p>
-   * fallback rule is follow valid zone pattern
-   */
-  public static String zoneFallback(String rawZone) {
-    if (Strings.isNullOrEmpty(rawZone)) {
-      return "";
-    }
-    return rawZone.toLowerCase().replaceAll("[\\-_]+", "-");
-  }
-
-  public static ZoneInfo createKaif(String zone, String aliasName, Instant now) {
-    Preconditions.checkArgument(validateZone(zone));
+  public static ZoneInfo createKaif(String zoneValue, String aliasName, Instant now) {
     boolean allowDownVote = true;
     boolean hideFromTopRanking = true;
-    return new ZoneInfo(zone,
+    return new ZoneInfo(Zone.valueOf(zoneValue),
         aliasName,
         THEME_KAIF,
         Authority.CITIZEN,
@@ -55,11 +31,10 @@ public class ZoneInfo {
         now);
   }
 
-  public static ZoneInfo createDefault(String zone, String aliasName, Instant now) {
-    Preconditions.checkArgument(validateZone(zone));
+  public static ZoneInfo createDefault(String zoneValue, String aliasName, Instant now) {
     boolean allowDownVote = true;
     boolean hideFromTopRanking = false;
-    return new ZoneInfo(zone,
+    return new ZoneInfo(Zone.valueOf(zoneValue),
         aliasName,
         THEME_DEFAULT,
         Authority.CITIZEN,
@@ -70,14 +45,10 @@ public class ZoneInfo {
         now);
   }
 
-  private static boolean validateZone(String zone) {
-    return zone != null && ZONE_PATTERN.matcher(zone).matches() && !zone.contains("--");
-  }
-
   /**
    * zone are always lowercase and URL friendly
    */
-  private final String zone;
+  private final Zone zone;
 
   /**
    * display name of zone, may include Upper case or even Chinese
@@ -116,7 +87,7 @@ public class ZoneInfo {
 
   private final Instant createTime;
 
-  ZoneInfo(String zone,
+  ZoneInfo(Zone zone,
       String aliasName,
       String theme,
       Authority voteAuthority,
@@ -159,7 +130,7 @@ public class ZoneInfo {
     return zone != null ? zone.hashCode() : 0;
   }
 
-  public String getZone() {
+  public Zone getZone() {
     return zone;
   }
 
@@ -241,6 +212,13 @@ public class ZoneInfo {
         allow,
         hideFromTop,
         createTime);
+  }
+
+  /**
+   * shortcut to zone.value()
+   */
+  public String getName() {
+    return zone.value();
   }
 }
 
