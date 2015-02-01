@@ -53,8 +53,6 @@ abstract class _AbstractService {
 
   _AbstractService(this._serverType, this._accessTokenProvider);
 
-  String _getAccountUrl(String path) => '/api/account$path';
-
   Future<HttpRequest> _postJson(String url, dynamic json, {Map<String, String> header}) {
     return _requestJson('POST', url, json, header:header);
   }
@@ -148,11 +146,13 @@ class AccountService extends _AbstractService {
   AccountService(ServerType serverType, accessTokenProvider _provider)
   : super(serverType, _provider);
 
+  String _getUrl(String path) => '/api/account$path';
+
   Future createAccount(String username, String email, String password) {
     var json = {
         'username':username, 'email':email, 'password':password
     };
-    return _putJson(_getAccountUrl('/'), json)
+    return _putJson(_getUrl('/'), json)
     .then((res) => null);
   }
 
@@ -160,7 +160,7 @@ class AccountService extends _AbstractService {
     var params = {
         'username':username
     };
-    return _get(_getAccountUrl('/name-available'), params:params)
+    return _get(_getUrl('/name-available'), params:params)
     .then((req) => JSON.decode(req.responseText))
     .then((raw) => raw['data']);
   }
@@ -169,7 +169,7 @@ class AccountService extends _AbstractService {
     var params = {
         'email':email
     };
-    return _get(_getAccountUrl('/email-available'), params:params)
+    return _get(_getUrl('/email-available'), params:params)
     .then((req) => JSON.decode(req.responseText))
     .then((raw) => raw['data']);
   }
@@ -178,13 +178,13 @@ class AccountService extends _AbstractService {
     var json = {
         'username':username, 'password':password
     };
-    return _postJson(_getAccountUrl('/authenticate'), json)
+    return _postJson(_getUrl('/authenticate'), json)
     .then((req) => JSON.decode(req.responseText))
     .then((raw) => new AccountAuth.decode(raw));
   }
 
   Future resendActivation() {
-    return _postJson(_getAccountUrl('/resend-activation'), {
+    return _postJson(_getUrl('/resend-activation'), {
     }).then((req) => null);
   }
 
@@ -192,7 +192,7 @@ class AccountService extends _AbstractService {
     var json = {
         'token':token, 'password':password
     };
-    return _postJson(_getAccountUrl('/update-password-with-token'), json)
+    return _postJson(_getUrl('/update-password-with-token'), json)
     .then((req) => null);
   }
 
@@ -200,7 +200,7 @@ class AccountService extends _AbstractService {
     var json = {
         'oldPassword':oldPassword, 'newPassword':newPassword
     };
-    return _postJson(_getAccountUrl('/update-new-password'), json)
+    return _postJson(_getUrl('/update-new-password'), json)
     .then((req) => JSON.decode(req.responseText))
     .then((raw) => new AccountAuth.decode(raw));
   }
@@ -209,7 +209,24 @@ class AccountService extends _AbstractService {
     var json = {
         'username':username, 'email':email
     };
-    return _postJson(_getAccountUrl('/send-reset-password'), json)
+    return _postJson(_getUrl('/send-reset-password'), json)
     .then((req) => null);
   }
+}
+
+class ArticleService extends _AbstractService {
+
+  ArticleService(ServerType serverType, accessTokenProvider _provider)
+  : super(serverType, _provider);
+
+  String _getUrl(String path) => '/api/article/$path';
+
+  Future createExternalLink(String zone, String url, String title) {
+    var json = {
+        'zone':zone, 'url':url, 'title':title
+    };
+    return _putJson(_getUrl('/external-link'), json)
+    .then((res) => null);
+  }
+
 }

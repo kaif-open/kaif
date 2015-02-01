@@ -23,8 +23,8 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   public void createExternalLink() throws Exception {
     ZoneInfo zoneInfo = savedZoneDefault("fun");
     Account account = savedAccountCitizen("citizen");
-    Article created = service.createExternalLink(zoneInfo.getZone(),
-        account.getAccountId(),
+    Article created = service.createExternalLink(account.getAccountId(),
+        zoneInfo.getZone(),
         "title1",
         "http://foo.com");
     Article article = service.findArticle(created.getZone(), created.getArticleId()).get();
@@ -47,8 +47,8 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     ZoneInfo zoneRequireCitizen = savedZoneDefault("fun");
     Account account = savedAccountTourist("notActivated");
     try {
-      service.createExternalLink(zoneRequireCitizen.getZone(),
-          account.getAccountId(),
+      service.createExternalLink(account.getAccountId(),
+          zoneRequireCitizen.getZone(),
           "title1",
           "http://foo.com");
       fail("AccessDeniedException expected");

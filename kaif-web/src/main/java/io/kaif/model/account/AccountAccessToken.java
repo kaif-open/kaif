@@ -16,6 +16,9 @@ import io.kaif.token.Bytes;
  * this also prevent leak detail passwordHash to client side
  */
 public class AccountAccessToken {
+
+  public static final String HEADER_KEY = "X-KAIF-ACCESS-TOKEN";
+
   public static Optional<AccountAccessToken> tryDecode(String rawToken, AccountSecret secret) {
     List<byte[]> fields = secret.getCodec().tryDecode(rawToken);
     if (fields == null || fields.size() != 3) {

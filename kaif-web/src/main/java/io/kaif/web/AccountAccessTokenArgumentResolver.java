@@ -10,8 +10,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import io.kaif.service.AccountService;
 import io.kaif.model.account.AccountAccessToken;
+import io.kaif.service.AccountService;
 import io.kaif.web.support.AccessDeniedException;
 
 public class AccountAccessTokenArgumentResolver implements HandlerMethodArgumentResolver {
@@ -33,7 +33,7 @@ public class AccountAccessTokenArgumentResolver implements HandlerMethodArgument
       ModelAndViewContainer mavContainer,
       NativeWebRequest webRequest,
       WebDataBinderFactory binderFactory) throws Exception {
-    String token = webRequest.getHeader("X-KAIF-ACCESS-TOKEN");
+    String token = webRequest.getHeader(AccountAccessToken.HEADER_KEY);
     HttpServletRequest nativeRequest = webRequest.getNativeRequest(HttpServletRequest.class);
     Optional<AccountAccessToken> verified;
 

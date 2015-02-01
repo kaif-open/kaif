@@ -11,6 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import io.kaif.model.account.Account;
+import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.test.MvcIntegrationTests;
@@ -52,5 +54,16 @@ public class ZoneControllerTest extends MvcIntegrationTests {
         .andExpect(status().isNotFound())
         .andExpect(view().name("error"))
         .andExpect(content().string(containsString("404")));
+  }
+
+  @Test
+  public void notAllowCreateArticle() throws Exception {
+    Account account = accountTourist("foo");
+    String token = prepareAccessToken(account);
+    when(zoneService.getZone(Zone.valueOf("programming"))).thenReturn(zoneInfo);
+    mockMvc.perform(//
+        get("/z/programming/article/create.part").header(AccountAccessToken.HEADER_KEY, token))
+        .andExpect(status().isUnauthorized())
+        .andExpect(view().name("access-denied"));
   }
 }

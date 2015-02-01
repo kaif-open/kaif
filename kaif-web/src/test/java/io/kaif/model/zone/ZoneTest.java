@@ -24,7 +24,7 @@ public class ZoneTest {
     ObjectMapper mapper = new ObjectMapper();
     assertEquals("\"abc\"", mapper.writeValueAsString(Zone.valueOf("abc")));
     assertEquals(Zone.valueOf("foo"), mapper.readValue("\"foo\"", Zone.class));
-
+    assertNull(mapper.readValue("null", Zone.class));
     assertEquals("{\"zone\":\"xyz\"}", mapper.writeValueAsString(new FooPojo(Zone.valueOf("xyz"))));
     assertEquals(Zone.valueOf("xyz"), mapper.readValue("{\"zone\":\"xyz\"}", FooPojo.class).zone);
   }

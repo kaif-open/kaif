@@ -31,6 +31,10 @@ class Router {
 
   void gotoSignInWithUpdatePasswordSuccess() => _gotoWithQuery(signIn, 'update-password-success');
 
+  void gotoCurrentZoneNewArticles() {
+    _gotoWithQuery('/z/${currentZone()}/new', null);
+  }
+
   void _gotoWithQuery(String path, String queryString) {
     if (queryString == null) {
       window.location.href = path;
@@ -42,5 +46,11 @@ class Router {
   // change /account/foo to /account/foo.part
   String currentPartTemplatePath() {
     return '${window.location.pathname}.part';
+  }
+
+  String currentZone() {
+    //see Zone.java for pattern
+    return new RegExp(r'/z/([a-z0-9][a-z0-9\-]{1,28}[a-z0-9])')
+    .allMatches(window.location.pathname).first.group(1);
   }
 }

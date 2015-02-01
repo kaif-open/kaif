@@ -123,6 +123,16 @@ sample configs:
 </#macro>
 
 <#macro menuLink href name>
-    <#assign selected = (springMacroRequestContext.getRequestUri() == href) />
+<#-- here we have a tricky hack
+     the landing page is `/z/programm/article/create`
+     but part template is `/z/programm/article/create.part`
+     if `create.part` use menuLink, it won't work because the url is not same as
+     landing page
+     thus we compare both url
+
+     TODO menuLink in part template should use dart to render and highlight
+  -->
+    <#local selected = (springMacroRequestContext.getRequestUri() == href
+    || springMacroRequestContext.getRequestUri() == (href + '.part') ) />
 <li class="${selected?string('pure-menu-selected','')}"><a href="${href}">${name}</a></li>
 </#macro>

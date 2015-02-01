@@ -327,7 +327,7 @@ main {
 /** utility **/
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 .l-box {
@@ -384,4 +384,12 @@ main {
 
 .zone-menu .pure-menu-heading {
     font-weight: bold;
+}
+
+.zone-menu .pure-menu-selected {
+    background-color: #eee;
+}
+
+.zone-menu li a:hover {
+    background-color: #eee;
 }

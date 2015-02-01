@@ -14,9 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.ZoneService;
+import io.kaif.web.support.AccessDeniedException;
+import io.kaif.web.support.PartTemplate;
 
 @Controller
 @RequestMapping("/z")
@@ -66,6 +69,27 @@ public class ZoneController {
   public Object newArticles(@PathVariable("zone") String rawZone, HttpServletRequest request) {
     return resolveZone(request, rawZone, zoneInfo -> {
       return new ModelAndView("zone/articles").addObject("zoneInfo", zoneInfo);
+    });
+  }
+
+  @RequestMapping("/{zone}/article/create")
+  public Object createArticle(@PathVariable("zone") String rawZone, HttpServletRequest request) {
+    return resolveZone(request, rawZone, zoneInfo -> PartTemplate.fullLayout());
+  }
+
+  @RequestMapping("/{zone}/article/create.part")
+  public Object createArticlePart(@PathVariable("zone") String rawZone,
+      HttpServletRequest request,
+      AccountAccessToken accessToken) {
+    return resolveZone(request, rawZone, zoneInfo -> {
+      //TODO use annotation to validate canWriteArticle
+      if (!zoneInfo.canWriteArticle(accessToken.getAccountId(), accessToken.getAuthorities())) {
+        throw new AccessDeniedException("not allow write article at zone:"
+            + zoneInfo.getZone()
+            + ", account:"
+            + accessToken.getAccountId());
+      }
+      return new ModelAndView("article/create.part").addObject("zoneInfo", zoneInfo);
     });
   }
 }

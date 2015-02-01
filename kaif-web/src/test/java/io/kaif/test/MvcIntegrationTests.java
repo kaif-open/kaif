@@ -1,5 +1,9 @@
 package io.kaif.test;
 
+import static org.mockito.Mockito.*;
+
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -22,6 +26,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import io.kaif.config.SpringProfile;
 import io.kaif.config.UtilConfiguration;
 import io.kaif.config.WebConfiguration;
+import io.kaif.model.account.Account;
+import io.kaif.model.account.AccountAccessToken;
 import io.kaif.service.AccountService;
 import io.kaif.service.ZoneService;
 
@@ -68,5 +74,14 @@ public abstract class MvcIntegrationTests implements ModelFixture {
   public void setUp() {
     mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
     Mockito.reset(accountService, zoneService);
+  }
+
+  protected final String prepareAccessToken(Account account) {
+    String token = account.getUsername() + "-token";
+    AccountAccessToken accountAccessToken = new AccountAccessToken(account.getAccountId(),
+        "pw",
+        account.getAuthorities());
+    when(accountService.tryDecodeAccessToken(token)).thenReturn(Optional.of(accountAccessToken));
+    return token;
   }
 }

@@ -6,6 +6,7 @@ import 'package:kaif_web/comp/account/forget_password_form.dart';
 import 'package:kaif_web/comp/account/reset_password_form.dart';
 import 'package:kaif_web/comp/account/account_menu.dart';
 import 'package:kaif_web/comp/account/account_settings.dart';
+import 'package:kaif_web/comp/article/external_link_article_form.dart';
 import 'package:kaif_web/comp/server_part_loader.dart';
 import 'dart:html';
 import 'dart:async';
@@ -28,6 +29,7 @@ class AppModule {
   AccountDao accountDao;
   AccountSession accountSession;
   AccountService accountService;
+  ArticleService articleService;
   PartService partService;
   ServerPartLoader serverPartLoader;
 
@@ -37,6 +39,7 @@ class AppModule {
 
     var accessTokenProvider = accountSession.provideAccessToken;
     accountService = new AccountService(serverType, accessTokenProvider);
+    articleService = new ArticleService(serverType, accessTokenProvider);
     partService = new PartService(serverType, accessTokenProvider);
 
     serverPartLoader = new ServerPartLoader(partService, _initializeComponents);
@@ -57,6 +60,9 @@ class AppModule {
     });
     parent.querySelectorAll('[reset-password-form]').forEach((el) {
       new ResetPasswordForm(el, accountService);
+    });
+    parent.querySelectorAll('[external-link-article-form]').forEach((el) {
+      new ExternalLinkArticleForm(el, articleService);
     });
   }
 

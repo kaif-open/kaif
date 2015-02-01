@@ -9,6 +9,10 @@ import io.kaif.model.zone.Zone;
 
 public class Article {
 
+  public static final int TITLE_MIN = 3;
+  public static final int TITLE_MAX = 128;
+  public static final int URL_MAX = 512;
+
   public static Article createExternalLink(Zone zone,
       FlakeId articleId,
       Account author,

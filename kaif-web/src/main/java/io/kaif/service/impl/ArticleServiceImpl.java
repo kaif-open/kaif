@@ -36,7 +36,8 @@ public class ArticleServiceImpl implements ArticleService {
   @Autowired
   private ZoneDao zoneDao;
 
-  public Article createExternalLink(Zone zone, UUID accountId, String title, String url) {
+  @Override
+  public Article createExternalLink(UUID accountId, Zone zone, String title, String url) {
     //creating article should not use cache
     ZoneInfo zoneInfo = zoneDao.getZoneWithoutCache(zone);
     Account author = accountDao.findById(accountId)
