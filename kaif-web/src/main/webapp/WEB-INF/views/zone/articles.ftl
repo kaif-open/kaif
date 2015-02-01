@@ -29,33 +29,39 @@ head=headContent
         </ul>
     </div>
     <div class="pure-u-1 pure-u-md-1-4">
-        <#-- TODO enable when ajax permission load -->
+    <#-- TODO enable when ajax permission load -->
         <a href="/z/${zoneInfo.name}/article/create" class="pure-button pure-button-primary"
            create-article>建立文章 &gt; </a>
     </div>
     <div class="pure-u-1 pure-u-md-3-4">
         <div class="pure-g article">
             <#list articles as article>
-                <div class="pure-u-1-6 pure-u-md-1-6">
-                    <div class="article-vote-box">
-                        <div>${article.upVote - article.downVote}</div>
-                    </div>
+                <div class="pure-u-1-6 pure-u-md-1-12">
                     <div class="article-voting">
-                        <a href="#"><i class="fa fa-chevron-up"></i></a><!--
-                        --><a href="#"><i class="fa fa-chevron-down"></i></a>
+                        <a href="#"><i class="fa fa-chevron-up"></i></a>
+                        <a href="#"><i class="fa fa-chevron-down"></i></a>
                     </div>
                 </div>
-                <div class="pure-u-5-6 pure-u-md-5-6">
+                <div class="pure-u-5-6 pure-u-md-11-12">
                     <div class="article-title">
-                        <a href="${article.content}" target="_blank">${article.title}</a>
+                        <a href="${article.content}" target="_blank">${article.title}
+                            <span class="article-content">${article.content}</span>
+                        </a>
                     </div>
-
                     <div class="article-info">
-                        <a class="article-author"
-                           href="/u/${article.authorName}">${article.authorName}</a>
-                        <a href="/z/${zoneInfo.name}/debates/${article.articleId}">討論
-                            (${article.debateCount})</a>
-                        <a href="#">${article.content}</a>
+                        <span>
+                           積分 ${article.upVote - article.downVote}
+                        </span>
+                        <span>
+                            <a href="/z/${zoneInfo.name}/debates/${article.articleId}">
+                                討論 (${article.debateCount})
+                            </a>
+                        </span>
+                        <span>
+                            <a class="article-author"
+                               href="/u/${article.authorName}">${article.authorName}</a>
+                            張貼於 ${article.createTime}
+                        </span>
                     </div>
                 </div>
             </#list>

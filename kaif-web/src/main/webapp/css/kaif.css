@@ -395,37 +395,15 @@ main {
 }
 
 .article {
-
+    margin-top: 1em;
 }
 
 .article > div {
     margin-bottom: 1em;
 }
 
-.article .article-vote-box {
-    display: flex;
-    min-height: 70px;
-    align-items: center;
-    justify-content: center;
-}
-
-.article .article-vote-box > * {
-    background-color: rgb(232, 232, 232);
-    border-radius: 2px;
-    width: 56px;
-    height: 56px;
-    line-height: 56px;
-    text-align: center;
-    vertical-align: middle;
-    color: rgb(113, 113, 113);
-    font-weight: bold;
-    font-size: 120%;
-    border: 1px solid rgba(203, 203, 203, 0.21);
-}
-
 .article .article-title {
-    padding: 1em 0;
-    min-height: 70px;
+    line-height: 1.2em;
 }
 
 .article-title a {
@@ -437,13 +415,21 @@ main {
     color: #307f9d;
 }
 
+.article-title .article-content {
+    color: darkgray;
+    font-size: 0.8em;
+}
+
 .article .article-info {
     font-size: 0.8em;
 }
 
+.article-info span {
+    margin-right: 0.5em;
+}
+
 .article-info a {
     color: dimgray;
-    margin-right: 0.5em;
 }
 
 .article-voting {
@@ -451,9 +437,5 @@ main {
 }
 
 .article-voting a {
-    padding: 5px 5px;
-    background: rgb(165, 165, 165);
-    color: white;
-    border-radius: 2px;
-    margin: 0 2px;
+    display: block;
 }
