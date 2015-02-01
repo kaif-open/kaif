@@ -1,6 +1,7 @@
 package io.kaif.model.article;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -70,4 +71,8 @@ public class ArticleDao implements DaoOperations {
     return jdbc().query(sql, articleMapper, zone.value(), articleId.value()).stream().findAny();
   }
 
+  public List<Article> listArticlesDesc(Zone zone, int offset, int limit) {
+    final String sql = " SELECT * FROM Article WHERE zone = ? ORDER BY articleId DESC OFFSET ? LIMIT ? ";
+    return jdbc().query(sql, articleMapper, zone.value(), offset, limit);
+  }
 }

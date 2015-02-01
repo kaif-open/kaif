@@ -1,6 +1,7 @@
 package io.kaif.service.impl;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,6 +24,8 @@ import io.kaif.web.support.AccessDeniedException;
 @Service
 @Transactional
 public class ArticleServiceImpl implements ArticleService {
+
+  private static final int PAGE_SIZE = 30;
 
   @Autowired
   private AccountDao accountDao;
@@ -52,5 +55,10 @@ public class ArticleServiceImpl implements ArticleService {
 
   public Optional<Article> findArticle(Zone zone, FlakeId articleId) {
     return articleDao.findArticle(zone, articleId);
+  }
+
+  @Override
+  public List<Article> listLatestArticles(Zone zone, int page) {
+    return articleDao.listArticlesDesc(zone, page * PAGE_SIZE, PAGE_SIZE);
   }
 }

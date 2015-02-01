@@ -1,6 +1,7 @@
 package io.kaif.web;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.function.Function;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,12 +12,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
+import io.kaif.service.ArticleService;
 import io.kaif.service.ZoneService;
 import io.kaif.web.support.AccessDeniedException;
 import io.kaif.web.support.PartTemplate;
@@ -27,12 +30,15 @@ public class ZoneController {
 
   @Autowired
   private ZoneService zoneService;
+  @Autowired
+  private ArticleService articleService;
 
   @RequestMapping("/{zone}")
   public Object hotArticles(@PathVariable("zone") String rawZone, HttpServletRequest request)
       throws IOException {
     return resolveZone(request, rawZone, zoneInfo -> {
-      return new ModelAndView("zone/articles").addObject("zoneInfo", zoneInfo);
+      return new ModelAndView("zone/articles")//
+          .addObject("zoneInfo", zoneInfo).addObject("articles", Collections.emptyList());
     });
   }
 
@@ -66,9 +72,13 @@ public class ZoneController {
   }
 
   @RequestMapping("/{zone}/new")
-  public Object newArticles(@PathVariable("zone") String rawZone, HttpServletRequest request) {
+  public Object newArticles(@PathVariable("zone") String rawZone,
+      @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+      HttpServletRequest request) {
     return resolveZone(request, rawZone, zoneInfo -> {
-      return new ModelAndView("zone/articles").addObject("zoneInfo", zoneInfo);
+      return new ModelAndView("zone/articles")//
+          .addObject("zoneInfo", zoneInfo)
+          .addObject("articles", articleService.listLatestArticles(zoneInfo.getZone(), page));
     });
   }
 

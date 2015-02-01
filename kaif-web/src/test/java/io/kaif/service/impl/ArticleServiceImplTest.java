@@ -1,5 +1,6 @@
 package io.kaif.service.impl;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
@@ -18,6 +19,26 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
   @Autowired
   private ArticleServiceImpl service;
+
+  @Test
+  public void listNewArticles() throws Exception {
+    ZoneInfo zoneInfo = savedZoneDefault("fun");
+    Account account = savedAccountCitizen("citizen");
+    Article a1 = service.createExternalLink(account.getAccountId(),
+        zoneInfo.getZone(),
+        "title1",
+        "http://foo1.com");
+    Article a2 = service.createExternalLink(account.getAccountId(),
+        zoneInfo.getZone(),
+        "title2",
+        "http://foo2.com");
+    Article a3 = service.createExternalLink(account.getAccountId(),
+        zoneInfo.getZone(),
+        "title2",
+        "http://foo2.com");
+
+    assertEquals(asList(a3, a2, a1), service.listLatestArticles(zoneInfo.getZone(), 0));
+  }
 
   @Test
   public void createExternalLink() throws Exception {

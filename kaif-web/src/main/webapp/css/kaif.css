@@ -393,3 +393,65 @@ main {
 .zone-menu li a:hover {
     background-color: #eee;
 }
+
+.article {
+
+}
+
+.article > div {
+    margin-bottom: 1em;
+}
+
+.article .article-vote-box {
+    display: flex;
+    min-height: 70px;
+    align-items: center;
+    justify-content: center;
+}
+
+.article .article-vote-box > * {
+    background-color: rgb(28, 121, 114);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    vertical-align: middle;
+    color: white;
+    font-weight: bold;
+    font-size: 120%;
+}
+
+.article .article-title {
+    padding: 1em 0;
+    min-height: 70px;
+}
+
+.article-title a {
+    text-decoration: none;
+    color: #245269;
+}
+
+.article-title a:hover {
+    color: #307f9d;
+}
+
+.article .article-info {
+    font-size: 0.8em;
+}
+
+.article-info a {
+    color: dimgray;
+    margin-right: 0.5em;
+}
+
+.article-voting {
+    text-align: center;
+}
+
+.article-voting a {
+    padding: 5px 5px;
+    background: rgb(182, 205, 191);
+    color: white;
+    border-radius: 50%;
+}

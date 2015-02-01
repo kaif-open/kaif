@@ -1,5 +1,6 @@
 package io.kaif.web;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -27,6 +28,19 @@ public class ZoneControllerTest extends MvcIntegrationTests {
     mockMvc.perform(get("/z/programming"))
         .andExpect(content().encoding("UTF-8"))
         .andExpect(content().string(containsString("programming-alias")));
+  }
+
+  @Test
+  public void newArticles() throws Exception {
+    Zone z = zoneInfo.getZone();
+    when(zoneService.getZone(z)).thenReturn(zoneInfo);
+    when(articleService.listLatestArticles(z, 0)).thenReturn(//
+        asList(article(z, "java"), article(z, "ruby"), article(z, "golang")));
+    mockMvc.perform(get("/z/programming/new"))
+        .andExpect(content().string(containsString("programming-alias")))
+        .andExpect(content().string(containsString("java")))
+        .andExpect(content().string(containsString("golang")))
+        .andExpect(content().string(containsString("ruby")));
   }
 
   @Test
