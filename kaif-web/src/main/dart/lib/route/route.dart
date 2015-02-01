@@ -5,7 +5,6 @@ const Router route = const Router._();
 
 class Router {
 
-
   const Router._();
 
   String get signUp => '/account/sign-up';
@@ -31,8 +30,8 @@ class Router {
 
   void gotoSignInWithUpdatePasswordSuccess() => _gotoWithQuery(signIn, 'update-password-success');
 
-  void gotoCurrentZoneNewArticles() {
-    _gotoWithQuery('/z/${currentZone()}/new', null);
+  void gotoNewArticlesOfZone(String zone) {
+    _gotoWithQuery('/z/${zone}/new', null);
   }
 
   void _gotoWithQuery(String path, String queryString) {

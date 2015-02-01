@@ -12,6 +12,8 @@
         <div class="pure-u-1 pure-u-md-3-4">
             <form class="pure-form pure-form-stacked" external-link-article-form>
 
+                <input type="hidden" value="${zoneInfo.name}" id="zoneInput">
+
                 <div class="pure-control-group">
                     <label for="titleInput">標題</label>
                     <textarea maxlength="128" rows="2" id="titleInput" type="text"

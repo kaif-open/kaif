@@ -8,14 +8,11 @@ class ExternalLinkArticleForm {
 
   final Element elem;
   final ArticleService articleService;
-  TextInputElement titleInput;
-  TextInputElement urlInput;
   Alert alert;
 
   ExternalLinkArticleForm(this.elem, this.articleService) {
     alert = new Alert.append(elem);
-    titleInput = elem.querySelector('#titleInput');
-    urlInput = elem.querySelector('#urlInput');
+
     elem.onSubmit.listen(_onSubmit);
   }
 
@@ -33,7 +30,9 @@ class ExternalLinkArticleForm {
       ..stopPropagation();
 
     alert.hide();
-
+    TextInputElement titleInput = elem.querySelector('#titleInput');
+    TextInputElement urlInput = elem.querySelector('#urlInput');
+    HiddenInputElement zoneInput = elem.querySelector('#zoneInput');
     titleInput.value = titleInput.value.trim();
     urlInput.value = urlInput.value.trim();
 
@@ -46,15 +45,16 @@ class ExternalLinkArticleForm {
     SubmitButtonInputElement submit = elem.querySelector('[type=submit]');
     submit.disabled = true;
 
+    String zone = zoneInput.value;
     var loading = new Loading.small()
       ..renderAfter(submit);
-    articleService.createExternalLink(route.currentZone(), urlInput.value, titleInput.value)
+    articleService.createExternalLink(zone, urlInput.value, titleInput.value)
     .then((_) {
       titleInput.value = '';
       urlInput.value = '';
       elem.remove();
       new Toast.success(i18n('article.create-success'), seconds:2).render().then((_) {
-        route.gotoCurrentZoneNewArticles();
+        route.gotoNewArticlesOfZone(zone);
       });
     }).catchError((e) {
       alert.renderError('${e}');
