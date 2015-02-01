@@ -70,13 +70,13 @@ public abstract class DbIntegrationTests extends AbstractTransactionalJUnit4Spri
   }
 
   protected final Account savedAccountCitizen(String username) {
-    Account account = accountDao.create(username,
-        username + "@example.com",
-        username + "pwd",
-        Instant.now());
+    Account account = savedAccountTourist(username);
     accountDao.updateAuthorities(account.getAccountId(),
         EnumSet.of(Authority.CITIZEN, Authority.TOURIST));
     return accountDao.findById(account.getAccountId()).get();
   }
 
+  protected final Account savedAccountTourist(String username) {
+    return accountDao.create(username, username + "@example.com", username + "pwd", Instant.now());
+  }
 }

@@ -12,6 +12,7 @@ import io.kaif.model.article.ArticleLinkType;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.test.DbIntegrationTests;
+import io.kaif.web.support.AccessDeniedException;
 
 public class ArticleServiceImplTest extends DbIntegrationTests {
 
@@ -22,12 +23,11 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   public void createExternalLink() throws Exception {
     ZoneInfo zoneInfo = savedZoneDefault("fun");
     Account account = savedAccountCitizen("citizen");
-    Article created = service.createExternalLink(zoneInfo,
+    Article created = service.createExternalLink(zoneInfo.getZone(),
         account.getAccountId(),
         "title1",
         "http://foo.com");
-    Article article = service.findArticle(created.getZone(), created.getArticleId())
-        .get();
+    Article article = service.findArticle(created.getZone(), created.getArticleId()).get();
     assertEquals(Zone.valueOf("fun"), article.getZone());
     assertEquals("title1", article.getTitle());
     assertNull(article.getUrlName());
@@ -40,5 +40,19 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertFalse(article.isDeleted());
     assertEquals(0, article.getUpVote());
     assertEquals(0, article.getDownVote());
+  }
+
+  @Test
+  public void createExternalLink_not_enough_authority() throws Exception {
+    ZoneInfo zoneRequireCitizen = savedZoneDefault("fun");
+    Account account = savedAccountTourist("notActivated");
+    try {
+      service.createExternalLink(zoneRequireCitizen.getZone(),
+          account.getAccountId(),
+          "title1",
+          "http://foo.com");
+      fail("AccessDeniedException expected");
+    } catch (AccessDeniedException expected) {
+    }
   }
 }
