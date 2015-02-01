@@ -29,6 +29,7 @@ head=headContent
         </ul>
     </div>
     <div class="pure-u-1 pure-u-md-1-4">
+        <#-- TODO enable when ajax permission load -->
         <a href="/z/${zoneInfo.name}/article/create" class="pure-button pure-button-primary"
            create-article>建立文章 &gt; </a>
     </div>
@@ -52,7 +53,8 @@ head=headContent
                     <div class="article-info">
                         <a class="article-author"
                            href="/u/${article.authorName}">${article.authorName}</a>
-                        <a href="/z/${zoneInfo.name}/debates/${article.articleId}">討論 (100)</a>
+                        <a href="/z/${zoneInfo.name}/debates/${article.articleId}">討論
+                            (${article.debateCount})</a>
                         <a href="#">${article.content}</a>
                     </div>
                 </div>

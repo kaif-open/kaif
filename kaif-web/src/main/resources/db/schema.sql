@@ -50,6 +50,7 @@ CREATE TABLE Article (
   deleted     BOOLEAN        NOT NULL DEFAULT FALSE,
   upVote      BIGINT         NOT NULL DEFAULT 0,
   downVote    BIGINT         NOT NULL DEFAULT 0,
+  debateCount BIGINT         NOT NULL DEFAULT 0,
   PRIMARY KEY (zone, articleId)
 );
 

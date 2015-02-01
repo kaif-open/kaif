@@ -61,6 +61,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertFalse(article.isDeleted());
     assertEquals(0, article.getUpVote());
     assertEquals(0, article.getDownVote());
+    assertEquals(0, article.getDebateCount());
   }
 
   @Test

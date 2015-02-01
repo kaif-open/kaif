@@ -31,8 +31,8 @@ public class Article {
         author.getUsername(),
         false,
         0,
+        0,
         0);
-
   }
 
   private final Zone zone;
@@ -48,6 +48,7 @@ public class Article {
   private final boolean deleted;
   private final long upVote;
   private final long downVote;
+  private final long debateCount;
 
   Article(Zone zone,
       FlakeId articleId,
@@ -61,7 +62,8 @@ public class Article {
       String authorName,
       boolean deleted,
       long upVote,
-      long downVote) {
+      long downVote,
+      long debateCount) {
     this.zone = zone;
     this.articleId = articleId;
     this.title = title;
@@ -75,6 +77,7 @@ public class Article {
     this.deleted = deleted;
     this.upVote = upVote;
     this.downVote = downVote;
+    this.debateCount = debateCount;
   }
 
   public Zone getZone() {
@@ -127,6 +130,10 @@ public class Article {
 
   public long getDownVote() {
     return downVote;
+  }
+
+  public long getDebateCount() {
+    return debateCount;
   }
 
   @Override

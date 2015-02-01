@@ -34,7 +34,8 @@ public class ArticleDao implements DaoOperations {
         rs.getString("authorName"),
         rs.getBoolean("deleted"),
         rs.getLong("upVote"),
-        rs.getLong("downVote"));
+        rs.getLong("downVote"),
+        rs.getLong("debateCount"));
   };
 
   @Override
@@ -47,9 +48,9 @@ public class ArticleDao implements DaoOperations {
             + " INSERT "
             + "   INTO Article "
             + "        (zone, articleid, title, urlname, linktype, createtime, content, "
-            + "         contenttype, authorid, authorname, deleted, upvote, downvote)"
+            + "         contenttype, authorid, authorname, deleted, upvote, downvote, debatecount)"
             + " VALUES "
-            + questions(13),
+            + questions(14),
         article.getZone().value(),
         article.getArticleId().value(),
         article.getTitle(),
@@ -62,7 +63,8 @@ public class ArticleDao implements DaoOperations {
         article.getAuthorName(),
         article.isDeleted(),
         article.getUpVote(),
-        article.getDownVote());
+        article.getDownVote(),
+        article.getDebateCount());
     return article;
   }
 
