@@ -1,7 +1,19 @@
 <#import "/spring.ftl" as spring />
 <#import "macros/template.ftl" as template>
 
-<@template.page {}>
+<#assign headContent>
+
+<title>kaif.io</title>
+<meta name="description" content="kaif.io">
+
+</#assign>
+
+<@template.page
+config={
+'layout':'full'
+}
+head=headContent
+>
 
 <div class="header">
     <h1>Page Title</h1>

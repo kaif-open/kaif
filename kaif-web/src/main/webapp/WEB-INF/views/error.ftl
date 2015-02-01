@@ -1,14 +1,21 @@
 <#import "/spring.ftl" as spring />
 <#import "macros/template.ftl" as template>
 
-<@template.page {
+<#assign headContent>
+<title>Error | kaif.io</title>
+</#assign>
+
+<@template.page
+config={
 'layout':'small',
-'errorPage': true
-}>
+'errorpage': true
+} head=headContent>
 
 <h1>
 <#-- TODO show stacktrace in dev mode
      TODO beautify with a little error detail
+     TODO error page should not use template or external css/font/js,
+         everything should inline (css, js...etc)
   -->
     <#assign resStatus = (Request['status'])!500 />
     <#if resStatus == 404>

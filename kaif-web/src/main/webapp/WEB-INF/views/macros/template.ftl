@@ -11,9 +11,17 @@ sample configs:
 
 2)
 
-<@template.page {
-  'layout':'full'
-}>
+// if you use `head` you must define <title>
+<#assign head>
+    <title>foo zone</title>
+    <meta name="description" content="foo zone is best">
+</#assign>
+<@template.page
+    config={
+      'layout':'full'
+    }
+    head=headContent
+>
 
 3) for error page
 
@@ -22,17 +30,13 @@ sample configs:
   'errorPage': true
 }>
 -->
-<#macro page config>
+<#macro page config head="">
 
 <!doctype html>
-<html lang="en">
+<html lang="zh-tw">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <#-- TODO description and title for zone -->
-    <meta name="description" content="Kaif prototype">
-    <title>kaif.io</title>
 
 <#-- meta data for dart, see ServerType for detail -->
     <#if kaif.profilesActive?contains('dev')>
@@ -50,9 +54,12 @@ sample configs:
     <link rel="stylesheet" href="/webjars/font-awesome/4.2.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/css/kaif.css?${(kaif.deployServerTime)!0}">
 
-    <#if zoneInfo?? >
-        <link rel="stylesheet" href="/css/${zoneInfo.theme}.css?${(kaif.deployServerTime)!0}">
+    <#if head?length == 0>
+        <title>kaif.io</title>
+    <#else>
+    ${head}
     </#if>
+
 </head>
 <body>
 <header class="header">
