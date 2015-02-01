@@ -40,8 +40,8 @@ head=headContent
                         <div>${article.upVote - article.downVote}</div>
                     </div>
                     <div class="article-voting">
-                        <a href="#"><i class="fa fa-thumbs-up"></i></a>
-                        <a href="#"><i class="fa fa-thumbs-down"></i></a>
+                        <a href="#"><i class="fa fa-chevron-up"></i></a><!--
+                        --><a href="#"><i class="fa fa-chevron-down"></i></a>
                     </div>
                 </div>
                 <div class="pure-u-5-6 pure-u-md-5-6">

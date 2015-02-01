@@ -410,16 +410,17 @@ main {
 }
 
 .article .article-vote-box > * {
-    background-color: rgb(28, 121, 114);
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    line-height: 50px;
+    background-color: rgb(232, 232, 232);
+    border-radius: 2px;
+    width: 56px;
+    height: 56px;
+    line-height: 56px;
     text-align: center;
     vertical-align: middle;
-    color: white;
+    color: rgb(113, 113, 113);
     font-weight: bold;
     font-size: 120%;
+    border: 1px solid rgba(203, 203, 203, 0.21);
 }
 
 .article .article-title {
@@ -451,7 +452,8 @@ main {
 
 .article-voting a {
     padding: 5px 5px;
-    background: rgb(182, 205, 191);
+    background: rgb(165, 165, 165);
     color: white;
-    border-radius: 50%;
+    border-radius: 2px;
+    margin: 0 2px;
 }
