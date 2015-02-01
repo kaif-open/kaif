@@ -78,12 +78,12 @@ public class AccountDao implements DaoOperations {
   }
 
   public Optional<Account> findById(UUID accountId) {
-    final String sql = " SELECT * FROM Account WHERE accountId = ? ";
+    final String sql = " SELECT * FROM Account WHERE accountId = ? LIMIT 1 ";
     return jdbc().query(sql, accountMapper, accountId).stream().findAny();
   }
 
   public Optional<Account> findByUsername(String username) {
-    return jdbc().query(" SELECT * FROM Account WHERE username = lower(?) ",
+    return jdbc().query(" SELECT * FROM Account WHERE username = lower(?) LIMIT 1 ",
         accountMapper,
         username).stream().findAny();
   }
@@ -101,7 +101,7 @@ public class AccountDao implements DaoOperations {
   }
 
   public boolean isEmailAvailable(String email) {
-    final String sql = " SELECT count(*) FROM Account WHERE email = ? ";
+    final String sql = " SELECT count(*) FROM Account WHERE email = ? LIMIT 1 ";
     return jdbc().queryForObject(sql, Number.class, email.toLowerCase()).intValue() == 0;
   }
 
@@ -131,7 +131,7 @@ public class AccountDao implements DaoOperations {
   }
 
   public Optional<AccountOnceToken> findOnceToken(String token, AccountOnceToken.Type tokenType) {
-    final String sql = " SELECT * FROM AccountOnceToken WHERE token = ? AND tokenType = ? ";
+    final String sql = " SELECT * FROM AccountOnceToken WHERE token = ? AND tokenType = ? LIMIT 1 ";
     return jdbc().query(sql, tokenMapper, token, tokenType.name()).stream().findFirst();
   }
 

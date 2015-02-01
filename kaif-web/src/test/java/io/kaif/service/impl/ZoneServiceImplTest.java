@@ -5,11 +5,11 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import io.kaif.database.DbIntegrationTests;
-import io.kaif.service.ZoneService;
 import io.kaif.model.account.Authority;
 import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
+import io.kaif.service.ZoneService;
+import io.kaif.test.DbIntegrationTests;
 
 public class ZoneServiceImplTest extends DbIntegrationTests {
 

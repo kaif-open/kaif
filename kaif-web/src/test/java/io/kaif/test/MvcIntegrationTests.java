@@ -1,4 +1,4 @@
-package io.kaif.web;
+package io.kaif.test;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -29,7 +29,7 @@ import io.kaif.service.ZoneService;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @SpringApplicationConfiguration(classes = MvcIntegrationTests.WebTestApplication.class)
-public abstract class MvcIntegrationTests {
+public abstract class MvcIntegrationTests implements ModelFixture {
 
   @Profile(SpringProfile.TEST)
   @EnableWebMvc

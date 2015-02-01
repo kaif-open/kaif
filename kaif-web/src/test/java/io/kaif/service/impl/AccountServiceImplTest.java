@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import io.kaif.database.DbIntegrationTests;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountAuth;
@@ -25,6 +24,7 @@ import io.kaif.model.account.AccountOnceToken;
 import io.kaif.model.account.AccountSecret;
 import io.kaif.model.account.Authority;
 import io.kaif.model.exception.OldPasswordNotMatchException;
+import io.kaif.test.DbIntegrationTests;
 
 public class AccountServiceImplTest extends DbIntegrationTests {
 

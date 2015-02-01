@@ -8,23 +8,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-import java.time.Instant;
-
 import org.junit.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import io.kaif.model.zone.ZoneInfo;
+import io.kaif.test.MvcIntegrationTests;
 
 public class ZoneControllerTest extends MvcIntegrationTests {
 
-  ZoneInfo zoneInfo = ZoneInfo.createDefault("programming", "fooProgramming", Instant.now());
+  ZoneInfo zoneInfo = zoneDefault("programming");
 
   @Test
   public void hot() throws Exception {
     when(zoneService.getZone("programming")).thenReturn(zoneInfo);
     mockMvc.perform(get("/z/programming"))
         .andExpect(content().encoding("UTF-8"))
-        .andExpect(content().string(containsString("fooProgramming")));
+        .andExpect(content().string(containsString("programming-alias")));
   }
 
   @Test

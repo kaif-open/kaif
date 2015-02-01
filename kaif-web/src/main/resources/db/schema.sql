@@ -40,7 +40,7 @@ CREATE TABLE Article (
   zone        VARCHAR(4096)  NOT NULL,
   articleId   BIGINT         NOT NULL,
   title       VARCHAR(4096)  NOT NULL,
-  urlName     VARCHAR(4096)  NOT NULL,
+  urlName     VARCHAR(4096)  NULL,
   linkType    VARCHAR(4096)  NOT NULL,
   createTime  TIMESTAMP      NOT NULL,
   content     VARCHAR(16384) NOT NULL,
