@@ -20,14 +20,13 @@ CREATE TABLE AccountOnceToken (
 
 CREATE TABLE ZoneInfo (
   zone            VARCHAR(4096) NOT NULL PRIMARY KEY,
-  aliasName       VARCHAR(4096) NULL,
-  theme           VARCHAR(4096) NULL,
+  aliasName       VARCHAR(4096) NOT NULL,
+  theme           VARCHAR(4096) NOT NULL,
   voteAuthority   VARCHAR(4096) NOT NULL,
   debateAuthority VARCHAR(4096) NOT NULL,
   writeAuthority  VARCHAR(4096) NOT NULL,
   adminAccountIds UUID []       NOT NULL,
   hideFromTop     BOOLEAN       NOT NULL,
-  allowDownVote   BOOLEAN       NOT NULL,
   createTime      TIMESTAMP     NOT NULL
 );
 

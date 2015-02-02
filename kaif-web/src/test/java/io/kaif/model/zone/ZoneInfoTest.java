@@ -53,7 +53,7 @@ public class ZoneInfoTest {
   public void canWriteArticle() throws Exception {
     ZoneInfo site = ZoneInfo.createKaif("site", "public", Instant.now());
     UUID accountId = UUID.randomUUID();
-    assertTrue(site.canWriteArticle(accountId, EnumSet.of(Authority.SYSOP)));
+    assertFalse(site.canWriteArticle(accountId, EnumSet.of(Authority.SYSOP)));
     assertFalse(site.canWriteArticle(accountId, EnumSet.of(Authority.TOURIST)));
     assertFalse(site.canWriteArticle(accountId, EnumSet.of(Authority.CITIZEN)));
 
@@ -66,22 +66,4 @@ public class ZoneInfoTest {
         managed.canWriteArticle(UUID.randomUUID(), EnumSet.noneOf(Authority.class)));
   }
 
-  @Test
-  public void canDownVote() throws Exception {
-    ZoneInfo zone = ZoneInfo.createDefault("zone-b", "public", Instant.now());
-    UUID accountId = UUID.randomUUID();
-    assertTrue(zone.canDownVote(accountId, EnumSet.of(Authority.CITIZEN)));
-    assertFalse(zone.canDownVote(accountId, EnumSet.of(Authority.TOURIST)));
-    assertFalse(zone.canDownVote(accountId, EnumSet.of(Authority.SYSOP)));
-
-    ZoneInfo managed = zone.withAdmins(Arrays.asList(accountId));
-
-    assertTrue("admin should ignore authority",
-        managed.canDownVote(accountId, EnumSet.noneOf(Authority.class)));
-
-    ZoneInfo disabledDownVote = zone.withAllowDownVote(false);
-
-    assertFalse(disabledDownVote.canDownVote(accountId, EnumSet.allOf(Authority.class)));
-    assertFalse(disabledDownVote.canDownVote(UUID.randomUUID(), EnumSet.allOf(Authority.class)));
-  }
 }

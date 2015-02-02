@@ -38,23 +38,20 @@ head=headContent
             <#list articles as article>
                 <div class="pure-u-1-6 pure-u-md-1-12">
                     <div class="article-voting">
+                    ${article.upVote - article.downVote}
                         <a href="#"><i class="fa fa-chevron-up"></i></a>
-                        <a href="#"><i class="fa fa-chevron-down"></i></a>
                     </div>
                 </div>
                 <div class="pure-u-5-6 pure-u-md-11-12">
                     <div class="article-title">
                         <a href="${article.content}" target="_blank">${article.title}
-                            <span class="article-content">${article.content}</span>
+                            <span class="article-content">(${article.content})</span>
                         </a>
                     </div>
                     <div class="article-info">
                         <span>
-                           積分 ${article.upVote - article.downVote}
-                        </span>
-                        <span>
                             <a href="/z/${zoneInfo.name}/debates/${article.articleId}">
-                                討論 (${article.debateCount})
+                                <i class="fa fa-comment"></i> ${article.debateCount} 則討論
                             </a>
                         </span>
                         <span>

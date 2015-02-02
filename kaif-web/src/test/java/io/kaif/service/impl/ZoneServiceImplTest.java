@@ -32,7 +32,6 @@ public class ZoneServiceImplTest extends DbIntegrationTests {
     assertEquals(Authority.CITIZEN, loaded.getDebateAuthority());
     assertEquals(ZoneInfo.THEME_DEFAULT, loaded.getTheme());
     assertFalse(loaded.isHideFromTop());
-    assertTrue(loaded.isAllowDownVote());
     assertEquals(0, loaded.getAdminAccountIds().size());
   }
 
@@ -45,10 +44,9 @@ public class ZoneServiceImplTest extends DbIntegrationTests {
     assertEquals("FAQ", loaded.getAliasName());
     assertEquals(Authority.CITIZEN, loaded.getVoteAuthority());
     assertEquals(Authority.CITIZEN, loaded.getDebateAuthority());
-    assertEquals(Authority.SYSOP, loaded.getWriteAuthority());
+    assertEquals(Authority.FORBIDDEN, loaded.getWriteAuthority());
     assertEquals(ZoneInfo.THEME_KAIF, loaded.getTheme());
     assertTrue(loaded.isHideFromTop());
-    assertTrue(loaded.isAllowDownVote());
     assertEquals(0, loaded.getAdminAccountIds().size());
   }
 

@@ -433,9 +433,9 @@ main {
 }
 
 .article-voting {
-    text-align: center;
+    text-align: right;
+    padding-right: 1em;
 }
 
 .article-voting a {
-    display: block;
 }

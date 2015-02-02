@@ -226,6 +226,17 @@ public class AccountServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
+  public void updateAuthorities_should_not_include_forbidden() throws Exception {
+    UUID accountId = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc).getAccountId();
+    EnumSet<Authority> set = EnumSet.of(Authority.FORBIDDEN, Authority.SYSOP);
+    try {
+      service.updateAuthorities(accountId, set);
+      fail("IllegalArgumentException expected");
+    } catch (IllegalArgumentException expected) {
+    }
+  }
+
+  @Test
   public void updateNewPassword() throws Exception {
     UUID accountId = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc).getAccountId();
     AccountAuth accountAuth = service.updateNewPassword(accountId, "pppwww", "123456", lc);

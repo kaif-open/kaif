@@ -1,5 +1,7 @@
 package io.kaif.model.zone;
 
+import static java.util.Arrays.asList;
+
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
@@ -8,18 +10,19 @@ import java.util.UUID;
 
 import com.google.common.collect.ImmutableList;
 
+import io.kaif.model.account.Account;
 import io.kaif.model.account.Authority;
 
 /**
  * Although authorities has lots of combination, but valid cases are:
  * <p>
- * 1) default --  CITIZEN allow: upVote, downVote, write, debate
+ * 1) default --  CITIZEN allow: upVote, write, debate
  * <p>
- * 2) kaif    --  CITIZEN allow: upVote, downVote, debate, zoneAdmin allow write
+ * 2) kaif    --  CITIZEN allow: upVote, debate, zoneAdmin allow write
  * <p>
- * 3) kVoting --  CITIZEN allow: debate, SUFFRAGE allow upVote, zoneAdmins allow write, no downVote
+ * 3) kVoting --  CITIZEN allow: debate, SUFFRAGE allow upVote, zoneAdmins allow write
  * <p>
- * 4) vote    --  CITIZEN allow: upVote, debate, zoneAdmins allow write, no downVote
+ * 4) vote    --  CITIZEN allow: upVote, debate, zoneAdmins allow write
  * <p>
  * CITIZEN allow up/down vote on PEOPLE, regardless ZoneInfo settings
  */
@@ -30,32 +33,76 @@ public class ZoneInfo {
   // theme used in site related zone, like Blog or FAQ
   public static final String THEME_KAIF = "z-theme-kaif";
 
+  public static final String THEME_NORMAL_VOTING = "z-theme-normal-voting";
+
+  public static final String THEME_K_VOTING = "z-theme-k-voting";
+
+  public static ZoneInfo createKVoting(String zoneValue,
+      String aliasName,
+      Account creator,
+      Instant now) {
+    boolean hideFromTopRanking = false;
+    Authority voteAuth = Authority.SUFFRAGE;
+    Authority debateAuth = Authority.CITIZEN;
+    Authority writeAuth = Authority.FORBIDDEN;
+    return new ZoneInfo(Zone.valueOf(zoneValue),
+        aliasName,
+        THEME_K_VOTING,
+        voteAuth,
+        debateAuth,
+        writeAuth,
+        asList(creator.getAccountId()),
+        hideFromTopRanking,
+        now);
+  }
+
+  public static ZoneInfo createNormalVoting(String zoneValue,
+      String aliasName,
+      Account creator,
+      Instant now) {
+    boolean hideFromTopRanking = false;
+    Authority voteAuth = Authority.CITIZEN;
+    Authority debateAuth = Authority.CITIZEN;
+    Authority writeAuth = Authority.FORBIDDEN;
+    return new ZoneInfo(Zone.valueOf(zoneValue),
+        aliasName,
+        THEME_NORMAL_VOTING,
+        voteAuth,
+        debateAuth,
+        writeAuth,
+        asList(creator.getAccountId()),
+        hideFromTopRanking,
+        now);
+  }
+
   public static ZoneInfo createKaif(String zoneValue, String aliasName, Instant now) {
-    boolean allowDownVote = true;
     boolean hideFromTopRanking = true;
+    Authority voteAuth = Authority.CITIZEN;
+    Authority debateAuth = Authority.CITIZEN;
+    Authority writeAuth = Authority.FORBIDDEN;
     return new ZoneInfo(Zone.valueOf(zoneValue),
         aliasName,
         THEME_KAIF,
-        Authority.CITIZEN,
-        Authority.CITIZEN,
-        Authority.SYSOP,
+        voteAuth,
+        debateAuth,
+        writeAuth,
         Collections.emptyList(),
-        allowDownVote,
         hideFromTopRanking,
         now);
   }
 
   public static ZoneInfo createDefault(String zoneValue, String aliasName, Instant now) {
-    boolean allowDownVote = true;
     boolean hideFromTopRanking = false;
+    Authority voteAuth = Authority.CITIZEN;
+    Authority debateAuth = Authority.CITIZEN;
+    Authority writeAuth = Authority.CITIZEN;
     return new ZoneInfo(Zone.valueOf(zoneValue),
         aliasName,
         THEME_DEFAULT,
-        Authority.CITIZEN,
-        Authority.CITIZEN,
-        Authority.CITIZEN,
+        voteAuth,
+        debateAuth,
+        writeAuth,
         Collections.emptyList(),
-        allowDownVote,
         hideFromTopRanking,
         now);
   }
@@ -96,11 +143,6 @@ public class ZoneInfo {
   private final List<UUID> adminAccountIds;
 
   /**
-   * specify the zone is up vote only
-   */
-  private final boolean allowDownVote;
-
-  /**
    * hide this zone in home page top ranking
    */
   private final boolean hideFromTop;
@@ -114,7 +156,6 @@ public class ZoneInfo {
       Authority debateAuthority,
       Authority writeAuthority,
       List<UUID> adminAccountIds,
-      boolean allowDownVote,
       boolean hideFromTop,
       Instant createTime) {
     this.zone = zone;
@@ -124,7 +165,6 @@ public class ZoneInfo {
     this.debateAuthority = debateAuthority;
     this.writeAuthority = writeAuthority;
     this.adminAccountIds = adminAccountIds;
-    this.allowDownVote = allowDownVote;
     this.hideFromTop = hideFromTop;
     this.createTime = createTime;
   }
@@ -198,25 +238,11 @@ public class ZoneInfo {
     return authorities.contains(debateAuthority);
   }
 
-  public boolean canDownVote(UUID accountId, Set<Authority> authorities) {
-    if (!allowDownVote) {
-      return false;
-    }
-    if (adminAccountIds.contains(accountId)) {
-      return true;
-    }
-    return authorities.contains(voteAuthority);
-  }
-
   public boolean canWriteArticle(UUID accountId, Set<Authority> authorities) {
     if (adminAccountIds.contains(accountId)) {
       return true;
     }
     return authorities.contains(writeAuthority);
-  }
-
-  public boolean isAllowDownVote() {
-    return allowDownVote;
   }
 
   public boolean isHideFromTop() {
@@ -231,20 +257,6 @@ public class ZoneInfo {
         debateAuthority,
         writeAuthority,
         ImmutableList.copyOf(accountIds),
-        allowDownVote,
-        hideFromTop,
-        createTime);
-  }
-
-  public ZoneInfo withAllowDownVote(boolean allow) {
-    return new ZoneInfo(zone,
-        aliasName,
-        theme,
-        voteAuthority,
-        debateAuthority,
-        writeAuthority,
-        adminAccountIds,
-        allow,
         hideFromTop,
         createTime);
   }

@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 
 import io.kaif.database.DaoOperations;
 
@@ -55,7 +56,7 @@ public class AccountDao implements DaoOperations {
   public Account create(String username, String email, String passwordHash, Instant now) {
 
     final Account account = Account.create(username, email, passwordHash, now);
-
+    Preconditions.checkArgument(!account.getAuthorities().contains(Authority.FORBIDDEN));
     jdbc().update(""
             + " INSERT "
             + "   INTO Account "
@@ -89,6 +90,7 @@ public class AccountDao implements DaoOperations {
   }
 
   public void updateAuthorities(UUID accountId, EnumSet<Authority> authorities) {
+    Preconditions.checkArgument(!authorities.contains(Authority.FORBIDDEN));
     jdbc().update(" UPDATE Account SET authorities = ? WHERE accountId = ? ",
         authoritiesToVarcharArray(authorities),
         accountId);

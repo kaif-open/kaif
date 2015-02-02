@@ -8,6 +8,11 @@ import java.util.stream.Stream;
 public enum Authority {
   //DO NOT break order, or change name, the ordinal are used to calculate many other things
   /**
+   * 這個值不會 assign 給用戶，只用來設定任何人都不能執行的權限上
+   */
+  FORBIDDEN,
+
+  /**
    * (觀光客)
    * 可登入
    * 修改 password
