@@ -35,6 +35,7 @@ public class ZoneDao implements DaoOperations {
         rs.getString("aliasName"),
         rs.getString("theme"),
         Authority.valueOf(rs.getString("voteAuthority")),
+        Authority.valueOf(rs.getString("debateAuthority")),
         Authority.valueOf(rs.getString("writeAuthority")),
         adminAccountIds,
         rs.getBoolean("allowDownVote"),
@@ -51,14 +52,15 @@ public class ZoneDao implements DaoOperations {
     jdbc().update(""
             + " INSERT "
             + "   INTO ZoneInfo "
-            + "        (zone, aliasName, theme, voteAuthority, writeAuthority, "
+            + "        (zone, aliasName, theme, voteAuthority, debateAuthority, writeAuthority, "
             + "         createTime, adminAccountIds, allowDownVote, hideFromTop) "
             + " VALUES "
-            + questions(9),
+            + questions(10),
         zoneInfo.getZone().value(),
         zoneInfo.getAliasName(),
         zoneInfo.getTheme(),
         zoneInfo.getVoteAuthority().name(),
+        zoneInfo.getDebateAuthority().name(),
         zoneInfo.getWriteAuthority().name(),
         Timestamp.from(zoneInfo.getCreateTime()),
         createUuidArray(zoneInfo.getAdminAccountIds().stream()),

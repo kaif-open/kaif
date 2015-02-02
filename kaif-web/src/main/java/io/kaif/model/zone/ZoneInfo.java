@@ -10,6 +10,19 @@ import com.google.common.collect.ImmutableList;
 
 import io.kaif.model.account.Authority;
 
+/**
+ * Although authorities has lots of combination, but valid cases are:
+ * <p>
+ * 1) default --  CITIZEN allow: upVote, downVote, write, debate
+ * <p>
+ * 2) kaif    --  CITIZEN allow: upVote, downVote, debate, zoneAdmin allow write
+ * <p>
+ * 3) kVoting --  CITIZEN allow: debate, SUFFRAGE allow upVote, zoneAdmins allow write, no downVote
+ * <p>
+ * 4) vote    --  CITIZEN allow: upVote, debate, zoneAdmins allow write, no downVote
+ * <p>
+ * CITIZEN allow up/down vote on PEOPLE, regardless ZoneInfo settings
+ */
 public class ZoneInfo {
 
   public static final String THEME_DEFAULT = "z-theme-default";
@@ -24,6 +37,7 @@ public class ZoneInfo {
         aliasName,
         THEME_KAIF,
         Authority.CITIZEN,
+        Authority.CITIZEN,
         Authority.SYSOP,
         Collections.emptyList(),
         allowDownVote,
@@ -37,6 +51,7 @@ public class ZoneInfo {
     return new ZoneInfo(Zone.valueOf(zoneValue),
         aliasName,
         THEME_DEFAULT,
+        Authority.CITIZEN,
         Authority.CITIZEN,
         Authority.CITIZEN,
         Collections.emptyList(),
@@ -61,9 +76,14 @@ public class ZoneInfo {
   private final String theme;
 
   /**
-   * which authority can vote this zone
+   * which authority can vote on this zone
    */
   private final Authority voteAuthority;
+
+  /**
+   * which authority can debate on this zone
+   */
+  private final Authority debateAuthority;
 
   /**
    * which authority can write article in this zone
@@ -91,6 +111,7 @@ public class ZoneInfo {
       String aliasName,
       String theme,
       Authority voteAuthority,
+      Authority debateAuthority,
       Authority writeAuthority,
       List<UUID> adminAccountIds,
       boolean allowDownVote,
@@ -100,6 +121,7 @@ public class ZoneInfo {
     this.aliasName = aliasName;
     this.theme = theme;
     this.voteAuthority = voteAuthority;
+    this.debateAuthority = debateAuthority;
     this.writeAuthority = writeAuthority;
     this.adminAccountIds = adminAccountIds;
     this.allowDownVote = allowDownVote;
@@ -158,11 +180,22 @@ public class ZoneInfo {
     return createTime;
   }
 
+  public Authority getDebateAuthority() {
+    return debateAuthority;
+  }
+
   public boolean canUpVote(UUID accountId, Set<Authority> authorities) {
     if (adminAccountIds.contains(accountId)) {
       return true;
     }
     return authorities.contains(voteAuthority);
+  }
+
+  public boolean canDebate(UUID accountId, Set<Authority> authorities) {
+    if (adminAccountIds.contains(accountId)) {
+      return true;
+    }
+    return authorities.contains(debateAuthority);
   }
 
   public boolean canDownVote(UUID accountId, Set<Authority> authorities) {
@@ -195,6 +228,7 @@ public class ZoneInfo {
         aliasName,
         theme,
         voteAuthority,
+        debateAuthority,
         writeAuthority,
         ImmutableList.copyOf(accountIds),
         allowDownVote,
@@ -207,6 +241,7 @@ public class ZoneInfo {
         aliasName,
         theme,
         voteAuthority,
+        debateAuthority,
         writeAuthority,
         adminAccountIds,
         allow,

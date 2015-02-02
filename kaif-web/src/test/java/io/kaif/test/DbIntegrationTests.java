@@ -85,8 +85,7 @@ public abstract class DbIntegrationTests extends AbstractTransactionalJUnit4Spri
     return accountDao.create(username, username + "@example.com", username + "pwd", Instant.now());
   }
 
-  protected final Article savedArticle(String zone, String title) {
-    ZoneInfo zoneInfo = savedZoneDefault(zone);
+  protected final Article savedArticle(ZoneInfo zoneInfo, String title) {
     Account author = savedAccountCitizen(title + "-author");
     return articleDao.createExternalLink(zoneInfo.getZone(),
         author,

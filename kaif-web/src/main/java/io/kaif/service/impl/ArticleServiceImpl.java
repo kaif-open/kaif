@@ -15,7 +15,7 @@ import io.kaif.model.account.AccountDao;
 import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleDao;
 import io.kaif.model.debate.Debate;
-import io.kaif.model.debate.DebateFlakeIdGenerator;
+import io.kaif.model.debate.DebateDao;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
@@ -36,6 +36,9 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Autowired
   private ZoneDao zoneDao;
+
+  @Autowired
+  private DebateDao debateDao;
 
   @Override
   public Article createExternalLink(UUID accountId, Zone zone, String title, String url) {
@@ -63,18 +66,17 @@ public class ArticleServiceImpl implements ArticleService {
       FlakeId parentDebateId,
       UUID debaterId,
       String content) {
+    //creating debate should not use cache
+    ZoneInfo zoneInfo = zoneDao.getZoneWithoutCache(zone);
+
     //TODO handle null
-    Article article = articleDao.findArticle(zone, articleId).get();
-    //TODO filter auth
+    Article article = articleDao.findArticle(zoneInfo.getZone(), articleId).get();
+
     Account debater = accountDao.findById(debaterId)
+        .filter(account -> zoneInfo.canDebate(account.getAccountId(), account.getAuthorities()))
         .orElseThrow(() -> new AccessDeniedException("no write to debate at zone:"
             + article.getZone()));
-    // TODO handle parent, flakeId
-    return Debate.create(article,
-        new DebateFlakeIdGenerator(10).next(),
-        null,
-        content,
-        debater,
-        Instant.now());
+    // TODO handle parent
+    return debateDao.create(article, null, content, debater, Instant.now());
   }
 }

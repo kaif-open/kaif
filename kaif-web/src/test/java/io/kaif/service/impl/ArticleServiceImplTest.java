@@ -12,6 +12,7 @@ import io.kaif.model.article.ArticleContentType;
 import io.kaif.model.article.ArticleLinkType;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateContentType;
+import io.kaif.model.debate.DebateDao;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.test.DbIntegrationTests;
@@ -22,26 +23,47 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   @Autowired
   private ArticleServiceImpl service;
 
+  @Autowired
+  private DebateDao debateDao;
+
   @Test
   public void debate() throws Exception {
-    Article article = savedArticle("fun", "art 1");
+    ZoneInfo zoneInfo = savedZoneDefault("sdk");
+    Article article = savedArticle(zoneInfo, "art 1");
     Account debater = savedAccountCitizen("debater1");
-    Debate debate = service.debate(article.getZone(),
+    Debate created = service.debate(zoneInfo.getZone(),
         article.getArticleId(),
         null,
         debater.getAccountId(),
         "pixel art is better");
 
+    Debate debate = debateDao.findDebate(article.getArticleId(), created.getDebateId()).get();
     assertEquals(DebateContentType.MARK_DOWN, debate.getContentType());
     assertEquals("debater1", debate.getDebaterName());
     assertEquals(debater.getAccountId(), debate.getDebaterId());
-    assertNull(debate.getParentDebateId());
+    assertFalse(debate.hasParent());
     assertEquals(1, debate.getLevel());
     assertEquals("pixel art is better", debate.getContent());
     assertEquals(0L, debate.getDownVote());
     assertEquals(0L, debate.getUpVote());
     assertNotNull(debate.getCreateTime());
     assertNotNull(debate.getLastUpdateTime());
+  }
+
+  @Test
+  public void debate_not_enough_authority() throws Exception {
+    ZoneInfo zoneRequireCitizen = savedZoneDefault("sdk");
+    Article article = savedArticle(zoneRequireCitizen, "art 1");
+    Account account = savedAccountTourist("notActivated");
+    try {
+      service.debate(zoneRequireCitizen.getZone(),
+          article.getArticleId(),
+          null,
+          account.getAccountId(),
+          "pixel art is better");
+      fail("AccessDeniedException expected");
+    } catch (AccessDeniedException expected) {
+    }
   }
 
   @Test

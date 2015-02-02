@@ -23,6 +23,7 @@ CREATE TABLE ZoneInfo (
   aliasName       VARCHAR(4096) NULL,
   theme           VARCHAR(4096) NULL,
   voteAuthority   VARCHAR(4096) NOT NULL,
+  debateAuthority VARCHAR(4096) NOT NULL,
   writeAuthority  VARCHAR(4096) NOT NULL,
   adminAccountIds UUID []       NOT NULL,
   hideFromTop     BOOLEAN       NOT NULL,
@@ -59,7 +60,7 @@ CREATE INDEX ArticleAuthorIndex ON Article (authorId);
 CREATE TABLE Debate (
   articleId      BIGINT         NOT NULL,
   debateId       BIGINT         NOT NULL,
-  parentDebateId BIGINT         NULL,
+  parentDebateId BIGINT         NOT NULL,
   level          INT            NOT NULL,
   content        VARCHAR(16384) NOT NULL,
   contentType    VARCHAR(4096)  NOT NULL,

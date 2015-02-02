@@ -4,25 +4,28 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
 import io.kaif.model.article.Article;
 
 public class Debate {
 
+  public static final FlakeId NO_PARENT = FlakeId.MIN;
+
   public static Debate create(Article article,
       FlakeId debateId,
-      Debate parent,
+      @Nullable Debate parent,
       String content,
       Account debater,
       Instant now) {
-    Optional<Debate> optParent = Optional.ofNullable(parent);
-    FlakeId parentId = optParent.map(Debate::getDebateId).orElse(null);
-    int nextLevel = optParent.map(Debate::getLevel).orElse(0) + 1;
+    FlakeId parentId = Optional.ofNullable(parent).map(Debate::getDebateId).orElse(NO_PARENT);
+    int parentLevel = parent == null ? 0 : parent.getLevel();
     return new Debate(article.getArticleId(),
         debateId,
         parentId,
-        nextLevel,
+        parentLevel + 1,
         content,
         DebateContentType.MARK_DOWN,
         debater.getAccountId(),
@@ -80,8 +83,12 @@ public class Debate {
     return debateId;
   }
 
-  public FlakeId getParentDebateId() {
+  FlakeId getParentDebateId() {
     return parentDebateId;
+  }
+
+  public boolean hasParent() {
+    return !parentDebateId.equals(NO_PARENT);
   }
 
   public int getLevel() {
