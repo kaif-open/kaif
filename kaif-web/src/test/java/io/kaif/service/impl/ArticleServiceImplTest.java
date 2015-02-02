@@ -3,9 +3,11 @@ package io.kaif.service.impl;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
 import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleContentType;
@@ -26,14 +28,20 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   @Autowired
   private DebateDao debateDao;
 
+  private ZoneInfo zoneInfo;
+
+  @Before
+  public void setUp() throws Exception {
+    zoneInfo = savedZoneDefault("sdk");
+  }
+
   @Test
   public void debate() throws Exception {
-    ZoneInfo zoneInfo = savedZoneDefault("sdk");
     Article article = savedArticle(zoneInfo, "art 1");
     Account debater = savedAccountCitizen("debater1");
     Debate created = service.debate(zoneInfo.getZone(),
         article.getArticleId(),
-        null,
+        Debate.NO_PARENT,
         debater.getAccountId(),
         "pixel art is better");
 
@@ -51,8 +59,64 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
+  public void debate_max_level() throws Exception {
+    Article article = savedArticle(zoneInfo, "art 1");
+    Account debater = savedAccountCitizen("debater1");
+    FlakeId parentId = Debate.NO_PARENT;
+    for (int i = 0; i < 10; i++) {
+      Debate next = service.debate(zoneInfo.getZone(),
+          article.getArticleId(),
+          parentId,
+          debater.getAccountId(),
+          "nested");
+      parentId = next.getDebateId();
+    }
+
+    try {
+      service.debate(zoneInfo.getZone(),
+          article.getArticleId(),
+          parentId,
+          debater.getAccountId(),
+          "failed");
+      fail("IllegalArgumentException expected");
+    } catch (IllegalArgumentException expected) {
+    }
+  }
+
+  @Test
+  public void debate_reply() throws Exception {
+    Article article = savedArticle(zoneInfo, "art 1");
+    Account debater = savedAccountCitizen("debater1");
+    Debate l1 = service.debate(zoneInfo.getZone(),
+        article.getArticleId(),
+        Debate.NO_PARENT,
+        debater.getAccountId(),
+        "pixel art is better");
+    Debate l2 = service.debate(zoneInfo.getZone(),
+        article.getArticleId(),
+        l1.getDebateId(),
+        debater.getAccountId(),
+        "i think so");
+    assertEquals(2, l2.getLevel());
+    assertTrue(l2.hasParent());
+    assertTrue(l2.isParent(l1));
+    assertFalse(l1.isParent(l2));
+
+    Debate l3 = service.debate(zoneInfo.getZone(),
+        article.getArticleId(),
+        l2.getDebateId(),
+        debater.getAccountId(),
+        "nonono");
+
+    assertEquals(3, l3.getLevel());
+    assertTrue(l3.hasParent());
+    assertTrue(l3.isParent(l2));
+    assertFalse(l2.isParent(l3));
+  }
+
+  @Test
   public void debate_not_enough_authority() throws Exception {
-    ZoneInfo zoneRequireCitizen = savedZoneDefault("sdk");
+    ZoneInfo zoneRequireCitizen = savedZoneDefault("fun");
     Article article = savedArticle(zoneRequireCitizen, "art 1");
     Account account = savedAccountTourist("notActivated");
     try {
@@ -68,7 +132,6 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void listNewArticles() throws Exception {
-    ZoneInfo zoneInfo = savedZoneDefault("fun");
     Account account = savedAccountCitizen("citizen");
     Article a1 = service.createExternalLink(account.getAccountId(),
         zoneInfo.getZone(),
@@ -88,14 +151,13 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void createExternalLink() throws Exception {
-    ZoneInfo zoneInfo = savedZoneDefault("fun");
     Account account = savedAccountCitizen("citizen");
     Article created = service.createExternalLink(account.getAccountId(),
         zoneInfo.getZone(),
         "title1",
         "http://foo.com");
     Article article = service.findArticle(created.getZone(), created.getArticleId()).get();
-    assertEquals(Zone.valueOf("fun"), article.getZone());
+    assertEquals(Zone.valueOf("sdk"), article.getZone());
     assertEquals("title1", article.getTitle());
     assertNull(article.getUrlName());
     assertNotNull(article.getCreateTime());

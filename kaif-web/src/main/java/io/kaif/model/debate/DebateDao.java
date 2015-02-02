@@ -5,6 +5,8 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -74,7 +76,7 @@ public class DebateDao implements DaoOperations {
   }
 
   public Debate create(Article article,
-      Debate parent,
+      @Nullable Debate parent,
       String content,
       Account debater,
       Instant now) {

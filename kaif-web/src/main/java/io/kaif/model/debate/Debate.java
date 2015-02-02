@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
+
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
 import io.kaif.model.article.Article;
@@ -13,6 +15,7 @@ import io.kaif.model.article.Article;
 public class Debate {
 
   public static final FlakeId NO_PARENT = FlakeId.MIN;
+  private static final int MAX_LEVEL = 10;
 
   public static Debate create(Article article,
       FlakeId debateId,
@@ -61,6 +64,7 @@ public class Debate {
       long downVote,
       Instant createTime,
       Instant lastUpdateTime) {
+    Preconditions.checkArgument(level <= MAX_LEVEL);
     this.articleId = articleId;
     this.debateId = debateId;
     this.parentDebateId = parentDebateId;
@@ -171,5 +175,9 @@ public class Debate {
         ", createTime=" + createTime +
         ", lastUpdateTime=" + lastUpdateTime +
         '}';
+  }
+
+  public boolean isParent(Debate candidate) {
+    return parentDebateId.equals(candidate.debateId);
   }
 }

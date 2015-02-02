@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -90,5 +91,14 @@ public class ArticleDao implements DaoOperations {
       Instant now) {
     FlakeId flakeId = articleFlakeIdGenerator.next();
     return insertArticle(Article.createExternalLink(zone, flakeId, author, title, url, now));
+  }
+
+  /**
+   * @throws EmptyResultDataAccessException
+   *     if not found
+   */
+  public Article getArticle(Zone zone, FlakeId articleId) throws EmptyResultDataAccessException {
+    final String sql = " SELECT * FROM Article WHERE zone = ? AND articleId = ? ";
+    return jdbc().queryForObject(sql, articleMapper, zone.value(), articleId.value());
   }
 }

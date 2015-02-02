@@ -69,7 +69,7 @@ CREATE TABLE Debate (
   downVote       BIGINT         NOT NULL DEFAULT 0,
   createTime     TIMESTAMP      NOT NULL,
   lastUpdateTime TIMESTAMP      NOT NULL,
-  PRIMARY KEY (articleId, debaterId)
+  PRIMARY KEY (articleId, debateId)
 );
 
 CREATE INDEX DebaterIndex ON Debate (debaterId);

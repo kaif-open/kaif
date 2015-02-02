@@ -68,15 +68,17 @@ public class ArticleServiceImpl implements ArticleService {
       String content) {
     //creating debate should not use cache
     ZoneInfo zoneInfo = zoneDao.getZoneWithoutCache(zone);
-
-    //TODO handle null
-    Article article = articleDao.findArticle(zoneInfo.getZone(), articleId).get();
+    Article article = articleDao.getArticle(zoneInfo.getZone(), articleId);
 
     Account debater = accountDao.findById(debaterId)
         .filter(account -> zoneInfo.canDebate(account.getAccountId(), account.getAuthorities()))
         .orElseThrow(() -> new AccessDeniedException("no write to debate at zone:"
             + article.getZone()));
-    // TODO handle parent
-    return debateDao.create(article, null, content, debater, Instant.now());
+
+    Debate parent = Optional.of(parentDebateId)
+        .filter(pId -> !Debate.NO_PARENT.equals(pId))
+        .flatMap(pId -> debateDao.findDebate(article.getArticleId(), pId))
+        .orElse(null);
+    return debateDao.create(article, parent, content, debater, Instant.now());
   }
 }
