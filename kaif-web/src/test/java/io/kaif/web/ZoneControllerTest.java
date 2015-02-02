@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.zone.Zone;
@@ -41,6 +42,18 @@ public class ZoneControllerTest extends MvcIntegrationTests {
         .andExpect(content().string(containsString("java")))
         .andExpect(content().string(containsString("golang")))
         .andExpect(content().string(containsString("ruby")));
+  }
+
+  @Test
+  public void articleDebates() throws Exception {
+    Zone z = zoneInfo.getZone();
+    when(zoneService.getZone(z)).thenReturn(zoneInfo);
+    when(articleService.getArticle(z, FlakeId.fromString("aaa"))).thenReturn(article(z, "erlang"));
+
+    mockMvc.perform(get("/z/programming/debates/aaa"))
+        .andExpect(view().name("article/debates"))
+        .andExpect(content().string(containsString("programming-alias")))
+        .andExpect(content().string(containsString("erlang")));
   }
 
   @Test

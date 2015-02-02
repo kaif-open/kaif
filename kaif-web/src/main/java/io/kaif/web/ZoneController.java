@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import io.kaif.flake.FlakeId;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
@@ -100,6 +101,18 @@ public class ZoneController {
             + accessToken.getAccountId());
       }
       return new ModelAndView("article/create.part").addObject("zoneInfo", zoneInfo);
+    });
+  }
+
+  @RequestMapping("/{zone}/debates/{articleId}")
+  public Object articleDebates(@PathVariable("zone") String rawZone,
+      @PathVariable("articleId") String articleId,
+      HttpServletRequest request) throws IOException {
+    return resolveZone(request, rawZone, zoneInfo -> {
+      return new ModelAndView("article/debates")//
+          .addObject("zoneInfo", zoneInfo)
+          .addObject("article",
+              articleService.getArticle(zoneInfo.getZone(), FlakeId.fromString(articleId)));
     });
   }
 }
