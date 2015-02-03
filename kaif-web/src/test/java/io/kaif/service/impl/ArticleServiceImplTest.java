@@ -1,7 +1,12 @@
 package io.kaif.service.impl;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.*;
 import static org.junit.Assert.*;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.IntStream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +20,7 @@ import io.kaif.model.article.ArticleLinkType;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateContentType;
 import io.kaif.model.debate.DebateDao;
+import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.test.DbIntegrationTests;
 import io.kaif.web.support.AccessDeniedException;
@@ -58,6 +64,55 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertEquals(0L, debate.getUpVote());
     assertNotNull(debate.getCreateTime());
     assertNotNull(debate.getLastUpdateTime());
+  }
+
+  @Test
+  public void listHotDebates_one_level() throws Exception {
+    Zone zone = zoneInfo.getZone();
+    FlakeId articleId = article.getArticleId();
+    assertEquals(0, service.listHotDebates(zone, articleId, 0).size());
+
+    List<Debate> debates = IntStream.rangeClosed(1, 3)
+        .mapToObj(i -> service.debate(zone,
+            articleId,
+            Debate.NO_PARENT,
+            citizen.getAccountId(),
+            "debate-content-" + i))
+        .collect(toList());
+
+    assertEquals(debates, service.listHotDebates(zone, articleId, 0));
+  }
+
+  @Test
+  public void listHotDebates_tree() throws Exception {
+    Debate d1 = savedDebate(null);
+    Debate d1_1 = savedDebate(d1);
+    Debate d1_1_1 = savedDebate(d1_1);
+    Debate d2 = savedDebate(null);
+    Debate d2_1 = savedDebate(d2);
+    Debate d2_2 = savedDebate(d2);
+
+    // begin out or order
+    Debate d1_1_2 = savedDebate(d1_1);
+    Debate d3 = savedDebate(null);
+    Debate d2_1_1 = savedDebate(d2_1);
+    Debate d3_1 = savedDebate(d3);
+    Debate d1_2 = savedDebate(d1);
+
+    List<Debate> expect = asList(//
+        d1, d1_1, d1_1_1, d1_1_2, d1_2, //
+        d2, d2_1, d2_1_1, d2_2, //
+        d3, d3_1);
+
+    assertEquals(expect, service.listHotDebates(zoneInfo.getZone(), article.getArticleId(), 0));
+  }
+
+  private Debate savedDebate(Debate parent) {
+    return service.debate(zoneInfo.getZone(),
+        article.getArticleId(),
+        Optional.ofNullable(parent).map(Debate::getDebateId).orElse(Debate.NO_PARENT),
+        citizen.getAccountId(),
+        "debate-content-" + Math.random());
   }
 
   @Test

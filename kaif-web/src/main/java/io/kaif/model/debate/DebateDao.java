@@ -2,6 +2,8 @@ package io.kaif.model.debate;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -11,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import com.google.common.collect.ImmutableMap;
 
 import io.kaif.database.DaoOperations;
 import io.kaif.flake.FlakeId;
@@ -89,5 +93,32 @@ public class DebateDao implements DaoOperations {
         content,
         debater,
         now));
+  }
+
+  public List<Debate> listTreeByArticle(FlakeId articleId) {
+    // TODO LIMIT in query
+    // http://stackoverflow.com/a/25486998
+    final String sql = ""
+        + " WITH RECURSIVE DebateTree "
+        + " AS "
+        + " ( "
+        + "    SELECT *, "
+        + "           ARRAY[debateId] AS path "
+        + "      FROM Debate "
+        + "     WHERE articleId = :articleId "
+        + "       AND parentDebateId = :noParent "
+        + "     UNION "
+        + "    SELECT d.*,"
+        + "           DebateTree.path || d.debateId AS path "
+        + "      FROM DebateTree "
+        + "      JOIN Debate d ON d.parentDebateId = DebateTree.debateId "
+        + "     WHERE d.articleId = :articleId "
+        + " ) "
+        + " SELECT * FROM DebateTree ORDER BY path ";
+
+    Map<String, Object> params = ImmutableMap.of(//
+        "articleId", articleId.value(), "noParent", Debate.NO_PARENT.value());
+
+    return namedJdbc().query(sql, params, debateMapper);
   }
 }

@@ -92,6 +92,8 @@ public class ArticleServiceImpl implements ArticleService {
    * tree structure, but flatten to list, with order by vote score
    */
   public List<Debate> listHotDebates(Zone zone, FlakeId articleId, int offset) {
-    return null;
+    //TODO paging
+    //TODO order by rank
+    return debateDao.listTreeByArticle(articleId);
   }
 }
