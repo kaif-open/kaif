@@ -51,6 +51,10 @@ class AppModule {
       new SignUpForm(el, accountService);
     });
     parent.querySelectorAll('[sign-in-form]').forEach((el) {
+      if (accountSession.current != null) {
+        route.gotoHome();
+        return;
+      }
       new SignInForm(el, accountService, accountSession);
     });
     parent.querySelectorAll('[account-settings]').forEach((el) {
