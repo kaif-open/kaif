@@ -17,7 +17,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
 @JsonSerialize(using = ZoneSerializer.class)
-@JsonDeserialize(using = ZoneDeserilaizer.class)
+@JsonDeserialize(using = ZoneDeserializer.class)
 public class Zone {
   /**
    * - must start with az09, end with az09, no dash
@@ -98,7 +98,7 @@ class ZoneSerializer extends JsonSerializer<Zone> {
 
 }
 
-class ZoneDeserilaizer extends JsonDeserializer<Zone> {
+class ZoneDeserializer extends JsonDeserializer<Zone> {
 
   @Override
   public Zone deserialize(JsonParser jp, DeserializationContext ctxt)
