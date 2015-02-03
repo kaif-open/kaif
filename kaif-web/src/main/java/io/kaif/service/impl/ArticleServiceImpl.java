@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -69,7 +71,7 @@ public class ArticleServiceImpl implements ArticleService {
 
   public Debate debate(Zone zone,
       FlakeId articleId,
-      FlakeId parentDebateId,
+      @Nullable FlakeId parentDebateId,
       UUID debaterId,
       String content) {
     //creating debate should not use cache
@@ -81,10 +83,16 @@ public class ArticleServiceImpl implements ArticleService {
         .orElseThrow(() -> new AccessDeniedException("no write to debate at zone:"
             + article.getZone()));
 
-    Debate parent = Optional.of(parentDebateId)
-        .filter(pId -> !Debate.NO_PARENT.equals(pId))
+    Debate parent = Optional.ofNullable(parentDebateId)
         .flatMap(pId -> debateDao.findDebate(article.getArticleId(), pId))
         .orElse(null);
     return debateDao.create(article, parent, content, debater, Instant.now());
+  }
+
+  /**
+   * tree structure, but flatten to list, with order by vote score
+   */
+  public List<Debate> listHotDebates(Zone zone, FlakeId articleId, int offset) {
+    return null;
   }
 }

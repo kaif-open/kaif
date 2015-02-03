@@ -23,8 +23,9 @@ public class Debate {
       String content,
       Account debater,
       Instant now) {
-    FlakeId parentId = Optional.ofNullable(parent).map(Debate::getDebateId).orElse(NO_PARENT);
-    int parentLevel = parent == null ? 0 : parent.getLevel();
+    Optional<Debate> optParent = Optional.ofNullable(parent);
+    FlakeId parentId = optParent.map(Debate::getDebateId).orElse(NO_PARENT);
+    int parentLevel = optParent.map(Debate::getLevel).orElse(0);
     return new Debate(article.getArticleId(),
         debateId,
         parentId,
@@ -65,6 +66,7 @@ public class Debate {
       Instant createTime,
       Instant lastUpdateTime) {
     Preconditions.checkArgument(level <= MAX_LEVEL);
+    Preconditions.checkArgument(!NO_PARENT.equals(debateId));
     this.articleId = articleId;
     this.debateId = debateId;
     this.parentDebateId = parentDebateId;
@@ -177,7 +179,7 @@ public class Debate {
         '}';
   }
 
-  public boolean isParent(Debate candidate) {
-    return parentDebateId.equals(candidate.debateId);
+  public boolean isParent(Debate child) {
+    return parentDebateId.equals(child.debateId);
   }
 }

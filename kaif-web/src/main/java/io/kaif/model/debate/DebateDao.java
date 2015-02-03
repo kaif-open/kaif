@@ -71,6 +71,9 @@ public class DebateDao implements DaoOperations {
   }
 
   public Optional<Debate> findDebate(FlakeId articleId, FlakeId debateId) {
+    if (Debate.NO_PARENT.equals(debateId)) {
+      return Optional.empty();
+    }
     final String sql = " SELECT * FROM Debate WHERE articleId = ? AND debateId = ? LIMIT 1 ";
     return jdbc().query(sql, debateMapper, articleId.value(), debateId.value()).stream().findAny();
   }

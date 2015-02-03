@@ -163,4 +163,12 @@ public class Article {
     result = 31 * result + articleId.hashCode();
     return result;
   }
+
+  @Override
+  public String toString() {
+    return "article:" +
+        "/z/" + zone +
+        "/article/" + articleId +
+        "/" + title;
+  }
 }
