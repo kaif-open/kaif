@@ -6,13 +6,25 @@ import 'package:kaif_web/model.dart';
 
 class DebateForm {
 
-  final Element elem;
-  final ArticleService articleService;
-  Alert alert;
+  final ArticleService _articleService;
 
-  DebateForm(this.elem, this.articleService) {
-    alert = new Alert.append(elem);
-    elem.onSubmit.listen(_onSubmit);
+  Element _elem;
+  Alert _alert;
+
+  Element get elem => _elem;
+
+  String parentDebateId;
+
+  DebateForm.placeHolder(Element placeHolderElem,
+                         ArticleService _articleService) :
+  this._(placeHolderElem, _articleService);
+
+  DebateForm._(Element placeHolderElem, this._articleService) {
+    _elem = new ComponentTemplate('debate-form').createElement();
+    placeHolderElem.replaceWith(_elem);
+
+    _alert = new Alert.append(_elem);
+    _elem.onSubmit.listen(_onSubmit);
   }
 
   void _onSubmit(Event e) {
@@ -22,16 +34,15 @@ class DebateForm {
 
     //TODO prompt login/registration if not login
 
-    alert.hide();
+    _alert.hide();
     TextInputElement contentInput = elem.querySelector('textarea[name=contentInput]');
     HiddenInputElement articleInput = elem.querySelector('input[name=articleInput]');
     HiddenInputElement zoneInput = elem.querySelector('input[name=zoneInput]');
-    HiddenInputElement parentDebateIdInput = elem.querySelector('input[name=parentDebateIdInput]');
     contentInput.value = contentInput.value.trim();
 
     //check Debate.CONTENT_MIN in java
     if (contentInput.value.length < 10) {
-      alert.renderError(i18n('debate.min-content', [10]));
+      _alert.renderError(i18n('debate.min-content', [10]));
       return;
     }
 
@@ -40,9 +51,9 @@ class DebateForm {
 
     var loading = new Loading.small()
       ..renderAfter(submit);
-    articleService.debate(zoneInput.value,
+    _articleService.debate(zoneInput.value,
     articleInput.value,
-    parentDebateIdInput.value,
+    parentDebateId,
     contentInput.value)
     .then((_) {
       contentInput.value = '';
@@ -51,7 +62,7 @@ class DebateForm {
         route.reload();
       });
     }).catchError((e) {
-      alert.renderError('${e}');
+      _alert.renderError('${e}');
     }).whenComplete(() {
       submit.disabled = false;
       loading.remove();

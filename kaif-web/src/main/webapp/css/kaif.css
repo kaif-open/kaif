@@ -371,6 +371,10 @@ main {
     right: 0;
 }
 
+[comp-template] {
+    display: none !important;
+}
+
 /** zone articles **/
 
 .zone {

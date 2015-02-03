@@ -24,21 +24,14 @@ head=headContent
 <div class="zone ${zoneInfo.theme} pure-g article">
     <div class="pure-u-1 pure-u-md-3-4">
     ${article.title}
-
-        <form class="pure-form" debate-form>
-        <#-- this form has a copy in debate_tree.dart
-             any change should review class DebateReplier
-        -->
-            <input type="hidden" name="zoneInput" value="${zoneInfo.zone}">
-            <input type="hidden" name="articleInput" value="${article.articleId}">
-        <#-- blank parent input, see debate_form.dart -->
-            <input type="hidden" name="parentDebateIdInput" value="">
-            <textarea name="contentInput" maxlength="4096" rows="3"></textarea>
-            <button type="submit" class="pure-button pure-button-primary">留言</button>
-        </form>
         <div class="debate-tree" debate-tree>
-            <input type="hidden" name="articleInput" value="${article.articleId}">
-            <input type="hidden" name="zoneInput" value="${zoneInfo.zone}">
+        <#-- place holder debate-form will replace by comp-template
+         keep place holder looks the same as comp-template
+        -->
+            <div class="pure-form" debate-form>
+                <textarea rows="3"></textarea>
+                <button type="submit" class="pure-button pure-button-primary">留言</button>
+            </div>
             <#list debates as debate>
                 <div class="debate" style="margin-left: ${(debate.level-1) * 15}px;">
                     <div class="debate-author">
@@ -59,4 +52,12 @@ head=headContent
 
     </div>
 </div>
+
+<#-- component templates -->
+<form class="pure-form hidden" comp-template="debate-form">
+    <input type="hidden" name="zoneInput" value="${zoneInfo.zone}">
+    <input type="hidden" name="articleInput" value="${article.articleId}">
+    <textarea name="contentInput" maxlength="4096" rows="3"></textarea>
+    <button type="submit" class="pure-button pure-button-primary">留言</button>
+</form>
 </@template.page>

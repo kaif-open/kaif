@@ -70,9 +70,6 @@ class AppModule {
     parent.querySelectorAll('[external-link-article-form]').forEach((el) {
       new ExternalLinkArticleForm(el, articleService);
     });
-    parent.querySelectorAll('[debate-form]').forEach((el) {
-      new DebateForm(el, articleService);
-    });
     parent.querySelectorAll('[debate-tree]').forEach((el) {
       new DebateTree(el, articleService);
     });
