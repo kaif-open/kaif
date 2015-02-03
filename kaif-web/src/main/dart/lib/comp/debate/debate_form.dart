@@ -20,10 +20,13 @@ class DebateForm {
       ..preventDefault()
       ..stopPropagation();
 
+    //TODO prompt login/registration if not login
+
     alert.hide();
-    TextInputElement contentInput = elem.querySelector('#contentInput');
-    HiddenInputElement articleInput = elem.querySelector('#articleInput');
-    HiddenInputElement zoneInput = elem.querySelector('#zoneInput');
+    TextInputElement contentInput = elem.querySelector('textarea[name=contentInput]');
+    HiddenInputElement articleInput = elem.querySelector('input[name=articleInput]');
+    HiddenInputElement zoneInput = elem.querySelector('input[name=zoneInput]');
+    HiddenInputElement parentDebateIdInput = elem.querySelector('input[name=parentDebateIdInput]');
     contentInput.value = contentInput.value.trim();
 
     //check Debate.CONTENT_MIN in java
@@ -37,7 +40,10 @@ class DebateForm {
 
     var loading = new Loading.small()
       ..renderAfter(submit);
-    articleService.debate(zoneInput.value, articleInput.value, null, contentInput.value)
+    articleService.debate(zoneInput.value,
+    articleInput.value,
+    parentDebateIdInput.value,
+    contentInput.value)
     .then((_) {
       contentInput.value = '';
       elem.remove();

@@ -181,6 +181,10 @@ public class Debate {
         '}';
   }
 
+  public boolean isMaxLevel() {
+    return level >= MAX_LEVEL;
+  }
+
   public boolean isParent(Debate child) {
     return parentDebateId.equals(child.debateId);
   }

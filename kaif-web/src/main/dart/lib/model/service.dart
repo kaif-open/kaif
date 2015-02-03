@@ -230,8 +230,9 @@ class ArticleService extends _AbstractService {
   }
 
   Future debate(String zone, String articleId, String parentDebateId, String content) {
+    String parent = isStringBlank(parentDebateId) ? null : parentDebateId;
     var json = {
-        'zone':zone, 'articleId':articleId, 'parentDebateId':parentDebateId, 'content':content
+        'zone':zone, 'articleId':articleId, 'parentDebateId':parent, 'content':content
     };
     return _putJson(_getUrl('/debate'), json)
     .then((res) => null);

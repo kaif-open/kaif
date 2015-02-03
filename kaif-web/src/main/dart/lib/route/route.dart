@@ -18,7 +18,7 @@ class Router {
   String get home => '/' ;
 
   void reload() {
-    window.location.href = window.location.href;
+    window.location.reload();
   }
 
   void gotoHome([String queryString]) => _gotoWithQuery(home, queryString);

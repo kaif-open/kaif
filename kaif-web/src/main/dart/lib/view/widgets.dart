@@ -149,7 +149,7 @@ class Alert {
   void _render(String message, String type) {
     _elem
       ..text = message
-      ..classes.toggle('hide', false)
+      ..classes.toggle('hidden', false)
       ..classes.toggle('alert-danger', type == 'danger')
       ..classes.toggle('alert-info', type == 'info')
       ..classes.toggle('alert-success', type == 'success')
@@ -157,6 +157,6 @@ class Alert {
   }
 
   void hide() {
-    _elem.classes.toggle('hide', true);
+    _elem.classes.toggle('hidden', true);
   }
 }

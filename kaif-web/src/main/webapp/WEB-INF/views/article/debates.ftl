@@ -26,14 +26,37 @@ head=headContent
     ${article.title}
 
         <form class="pure-form" debate-form>
-            <input type="hidden" id="zoneInput" value="${zoneInfo.zone}">
-            <input type="hidden" id="articleInput" value="${article.articleId}">
-            <textarea id="contentInput" maxlength="4096" rows="3"></textarea>
+        <#-- this form has a copy in debate_tree.dart
+             any change should review class DebateReplier
+        -->
+            <input type="hidden" name="zoneInput" value="${zoneInfo.zone}">
+            <input type="hidden" name="articleInput" value="${article.articleId}">
+        <#-- blank parent input, see debate_form.dart -->
+            <input type="hidden" name="parentDebateIdInput" value="">
+            <textarea name="contentInput" maxlength="4096" rows="3"></textarea>
             <button type="submit" class="pure-button pure-button-primary">留言</button>
         </form>
-        <#list debates as debate>
-        ${debate.content}
-        </#list>
+        <div class="debate-tree" debate-tree>
+            <input type="hidden" name="articleInput" value="${article.articleId}">
+            <input type="hidden" name="zoneInput" value="${zoneInfo.zone}">
+            <#list debates as debate>
+                <div class="debate" style="margin-left: ${(debate.level-1) * 15}px;">
+                    <div class="debate-author">
+                    ${debate.debaterName}
+                    </div>
+                    <div class="debate-content">
+                    ${debate.content}
+                    </div>
+                    <div class="debate-info">
+                        <#if !debate.maxLevel>
+                            <a href="#" debate-replier
+                               data-debate-id="${debate.debateId}">回應</a>
+                        </#if>
+                    </div>
+                </div>
+            </#list>
+        </div>
+
     </div>
 </div>
 </@template.page>

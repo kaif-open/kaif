@@ -58,6 +58,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertEquals("debater1", debate.getDebaterName());
     assertEquals(debater.getAccountId(), debate.getDebaterId());
     assertFalse(debate.hasParent());
+    assertFalse(debate.isMaxLevel());
     assertEquals(1, debate.getLevel());
     assertEquals("pixel art is better", debate.getContent());
     assertEquals(0L, debate.getDownVote());
@@ -119,15 +120,16 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   public void debate_max_level() throws Exception {
     Account debater = savedAccountCitizen("debater1");
     FlakeId parentId = Debate.NO_PARENT;
+    Debate last = null;
     for (int i = 0; i < 10; i++) {
-      Debate next = service.debate(zoneInfo.getZone(),
+      last = service.debate(zoneInfo.getZone(),
           article.getArticleId(),
           parentId,
           debater.getAccountId(),
           "nested");
-      parentId = next.getDebateId();
+      parentId = last.getDebateId();
     }
-
+    assertTrue(last.isMaxLevel());
     try {
       service.debate(zoneInfo.getZone(),
           article.getArticleId(),
