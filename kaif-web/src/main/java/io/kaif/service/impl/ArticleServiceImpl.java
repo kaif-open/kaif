@@ -48,8 +48,7 @@ public class ArticleServiceImpl implements ArticleService {
     //creating article should not use cache
     ZoneInfo zoneInfo = zoneDao.getZoneWithoutCache(zone);
     Account author = accountDao.findById(accountId)
-        .filter(account -> zoneInfo.canWriteArticle(account.getAccountId(),
-            account.getAuthorities()))
+        .filter(zoneInfo::canWriteArticle)
         .orElseThrow(() -> new AccessDeniedException("no write to create article at zone:" + zone));
 
     return articleDao.createExternalLink(zone, author, title, url, Instant.now());
@@ -79,7 +78,7 @@ public class ArticleServiceImpl implements ArticleService {
     Article article = articleDao.getArticle(zoneInfo.getZone(), articleId);
 
     Account debater = accountDao.findById(debaterId)
-        .filter(account -> zoneInfo.canDebate(account.getAccountId(), account.getAuthorities()))
+        .filter(zoneInfo::canDebate)
         .orElseThrow(() -> new AccessDeniedException("no write to debate at zone:"
             + article.getZone()));
 

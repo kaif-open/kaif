@@ -1,6 +1,7 @@
 package io.kaif.model.account;
 
 import static io.kaif.model.account.Authority.CITIZEN;
+import static io.kaif.model.account.Authority.SUFFRAGE;
 import static io.kaif.model.account.Authority.SYSOP;
 import static org.junit.Assert.*;
 
@@ -26,7 +27,9 @@ public class AccountAccessTokenTest {
     assertTrue(token.length() > 100);
     AccountAccessToken decoded = AccountAccessToken.tryDecode(token, secret).get();
     assertEquals(accountAccessToken, decoded);
-    assertEquals(EnumSet.of(SYSOP, CITIZEN), decoded.getAuthorities());
+    assertTrue(decoded.containsAuthority(SYSOP));
+    assertTrue(decoded.containsAuthority(CITIZEN));
+    assertFalse(decoded.containsAuthority(SUFFRAGE));
 
     assertFalse(AccountAccessToken.tryDecode("bad", secret).isPresent());
   }

@@ -2,6 +2,7 @@ package io.kaif.model.account;
 
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -15,7 +16,7 @@ import io.kaif.token.Bytes;
  * <p>
  * this also prevent leak detail passwordHash to client side
  */
-public class AccountAccessToken {
+public class AccountAccessToken implements Authorization {
 
   public static final String HEADER_KEY = "X-KAIF-ACCESS-TOKEN";
 
@@ -25,45 +26,39 @@ public class AccountAccessToken {
       return Optional.empty();
     }
     final UUID accountId;
+    final long authoritiesBits;
     try {
       accountId = Bytes.uuidFromBytes(fields.get(0));
+      authoritiesBits = Bytes.longFromBytes(fields.get(2));
     } catch (RuntimeException e) {
-      //malformed UUID, this should not be possible, unless we change protocol
+      //malformed UUID or bits, this should not be possible, unless we change protocol
       return Optional.empty();
     }
-    return Optional.of(new AccountAccessToken(accountId, fields.get(1), fields.get(2)));
+    return Optional.of(new AccountAccessToken(accountId, fields.get(1), authoritiesBits));
   }
 
   private static byte[] passwordHashToBytes(String passwordHash) {
     return Bytes.intToBytes(passwordHash.hashCode());
   }
 
-  private static byte[] authoritiesToBytes(Set<Authority> authorities) {
-    return Bytes.longToBytes(Authority.toBits(authorities));
-  }
-
   private final UUID accountId;
-  private final byte[] authoritiesBits;
+  private final long authoritiesBits;
   private final byte[] passwordHashDigest;
 
   public AccountAccessToken(UUID accountId, String passwordHash, Set<Authority> authorities) {
-    this(accountId, passwordHashToBytes(passwordHash), authoritiesToBytes(authorities));
+    this(accountId, passwordHashToBytes(passwordHash), Authority.toBits(authorities));
   }
 
-  private AccountAccessToken(UUID accountId, byte[] passwordHashDigest, byte[] authoritiesBits) {
+  private AccountAccessToken(UUID accountId, byte[] passwordHashDigest, long authoritiesBits) {
     this.accountId = accountId;
     this.passwordHashDigest = passwordHashDigest;
     this.authoritiesBits = authoritiesBits;
   }
 
-  public Set<Authority> getAuthorities() {
-    return Authority.fromBits(Bytes.longFromBytes(authoritiesBits));
-  }
-
   public String encode(Instant expireTime, AccountSecret secret) {
     List<byte[]> fields = Arrays.asList(Bytes.uuidToBytes(accountId),
         passwordHashDigest,
-        authoritiesBits);
+        Bytes.longToBytes(authoritiesBits));
     return secret.getCodec().encode(expireTime.toEpochMilli(), fields);
   }
 
@@ -73,7 +68,7 @@ public class AccountAccessToken {
    */
   public boolean matches(String passwordHash, Set<Authority> authorities) {
     return Arrays.equals(this.passwordHashDigest, passwordHashToBytes(passwordHash))
-        && Arrays.equals(this.authoritiesBits, authoritiesToBytes(authorities));
+        && this.authoritiesBits == Authority.toBits(authorities);
   }
 
   @Override
@@ -87,7 +82,7 @@ public class AccountAccessToken {
 
     AccountAccessToken that = (AccountAccessToken) o;
 
-    if (!Arrays.equals(authoritiesBits, that.authoritiesBits)) {
+    if (authoritiesBits != that.authoritiesBits) {
       return false;
     }
     if (accountId != null ? !accountId.equals(that.accountId) : that.accountId != null) {
@@ -102,9 +97,9 @@ public class AccountAccessToken {
 
   @Override
   public int hashCode() {
-    int result = passwordHashDigest != null ? Arrays.hashCode(passwordHashDigest) : 0;
-    result = 31 * result + (accountId != null ? accountId.hashCode() : 0);
-    result = 31 * result + (authoritiesBits != null ? Arrays.hashCode(authoritiesBits) : 0);
+    int result = accountId != null ? accountId.hashCode() : 0;
+    result = 31 * result + (int) (authoritiesBits ^ (authoritiesBits >>> 32));
+    result = 31 * result + (passwordHashDigest != null ? Arrays.hashCode(passwordHashDigest) : 0);
     return result;
   }
 
@@ -119,4 +114,13 @@ public class AccountAccessToken {
     return accountId;
   }
 
+  @Override
+  public boolean belongToAccounts(Collection<UUID> accountIds) {
+    return accountIds.contains(accountId);
+  }
+
+  @Override
+  public boolean containsAuthority(Authority authority) {
+    return Authority.bitsContains(authoritiesBits, authority);
+  }
 }

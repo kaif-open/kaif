@@ -1,6 +1,7 @@
 package io.kaif.model.account;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.UUID;
@@ -8,7 +9,7 @@ import java.util.UUID;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class Account {
+public class Account implements Authorization {
   public static final int PASSWORD_MIN = 6;
   public static final int PASSWORD_MAX = 100;
   public static final int NAME_MIN = 3;
@@ -131,5 +132,15 @@ public class Account {
         ", createTime=" + createTime +
         ", authorities=" + authorities +
         '}';
+  }
+
+  @Override
+  public boolean belongToAccounts(Collection<UUID> accountIds) {
+    return accountIds.contains(accountId);
+  }
+
+  @Override
+  public boolean containsAuthority(Authority authority) {
+    return authorities.contains(authority);
   }
 }

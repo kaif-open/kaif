@@ -45,9 +45,11 @@ public enum Authority {
   SYSOP;
 
   public static Set<Authority> fromBits(long bits) {
-    return Stream.of(values())
-        .filter(auth -> (auth.bit() & bits) == auth.bit())
-        .collect(Collectors.toSet());
+    return Stream.of(values()).filter(auth -> bitsContains(bits, auth)).collect(Collectors.toSet());
+  }
+
+  public static boolean bitsContains(long bits, Authority authority) {
+    return (authority.bit() & bits) == authority.bit();
   }
 
   public static long toBits(Collection<Authority> authorities) {

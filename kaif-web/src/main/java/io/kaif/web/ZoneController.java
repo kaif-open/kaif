@@ -94,7 +94,7 @@ public class ZoneController {
       AccountAccessToken accessToken) {
     return resolveZone(request, rawZone, zoneInfo -> {
       //TODO use annotation to validate canWriteArticle
-      if (!zoneInfo.canWriteArticle(accessToken.getAccountId(), accessToken.getAuthorities())) {
+      if (!zoneInfo.canWriteArticle(accessToken)) {
         throw new AccessDeniedException("not allow write article at zone:"
             + zoneInfo.getZone()
             + ", account:"

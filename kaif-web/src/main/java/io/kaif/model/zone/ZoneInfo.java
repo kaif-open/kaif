@@ -5,13 +5,13 @@ import static java.util.Arrays.asList;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import com.google.common.collect.ImmutableList;
 
 import io.kaif.model.account.Account;
 import io.kaif.model.account.Authority;
+import io.kaif.model.account.Authorization;
 
 /**
  * Although authorities has lots of combination, but valid cases are:
@@ -224,25 +224,25 @@ public class ZoneInfo {
     return debateAuthority;
   }
 
-  public boolean canUpVote(UUID accountId, Set<Authority> authorities) {
-    if (adminAccountIds.contains(accountId)) {
+  public boolean canUpVote(Authorization auth) {
+    if (auth.belongToAccounts(adminAccountIds)) {
       return true;
     }
-    return authorities.contains(voteAuthority);
+    return auth.containsAuthority(voteAuthority);
   }
 
-  public boolean canDebate(UUID accountId, Set<Authority> authorities) {
-    if (adminAccountIds.contains(accountId)) {
+  public boolean canDebate(Authorization auth) {
+    if (auth.belongToAccounts(adminAccountIds)) {
       return true;
     }
-    return authorities.contains(debateAuthority);
+    return auth.containsAuthority(debateAuthority);
   }
 
-  public boolean canWriteArticle(UUID accountId, Set<Authority> authorities) {
-    if (adminAccountIds.contains(accountId)) {
+  public boolean canWriteArticle(Authorization auth) {
+    if (auth.belongToAccounts(adminAccountIds)) {
       return true;
     }
-    return authorities.contains(writeAuthority);
+    return auth.containsAuthority(writeAuthority);
   }
 
   public boolean isHideFromTop() {
