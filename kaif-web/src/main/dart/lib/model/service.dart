@@ -229,4 +229,11 @@ class ArticleService extends _AbstractService {
     .then((res) => null);
   }
 
+  Future debate(String zone, String articleId, String parentDebateId, String content) {
+    var json = {
+        'zone':zone, 'articleId':articleId, 'parentDebateId':parentDebateId, 'content':content
+    };
+    return _putJson(_getUrl('/debate'), json)
+    .then((res) => null);
+  }
 }

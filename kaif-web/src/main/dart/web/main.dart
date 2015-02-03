@@ -7,6 +7,7 @@ import 'package:kaif_web/comp/account/reset_password_form.dart';
 import 'package:kaif_web/comp/account/account_menu.dart';
 import 'package:kaif_web/comp/account/account_settings.dart';
 import 'package:kaif_web/comp/article/external_link_article_form.dart';
+import 'package:kaif_web/comp/debate/debate_form.dart';
 import 'package:kaif_web/comp/server_part_loader.dart';
 import 'dart:html';
 import 'dart:async';
@@ -63,6 +64,9 @@ class AppModule {
     });
     parent.querySelectorAll('[external-link-article-form]').forEach((el) {
       new ExternalLinkArticleForm(el, articleService);
+    });
+    parent.querySelectorAll('[debate-form]').forEach((el) {
+      new DebateForm(el, articleService);
     });
   }
 

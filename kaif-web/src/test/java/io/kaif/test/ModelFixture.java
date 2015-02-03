@@ -6,6 +6,7 @@ import java.util.Random;
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
 import io.kaif.model.article.Article;
+import io.kaif.model.debate.Debate;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 
@@ -20,6 +21,17 @@ public interface ModelFixture {
 
   default Account accountTourist(String username) {
     return Account.create(username, username + "@example.com", username + "pwd", Instant.now());
+  }
+
+  default Debate debate(Article article, String content, Debate parent) {
+    Instant now = Instant.now();
+    Account debater = accountTourist("debater-" + new Random().nextInt(100));
+    return Debate.create(article,
+        FlakeId.startOf(now.toEpochMilli()),
+        parent,
+        content,
+        debater,
+        now);
   }
 
   default Article article(Zone zone, String title) {

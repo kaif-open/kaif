@@ -68,6 +68,7 @@ public class ArticleServiceImpl implements ArticleService {
     return articleDao.getArticle(zone, articleId);
   }
 
+  @Override
   public Debate debate(Zone zone,
       FlakeId articleId,
       @Nullable FlakeId parentDebateId,
@@ -91,7 +92,9 @@ public class ArticleServiceImpl implements ArticleService {
   /**
    * tree structure, but flatten to list, with order by vote score
    */
+  @Override
   public List<Debate> listHotDebates(Zone zone, FlakeId articleId, int offset) {
+    //TODO cache
     //TODO paging
     //TODO order by rank
     return debateDao.listTreeByArticle(articleId);

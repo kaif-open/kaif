@@ -1,18 +1,17 @@
-library external_link_article_form;
+library debate_form;
 
 import 'dart:html';
 import 'package:kaif_web/util.dart';
 import 'package:kaif_web/model.dart';
 
-class ExternalLinkArticleForm {
+class DebateForm {
 
   final Element elem;
   final ArticleService articleService;
   Alert alert;
 
-  ExternalLinkArticleForm(this.elem, this.articleService) {
+  DebateForm(this.elem, this.articleService) {
     alert = new Alert.append(elem);
-
     elem.onSubmit.listen(_onSubmit);
   }
 
@@ -22,31 +21,28 @@ class ExternalLinkArticleForm {
       ..stopPropagation();
 
     alert.hide();
-    TextInputElement titleInput = elem.querySelector('#titleInput');
-    TextInputElement urlInput = elem.querySelector('#urlInput');
+    TextInputElement contentInput = elem.querySelector('#contentInput');
+    HiddenInputElement articleInput = elem.querySelector('#articleInput');
     HiddenInputElement zoneInput = elem.querySelector('#zoneInput');
-    titleInput.value = titleInput.value.trim();
-    urlInput.value = urlInput.value.trim();
+    contentInput.value = contentInput.value.trim();
 
-    //check Article.TITLE_MIN in java
-    if (titleInput.value.length < 3) {
-      alert.renderError(i18n('article.min-title', [3]));
+    //check Debate.CONTENT_MIN in java
+    if (contentInput.value.length < 10) {
+      alert.renderError(i18n('debate.min-content', [10]));
       return;
     }
 
     SubmitButtonInputElement submit = elem.querySelector('[type=submit]');
     submit.disabled = true;
 
-    String zone = zoneInput.value;
     var loading = new Loading.small()
       ..renderAfter(submit);
-    articleService.createExternalLink(zone, urlInput.value, titleInput.value)
+    articleService.debate(zoneInput.value, articleInput.value, null, contentInput.value)
     .then((_) {
-      titleInput.value = '';
-      urlInput.value = '';
+      contentInput.value = '';
       elem.remove();
-      new Toast.success(i18n('article.create-success'), seconds:2).render().then((_) {
-        route.gotoNewArticlesOfZone(zone);
+      new Toast.success(i18n('debate.create-success'), seconds:2).render().then((_) {
+        route.reload();
       });
     }).catchError((e) {
       alert.renderError('${e}');

@@ -109,10 +109,12 @@ public class ZoneController {
       @PathVariable("articleId") String articleId,
       HttpServletRequest request) throws IOException {
     return resolveZone(request, rawZone, zoneInfo -> {
+      FlakeId articleFlakeId = FlakeId.fromString(articleId);
       return new ModelAndView("article/debates")//
           .addObject("zoneInfo", zoneInfo)
-          .addObject("article",
-              articleService.getArticle(zoneInfo.getZone(), FlakeId.fromString(articleId)));
+          .addObject("article", articleService.getArticle(zoneInfo.getZone(), articleFlakeId))
+          .addObject("debates",
+              articleService.listHotDebates(zoneInfo.getZone(), articleFlakeId, 0));
     });
   }
 }

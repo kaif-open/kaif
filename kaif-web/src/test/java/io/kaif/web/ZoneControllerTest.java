@@ -9,12 +9,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
+import io.kaif.model.article.Article;
+import io.kaif.model.debate.Debate;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.test.MvcIntegrationTests;
@@ -47,13 +51,22 @@ public class ZoneControllerTest extends MvcIntegrationTests {
   @Test
   public void articleDebates() throws Exception {
     Zone z = zoneInfo.getZone();
+    FlakeId articleId = FlakeId.fromString("aaa");
+    Article article = article(z, "erlang");
+    List<Debate> debates = asList(//
+        debate(article, "ERLANG is bad", null), //
+        debate(article, "JAVA is better", null));
+
     when(zoneService.getZone(z)).thenReturn(zoneInfo);
-    when(articleService.getArticle(z, FlakeId.fromString("aaa"))).thenReturn(article(z, "erlang"));
+    when(articleService.getArticle(z, articleId)).thenReturn(article);
+    when(articleService.listHotDebates(z, articleId, 0)).thenReturn(debates);
 
     mockMvc.perform(get("/z/programming/debates/aaa"))
         .andExpect(view().name("article/debates"))
         .andExpect(content().string(containsString("programming-alias")))
-        .andExpect(content().string(containsString("erlang")));
+        .andExpect(content().string(containsString("erlang")))
+        .andExpect(content().string(containsString("ERLANG is bad")))
+        .andExpect(content().string(containsString("JAVA is better")));
   }
 
   @Test

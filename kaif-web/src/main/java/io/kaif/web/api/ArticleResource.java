@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.kaif.flake.FlakeId;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.article.Article;
+import io.kaif.model.debate.Debate;
 import io.kaif.model.zone.Zone;
 import io.kaif.service.ArticleService;
 
@@ -22,8 +24,6 @@ import io.kaif.service.ArticleService;
 public class ArticleResource {
 
   static class CreateExternalLink {
-    @NotNull
-    public Zone zone;
 
     @Size(max = Article.URL_MAX)
     @NotNull
@@ -33,8 +33,25 @@ public class ArticleResource {
     @Size(min = Article.TITLE_MIN, max = Article.TITLE_MAX)
     @NotNull
     public String title;
+
+    @NotNull
+    public Zone zone;
+
   }
 
+  static class CreateDebate {
+    @NotNull
+    public Zone zone;
+
+    @NotNull
+    public FlakeId articleId;
+
+    public FlakeId parentDebateId;
+
+    @Size(min = Debate.CONTENT_MIN, max = Debate.CONTENT_MAX)
+    @NotNull
+    public String content;
+  }
   @Autowired
   private ArticleService articleService;
 
@@ -46,5 +63,15 @@ public class ArticleResource {
         request.zone,
         request.title.trim(),
         request.url.trim());
+  }
+
+  @RequestMapping(value = "/debate", method = RequestMethod.PUT, consumes = {
+      MediaType.APPLICATION_JSON_VALUE })
+  public void create(AccountAccessToken token, @Valid @RequestBody CreateDebate request) {
+    articleService.debate(request.zone,
+        request.articleId,
+        request.parentDebateId,
+        token.getAccountId(),
+        request.content.trim());
   }
 }
