@@ -10,13 +10,19 @@ class ServerType {
    * only available in dev mode. production return null
    */
   String get locale => _locale;
+
+  /**
+   * server spring active profiles, only meaningful in dev mode. production always
+   * return ['prod']
+   */
   List<String> get profilesActive => _profilesActive;
+
   bool get isDevMode => _profilesActive.contains('dev');
 
   ServerType() {
     MetaElement localeEl = querySelector('meta[name=kaifLocale]');
     _locale = localeEl == null ? null : localeEl.content;
     MetaElement modeEl = querySelector('meta[name=kaifProfilesActive]');
-    _profilesActive = modeEl == null ? 'prod' : modeEl.content.split(',').toList();
+    _profilesActive = modeEl == null ? ['prod'] : modeEl.content.split(',').toList();
   }
 }
