@@ -55,7 +55,7 @@ head=headContent
 
 <#-- component templates -->
 <form class="pure-form hidden" comp-template="debate-form">
-    <input type="hidden" name="zoneInput" value="${zoneInfo.zone}">
+    <input type="hidden" name="zoneInput" value="${article.zone}">
     <input type="hidden" name="articleInput" value="${article.articleId}">
     <textarea name="contentInput" maxlength="4096" rows="3"></textarea>
     <button type="submit" class="pure-button pure-button-primary">留言</button>

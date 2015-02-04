@@ -160,21 +160,3 @@ class Alert {
     _elem.classes.toggle('hidden', true);
   }
 }
-
-class ComponentTemplate {
-  final String name;
-  Element _elem;
-
-  ComponentTemplate(this.name) {
-    _elem = querySelector('[comp-template="$name"]');
-    _elem.classes.toggle('hidden', true);
-  }
-
-  Element createElement() {
-    Element clone = _elem.clone(true);
-    return clone
-      ..classes.remove('hidden')
-      ..attributes.remove('comp-template');
-  }
-
-}

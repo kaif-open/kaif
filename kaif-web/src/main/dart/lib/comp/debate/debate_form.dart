@@ -3,6 +3,13 @@ library debate_form;
 import 'dart:html';
 import 'package:kaif_web/util.dart';
 import 'package:kaif_web/model.dart';
+import 'package:kaif_web/comp/comp_template.dart';
+
+/**
+ * final field in library scope is lazy in dart. so the template only loaded when we
+ * actually use [_debateFormTemplate]
+ */
+final ComponentTemplate _debateFormTemplate = new ComponentTemplate.take('debate-form');
 
 class DebateForm {
 
@@ -20,7 +27,7 @@ class DebateForm {
   this._(placeHolderElem, _articleService);
 
   DebateForm._(Element placeHolderElem, this._articleService) {
-    _elem = new ComponentTemplate('debate-form').createElement();
+    _elem = _debateFormTemplate.createElement();
     placeHolderElem.replaceWith(_elem);
 
     _alert = new Alert.append(_elem);
