@@ -4,6 +4,7 @@ dependencies:
   browser: any
   barback: any
   intl: any
+  cookie: ">=0.0.4 <0.1.0"
 dev_dependencies:
   unittest: any
 transformers:

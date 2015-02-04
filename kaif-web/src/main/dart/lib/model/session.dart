@@ -5,7 +5,7 @@ import 'dao.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:html';
-
+import 'package:cookie/cookie.dart' as cookie;
 
 class AccountSession {
 
@@ -14,6 +14,16 @@ class AccountSession {
 
   AccountSession(this.accountDao) {
     _current = accountDao.load();
+    _detectForceLogout();
+  }
+
+  void _detectForceLogout() {
+    // see AccountController.java #activation
+    var value = cookie.get("force-logout");
+    if (value != null && "true" == value.toLowerCase()) {
+      cookie.remove("force-logout", path:"/", secure:true);
+      signOut();
+    }
   }
 
   void save(AccountAuth auth, {bool rememberMe}) {

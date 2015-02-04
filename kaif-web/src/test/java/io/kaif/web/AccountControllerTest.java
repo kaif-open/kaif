@@ -4,6 +4,8 @@ import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import java.util.Optional;
@@ -27,5 +29,17 @@ public class AccountControllerTest extends MvcIntegrationTests {
         .andExpect(view().name("account/settings.part"))
         .andExpect(content().string(containsString("foo@example.com")))
         .andExpect(content().string(containsString("foo")));
+  }
+
+  @Test
+  public void activation() throws Exception {
+    when(accountService.activate("abc")).thenReturn(true);
+
+    mockMvc.perform(get("/account/activation?key=abc"))
+        .andExpect(view().name("account/activation"))
+        .andExpect(model().attribute("success", true))
+        .andExpect(cookie().secure("force-logout", true))
+        .andExpect(cookie().path("force-logout", "/"))
+        .andExpect(cookie().value("force-logout", "true"));
   }
 }

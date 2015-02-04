@@ -2,16 +2,19 @@ package io.kaif.web;
 
 import java.util.Optional;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import io.kaif.service.AccountService;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountOnceToken;
+import io.kaif.service.AccountService;
 import io.kaif.web.support.PartTemplate;
 
 @Controller
@@ -56,8 +59,15 @@ public class AccountController {
   }
 
   @RequestMapping("/activation")
-  public ModelAndView activation(@RequestParam("key") String key) {
+  public ModelAndView activation(@RequestParam("key") String key, HttpServletResponse response) {
     boolean success = accountService.activate(key);
+    if (success) {
+      //see AccountSession.dart#detectForceLogout();
+      Cookie cookie = new Cookie("force-logout", "true");
+      cookie.setPath("/");
+      cookie.setSecure(true);
+      response.addCookie(cookie);
+    }
     return new ModelAndView("account/activation").addObject("success", success);
   }
 }

@@ -45,6 +45,9 @@ head=headContent
                             <a href="#" debate-replier
                                data-debate-id="${debate.debateId}">回應</a>
                         </#if>
+                        <#if debate.hasParent()>
+                            <a>parent</a>
+                        </#if>
                     </div>
                 </div>
             </#list>
