@@ -61,7 +61,7 @@ class AppModule {
       new ForgetPasswordForm(el, accountService);
     });
     parent.querySelectorAll('[reset-password-form]').forEach((el) {
-      new ResetPasswordForm(el, accountService);
+      new ResetPasswordForm(el, accountService, accountSession);
     });
     parent.querySelectorAll('[external-link-article-form]').forEach((el) {
       new ExternalLinkArticleForm(el, articleService);

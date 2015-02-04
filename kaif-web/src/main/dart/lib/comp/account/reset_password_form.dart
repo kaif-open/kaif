@@ -8,9 +8,10 @@ class ResetPasswordForm {
 
   final Element elem;
   final AccountService accountService;
+  final AccountSession accountSession;
   Alert alert;
 
-  ResetPasswordForm(this.elem, this.accountService) {
+  ResetPasswordForm(this.elem, this.accountService, this.accountSession) {
     alert = new Alert.append(elem);
     elem.onSubmit.listen(_onSubmit);
   }
@@ -37,6 +38,8 @@ class ResetPasswordForm {
       ..renderAfter(submit);
     accountService.updatePasswordWithToken(token, passwordInput.value)
     .then((_) {
+      // force sign out because old token is stale because password changed
+      accountSession.signOut();
       route.gotoSignInWithUpdatePasswordSuccess();
     }).catchError((e) {
       alert.renderError('${e}');
