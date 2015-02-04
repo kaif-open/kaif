@@ -67,7 +67,7 @@ public class ZoneDao implements DaoOperations {
     return zoneInfo;
   }
 
-  public ZoneInfo getZoneWithoutCache(Zone zone) throws EmptyResultDataAccessException {
+  public ZoneInfo loadZoneWithoutCache(Zone zone) throws EmptyResultDataAccessException {
     return jdbc().queryForObject("SELECT * FROM ZoneInfo WHERE zone = ? ",
         zoneInfoMapper,
         zone.value());
@@ -75,8 +75,8 @@ public class ZoneDao implements DaoOperations {
 
   //use argument `zone` as cache key
   @Cacheable
-  public ZoneInfo getZone(Zone zone) throws EmptyResultDataAccessException {
-    return getZoneWithoutCache(zone);
+  public ZoneInfo loadZone(Zone zone) throws EmptyResultDataAccessException {
+    return loadZoneWithoutCache(zone);
   }
 
   @CacheEvict(key = "#a0") //a0 is first argument

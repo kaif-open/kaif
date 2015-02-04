@@ -97,7 +97,7 @@ public class ArticleDao implements DaoOperations {
    * @throws EmptyResultDataAccessException
    *     if not found
    */
-  public Article getArticle(Zone zone, FlakeId articleId) throws EmptyResultDataAccessException {
+  public Article loadArticle(Zone zone, FlakeId articleId) throws EmptyResultDataAccessException {
     final String sql = " SELECT * FROM Article WHERE zone = ? AND articleId = ? ";
     return jdbc().queryForObject(sql, articleMapper, zone.value(), articleId.value());
   }

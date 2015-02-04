@@ -46,7 +46,7 @@ public class ArticleServiceImpl implements ArticleService {
   @Override
   public Article createExternalLink(UUID accountId, Zone zone, String title, String url) {
     //creating article should not use cache
-    ZoneInfo zoneInfo = zoneDao.getZoneWithoutCache(zone);
+    ZoneInfo zoneInfo = zoneDao.loadZoneWithoutCache(zone);
     Account author = accountDao.findById(accountId)
         .filter(zoneInfo::canWriteArticle)
         .orElseThrow(() -> new AccessDeniedException("no write to create article at zone:" + zone));
@@ -64,8 +64,8 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public Article getArticle(Zone zone, FlakeId articleId) throws EmptyResultDataAccessException {
-    return articleDao.getArticle(zone, articleId);
+  public Article loadArticle(Zone zone, FlakeId articleId) throws EmptyResultDataAccessException {
+    return articleDao.loadArticle(zone, articleId);
   }
 
   @Override
@@ -75,8 +75,8 @@ public class ArticleServiceImpl implements ArticleService {
       UUID debaterId,
       String content) {
     //creating debate should not use cache
-    ZoneInfo zoneInfo = zoneDao.getZoneWithoutCache(zone);
-    Article article = articleDao.getArticle(zoneInfo.getZone(), articleId);
+    ZoneInfo zoneInfo = zoneDao.loadZoneWithoutCache(zone);
+    Article article = articleDao.loadArticle(zoneInfo.getZone(), articleId);
 
     Account debater = accountDao.findById(debaterId)
         .filter(zoneInfo::canDebate)

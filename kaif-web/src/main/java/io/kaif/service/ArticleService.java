@@ -16,7 +16,7 @@ public interface ArticleService {
 
   List<Article> listLatestArticles(Zone zone, int page);
 
-  Article getArticle(Zone zone, FlakeId articleId);
+  Article loadArticle(Zone zone, FlakeId articleId);
 
   Debate debate(Zone zone,
       FlakeId articleId,

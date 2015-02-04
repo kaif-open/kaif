@@ -67,7 +67,7 @@ public class ZoneController {
           return redirectView;
         }
       }
-      return onZoneInfo.apply(zoneService.getZone(zone));
+      return onZoneInfo.apply(zoneService.loadZone(zone));
     }).orElseThrow(() -> new EmptyResultDataAccessException("no such zone: " + decodedRawZone, 1));
 
   }
@@ -112,7 +112,7 @@ public class ZoneController {
       FlakeId articleFlakeId = FlakeId.fromString(articleId);
       return new ModelAndView("article/debates")//
           .addObject("zoneInfo", zoneInfo)
-          .addObject("article", articleService.getArticle(zoneInfo.getZone(), articleFlakeId))
+          .addObject("article", articleService.loadArticle(zoneInfo.getZone(), articleFlakeId))
           .addObject("debates",
               articleService.listHotDebates(zoneInfo.getZone(), articleFlakeId, 0));
     });

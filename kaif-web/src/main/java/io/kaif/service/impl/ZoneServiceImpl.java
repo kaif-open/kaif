@@ -19,8 +19,8 @@ public class ZoneServiceImpl implements ZoneService {
   private ZoneDao zoneDao;
 
   @Override
-  public ZoneInfo getZone(Zone zone) {
-    return zoneDao.getZone(zone);
+  public ZoneInfo loadZone(Zone zone) {
+    return zoneDao.loadZone(zone);
   }
 
   @Override

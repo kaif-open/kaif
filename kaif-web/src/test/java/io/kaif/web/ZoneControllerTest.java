@@ -29,7 +29,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
 
   @Test
   public void hot() throws Exception {
-    when(zoneService.getZone(Zone.valueOf("programming"))).thenReturn(zoneInfo);
+    when(zoneService.loadZone(Zone.valueOf("programming"))).thenReturn(zoneInfo);
     mockMvc.perform(get("/z/programming"))
         .andExpect(content().encoding("UTF-8"))
         .andExpect(content().string(containsString("/snapshot/css/z-theme-default.css")))
@@ -39,7 +39,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
   @Test
   public void newArticles() throws Exception {
     Zone z = zoneInfo.getZone();
-    when(zoneService.getZone(z)).thenReturn(zoneInfo);
+    when(zoneService.loadZone(z)).thenReturn(zoneInfo);
     when(articleService.listLatestArticles(z, 0)).thenReturn(//
         asList(article(z, "java"), article(z, "ruby"), article(z, "golang")));
     mockMvc.perform(get("/z/programming/new"))
@@ -58,8 +58,8 @@ public class ZoneControllerTest extends MvcIntegrationTests {
         debate(article, "ERLANG is bad", null), //
         debate(article, "JAVA is better", null));
 
-    when(zoneService.getZone(z)).thenReturn(zoneInfo);
-    when(articleService.getArticle(z, articleId)).thenReturn(article);
+    when(zoneService.loadZone(z)).thenReturn(zoneInfo);
+    when(articleService.loadArticle(z, articleId)).thenReturn(article);
     when(articleService.listHotDebates(z, articleId, 0)).thenReturn(debates);
 
     mockMvc.perform(get("/z/programming/debates/aaa"))
@@ -73,7 +73,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
 
   @Test
   public void hot_redirectFallback() throws Exception {
-    when(zoneService.getZone(Zone.valueOf("programming"))).thenReturn(zoneInfo);
+    when(zoneService.loadZone(Zone.valueOf("programming"))).thenReturn(zoneInfo);
     mockMvc.perform(get("/z/Programming?xyz"))
         .andExpect(status().isPermanentRedirect())
         .andExpect(redirectedUrl("http://localhost/z/programming?xyz"));
@@ -81,7 +81,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
 
   @Test
   public void notExistZone_404() throws Exception {
-    when(zoneService.getZone(Zone.valueOf("not-exist"))).thenThrow(new EmptyResultDataAccessException(
+    when(zoneService.loadZone(Zone.valueOf("not-exist"))).thenThrow(new EmptyResultDataAccessException(
         "fake",
         1));
     mockMvc.perform(get("/z/not-exist"))
@@ -102,7 +102,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
   public void notAllowCreateArticle() throws Exception {
     Account account = accountTourist("foo");
     String token = prepareAccessToken(account);
-    when(zoneService.getZone(Zone.valueOf("programming"))).thenReturn(zoneInfo);
+    when(zoneService.loadZone(Zone.valueOf("programming"))).thenReturn(zoneInfo);
     mockMvc.perform(//
         get("/z/programming/article/create.part").header(AccountAccessToken.HEADER_KEY, token))
         .andExpect(status().isUnauthorized())

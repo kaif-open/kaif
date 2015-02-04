@@ -5,7 +5,7 @@ import io.kaif.model.zone.ZoneInfo;
 
 public interface ZoneService {
 
-  ZoneInfo getZone(Zone zone);
+  ZoneInfo loadZone(Zone zone);
 
   ZoneInfo createDefault(String zone, String aliasName);
 

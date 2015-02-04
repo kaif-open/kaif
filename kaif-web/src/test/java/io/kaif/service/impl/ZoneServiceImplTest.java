@@ -23,7 +23,7 @@ public class ZoneServiceImplTest extends DbIntegrationTests {
   @Test
   public void createDefault() throws Exception {
     ZoneInfo zoneInfo = service.createDefault("abc", "Abc");
-    ZoneInfo loaded = zoneDao.getZoneWithoutCache(Zone.valueOf("abc"));
+    ZoneInfo loaded = zoneDao.loadZoneWithoutCache(Zone.valueOf("abc"));
     assertEquals(zoneInfo, loaded);
     assertEquals("abc", loaded.getName());
     assertEquals("Abc", loaded.getAliasName());
@@ -38,7 +38,7 @@ public class ZoneServiceImplTest extends DbIntegrationTests {
   @Test
   public void createKaif() throws Exception {
     ZoneInfo zoneInfo = service.createKaif("faq", "FAQ");
-    ZoneInfo loaded = zoneDao.getZoneWithoutCache(Zone.valueOf("faq"));
+    ZoneInfo loaded = zoneDao.loadZoneWithoutCache(Zone.valueOf("faq"));
     assertEquals(zoneInfo, loaded);
     assertEquals("faq", loaded.getZone().value());
     assertEquals("FAQ", loaded.getAliasName());
@@ -54,15 +54,15 @@ public class ZoneServiceImplTest extends DbIntegrationTests {
   public void getZone_cached() throws Exception {
     service.createDefault("def", "dddd");
 
-    ZoneInfo cached = service.getZone(Zone.valueOf("def"));
-    assertSame(cached, service.getZone(Zone.valueOf("def")));
+    ZoneInfo cached = service.loadZone(Zone.valueOf("def"));
+    assertSame(cached, service.loadZone(Zone.valueOf("def")));
   }
 
   @Test
   public void updateTheme() throws Exception {
     service.createDefault("twfaq", "TW FAQ");
-    service.getZone(Zone.valueOf("twfaq"));//populate cache
+    service.loadZone(Zone.valueOf("twfaq"));//populate cache
     service.updateTheme(Zone.valueOf("twfaq"), ZoneInfo.THEME_KAIF);
-    assertEquals(ZoneInfo.THEME_KAIF, service.getZone(Zone.valueOf("twfaq")).getTheme());
+    assertEquals(ZoneInfo.THEME_KAIF, service.loadZone(Zone.valueOf("twfaq")).getTheme());
   }
 }
