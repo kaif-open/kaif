@@ -1,17 +1,18 @@
 package io.kaif.mail;
 
-import static org.mockito.Mockito.*;
-
-import java.time.Instant;
-import java.util.Locale;
-import java.util.concurrent.CompletableFuture;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.mail.MailException;
 
+import java.time.Instant;
+import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
+
 import io.kaif.model.account.Account;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class MailAgentTest extends MailTestCases {
 
@@ -74,6 +75,26 @@ public class MailAgentTest extends MailTestCases {
         + "You have been requested password reset, please click on the URL below to reset it:\n"
         + "\n"
         + "  http://kaif.io/account/reset-password?key=myToken\n"
+        + "\n"
+        + "Regards,\n"
+        + "\n"
+        + "- kaif Team.");
+    mailMessage.setTo("foo@gmail.com");
+    verify(mockMailAgent).send(mailMessage);
+  }
+
+  @Test
+  public void sendPasswordWasReset() throws Exception {
+    Account account = Account.create("aName", "foo@gmail.com", "pw", Instant.now());
+    mailAgent.sendPasswordWasReset(Locale.ENGLISH, account);
+    Mail mailMessage = new Mail();
+    mailMessage.setFrom("noreply@kaif.io");
+    mailMessage.setSubject("Your kaif password has been reset.");
+    mailMessage.setText("Dear aName\n"
+        + "\n"
+        + "The password for your kaif id, has been successfully reset.\n"
+        + "\n"
+        + "If you didn’t make this change or if you believe an unauthorized person has accessed your account, go to http://kaif.io/account/forget-password to reset your password immediately.\n"
         + "\n"
         + "Regards,\n"
         + "\n"

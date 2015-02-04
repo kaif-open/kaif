@@ -7,12 +7,12 @@
  */
 package io.kaif.mail;
 
-import java.util.Locale;
-import java.util.concurrent.CompletableFuture;
+import com.google.common.collect.ImmutableMap;
 
 import org.springframework.mail.MailException;
 
-import com.google.common.collect.ImmutableMap;
+import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
 import io.kaif.model.account.Account;
 
@@ -39,7 +39,20 @@ public interface MailAgent {
     return send(mail);
   }
 
-  default CompletableFuture<Boolean> sendResetPassword(Locale locale, Account account, String onceToken) {
+  default CompletableFuture<Boolean> sendPasswordWasReset(Locale locale, Account account) {
+    Mail mail = mailComposer().createMail();
+    mail.setTo(account.getEmail());
+    mail.setSubject(mailComposer().i18n(locale, "email.password-was-reset.title"));
+    String body = mailComposer().compose(locale,
+        "/account-password-was-reset.ftl",
+        ImmutableMap.of("account", account));
+    mail.setText(body);
+    return send(mail);
+  }
+
+  default CompletableFuture<Boolean> sendResetPassword(Locale locale,
+      Account account,
+      String onceToken) {
 
     Mail mail = mailComposer().createMail();
     mail.setTo(account.getEmail());

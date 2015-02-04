@@ -1,12 +1,7 @@
 package io.kaif.service.impl;
 
-import java.time.Clock;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.EnumSet;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.UUID;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,11 +10,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.EnumSet;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.UUID;
 
 import io.kaif.mail.MailAgent;
-import io.kaif.service.AccountService;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountAuth;
@@ -28,6 +27,7 @@ import io.kaif.model.account.AccountOnceToken;
 import io.kaif.model.account.AccountSecret;
 import io.kaif.model.account.Authority;
 import io.kaif.model.exception.OldPasswordNotMatchException;
+import io.kaif.service.AccountService;
 
 @Service
 @Transactional
@@ -139,7 +139,8 @@ public class AccountServiceImpl implements AccountService {
   private void updatePassword(UUID accountId, String password, Locale locale) {
     Preconditions.checkArgument(Account.isValidPassword(password));
     accountDao.updatePasswordHash(accountId, passwordEncoder.encode(password));
-    //TODO send password changed email
+    accountDao.findById(accountId).ifPresent(account -> mailAgent.sendPasswordWasReset(locale,
+        account));
   }
 
   @Override
@@ -157,8 +158,7 @@ public class AccountServiceImpl implements AccountService {
         .orElse(false);
   }
 
-  @VisibleForTesting
-  void setClock(Clock clock) {
+  @VisibleForTesting void setClock(Clock clock) {
     this.clock = clock;
   }
 
@@ -180,7 +180,6 @@ public class AccountServiceImpl implements AccountService {
               Instant.now(clock));
           mailAgent.sendResetPassword(locale, account, token.getToken());
         });
-
   }
 
   @Override
