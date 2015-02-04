@@ -1,5 +1,5 @@
 <#import "/spring.ftl" as spring />
-
+<#import "url.ftl" as url />
 <#--
 sample configs:
 
@@ -52,7 +52,7 @@ sample configs:
     <link rel='stylesheet' href='/webjars/yui-pure/0.5.0/pure-min.css'>
     <link rel='stylesheet' href='/webjars/yui-pure/0.5.0/grids-responsive-min.css'>
     <link rel="stylesheet" href="/webjars/font-awesome/4.2.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/kaif.css?${(kaif.deployServerTime)!0}">
+    <link rel="stylesheet" href="<@url.dynamicRes/>/css/kaif.css">
 
     <#if head?length == 0>
         <title>kaif.io</title>
@@ -114,7 +114,7 @@ sample configs:
         </div>
         <script src="//localhost:15980/main.dart.js"></script>
         <#else>
-        <script src="/dart_dist/web/main.dart.js?${kaif.deployServerTime}"></script>
+        <script src="<@url.dynamicRes/>/web/main.dart.js"></script>
         </#if>
     </#if>
 </body>

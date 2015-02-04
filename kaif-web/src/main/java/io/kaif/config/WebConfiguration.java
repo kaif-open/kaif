@@ -34,6 +34,15 @@ import io.kaif.web.AccountAccessTokenArgumentResolver;
 @Configuration
 public class WebConfiguration extends WebMvcConfigurerAdapter {
 
+  @Autowired
+  private AccountService accountService;
+  @Autowired
+  private freemarker.template.Configuration freeMarkerConfiguration;
+  @Autowired
+  private Environment environment;
+  @Autowired
+  private AppProperties appProperties;
+
   /**
    * add module Java 8 Time and AfterBurner in class path
    */
@@ -50,9 +59,6 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
     //    registry.addResourceHandler("/webjars/**")
     //        .addResourceLocations("classpath:/META-INF/resources/webjars/");
   }
-
-  @Autowired
-  private AccountService accountService;
 
   @Override
   public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
@@ -85,12 +91,6 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
     }
   }
 
-  @Autowired
-  private freemarker.template.Configuration freeMarkerConfiguration;
-
-  @Autowired
-  private Environment environment;
-
   @PostConstruct
   public void init() throws TemplateModelException {
     configureFreeMarker();
@@ -98,7 +98,7 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
 
   private void configureFreeMarker() throws TemplateModelException {
     Map<String, Object> variables = new HashMap<>();
-    variables.put("deployServerTime", System.currentTimeMillis());
+    variables.put("appBuild", appProperties.getBuild());
     variables.put("profilesActive",
         Arrays.stream(environment.getActiveProfiles()).collect(Collectors.joining(",")));
     freeMarkerConfiguration.setAllSharedVariables(new SimpleHash(ImmutableMap.of("kaif", variables),

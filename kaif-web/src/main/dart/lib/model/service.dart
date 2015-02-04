@@ -219,7 +219,7 @@ class ArticleService extends _AbstractService {
   ArticleService(ServerType serverType, accessTokenProvider _provider)
   : super(serverType, _provider);
 
-  String _getUrl(String path) => '/api/article/$path';
+  String _getUrl(String path) => '/api/article$path';
 
   Future createExternalLink(String zone, String url, String title) {
     var json = {

@@ -32,6 +32,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
     when(zoneService.getZone(Zone.valueOf("programming"))).thenReturn(zoneInfo);
     mockMvc.perform(get("/z/programming"))
         .andExpect(content().encoding("UTF-8"))
+        .andExpect(content().string(containsString("/snapshot/css/z-theme-default.css")))
         .andExpect(content().string(containsString("programming-alias")));
   }
 
@@ -63,6 +64,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
 
     mockMvc.perform(get("/z/programming/debates/aaa"))
         .andExpect(view().name("article/debates"))
+        .andExpect(content().string(containsString("/snapshot/css/z-theme-default.css")))
         .andExpect(content().string(containsString("programming-alias")))
         .andExpect(content().string(containsString("erlang")))
         .andExpect(content().string(containsString("ERLANG is bad")))

@@ -3,10 +3,6 @@ import 'dart:html';
 
 /**
  *
- * TODO component template may load wrong version because server page is cached,
- *      but dart.js is newer version. component template should change to server part loader
- *      , with versioning.
- *
  * component template is rendered by server (invisible to user), it is use to create multiple
  * dart view component programmatically.
  *

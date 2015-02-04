@@ -10,6 +10,8 @@ buildscript {
   }
 }
 
+def appBuild = 'build-' + new Date().format('yyyy-MM-dd-HH-mm-ss')
+
 apply plugin: 'war'
 
 /** spring boot begin **/
@@ -70,6 +72,16 @@ war.dependsOn buildDart
 
 /** dart configuration end **/
 
+import org.apache.tools.ant.filters.*
+
+// replace @app.build@ in application-prod.yml
+processResources {
+  filesMatching('**/application-prod.yml') {
+    filter ReplaceTokens, tokens: [
+        "app.build": appBuild
+    ]
+  }
+}
 
 jar {
   baseName = 'kaif-web'
@@ -78,7 +90,10 @@ jar {
 war {
   baseName = 'kaif-web'
   from("${buildDir}/$dartDist") {
-    into "${dartDist}"
+    into "${appBuild}/"
+  }
+  from("${webAppDirName}/snapshot") {
+    into "${appBuild}"
   }
 }
 

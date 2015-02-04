@@ -41,6 +41,9 @@ spring.jmx.enabled: false
 ## flake node id
 
 
+## app, replace while gradle build
+
+
 ## logback
 # logback will pick logback-test.xml first automatically
 

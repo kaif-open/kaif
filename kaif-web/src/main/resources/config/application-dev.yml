@@ -30,5 +30,8 @@ spring.mail.host: 192.168.59.59
 ## flake node id
 
 
+## app
+
+
 ## logback
 logging.config: classpath:logback-dev.xml

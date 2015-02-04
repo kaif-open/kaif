@@ -55,4 +55,8 @@ account:
 flake.node-id: 99
 
 
+## app build number, this is also used in dynamic web resource
+app.build: snapshot
+
+
 ## logback

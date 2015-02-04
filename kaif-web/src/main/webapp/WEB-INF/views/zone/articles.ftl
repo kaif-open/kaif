@@ -1,5 +1,6 @@
 <#import "/spring.ftl" as spring />
 <#import "../macros/template.ftl" as template>
+<#import "../macros/url.ftl" as url>
 
 <#assign headContent>
 
@@ -9,7 +10,7 @@
 
 <meta name="description" content="${zoneInfo.aliasName} ${zoneInfo.name} | kaif.io">
 
-<link rel="stylesheet" href="/css/${zoneInfo.theme}.css?${(kaif.deployServerTime)!0}">
+<link rel="stylesheet" href="<@url.dynamicRes/>/css/${zoneInfo.theme}.css">
 
 </#assign>
 

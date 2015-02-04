@@ -32,5 +32,9 @@ account:
 flake.node-id: ${flake.node-id}
 
 
+## app, replace while gradle build (by ant syntax)
+app.build: @app.build@
+
+
 ## logback
 logging.config: classpath:logback-prod.xml
