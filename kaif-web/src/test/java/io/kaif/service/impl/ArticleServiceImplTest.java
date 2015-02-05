@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
+import io.kaif.model.account.AccountStats;
 import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleContentType;
 import io.kaif.model.article.ArticleLinkType;
@@ -22,6 +23,7 @@ import io.kaif.model.debate.DebateContentType;
 import io.kaif.model.debate.DebateDao;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
+import io.kaif.service.AccountService;
 import io.kaif.test.DbIntegrationTests;
 import io.kaif.web.support.AccessDeniedException;
 
@@ -29,6 +31,9 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
   @Autowired
   private ArticleServiceImpl service;
+
+  @Autowired
+  private AccountService accountService;
 
   @Autowired
   private DebateDao debateDao;
@@ -68,6 +73,8 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
     assertEquals(1,
         service.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getDebateCount());
+
+    assertEquals(1, accountService.loadAccountStats(debater.getAccountId()).getDebateCount());
   }
 
   @Test
@@ -235,6 +242,9 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertEquals(0, article.getUpVote());
     assertEquals(0, article.getDownVote());
     assertEquals(0, article.getDebateCount());
+
+    AccountStats stats = accountService.loadAccountStats(citizen.getAccountId());
+    assertEquals(1, stats.getArticleCount());
   }
 
   @Test

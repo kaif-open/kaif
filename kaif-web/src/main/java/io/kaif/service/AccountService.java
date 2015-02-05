@@ -9,6 +9,7 @@ import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountAuth;
 import io.kaif.model.account.AccountOnceToken;
+import io.kaif.model.account.AccountStats;
 import io.kaif.model.account.Authority;
 import io.kaif.model.exception.OldPasswordNotMatchException;
 
@@ -46,4 +47,6 @@ public interface AccountService {
       Locale locale) throws OldPasswordNotMatchException;
 
   Optional<AccountAccessToken> tryDecodeAccessToken(String token);
+
+  AccountStats loadAccountStats(UUID accountId);
 }

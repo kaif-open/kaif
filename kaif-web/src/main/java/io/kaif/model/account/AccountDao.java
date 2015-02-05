@@ -177,4 +177,18 @@ public class AccountDao implements DaoOperations {
         accountId);
   }
 
+  public void increaseArticleCount(Account author) {
+    increaseStats(author, "articleCount");
+  }
+
+  private void increaseStats(Account account, String field) {
+    String sql = String.format(" UPDATE AccountStats SET %s = %s + 1 WHERE accountId = ? ",
+        field,
+        field);
+    jdbc().update(sql, account.getAccountId());
+  }
+
+  public void increaseDebateCount(Account debater) {
+    increaseStats(debater, "debateCount");
+  }
 }

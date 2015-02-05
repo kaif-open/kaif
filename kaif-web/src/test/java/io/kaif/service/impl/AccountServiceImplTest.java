@@ -59,7 +59,7 @@ public class AccountServiceImplTest extends DbIntegrationTests {
     assertFalse(token.isExpired(Instant.now().plus(Duration.ofHours(23))));
     assertFalse(token.isComplete());
 
-    AccountStats stats = accountDao.loadStats(account.getAccountId());
+    AccountStats stats = service.loadAccountStats(account.getAccountId());
     assertEquals(AccountStats.zero(account.getAccountId()), stats);
   }
 

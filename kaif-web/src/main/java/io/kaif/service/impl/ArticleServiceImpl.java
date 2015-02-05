@@ -51,7 +51,9 @@ public class ArticleServiceImpl implements ArticleService {
         .filter(zoneInfo::canWriteArticle)
         .orElseThrow(() -> new AccessDeniedException("no write to create article at zone:" + zone));
 
-    return articleDao.createExternalLink(zone, author, title, url, Instant.now());
+    Article article = articleDao.createExternalLink(zone, author, title, url, Instant.now());
+    accountDao.increaseArticleCount(author);
+    return article;
   }
 
   public Optional<Article> findArticle(Zone zone, FlakeId articleId) {
@@ -88,7 +90,9 @@ public class ArticleServiceImpl implements ArticleService {
         .orElse(null);
     Debate debate = debateDao.create(article, parent, content, debater, Instant.now());
 
+    //may improve latter to make it async, but async has transaction problem
     articleDao.increaseDebateCount(article);
+    accountDao.increaseDebateCount(debater);
     return debate;
   }
 
