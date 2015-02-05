@@ -47,7 +47,10 @@ public class Article {
   private final String authorName;
   private final boolean deleted;
   private final long upVote;
+
+  //article downVote count is preserved, not used
   private final long downVote;
+
   private final long debateCount;
 
   Article(Zone zone,

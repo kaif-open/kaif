@@ -90,7 +90,7 @@ public class ArticleServiceImpl implements ArticleService {
         .orElse(null);
     Debate debate = debateDao.create(article, parent, content, debater, Instant.now());
 
-    //may improve latter to make it async, but async has transaction problem
+    //may improve later to make it async, but async has transaction problem
     articleDao.increaseDebateCount(article);
     accountDao.increaseDebateCount(debater);
     return debate;
