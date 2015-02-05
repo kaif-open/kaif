@@ -30,12 +30,6 @@ CREATE TABLE ZoneInfo (
   createTime      TIMESTAMP     NOT NULL
 );
 
-CREATE TABLE ZoneAdmin (
-  accountId UUID          NOT NULL,
-  zone      VARCHAR(4096) NOT NULL,
-  PRIMARY KEY (accountId, zone)
-);
-
 CREATE TABLE Article (
   zone        VARCHAR(4096)  NOT NULL,
   articleId   BIGINT         NOT NULL,
@@ -82,15 +76,33 @@ CREATE TABLE DebateHistory (
   PRIMARY KEY (debateId, revision)
 );
 
+-- foreign key is intended exclude
 CREATE TABLE ArticleVoter (
-  voterId   UUID    NOT NULL PRIMARY KEY,
-  articleId BIGINT  NOT NULL,
-  upVote    BOOLEAN NOT NULL
+  voterId       UUID      NOT NULL,
+  articleId     BIGINT    NOT NULL,
+  cancel        BOOLEAN   NOT NULL,
+  previousCount BIGINT    NOT NULL,
+  updateTime    TIMESTAMP NOT NULL,
+  PRIMARY KEY (voterId, articleId)
 );
 
+-- foreign key is intended exclude
 CREATE TABLE DebateVoter (
-  voterId  UUID    NOT NULL PRIMARY KEY,
-  debateId BIGINT  NOT NULL,
-  upVote   BOOLEAN NOT NULL
+  voterId       UUID      NOT NULL,
+  debateId      BIGINT    NOT NULL,
+  voteType      BOOLEAN   NOT NULL,
+  cancel        BOOLEAN   NOT NULL,
+  previousCount BIGINT    NOT NULL,
+  updateTime    TIMESTAMP NOT NULL,
+  PRIMARY KEY (voterId, debateId)
 );
 
+CREATE TABLE AccountStats (
+  accountId       UUID   NOT NULL REFERENCES Account (accountId),
+  debateCount     BIGINT NOT NULL DEFAULT 0,
+  articleCount    BIGINT NOT NULL DEFAULT 0,
+  debateUpVoted   BIGINT NOT NULL DEFAULT 0,
+  debateDownVoted BIGINT NOT NULL DEFAULT 0,
+  articleUpVoted  BIGINT NOT NULL DEFAULT 0,
+  PRIMARY KEY (accountId)
+);

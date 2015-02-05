@@ -1,8 +1,8 @@
 package io.kaif.service.impl;
 
-import org.junit.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -12,25 +12,20 @@ import java.util.EnumSet;
 import java.util.Locale;
 import java.util.UUID;
 
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountAuth;
 import io.kaif.model.account.AccountDao;
 import io.kaif.model.account.AccountOnceToken;
 import io.kaif.model.account.AccountSecret;
+import io.kaif.model.account.AccountStats;
 import io.kaif.model.account.Authority;
 import io.kaif.model.exception.OldPasswordNotMatchException;
 import io.kaif.test.DbIntegrationTests;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 public class AccountServiceImplTest extends DbIntegrationTests {
 
@@ -63,6 +58,9 @@ public class AccountServiceImplTest extends DbIntegrationTests {
     assertEquals(AccountOnceToken.Type.ACTIVATION, token.getTokenType());
     assertFalse(token.isExpired(Instant.now().plus(Duration.ofHours(23))));
     assertFalse(token.isComplete());
+
+    AccountStats stats = accountDao.loadStats(account.getAccountId());
+    assertEquals(AccountStats.zero(account.getAccountId()), stats);
   }
 
   @Test
@@ -102,8 +100,7 @@ public class AccountServiceImplTest extends DbIntegrationTests {
 
     service.updatePasswordWithToken(resetToken.getToken(), "pwd456", lc);
 
-    verify(mockMailAgent).sendPasswordWasReset(eq(lc),
-        eq(account));
+    verify(mockMailAgent).sendPasswordWasReset(eq(lc), eq(account));
 
     assertFalse(service.findValidResetPasswordToken(resetToken.getToken()).isPresent());
     assertTrue(service.authenticate("myname", "pwd456").isPresent());
@@ -254,8 +251,7 @@ public class AccountServiceImplTest extends DbIntegrationTests {
     UUID accountId = account.getAccountId();
     Mockito.reset(mockMailAgent);
     AccountAuth accountAuth = service.updateNewPassword(accountId, "pppwww", "123456", lc);
-    verify(mockMailAgent).sendPasswordWasReset(eq(lc),
-        eq(account));
+    verify(mockMailAgent).sendPasswordWasReset(eq(lc), eq(account));
     assertNotNull(accountAuth);
     assertTrue(service.authenticate("abc99", "123456").isPresent());
   }

@@ -45,6 +45,16 @@ public class AccountDao implements DaoOperations {
         rs.getTimestamp("createTime").toInstant());
   };
 
+  private final RowMapper<AccountStats> statsMapper = (rs, rowNum) -> {
+    return new AccountStats(//
+        UUID.fromString(rs.getString("accountId")),
+        rs.getLong("debateCount"),
+        rs.getLong("articleCount"),
+        rs.getLong("debateUpVoted"),
+        rs.getLong("debateDownVoted"),
+        rs.getLong("articleUpVoted"));
+  };
+
   @Autowired
   private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -71,7 +81,25 @@ public class AccountDao implements DaoOperations {
         Timestamp.from(account.getCreateTime()),
         authoritiesToVarcharArray(account.getAuthorities()));
 
+    createStats(account);
     return account;
+  }
+
+  private void createStats(Account account) {
+    AccountStats stats = AccountStats.zero(account.getAccountId());
+    jdbc().update(""
+            + " INSERT "
+            + "   INTO AccountStats "
+            + "        (accountId, debateCount, articleCount, debateUpVoted, "
+            + "         debateDownVoted, articleUpVoted ) "
+            + " VALUES "
+            + questions(6),
+        stats.getAccountId(),
+        stats.getDebateCount(),
+        stats.getArticleCount(),
+        stats.getDebateUpVoted(),
+        stats.getDebateDownVoted(),
+        stats.getArticleUpVoted());
   }
 
   private Array authoritiesToVarcharArray(Set<Authority> authorities) {
@@ -142,4 +170,11 @@ public class AccountDao implements DaoOperations {
         true,
         onceToken.getToken());
   }
+
+  public AccountStats loadStats(UUID accountId) {
+    return jdbc().queryForObject(" SELECT * FROM AccountStats WHERE accountId = ? ",
+        statsMapper,
+        accountId);
+  }
+
 }
