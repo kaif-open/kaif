@@ -1,16 +1,17 @@
 package io.kaif.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.HtmlUtils;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
@@ -51,7 +52,8 @@ public class ArticleServiceImpl implements ArticleService {
         .filter(zoneInfo::canWriteArticle)
         .orElseThrow(() -> new AccessDeniedException("no write to create article at zone:" + zone));
 
-    Article article = articleDao.createExternalLink(zone, author, title, url, Instant.now());
+    Article article = articleDao.createExternalLink(zone, author,
+        HtmlUtils.htmlEscape(title), HtmlUtils.htmlEscape(url), Instant.now());
     accountDao.increaseArticleCount(author);
     return article;
   }
@@ -88,7 +90,8 @@ public class ArticleServiceImpl implements ArticleService {
     Debate parent = Optional.ofNullable(parentDebateId)
         .flatMap(pId -> debateDao.findDebate(article.getArticleId(), pId))
         .orElse(null);
-    Debate debate = debateDao.create(article, parent, content, debater, Instant.now());
+    Debate debate = debateDao.create(article, parent, HtmlUtils.htmlEscape(content), debater,
+        Instant.now());
 
     //may improve later to make it async, but async has transaction problem
     articleDao.increaseDebateCount(article);

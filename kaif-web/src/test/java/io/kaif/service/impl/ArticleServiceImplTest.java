@@ -1,16 +1,12 @@
 package io.kaif.service.impl;
 
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.*;
-import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
@@ -26,6 +22,15 @@ import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.AccountService;
 import io.kaif.test.DbIntegrationTests;
 import io.kaif.web.support.AccessDeniedException;
+
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ArticleServiceImplTest extends DbIntegrationTests {
 
@@ -75,6 +80,20 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         service.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getDebateCount());
 
     assertEquals(1, accountService.loadAccountStats(debater.getAccountId()).getDebateCount());
+  }
+
+  @Test
+  public void debate_escape_content() throws Exception {
+    Account debater = savedAccountCitizen("debater1");
+    Debate created = service.debate(zoneInfo.getZone(),
+        article.getArticleId(),
+        Debate.NO_PARENT,
+        debater.getAccountId(),
+        "pixel art is better<evil>hi</evil>");
+
+    Debate debate = debateDao.findDebate(article.getArticleId(), created.getDebateId()).get();
+    assertEquals(DebateContentType.MARK_DOWN, debate.getContentType());
+    assertEquals("pixel art is better&lt;evil&gt;hi&lt;/evil&gt;", debate.getContent());
   }
 
   @Test
@@ -220,6 +239,18 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         "http://foo2.com");
 
     assertEquals(asList(a3, a2, a1), service.listLatestArticles(fooZone.getZone(), 0));
+  }
+
+  @Test
+  public void createExternalLink_escape_content() throws Exception {
+    Article created = service.createExternalLink(citizen.getAccountId(),
+        zoneInfo.getZone(),
+        "title1<script>alert('123');</script>",
+        "http://foo.com<script>alert('123');</script>");
+    Article article = service.findArticle(created.getZone(), created.getArticleId()).get();
+    assertEquals("title1&lt;script&gt;alert(&#39;123&#39;);&lt;/script&gt;", article.getTitle());
+    assertEquals("http://foo.com&lt;script&gt;alert(&#39;123&#39;);&lt;/script&gt;",
+        article.getContent());
   }
 
   @Test
