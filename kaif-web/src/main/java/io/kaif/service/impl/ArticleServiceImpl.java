@@ -86,7 +86,10 @@ public class ArticleServiceImpl implements ArticleService {
     Debate parent = Optional.ofNullable(parentDebateId)
         .flatMap(pId -> debateDao.findDebate(article.getArticleId(), pId))
         .orElse(null);
-    return debateDao.create(article, parent, content, debater, Instant.now());
+    Debate debate = debateDao.create(article, parent, content, debater, Instant.now());
+
+    articleDao.increaseDebateCount(article);
+    return debate;
   }
 
   /**

@@ -101,4 +101,11 @@ public class ArticleDao implements DaoOperations {
     final String sql = " SELECT * FROM Article WHERE zone = ? AND articleId = ? ";
     return jdbc().queryForObject(sql, articleMapper, zone.value(), articleId.value());
   }
+
+  public void increaseDebateCount(Article article) {
+    jdbc().update(
+        " UPDATE Article SET debateCount = debateCount + 1 WHERE ZONE = ? AND articleId = ? ",
+        article.getZone().value(),
+        article.getArticleId().value());
+  }
 }

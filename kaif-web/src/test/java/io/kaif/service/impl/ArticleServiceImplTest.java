@@ -65,6 +65,9 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertEquals(0L, debate.getUpVote());
     assertNotNull(debate.getCreateTime());
     assertNotNull(debate.getLastUpdateTime());
+
+    assertEquals(1,
+        service.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getDebateCount());
   }
 
   @Test
@@ -159,6 +162,8 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertTrue(l2.isParent(l1));
     assertFalse(l1.isParent(l2));
 
+    assertEquals(2,
+        service.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getDebateCount());
     Debate l3 = service.debate(zoneInfo.getZone(),
         article.getArticleId(),
         l2.getDebateId(),
@@ -169,6 +174,9 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertTrue(l3.hasParent());
     assertTrue(l3.isParent(l2));
     assertFalse(l2.isParent(l3));
+
+    assertEquals(3,
+        service.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getDebateCount());
   }
 
   @Test
