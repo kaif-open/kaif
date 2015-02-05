@@ -124,7 +124,7 @@ dependencies {
 
   compile 'org.springframework.security:spring-security-crypto:3.2.5.RELEASE';
 
-  compile 'org.postgresql:postgresql:9.3-1102-jdbc41'
+  compile 'org.postgresql:postgresql:9.4-1200-jdbc41'
   compile 'com.google.guava:guava:18.0'
 
   // postgresql driver not better fit HikariCP
