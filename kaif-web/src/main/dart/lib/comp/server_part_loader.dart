@@ -13,6 +13,14 @@ class ServerPartLoader {
 
   ServerPartLoader(this._partService, this._componentsInitializer);
 
+  /**
+   * load server render page into selector element.
+   *
+   * note that server returned html will be sanitize <script> and any
+   * onFoo="" attribute
+   *
+   * see view/htmls.dart
+   */
   Future tryLoadInto(String selector, String partPath, {Loading loading}) {
     Element found = querySelector(selector);
     if (found == null) {
@@ -24,7 +32,8 @@ class ServerPartLoader {
 
     return _partService.loadPart(partPath).then((htmlText) {
       progress.remove();
-      trustInnerHtml(found, htmlText);
+      // server returned html soup. note all js script will be removed
+      unSafeInnerHtml(found, htmlText);
       return found;
     }).then(_componentsInitializer)
     .catchError((permissionError) {

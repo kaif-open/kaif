@@ -9,14 +9,22 @@ class AccountMenu {
   void _render(AccountAuth auth) {
     elem.nodes.clear();
     if (auth == null) {
-      //TODO change to safe html approach, do not use trustHtml
-      elem.nodes.add(trustHtml('<li><a href="${route.signIn}">${i18n('account-menu.sign-in')}</a></li>'));
-      elem.nodes.add(trustHtml('<li><a href="${route.signUp}">${i18n('account-menu.sign-up')}</a></li>'));
+      elem.append(_menuLink(route.signIn, i18n('account-menu.sign-in')));
+      elem.append(_menuLink(route.signUp, i18n('account-menu.sign-up')));
     } else {
-      elem.nodes.add(trustHtml('<li><a href="${route.settings}">${auth.username}</a></li>'));
+      elem.append(_menuLink(route.settings, auth.username));
       elem.nodes.add(_createSignOut());
     }
   }
+
+  Element _menuLink(String href, String text) {
+    //use .text = value to ensure safe html
+    return new LIElement()
+      ..append(new AnchorElement()
+      ..href = href
+      ..text = text) ;
+  }
+
 
   final Element elem;
   final AccountSession accountSession ;
@@ -38,7 +46,7 @@ class AccountMenu {
   }
 
   Element _createSignOut() {
-    var signOut = trustHtml('<li><a href="#">${i18n('account-menu.sign-out')}</a></li>');
+    var signOut = _menuLink("#", i18n('account-menu.sign-out'));
     signOut.querySelector('a').onClick.first.then((e) {
       e
         ..preventDefault()

@@ -18,13 +18,13 @@ class Loading {
   }
 
   Loading.small() {
-    _el = trustHtml("""
+    _el = _unSafeHtml("""
       <i class="fa fa-cog fa-spin"></i>
     """);
   }
 
   Loading.largeCenter() {
-    _el = trustHtml("""
+    _el = _unSafeHtml("""
       <div class="large-center-loading">
         <i class="fa fa-cog fa-spin"></i>
       </div>
@@ -71,7 +71,7 @@ class LargeErrorModal {
   void render() {
 
     //do not embed ${message} within trustHtml !
-    var dangerUnSafeElem = trustHtml(
+    var dangerUnSafeElem = _unSafeHtml(
         """
       <div class="large-error-modal">
          <div class="alert alert-danger">
