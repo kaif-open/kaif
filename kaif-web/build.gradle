@@ -124,7 +124,7 @@ dependencies {
 
   compile 'org.springframework.security:spring-security-crypto:3.2.5.RELEASE';
 
-  compile 'org.postgresql:postgresql:9.4-1200-jdbc41'
+  compile 'org.postgresql:postgresql:9.3-1102-jdbc41'
   compile 'com.google.guava:guava:18.0'
 
   // postgresql driver not better fit HikariCP
@@ -142,5 +142,9 @@ dependencies {
 
   // aws will depends on jackson/joda/httpclient
   compile 'com.amazonaws:aws-java-sdk-ses:1.9.16'
+
+  //markdown processor
+  compile 'org.pegdown:pegdown:1.4.2'
+
 }
 
