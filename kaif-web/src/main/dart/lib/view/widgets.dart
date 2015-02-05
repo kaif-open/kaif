@@ -69,17 +69,23 @@ class LargeErrorModal {
   LargeErrorModal(this.message);
 
   void render() {
-    var el = trustHtml(
+
+    //do not embed ${message} within trustHtml !
+    var dangerUnSafeElem = trustHtml(
         """
       <div class="large-error-modal">
          <div class="alert alert-danger">
-           ${message}
+           <span class="safeMessage"></span>
            <p><a href="/">Home</a></p>
          </div>
       </div>
     """);
 
-    (window.document as HtmlDocument).body.append(el);
+    var safeHtmlElem = dangerUnSafeElem.querySelector('span.safeMessage');
+
+    //must use `.text = message` to ensure html safety !!
+    safeHtmlElem.text = message;
+    (window.document as HtmlDocument).body.append(dangerUnSafeElem);
   }
 }
 
@@ -99,41 +105,39 @@ class Toast {
   }
 
   Future render() {
-    var el = trustHtml(
-        """
-     <div class="alert alert-${_type} toast">
-       ${message}
-     </div>
-    """);
+    var safeHtmlElem = new DivElement()
+      ..classes.addAll(['alert', 'alert-${_type}', 'toast']);
 
-    (window.document as HtmlDocument).body.append(el);
+    //.text = message to ensure safe html here !
+    safeHtmlElem.text = message;
+    (window.document as HtmlDocument).body.append(safeHtmlElem);
 
     return new Future.delayed(_duration, () {
-      el.remove();
+      safeHtmlElem.remove();
     });
   }
 }
 
 class Alert {
 
-  Element _elem;
+  Element _safeHtmlElem;
 
   factory Alert.append(Element sibling) {
     var alert = new Alert._();
-    sibling.append(alert._elem);
+    sibling.append(alert._safeHtmlElem);
     return alert;
   }
 
   factory Alert.after(Element sibling) {
     var alert = new Alert._();
 
-    _insertAfter(sibling, alert._elem);
+    _insertAfter(sibling, alert._safeHtmlElem);
 
     return alert;
   }
 
   Alert._() {
-    _elem = new DivElement()
+    _safeHtmlElem = new DivElement()
       ..classes.add('alert');
     hide();
   }
@@ -147,7 +151,9 @@ class Alert {
   void renderWarning(String message) => _render(message, 'warning');
 
   void _render(String message, String type) {
-    _elem
+
+    // use .text = message ensure safe html
+    _safeHtmlElem
       ..text = message
       ..classes.toggle('hidden', false)
       ..classes.toggle('alert-danger', type == 'danger')
@@ -157,6 +163,6 @@ class Alert {
   }
 
   void hide() {
-    _elem.classes.toggle('hidden', true);
+    _safeHtmlElem.classes.toggle('hidden', true);
   }
 }

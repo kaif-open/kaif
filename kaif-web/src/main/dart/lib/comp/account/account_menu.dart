@@ -9,6 +9,7 @@ class AccountMenu {
   void _render(AccountAuth auth) {
     elem.nodes.clear();
     if (auth == null) {
+      //TODO change to safe html approach, do not use trustHtml
       elem.nodes.add(trustHtml('<li><a href="${route.signIn}">${i18n('account-menu.sign-in')}</a></li>'));
       elem.nodes.add(trustHtml('<li><a href="${route.signUp}">${i18n('account-menu.sign-up')}</a></li>'));
     } else {
