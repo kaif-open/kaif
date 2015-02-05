@@ -1,8 +1,11 @@
-spring:
-    profiles:
-        active: prod
+## web server
+
 
 ## freemarker
+spring.freemarker:
+    cache: true
+    settings:
+        show_error_tips: false
 
 
 ## actuator

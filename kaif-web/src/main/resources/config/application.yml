@@ -3,12 +3,14 @@ server:
     port: 5980
 
 ## freemarker
-spring.freemarker.cache: true
-spring.freemarker.templateLoaderPath: /WEB-INF/views,classpath:/mail
-spring.freemarker.settings.datetime_format: yyyy-MM-dd
-spring.freemarker.settings.number_format: 0.######
-# expose `request` so it is accessible in ftl
-spring.freemarker.request-context-attribute: request
+spring.freemarker:
+    templateLoaderPath: /WEB-INF/views,classpath:/mail
+    # expose `request` so it is accessible in ftl
+    request-context-attribute: request
+    settings:
+        datetime_format: yyyy-MM-dd
+        number_format: 0.######
+
 error.whitelabel.enabled: false
 
 
