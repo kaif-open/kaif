@@ -101,11 +101,12 @@ public class ToSimpleHtmlSerializer implements Visitor {
   }
 
   @Override public void visit(final ExpImageNode node) {
-    printer.print(printChildrenToString(node));
+    final String text = printChildrenToString(node);
+    printer.print(text).print("(").print(node.url).print(")");
   }
 
   @Override public void visit(final ExpLinkNode node) {
-    String text = printChildrenToString(node);
+    final String text = printChildrenToString(node);
     printLink(linkRenderer.render(node, text));
   }
 
