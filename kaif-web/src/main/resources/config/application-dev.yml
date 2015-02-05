@@ -1,8 +1,11 @@
 ## web server
+server:
+    port: 5980
 
 
 ## freemarker
 spring.freemarker:
+    templateLoaderPath: /WEB-INF/views,classpath:/mail
     cache: false
     settings:
         show_error_tips: true
@@ -13,7 +16,13 @@ endpoints.enabled: true
 
 
 ## database
-
+spring.datasource:
+    initialize: false
+    url: jdbc:postgresql://192.168.59.59:5432/kaif
+    username: kaif
+    password: changeme
+    schema:
+    data:
 
 ## jmx
 
@@ -26,14 +35,23 @@ spring.messages.cache-seconds: 0
 spring.mail.host: 192.168.59.59
 
 
-## model
+## model, see AccountSecret.java
+account:
+    mac: n7LOo9kKqSqM-fshf_T3xw
+    key: dnXAz2u6mn4L_vZyiW0hHA
 
 
 ## flake node id
+flake.node-id: 99
 
 
 ## app
+app.build: snapshot
 
 
 ## logback
 logging.config: classpath:logback-dev.xml
+
+
+## misc
+spring.main.show_banner: true

@@ -9,23 +9,23 @@ spring.freemarker:
     cache: true
     # note that /views_link is symbolic link to WEB-INF/views, because MvcIntegraitonTests could
     # not detect template via file system, only classpath
-    templateLoaderPath: classpath:/views_link
+    templateLoaderPath: classpath:/views_link,classpath:/mail
     settings:
         show_error_tips: true
 
 
 ## actuator
+endpoints.enabled: false
 
 
 ## database
-spring.datasource.initialize: true
-spring.datasource.schema: classpath:db/recreate_schema.sql,classpath:db/schema.sql
-spring.datasource.data:
-
-spring.datasource.driver-class-name: org.postgresql.Driver
-spring.datasource.url: jdbc:postgresql://192.168.59.59:5432/ci_kaif
-spring.datasource.username: ci_kaif
-spring.datasource.password: changeme
+spring.datasource:
+    initialize: true
+    url: jdbc:postgresql://192.168.59.59:5432/ci_kaif
+    username: ci_kaif
+    password: changeme
+    schema: classpath:db/recreate_schema.sql,classpath:db/schema.sql
+    data:
 
 
 ## jmx
@@ -38,13 +38,18 @@ spring.jmx.enabled: false
 ## mail
 
 
-## model
+## model, see AccountSecret.java
+account:
+    mac: n7LOo9kKqSqM-fshf_T3xw
+    key: dnXAz2u6mn4L_vZyiW0hHA
 
 
 ## flake node id
+flake.node-id: 99
 
 
 ## app, replace while gradle build
+app.build: snapshot
 
 
 ## logback

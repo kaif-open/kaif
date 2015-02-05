@@ -1,19 +1,29 @@
 ## web server
+server:
+    port: 5980
 
 
 ## freemarker
 spring.freemarker:
+    templateLoaderPath: /WEB-INF/views,classpath:/mail
     cache: true
     settings:
         show_error_tips: false
 
 
 ## actuator
+endpoints.enabled: false
 
 
 ## database
-spring.datasource.password: ${dbpassword}
-spring.datasource.url: jdbc:postgresql://localhost:5432/kaif
+spring.datasource:
+    initialize: false
+    # TODO change `localhost` from ansible
+    url: jdbc:postgresql://localhost:5432/kaif
+    username: kaif
+    password: ${dbpassword}
+    schema:
+    data:
 
 ## jmx
 
@@ -41,3 +51,7 @@ app.build: @app.build@
 
 ## logback
 logging.config: classpath:logback-prod.xml
+
+
+## misc
+spring.main.show_banner: true

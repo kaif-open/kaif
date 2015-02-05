@@ -1,10 +1,15 @@
+####
+# Common properties for all profiles.
+#
+# If some properties are different between profiles, write property in each .yml
+# Please do not write default value here and overwrite in specific .yml
+####
+
 ## web server
-server:
-    port: 5980
+
 
 ## freemarker
 spring.freemarker:
-    templateLoaderPath: /WEB-INF/views,classpath:/mail
     # expose `request` so it is accessible in ftl
     request-context-attribute: request
     settings:
@@ -16,18 +21,13 @@ error.whitelabel.enabled: false
 
 ## actuator
 management.context-path: /actuate
-endpoints.enabled: false
 endpoints.info.enabled: true
 endpoints.health.enabled: true
 
 
 ## database
-spring.datasource.initialize: false
-
-spring.datasource.driver-class-name: org.postgresql.Driver
-spring.datasource.url: jdbc:postgresql://192.168.59.59:5432/kaif
-spring.datasource.username: kaif
-spring.datasource.password: changeme
+spring.datasource:
+    driver-class-name: org.postgresql.Driver
 
 
 ## jmx
@@ -47,18 +47,16 @@ mail.aws-secret-key:
 mail.aws-access-key:
 
 
-## model, see AccountSecret.java
-account:
-    mac: n7LOo9kKqSqM-fshf_T3xw
-    key: dnXAz2u6mn4L_vZyiW0hHA
+## model
 
 
 ## flake node id
-flake.node-id: 99
 
 
-## app build number, this is also used in dynamic web resource
-app.build: snapshot
+## app
 
 
 ## logback
+
+
+## misc
