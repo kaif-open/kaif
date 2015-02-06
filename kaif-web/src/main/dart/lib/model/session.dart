@@ -49,6 +49,8 @@ class AccountSession {
   //null if not sign in
   AccountAuth get current => _current;
 
+  bool get isSignIn => current != null;
+
   String provideAccessToken() {
     return _current != null ? _current.accessToken : null;
   }

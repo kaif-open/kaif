@@ -1,5 +1,7 @@
 package io.kaif.web.api;
 
+import java.util.List;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -8,10 +10,12 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.AccountAccessToken;
+import io.kaif.model.vote.ArticleVoter;
 import io.kaif.model.zone.Zone;
 import io.kaif.service.VoteService;
 
@@ -42,4 +46,13 @@ public class VoteResource {
         request.previousCount);
   }
 
+  @RequestMapping(value = "/article-voters", method = RequestMethod.GET)
+  public List<ArticleVoter> listArticleVotersInRage(AccountAccessToken token,
+      @RequestParam("startArticleId") String startArticleId,
+      @RequestParam("endArticleId") String endArticleId) {
+    //TODO ArticleVoterDto ?
+    return voteService.listArticleVotersInRage(token.getAccountId(),
+        FlakeId.fromString(startArticleId),
+        FlakeId.fromString(endArticleId));
+  }
 }

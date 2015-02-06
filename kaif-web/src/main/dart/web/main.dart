@@ -73,7 +73,7 @@ class AppModule {
       new DebateTree(el, articleService);
     });
     parent.querySelectorAll('[article-list]').forEach((el) {
-      new ArticleList(el, articleService, voteService);
+      new ArticleList(el, articleService, voteService, accountSession);
     });
   }
 

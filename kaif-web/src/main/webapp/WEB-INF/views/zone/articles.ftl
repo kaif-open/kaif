@@ -37,9 +37,9 @@ head=headContent
     <div class="pure-u-1 pure-u-md-3-4">
         <div class="pure-g article-list" article-list>
             <input type="hidden" name="zoneInput" value="${zoneInfo.name}">
-            <input type="hidden" name="startArticleIdInput" value="0">
-            <input type="hidden" name="endArticleIdInput" value="0">
-            <#list articles as article>
+            <input type="hidden" name="startArticleIdInput" value="${articlePage.startArticleId}">
+            <input type="hidden" name="endArticleIdInput" value="${articlePage.endArticleId}">
+            <#list articlePage.articles as article>
                 <div class="pure-u-1-6 pure-u-md-1-12">
                     <div class="article-vote-box" article-vote-box
                          data-article-id="${article.articleId}"
