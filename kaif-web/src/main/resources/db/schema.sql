@@ -86,8 +86,6 @@ CREATE TABLE ArticleVoter (
   PRIMARY KEY (voterId, articleId)
 );
 
-CREATE INDEX ArticleVoterUpdateTime ON ArticleVoter (updateTime);
-
 -- foreign key is intended exclude
 CREATE TABLE DebateVoter (
   voterId       UUID      NOT NULL,
@@ -98,8 +96,6 @@ CREATE TABLE DebateVoter (
   updateTime    TIMESTAMP NOT NULL,
   PRIMARY KEY (voterId, debateId)
 );
-
-CREATE INDEX DebateVoterUpdateTime ON DebateVoter (updateTime);
 
 CREATE TABLE AccountStats (
   accountId       UUID   NOT NULL REFERENCES Account (accountId),

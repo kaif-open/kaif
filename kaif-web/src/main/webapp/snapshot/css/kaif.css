@@ -398,15 +398,15 @@ main {
     background-color: #eee;
 }
 
-.article {
+.article-list {
     margin-top: 1em;
 }
 
-.article > div {
+.article-list > div {
     margin-bottom: 1em;
 }
 
-.article .article-title {
+.article-list .article-title {
     line-height: 1.2em;
 }
 
@@ -424,7 +424,7 @@ main {
     font-size: 0.8em;
 }
 
-.article .article-info {
+.article-list .article-info {
     font-size: 0.8em;
 }
 
@@ -436,10 +436,14 @@ main {
     color: dimgray;
 }
 
-.article-voting {
+.article-vote-box {
     text-align: right;
     padding-right: 1em;
 }
 
-.article-voting a {
+.article-vote-box a[article-up-vote] {
+}
+
+.article-vote-box.vote-box-voted {
+    color: red;
 }

@@ -238,3 +238,19 @@ class ArticleService extends _AbstractService {
     .then((res) => null);
   }
 }
+
+class VoteService extends _AbstractService {
+
+  VoteService(ServerType serverType, accessTokenProvider _provider)
+  : super(serverType, _provider);
+
+  String _getUrl(String path) => '/api/vote$path';
+
+  Future upVoteArticle(String zone, String articleId, int previousCount) {
+    var json = {
+        'zone':zone, 'articleId':articleId, 'previousCount':previousCount
+    };
+    return _postJson(_getUrl('/article'), json)
+    .then((res) => null);
+  }
+}

@@ -1,6 +1,5 @@
 package io.kaif.service.impl;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -27,13 +26,16 @@ public class VoteServiceImpl implements VoteService {
   @Autowired
   private VoteDao voteDao;
 
+  @Override
   public void upVoteArticle(Zone zone, FlakeId articleId, UUID accountId, long previousCount) {
     VoteDelta voteDelta = voteDao.upVoteArticle(articleId, accountId, previousCount, Instant.now());
     articleDao.changeUpVote(zone, articleId, voteDelta.getChangedValue());
   }
 
-  public List<ArticleVoter> listRecentArticleVotes(UUID accountId) {
-    Instant ago = Instant.now().minus(Duration.ofMinutes(10));
-    return voteDao.listArticleVotersAfter(accountId, ago);
+  @Override
+  public List<ArticleVoter> listArticleVotersInRage(UUID accountId,
+      FlakeId startArticleId,
+      FlakeId endArticleId) {
+    return voteDao.listArticleVotersInRage(accountId, startArticleId, endArticleId);
   }
 }

@@ -41,7 +41,9 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     assertEquals(1,
         articleDao.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getUpVote());
 
-    List<ArticleVoter> votes = service.listRecentArticleVotes(voter.getAccountId());
+    List<ArticleVoter> votes = service.listArticleVotersInRage(voter.getAccountId(),
+        article.getArticleId(),
+        article.getArticleId());
     assertEquals(1, votes.size());
     ArticleVoter vote = votes.get(0);
     assertEquals(voter.getAccountId(), vote.getVoterId());

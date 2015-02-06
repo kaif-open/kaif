@@ -54,15 +54,14 @@ public class VoteDao implements DaoOperations {
     return namedParameterJdbcTemplate;
   }
 
-  public List<ArticleVoter> listArticleVotersAfter(UUID accountId, Instant updateTime) {
+  public List<ArticleVoter> listArticleVotersInRage(UUID accountId,
+      FlakeId startArticleId,
+      FlakeId endArticleId) {
     return jdbc().query(""
             + " SELECT * "
             + "   FROM ArticleVoter "
-            + "  WHERE voterId = ? "
-            + "    AND updateTime >= ? "
-            + "  ORDER BY updateTime ASC ",
+            + "  WHERE voterId = ? " + "    AND articleId BETWEEN ? AND ? ",
         articleVoterMapper,
-        accountId,
-        Timestamp.from(updateTime));
+        accountId, startArticleId.value(), endArticleId.value());
   }
 }
