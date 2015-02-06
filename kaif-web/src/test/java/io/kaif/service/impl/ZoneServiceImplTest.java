@@ -36,6 +36,25 @@ public class ZoneServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
+  public void createDefault_not_allow_reserve_word() throws Exception {
+    try {
+      service.createDefault("kaif", "ABC");
+      fail("IllegalArgumentException expected");
+    } catch (IllegalArgumentException expected) {
+    }
+    try {
+      service.createDefault("kaif-abc", "ABC");
+      fail("IllegalArgumentException expected");
+    } catch (IllegalArgumentException expected) {
+    }
+    try {
+      service.createDefault("abckaifabc", "ABC");
+      fail("IllegalArgumentException expected");
+    } catch (IllegalArgumentException expected) {
+    }
+  }
+
+  @Test
   public void createKaif() throws Exception {
     ZoneInfo zoneInfo = service.createKaif("faq", "FAQ");
     ZoneInfo loaded = zoneDao.loadZoneWithoutCache(Zone.valueOf("faq"));

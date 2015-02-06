@@ -40,7 +40,8 @@ public class Account implements Authorization {
     return username != null
         && username.length() >= NAME_MIN
         && username.length() <= NAME_MAX
-        && username.matches(NAME_PATTERN);
+        && username.matches(NAME_PATTERN)
+        && !username.equalsIgnoreCase("null");
   }
 
   private final String username;

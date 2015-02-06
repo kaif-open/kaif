@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import io.kaif.model.account.Account;
@@ -36,11 +37,13 @@ public class ZoneInfo {
   public static final String THEME_NORMAL_VOTING = "z-theme-normal-voting";
 
   public static final String THEME_K_VOTING = "z-theme-k-voting";
+  public static final String RESERVED_WORD = "kaif";
 
   public static ZoneInfo createKVoting(String zoneValue,
       String aliasName,
       Account creator,
       Instant now) {
+    checkReserveWord(zoneValue);
     boolean hideFromTopRanking = false;
     Authority voteAuth = Authority.SUFFRAGE;
     Authority debateAuth = Authority.CITIZEN;
@@ -60,6 +63,7 @@ public class ZoneInfo {
       String aliasName,
       Account creator,
       Instant now) {
+    checkReserveWord(zoneValue);
     boolean hideFromTopRanking = false;
     Authority voteAuth = Authority.CITIZEN;
     Authority debateAuth = Authority.CITIZEN;
@@ -92,6 +96,7 @@ public class ZoneInfo {
   }
 
   public static ZoneInfo createDefault(String zoneValue, String aliasName, Instant now) {
+    checkReserveWord(zoneValue);
     boolean hideFromTopRanking = false;
     Authority voteAuth = Authority.CITIZEN;
     Authority debateAuth = Authority.CITIZEN;
@@ -105,6 +110,10 @@ public class ZoneInfo {
         Collections.emptyList(),
         hideFromTopRanking,
         now);
+  }
+
+  private static void checkReserveWord(String zoneValue) {
+    Preconditions.checkArgument(!zoneValue.contains(RESERVED_WORD));
   }
 
   /**

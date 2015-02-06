@@ -37,7 +37,10 @@ public class Zone {
   }
 
   private static boolean validateZone(String zone) {
-    return zone != null && ZONE_PATTERN.matcher(zone).matches() && !zone.contains("--");
+    return zone != null
+        && ZONE_PATTERN.matcher(zone).matches()
+        && !zone.contains("--")
+        && !zone.equals("null");
   }
 
   /**
