@@ -2,6 +2,8 @@ package io.kaif.flake;
 
 import static org.junit.Assert.*;
 
+import java.time.Instant;
+
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +19,24 @@ public class FlakeIdTest {
 
     public FooPojo() {
     }
+  }
+
+  public static void main(String[] args) {
+    String name = "mdformat";
+    FlakeId flakeId = FlakeId.fromString(name);
+    if (!flakeId.toString().equals(name)) {
+      throw new RuntimeException("input name: "
+          + name
+          + " revert back to flakeId string not match: "
+          + flakeId.toString());
+    }
+    if (name.length() > 8) {
+      throw new RuntimeException("name should not > 8 length (production article/debates is >= 9");
+    }
+    System.out.printf("name convert '%s' to flakeId %d (date: %s) \n",
+        flakeId,
+        flakeId.value(),
+        Instant.ofEpochMilli(flakeId.epochMilli()));
   }
 
   @Test
