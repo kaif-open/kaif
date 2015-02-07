@@ -26,6 +26,8 @@ import io.kaif.model.account.AccountDao;
 import io.kaif.model.account.Authority;
 import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleDao;
+import io.kaif.model.debate.Debate;
+import io.kaif.model.debate.DebateDao;
 import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
 
@@ -65,6 +67,9 @@ public abstract class DbIntegrationTests extends AbstractTransactionalJUnit4Spri
   @Autowired
   private ArticleDao articleDao;
 
+  @Autowired
+  private DebateDao debateDao;
+
   @Before
   public void integrationSetUp() throws Exception {
     Mockito.reset(mockMailAgent);
@@ -90,6 +95,11 @@ public abstract class DbIntegrationTests extends AbstractTransactionalJUnit4Spri
         title,
         "http://example.com/" + title,
         Instant.now());
+  }
+
+  protected final Debate savedDebate(Article article, String content, Debate parent) {
+    final Account debater = savedAccountCitizen(article.getAuthorName() + "-debate");
+    return debateDao.create(article, parent, content, debater, Instant.now());
   }
 
 }

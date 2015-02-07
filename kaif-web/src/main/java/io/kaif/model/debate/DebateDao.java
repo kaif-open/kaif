@@ -121,4 +121,23 @@ public class DebateDao implements DaoOperations {
 
     return namedJdbc().query(sql, params, debateMapper);
   }
+
+  public void changeTotalVote(FlakeId articleId,
+      FlakeId debateId,
+      long upVoteDelta,
+      long downVoteDelta) {
+    if (upVoteDelta == 0 && downVoteDelta == 0) {
+      return;
+    }
+    jdbc().update(""
+            + " UPDATE Debate "
+            + "    SET upVote = upVote + (?) "
+            + "      , downVote = downVote + (?) "
+            + "  WHERE debateId = ? "
+            + "    AND articleId = ? ",
+        upVoteDelta,
+        downVoteDelta,
+        debateId.value(),
+        articleId.value());
+  }
 }

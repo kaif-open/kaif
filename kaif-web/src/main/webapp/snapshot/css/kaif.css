@@ -441,9 +441,26 @@ main {
     padding-right: 1em;
 }
 
-.article-vote-box a[article-up-vote] {
+.article-vote-box a,
+.article-vote-box a:focus,
+.article-vote-box a:visited {
+    outline: 0;
 }
 
 .article-vote-box.vote-box-voted {
     color: red;
+}
+
+.debate {
+
+}
+
+.debate-vote-box {
+
+}
+
+.debate-vote-box a,
+.debate-vote-box a:focus,
+.debate-vote-box a:visited {
+    outline: 0;
 }

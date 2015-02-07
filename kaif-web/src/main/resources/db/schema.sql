@@ -88,13 +88,13 @@ CREATE TABLE ArticleVoter (
 
 -- foreign key is intended exclude
 CREATE TABLE DebateVoter (
-  voterId       UUID      NOT NULL,
-  debateId      BIGINT    NOT NULL,
-  voteType      BOOLEAN   NOT NULL,
-  cancel        BOOLEAN   NOT NULL,
-  previousCount BIGINT    NOT NULL,
-  updateTime    TIMESTAMP NOT NULL,
-  PRIMARY KEY (voterId, debateId)
+  voterId       UUID          NOT NULL,
+  articleId     BIGINT        NOT NULL,
+  debateId      BIGINT        NOT NULL,
+  voteState     VARCHAR(4096) NOT NULL,
+  previousCount BIGINT        NOT NULL,
+  updateTime    TIMESTAMP     NOT NULL,
+  PRIMARY KEY (voterId, articleId, debateId)
 );
 
 CREATE TABLE AccountStats (
