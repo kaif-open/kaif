@@ -259,7 +259,7 @@ class VoteService extends _AbstractService {
     var json = {
         'zone':zone, 'articleId':articleId
     };
-    return _postJson(_getUrl('/article-canel'), json)
+    return _postJson(_getUrl('/article-cancel'), json)
     .then((res) => null);
   }
 

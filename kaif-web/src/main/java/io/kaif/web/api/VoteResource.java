@@ -54,7 +54,7 @@ public class VoteResource {
     voteService.upVoteArticle(request.zone, request.articleId, token, request.previousCount);
   }
 
-  @RequestMapping(value = "/article-canel", method = RequestMethod.POST, consumes = {
+  @RequestMapping(value = "/article-cancel", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
   public void cancelVoteArticle(AccountAccessToken token,
       @Valid @RequestBody CancelVoteArticle request) {

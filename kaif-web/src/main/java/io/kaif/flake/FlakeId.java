@@ -32,7 +32,7 @@ import io.kaif.token.Base62;
  * jackson serialize format is base62 string
  */
 @JsonSerialize(using = FlakeIdSerializer.class)
-@JsonDeserialize(using = FlakeIdDeserilaizer.class)
+@JsonDeserialize(using = FlakeIdDeserializer.class)
 public final class FlakeId implements Comparable<FlakeId> {
 
   // 2015-01-01T00:00:00Z
@@ -164,7 +164,7 @@ class FlakeIdSerializer extends JsonSerializer<FlakeId> {
 
 }
 
-class FlakeIdDeserilaizer extends JsonDeserializer<FlakeId> {
+class FlakeIdDeserializer extends JsonDeserializer<FlakeId> {
 
   @Override
   public FlakeId deserialize(JsonParser jp, DeserializationContext ctxt)
