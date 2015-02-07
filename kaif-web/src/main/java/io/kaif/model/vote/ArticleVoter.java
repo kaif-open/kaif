@@ -52,6 +52,10 @@ public class ArticleVoter {
     return updateTime;
   }
 
+  public ArticleVoterDto toDto() {
+    return new ArticleVoterDto(articleId, cancel, previousCount, updateTime.toEpochMilli());
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {

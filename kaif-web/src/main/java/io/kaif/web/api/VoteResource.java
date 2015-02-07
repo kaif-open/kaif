@@ -1,5 +1,7 @@
 package io.kaif.web.api;
 
+import static java.util.stream.Collectors.*;
+
 import java.util.List;
 
 import javax.validation.Valid;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.vote.ArticleVoter;
+import io.kaif.model.vote.ArticleVoterDto;
 import io.kaif.model.zone.Zone;
 import io.kaif.service.VoteService;
 
@@ -59,12 +62,11 @@ public class VoteResource {
   }
 
   @RequestMapping(value = "/article-voters", method = RequestMethod.GET)
-  public List<ArticleVoter> listArticleVotersInRage(AccountAccessToken token,
+  public List<ArticleVoterDto> listArticleVotersInRage(AccountAccessToken token,
       @RequestParam("startArticleId") String startArticleId,
       @RequestParam("endArticleId") String endArticleId) {
-    //TODO ArticleVoterDto ?
     return voteService.listArticleVotersInRage(token,
         FlakeId.fromString(startArticleId),
-        FlakeId.fromString(endArticleId));
+        FlakeId.fromString(endArticleId)).stream().map(ArticleVoter::toDto).collect(toList());
   }
 }

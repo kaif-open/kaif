@@ -106,7 +106,7 @@ class ArticleVoteBox {
     }).catchError((e) {
       // revert
       _mark(voted:true);
-      _changeCount(delta:0);
+      _changeCount(delta:1);
       new Toast.error('$e', seconds:5).render();
     });
   }
@@ -119,7 +119,7 @@ class ArticleVoteBox {
     }).catchError((e) {
       //revert
       _mark(voted:false);
-      _changeCount(delta:0);
+      _changeCount(delta:-1);
       new Toast.error('$e', seconds:5).render();
     });
   }
