@@ -1,12 +1,13 @@
 package io.kaif.model.account;
 
 import java.time.Instant;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.UUID;
 
 import javax.annotation.concurrent.Immutable;
+
+import com.google.common.base.Preconditions;
 
 @Immutable
 public class Account implements Authorization {
@@ -136,12 +137,24 @@ public class Account implements Authorization {
   }
 
   @Override
-  public boolean belongToAccounts(Collection<UUID> accountIds) {
-    return accountIds.contains(accountId);
+  public UUID authenticatedId() {
+    return accountId;
   }
 
   @Override
   public boolean containsAuthority(Authority authority) {
     return authorities.contains(authority);
+  }
+
+  @Override
+  public boolean matches(Account account) {
+    return authenticatedId().equals(account.getAccountId())
+        && passwordHash.equals(account.getPasswordHash())
+        && authorities.equals(account.getAuthorities());
+  }
+
+  public Account withAuthorities(Set<Authority> authorities) {
+    Preconditions.checkArgument(!authorities.contains(Authority.FORBIDDEN));
+    return new Account(accountId, username, email, passwordHash, createTime, authorities);
   }
 }

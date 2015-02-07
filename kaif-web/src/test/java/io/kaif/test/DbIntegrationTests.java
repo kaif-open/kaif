@@ -76,8 +76,7 @@ public abstract class DbIntegrationTests extends AbstractTransactionalJUnit4Spri
 
   protected final Account savedAccountCitizen(String username) {
     Account account = savedAccountTourist(username);
-    accountDao.updateAuthorities(account.getAccountId(),
-        EnumSet.of(Authority.CITIZEN, Authority.TOURIST));
+    accountDao.updateAuthorities(account, EnumSet.of(Authority.CITIZEN, Authority.TOURIST));
     return accountDao.findById(account.getAccountId()).get();
   }
 

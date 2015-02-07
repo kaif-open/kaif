@@ -10,7 +10,6 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.EnumSet;
 import java.util.Locale;
-import java.util.UUID;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -24,6 +23,7 @@ import io.kaif.model.account.AccountOnceToken;
 import io.kaif.model.account.AccountSecret;
 import io.kaif.model.account.AccountStats;
 import io.kaif.model.account.Authority;
+import io.kaif.model.account.Authorization;
 import io.kaif.model.exception.OldPasswordNotMatchException;
 import io.kaif.test.DbIntegrationTests;
 
@@ -43,7 +43,7 @@ public class AccountServiceImplTest extends DbIntegrationTests {
   @Test
   public void createViaEmail() {
     Account account = service.createViaEmail("myname", "foo@gmail.com", "pwd123", lc);
-    Account loaded = service.findById(account.getAccountId()).get();
+    Account loaded = accountDao.findById(account.getAccountId()).get();
     assertEquals(account, loaded);
     assertEquals("foo@gmail.com", loaded.getEmail());
     assertFalse(loaded.isActivated());
@@ -59,7 +59,7 @@ public class AccountServiceImplTest extends DbIntegrationTests {
     assertFalse(token.isExpired(Instant.now().plus(Duration.ofHours(23))));
     assertFalse(token.isComplete());
 
-    AccountStats stats = service.loadAccountStats(account.getAccountId());
+    AccountStats stats = service.loadAccountStats(account.getUsername());
     assertEquals(AccountStats.zero(account.getAccountId()), stats);
   }
 
@@ -69,7 +69,7 @@ public class AccountServiceImplTest extends DbIntegrationTests {
 
     Mockito.reset(mockMailAgent);
 
-    service.resendActivation(account.getAccountId(), lc);
+    service.resendActivation(account, lc);
 
     verify(mockMailAgent).sendAccountActivation(eq(lc),
         eq(account),
@@ -91,14 +91,14 @@ public class AccountServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
-  public void updatePasswordWithToken() throws Exception {
+  public void updatePasswordWithOnceToken() throws Exception {
     Account account = service.createViaEmail("myname", "foo@gmail.com", "pwd123", lc);
     service.sendResetPassword("myname", "foo@gmail.com", lc);
     AccountOnceToken resetToken = accountDao.listOnceTokens().get(1);
 
     Mockito.reset(mockMailAgent);
 
-    service.updatePasswordWithToken(resetToken.getToken(), "pwd456", lc);
+    service.updatePasswordWithOnceToken(resetToken.getToken(), "pwd456", lc);
 
     verify(mockMailAgent).sendPasswordWasReset(eq(lc), eq(account));
 
@@ -106,7 +106,7 @@ public class AccountServiceImplTest extends DbIntegrationTests {
     assertTrue(service.authenticate("myname", "pwd456").isPresent());
 
     //update again takes no effect
-    service.updatePasswordWithToken(resetToken.getToken(), "pw ignored", lc);
+    service.updatePasswordWithOnceToken(resetToken.getToken(), "pw ignored", lc);
     assertFalse(service.authenticate("myname", "pw ignored").isPresent());
     verifyNoMoreInteractions(mockMailAgent);
   }
@@ -152,7 +152,7 @@ public class AccountServiceImplTest extends DbIntegrationTests {
     AccountOnceToken token = accountDao.listOnceTokens().get(0);
 
     assertTrue(service.activate(token.getToken()));
-    Account loaded = service.findById(account.getAccountId()).get();
+    Account loaded = accountDao.findById(account.getAccountId()).get();
     assertTrue(loaded.isActivated());
     assertTrue(loaded.getAuthorities().contains(Authority.CITIZEN));
 
@@ -168,7 +168,7 @@ public class AccountServiceImplTest extends DbIntegrationTests {
 
     service.setClock(Clock.systemDefaultZone());
     assertFalse("expired token should invalid", service.activate(token.getToken()));
-    Account loaded = service.findById(account.getAccountId()).get();
+    Account loaded = accountDao.findById(account.getAccountId()).get();
     assertFalse(loaded.isActivated());
   }
 
@@ -207,39 +207,39 @@ public class AccountServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
-  public void verifyAccessToken() throws Exception {
+  public void strongVerifyAccessToken() throws Exception {
     Account account = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc);
     AccountAuth accountAuth = service.authenticate("abc99", "pppwww").get();
-    assertTrue(service.verifyAccessToken(accountAuth.getAccessToken()).isPresent());
+    assertTrue(service.strongVerifyAccessToken(accountAuth.getAccessToken()).isPresent());
 
-    UUID accountId = account.getAccountId();
     //invalid case 1 bad token
-    assertFalse(service.verifyAccessToken("badtoken").isPresent());
+    assertFalse(service.strongVerifyAccessToken("badtoken").isPresent());
 
     //invalid case 2, password changed
-    service.updateNewPassword(accountId, "pppwww", "newPw123", lc);
-    assertFalse(service.verifyAccessToken(accountAuth.getAccessToken()).isPresent());
+    service.updateNewPassword(account, "pppwww", "newPw123", lc);
+    assertFalse(service.strongVerifyAccessToken(accountAuth.getAccessToken()).isPresent());
 
     //invalid case 3, authorities changed
     accountAuth = service.authenticate("abc99", "newPw123").get();
-    service.updateAuthorities(accountId, EnumSet.of(Authority.SUFFRAGE));
-    assertFalse(service.verifyAccessToken(accountAuth.getAccessToken()).isPresent());
+    //use dao to update directly
+    accountDao.updateAuthorities(account, EnumSet.of(Authority.SUFFRAGE));
+    assertFalse(service.strongVerifyAccessToken(accountAuth.getAccessToken()).isPresent());
   }
 
   @Test
   public void updateAuthorities() throws Exception {
-    UUID accountId = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc).getAccountId();
+    Authorization account = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc);
     EnumSet<Authority> set = EnumSet.of(Authority.CITIZEN, Authority.SYSOP);
-    service.updateAuthorities(accountId, set);
-    assertEquals(set, service.findById(accountId).get().getAuthorities());
+    service.updateAuthorities(account, set);
+    assertEquals(set, accountDao.findById(account.authenticatedId()).get().getAuthorities());
   }
 
   @Test
   public void updateAuthorities_should_not_include_forbidden() throws Exception {
-    UUID accountId = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc).getAccountId();
+    Authorization authorization = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc);
     EnumSet<Authority> set = EnumSet.of(Authority.FORBIDDEN, Authority.SYSOP);
     try {
-      service.updateAuthorities(accountId, set);
+      service.updateAuthorities(authorization, set);
       fail("IllegalArgumentException expected");
     } catch (IllegalArgumentException expected) {
     }
@@ -248,9 +248,8 @@ public class AccountServiceImplTest extends DbIntegrationTests {
   @Test
   public void updateNewPassword() throws Exception {
     Account account = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc);
-    UUID accountId = account.getAccountId();
     Mockito.reset(mockMailAgent);
-    AccountAuth accountAuth = service.updateNewPassword(accountId, "pppwww", "123456", lc);
+    AccountAuth accountAuth = service.updateNewPassword(account, "pppwww", "123456", lc);
     verify(mockMailAgent).sendPasswordWasReset(eq(lc), eq(account));
     assertNotNull(accountAuth);
     assertTrue(service.authenticate("abc99", "123456").isPresent());
@@ -258,18 +257,18 @@ public class AccountServiceImplTest extends DbIntegrationTests {
 
   @Test(expected = OldPasswordNotMatchException.class)
   public void updateNewPassword_oldPasswordNotMatch() throws Exception {
-    UUID accountId = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc).getAccountId();
-    service.updateNewPassword(accountId, "wrong old pw", "123456", lc);
+    Account account = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc);
+    service.updateNewPassword(account, "wrong old pw", "123456", lc);
   }
 
   @Test
   public void extendsAccessToken() throws Exception {
     service.createViaEmail("bbbb99", "bar@gmail.com", "pppwww", lc);
     AccountAuth accountAuth = service.authenticate("bbbb99", "pppwww").get();
-    AccountAccessToken accountAccessToken = service.verifyAccessToken(accountAuth.getAccessToken())
+    AccountAccessToken accountAccessToken = service.strongVerifyAccessToken(accountAuth.getAccessToken())
         .get();
     AccountAuth extend = service.extendsAccessToken(accountAccessToken);
     assertFalse(extend.equals(accountAuth));
-    assertTrue(service.verifyAccessToken(extend.getAccessToken()).isPresent());
+    assertTrue(service.strongVerifyAccessToken(extend.getAccessToken()).isPresent());
   }
 }

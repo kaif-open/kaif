@@ -11,9 +11,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Optional;
 
 import org.junit.Test;
+import org.mockito.Matchers;
 
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
+import io.kaif.model.account.Authorization;
 import io.kaif.test.MvcIntegrationTests;
 
 public class AccountControllerTest extends MvcIntegrationTests {
@@ -23,7 +25,7 @@ public class AccountControllerTest extends MvcIntegrationTests {
     Account account = accountTourist("foo");
     String token = prepareAccessToken(account);
 
-    when(accountService.findById(account.getAccountId())).thenReturn(Optional.of(account));
+    when(accountService.findMe(Matchers.isA(Authorization.class))).thenReturn(Optional.of(account));
 
     mockMvc.perform(get("/account/settings.part").header(AccountAccessToken.HEADER_KEY, token))
         .andExpect(view().name("account/settings.part"))

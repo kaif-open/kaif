@@ -51,10 +51,9 @@ public class AccountController {
     return PartTemplate.smallLayout();
   }
 
-  //TODO check permission
   @RequestMapping("/settings.part")
   public ModelAndView settingsPart(AccountAccessToken accountAccessToken) {
-    Account account = accountService.findById(accountAccessToken.getAccountId()).orElse(null);
+    Account account = accountService.findMe(accountAccessToken).orElse(null);
     return new ModelAndView("account/settings.part").addObject("account", account);
   }
 

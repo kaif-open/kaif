@@ -101,7 +101,7 @@ public class ZoneController {
         throw new AccessDeniedException("not allow write article at zone:"
             + zoneInfo.getZone()
             + ", account:"
-            + accessToken.getAccountId());
+            + accessToken.authenticatedId());
       }
       return new ModelAndView("article/create.part").addObject("zoneInfo", zoneInfo);
     });

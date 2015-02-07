@@ -106,6 +106,10 @@ public class AccountDao implements DaoOperations {
     return createVarcharArray(authorities.stream().map(Authority::name));
   }
 
+  public Optional<Account> strongVerifyAccount(Authorization authorization) {
+    return findById(authorization.authenticatedId()).filter(authorization::matches);
+  }
+
   public Optional<Account> findById(UUID accountId) {
     final String sql = " SELECT * FROM Account WHERE accountId = ? LIMIT 1 ";
     return jdbc().query(sql, accountMapper, accountId).stream().findAny();
@@ -117,11 +121,17 @@ public class AccountDao implements DaoOperations {
         username).stream().findAny();
   }
 
-  public void updateAuthorities(UUID accountId, EnumSet<Authority> authorities) {
-    Preconditions.checkArgument(!authorities.contains(Authority.FORBIDDEN));
+  public Account loadByUsername(String username) {
+    return jdbc().queryForObject(" SELECT * FROM Account WHERE username = lower(?) ",
+        accountMapper,
+        username);
+  }
+
+  public void updateAuthorities(Account account, EnumSet<Authority> authorities) {
+    Account updated = account.withAuthorities(authorities);
     jdbc().update(" UPDATE Account SET authorities = ? WHERE accountId = ? ",
-        authoritiesToVarcharArray(authorities),
-        accountId);
+        authoritiesToVarcharArray(updated.getAuthorities()),
+        updated.getAccountId());
   }
 
   public void updatePasswordHash(UUID accountId, String passwordHash) {
@@ -171,10 +181,12 @@ public class AccountDao implements DaoOperations {
         onceToken.getToken());
   }
 
-  public AccountStats loadStats(UUID accountId) {
-    return jdbc().queryForObject(" SELECT * FROM AccountStats WHERE accountId = ? ",
-        statsMapper,
-        accountId);
+  public AccountStats loadStats(String username) {
+    return jdbc().queryForObject(""
+        + " SELECT ass.* "
+        + "   FROM AccountStats ass "
+        + "   JOIN Account a ON (ass.accountId = a.accountId) "
+        + "  WHERE a.username = ? ", statsMapper, username);
   }
 
   public void increaseArticleCount(Account author) {

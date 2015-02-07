@@ -52,6 +52,7 @@ public class ArticleResource {
     @NotNull
     public String content;
   }
+
   @Autowired
   private ArticleService articleService;
 
@@ -59,7 +60,7 @@ public class ArticleResource {
       MediaType.APPLICATION_JSON_VALUE })
   public void createExternalLink(AccountAccessToken token,
       @Valid @RequestBody CreateExternalLink request) {
-    articleService.createExternalLink(token.getAccountId(),
+    articleService.createExternalLink(token,
         request.zone,
         request.title.trim(),
         request.url.trim());
@@ -71,7 +72,7 @@ public class ArticleResource {
     articleService.debate(request.zone,
         request.articleId,
         request.parentDebateId,
-        token.getAccountId(),
+        token,
         request.content.trim());
   }
 }

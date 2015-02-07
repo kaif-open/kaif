@@ -2,7 +2,6 @@ package io.kaif.model.account;
 
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -62,15 +61,6 @@ public class AccountAccessToken implements Authorization {
     return secret.getCodec().encode(expireTime.toEpochMilli(), fields);
   }
 
-  /**
-   * matches() only check if any data changed, it has no security meaning. the actual protection is
-   * base on SecureTokenCodec, not this method.
-   */
-  public boolean matches(String passwordHash, Set<Authority> authorities) {
-    return Arrays.equals(this.passwordHashDigest, passwordHashToBytes(passwordHash))
-        && this.authoritiesBits == Authority.toBits(authorities);
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -110,17 +100,20 @@ public class AccountAccessToken implements Authorization {
         '}';
   }
 
-  public UUID getAccountId() {
-    return accountId;
-  }
-
   @Override
-  public boolean belongToAccounts(Collection<UUID> accountIds) {
-    return accountIds.contains(accountId);
+  public UUID authenticatedId() {
+    return accountId;
   }
 
   @Override
   public boolean containsAuthority(Authority authority) {
     return Authority.bitsContains(authoritiesBits, authority);
+  }
+
+  @Override
+  public boolean matches(Account account) {
+    return authenticatedId().equals(account.getAccountId())
+        && Arrays.equals(this.passwordHashDigest, passwordHashToBytes(account.getPasswordHash()))
+        && this.authoritiesBits == Authority.toBits(account.getAuthorities());
   }
 }

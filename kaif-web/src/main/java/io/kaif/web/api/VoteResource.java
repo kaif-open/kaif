@@ -48,17 +48,14 @@ public class VoteResource {
   @RequestMapping(value = "/article", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
   public void upVoteArticle(AccountAccessToken token, @Valid @RequestBody UpVoteArticle request) {
-    voteService.upVoteArticle(request.zone,
-        request.articleId,
-        token.getAccountId(),
-        request.previousCount);
+    voteService.upVoteArticle(request.zone, request.articleId, token, request.previousCount);
   }
 
   @RequestMapping(value = "/article-canel", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
   public void cancelVoteArticle(AccountAccessToken token,
       @Valid @RequestBody CancelVoteArticle request) {
-    voteService.cancelVoteArticle(request.zone, request.articleId, token.getAccountId());
+    voteService.cancelVoteArticle(request.zone, request.articleId, token);
   }
 
   @RequestMapping(value = "/article-voters", method = RequestMethod.GET)
@@ -66,7 +63,7 @@ public class VoteResource {
       @RequestParam("startArticleId") String startArticleId,
       @RequestParam("endArticleId") String endArticleId) {
     //TODO ArticleVoterDto ?
-    return voteService.listArticleVotersInRage(token.getAccountId(),
+    return voteService.listArticleVotersInRage(token,
         FlakeId.fromString(startArticleId),
         FlakeId.fromString(endArticleId));
   }

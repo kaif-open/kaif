@@ -38,11 +38,11 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void upVoteArticle() throws Exception {
-    service.upVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter.getAccountId(), 100);
+    service.upVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter, 100);
     assertEquals(1,
         articleDao.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getUpVote());
 
-    List<ArticleVoter> votes = service.listArticleVotersInRage(voter.getAccountId(),
+    List<ArticleVoter> votes = service.listArticleVotersInRage(voter,
         article.getArticleId(),
         article.getArticleId());
     assertEquals(1, votes.size());
@@ -56,9 +56,9 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void upVoteArticle_not_allow_duplicate() throws Exception {
-    service.upVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter.getAccountId(), 100);
+    service.upVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter, 100);
     try {
-      service.upVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter.getAccountId(), 101);
+      service.upVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter, 101);
       fail("DuplicateKeyException expected");
     } catch (DuplicateKeyException expected) {
     }
@@ -66,11 +66,11 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void cancelVoteArticle_no_effect_if_not_exist() throws Exception {
-    service.cancelVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter.getAccountId());
+    service.cancelVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter);
     assertEquals(0,
         articleDao.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getUpVote());
 
-    List<ArticleVoter> votes = service.listArticleVotersInRage(voter.getAccountId(),
+    List<ArticleVoter> votes = service.listArticleVotersInRage(voter,
         article.getArticleId(),
         article.getArticleId());
     assertEquals(0, votes.size());
@@ -78,14 +78,14 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void upVoteArticle_allow_on_canceled_vote() throws Exception {
-    service.upVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter.getAccountId(), 100);
-    service.cancelVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter.getAccountId());
-    service.upVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter.getAccountId(), 102);
+    service.upVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter, 100);
+    service.cancelVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter);
+    service.upVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter, 102);
 
     assertEquals(1,
         articleDao.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getUpVote());
 
-    List<ArticleVoter> votes = service.listArticleVotersInRage(voter.getAccountId(),
+    List<ArticleVoter> votes = service.listArticleVotersInRage(voter,
         article.getArticleId(),
         article.getArticleId());
     assertEquals(1, votes.size());
@@ -96,12 +96,12 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void cancelVoteArticle() throws Exception {
-    service.upVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter.getAccountId(), 100);
-    service.cancelVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter.getAccountId());
+    service.upVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter, 100);
+    service.cancelVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter);
     assertEquals(0,
         articleDao.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getUpVote());
 
-    List<ArticleVoter> votes = service.listArticleVotersInRage(voter.getAccountId(),
+    List<ArticleVoter> votes = service.listArticleVotersInRage(voter,
         article.getArticleId(),
         article.getArticleId());
     assertEquals(1, votes.size());

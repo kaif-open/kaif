@@ -12,7 +12,9 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-public class AccountAccessTokenTest {
+import io.kaif.test.ModelFixture;
+
+public class AccountAccessTokenTest implements ModelFixture {
 
   @Test
   public void codec() throws Exception {
@@ -35,14 +37,34 @@ public class AccountAccessTokenTest {
   }
 
   @Test
-  public void match() throws Exception {
-    AccountAccessToken accountAccessToken = new AccountAccessToken(UUID.randomUUID(),
+  public void matches() throws Exception {
+    Account account = accountWithAuth("pw1", CITIZEN, SYSOP);
+
+    AccountAccessToken accountAccessToken = new AccountAccessToken(account.getAccountId(),
         "pw1",
         EnumSet.of(CITIZEN, SYSOP));
 
-    assertTrue(accountAccessToken.matches("pw1", EnumSet.of(CITIZEN, SYSOP)));
-    assertTrue(accountAccessToken.matches("pw1", EnumSet.of(SYSOP, CITIZEN)));
-    assertFalse(accountAccessToken.matches("pw1", EnumSet.of(CITIZEN)));
-    assertFalse(accountAccessToken.matches("wrongpw1", EnumSet.of(SYSOP, CITIZEN)));
+    assertTrue(accountAccessToken.matches(account));
+
+    accountAccessToken = new AccountAccessToken(account.getAccountId(), "pw1", EnumSet.of(CITIZEN));
+    assertFalse(accountAccessToken.matches(account));
+
+    accountAccessToken = new AccountAccessToken(account.getAccountId(),
+        "pw1",
+        EnumSet.of(SUFFRAGE));
+
+    assertFalse(accountAccessToken.matches(account));
+
+    accountAccessToken = new AccountAccessToken(account.getAccountId(),
+        "wrongpw1",
+        EnumSet.of(CITIZEN, SYSOP));
+
+    assertFalse(accountAccessToken.matches(account));
+
+    Account diffAccount = accountWithAuth("ppww", SYSOP);
+    accountAccessToken = new AccountAccessToken(UUID.randomUUID(), "ppww", EnumSet.of(SYSOP));
+
+    assertFalse(accountAccessToken.matches(diffAccount));
+
   }
 }
