@@ -118,21 +118,27 @@ public class VoteDao implements DaoOperations {
     return changed == 1 ? VoteDelta.DECREASED : VoteDelta.NO_CHANGE;
   }
 
-  public void upVotedDebate(FlakeId articleId,
+  public void voteDebate(VoteState newState,
+      FlakeId articleId,
       FlakeId debateId,
       UUID voterId,
+      VoteState previousState,
       long previousCount,
       Instant now) {
-    upsertDebateVoter(DebateVoter.upVote(articleId, debateId, voterId, previousCount, now));
-  }
 
-  private void upsertDebateVoter(DebateVoter voter) {
+    DebateVoter voter = DebateVoter.create(newState,
+        articleId,
+        debateId,
+        voterId,
+        previousCount,
+        now);
+
     // allow two cases:
     //
     // 1) no data: just do INSERT
-    // 2) a vote exist with different state: update to new vote state
+    // 2) a vote exist match previous state: update to new vote state
     //
-    // note that we do not allow update a same state voter.
+    // note that we do not allow update previousState not match.
 
     String upsert = ""
         + "   WITH UpsertVote "
@@ -144,7 +150,7 @@ public class VoteDao implements DaoOperations {
         + "              WHERE articleId = :articleId "
         + "                AND voterId = :voterId "
         + "                AND debateId = :debateId "
-        + "                AND voteState <> :voteState "
+        + "                AND voteState = :previousState "
         + "          RETURNING * "
         + "        ) "
         + " INSERT "
@@ -160,17 +166,10 @@ public class VoteDao implements DaoOperations {
         .put("previousCount", voter.getPreviousCount())
         .put("updateTime", Timestamp.from(voter.getUpdateTime()))
         .put("voteState", voter.getVoteState().name())
+        .put("previousState", previousState.name())
         .build();
 
     namedJdbc().update(upsert, params);
-  }
-
-  public void downVotedDebate(FlakeId articleId,
-      FlakeId debateId,
-      UUID voterId,
-      long previousCount,
-      Instant now) {
-    upsertDebateVoter(DebateVoter.downVote(articleId, debateId, voterId, previousCount, now));
   }
 
   public List<DebateVoter> listDebateVotersByArticle(UUID accountId, FlakeId articleId) {
@@ -181,27 +180,4 @@ public class VoteDao implements DaoOperations {
         + "    AND articleId = ? ", debateVoterMapper, accountId, articleId.value());
   }
 
-  public boolean cancelVoteDebate(FlakeId articleId,
-      FlakeId debateId,
-      UUID accountId,
-      VoteState previousState,
-      Instant now) {
-
-    int changed = jdbc().update(""
-            + " UPDATE DebateVoter "
-            + "    SET voteState = ? "
-            + "      , previousCount = 0 "
-            + "      , updateTime = ? "
-            + "  WHERE voterId = ? "
-            + "    AND articleId = ? "
-            + "    AND debateId = ? "
-            + "    AND voteState = ? ",
-        VoteState.EMPTY.name(),
-        Timestamp.from(now),
-        accountId,
-        articleId.value(),
-        debateId.value(),
-        previousState.name());
-    return changed == 1;
-  }
 }

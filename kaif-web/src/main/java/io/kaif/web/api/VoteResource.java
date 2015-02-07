@@ -19,6 +19,9 @@ import io.kaif.flake.FlakeId;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.vote.ArticleVoter;
 import io.kaif.model.vote.ArticleVoterDto;
+import io.kaif.model.vote.DebateVoter;
+import io.kaif.model.vote.DebateVoterDto;
+import io.kaif.model.vote.VoteState;
 import io.kaif.model.zone.Zone;
 import io.kaif.service.VoteService;
 
@@ -45,6 +48,44 @@ public class VoteResource {
     public Zone zone;
   }
 
+  static class VoteDebate {
+
+    @NotNull
+    public FlakeId articleId;
+
+    @NotNull
+    public FlakeId debateId;
+
+    @NotNull
+    public Zone zone;
+
+    @NotNull
+    public VoteState newState;
+
+    @NotNull
+    public VoteState previousState;
+
+    @NotNull
+    public Long previousCount;
+
+  }
+
+  static class CancelVoteDebate {
+
+    @NotNull
+    public FlakeId articleId;
+
+    @NotNull
+    public FlakeId debateId;
+
+    @NotNull
+    public Zone zone;
+
+    @NotNull
+    public VoteState previousState;
+
+  }
+
   @Autowired
   private VoteService voteService;
 
@@ -61,6 +102,18 @@ public class VoteResource {
     voteService.cancelVoteArticle(request.zone, request.articleId, token);
   }
 
+  @RequestMapping(value = "/debate", method = RequestMethod.POST, consumes = {
+      MediaType.APPLICATION_JSON_VALUE })
+  public void voteDebate(AccountAccessToken token, @Valid @RequestBody VoteDebate request) {
+    voteService.voteDebate(request.newState,
+        request.zone,
+        request.articleId,
+        request.debateId,
+        token,
+        request.previousState,
+        request.previousCount);
+  }
+
   @RequestMapping(value = "/article-voters", method = RequestMethod.GET)
   public List<ArticleVoterDto> listArticleVotersInRage(AccountAccessToken token,
       @RequestParam("startArticleId") String startArticleId,
@@ -68,5 +121,14 @@ public class VoteResource {
     return voteService.listArticleVotersInRage(token,
         FlakeId.fromString(startArticleId),
         FlakeId.fromString(endArticleId)).stream().map(ArticleVoter::toDto).collect(toList());
+  }
+
+  @RequestMapping(value = "/debate-voters", method = RequestMethod.GET)
+  public List<DebateVoterDto> lisDebateVoters(AccountAccessToken token,
+      @RequestParam("articleId") String articleId) {
+    return voteService.listDebateVoters(token, FlakeId.fromString(articleId))
+        .stream()
+        .map(DebateVoter::toDto)
+        .collect(toList());
   }
 }

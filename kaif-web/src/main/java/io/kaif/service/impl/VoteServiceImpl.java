@@ -79,72 +79,37 @@ public class VoteServiceImpl implements VoteService {
     articleDao.changeTotalVote(zone, articleId, voteDelta.getChangedValue());
   }
 
-  public void upVoteDebate(Zone zone,
-      FlakeId articleId,
-      FlakeId debateId,
-      Authorization voter,
-      int previousCount,
-      VoteState previousState) {
-    checkVoteAuthority(zone, voter);
-
-    voteDao.upVotedDebate(articleId,
-        debateId,
-        voter.authenticatedId(),
-        previousCount,
-        Instant.now());
-
-    VoteDelta upVoteDelta = VoteState.UP.upVoteDelta(previousState);
-    VoteDelta downVoteDelta = VoteState.UP.downVoteDelta(previousState);
-    debateDao.changeTotalVote(articleId,
-        debateId,
-        upVoteDelta.getChangedValue(),
-        downVoteDelta.getChangedValue());
-  }
-
+  @Override
   public List<DebateVoter> listDebateVoters(Authorization voter, FlakeId articleId) {
     return voteDao.listDebateVotersByArticle(voter.authenticatedId(), articleId);
   }
 
-  public void downVoteDebate(Zone zone,
+  @Override
+  public void voteDebate(VoteState newState,
+      Zone zone,
       FlakeId articleId,
       FlakeId debateId,
       Authorization voter,
-      long previousCount,
-      VoteState previousState) {
+      VoteState previousState,
+      long previousCount) {
+
     checkVoteAuthority(zone, voter);
 
-    voteDao.downVotedDebate(articleId,
+    voteDao.voteDebate(newState,
+        articleId,
         debateId,
         voter.authenticatedId(),
+        previousState,
         previousCount,
         Instant.now());
-    VoteDelta upVoteDelta = VoteState.DOWN.upVoteDelta(previousState);
-    VoteDelta downVoteDelta = VoteState.DOWN.downVoteDelta(previousState);
+
+    VoteDelta upVoteDelta = newState.upVoteDelta(previousState);
+    VoteDelta downVoteDelta = newState.downVoteDelta(previousState);
+
     debateDao.changeTotalVote(articleId,
         debateId,
         upVoteDelta.getChangedValue(),
         downVoteDelta.getChangedValue());
   }
 
-  public void cancelVoteDebate(Zone zone,
-      FlakeId articleId,
-      FlakeId debateId,
-      Authorization voter,
-      VoteState previousState) {
-    checkVoteAuthority(zone, voter);
-
-    boolean success = voteDao.cancelVoteDebate(articleId,
-        debateId,
-        voter.authenticatedId(),
-        previousState,
-        Instant.now());
-    if (success) {
-      VoteDelta upVoteDelta = VoteState.EMPTY.upVoteDelta(previousState);
-      VoteDelta downVoteDelta = VoteState.EMPTY.downVoteDelta(previousState);
-      debateDao.changeTotalVote(articleId,
-          debateId,
-          upVoteDelta.getChangedValue(),
-          downVoteDelta.getChangedValue());
-    }
-  }
 }

@@ -70,7 +70,7 @@ class AppModule {
       new ExternalLinkArticleForm(el, articleService);
     });
     parent.querySelectorAll('[debate-tree]').forEach((el) {
-      new DebateTree(el, articleService);
+      new DebateTree(el, articleService, voteService, accountSession);
     });
     parent.querySelectorAll('[article-list]').forEach((el) {
       new ArticleList(el, articleService, voteService, accountSession);

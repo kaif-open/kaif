@@ -7,20 +7,13 @@ import io.kaif.flake.FlakeId;
 
 public class DebateVoter {
 
-  public static DebateVoter upVote(FlakeId articleId,
+  public static DebateVoter create(VoteState state,
+      FlakeId articleId,
       FlakeId debateId,
       UUID voterId,
       long previousCount,
       Instant now) {
-    return new DebateVoter(voterId, articleId, debateId, VoteState.UP, previousCount, now);
-  }
-
-  public static DebateVoter downVote(FlakeId articleId,
-      FlakeId debateId,
-      UUID voterId,
-      long previousCount,
-      Instant now) {
-    return new DebateVoter(voterId, articleId, debateId, VoteState.DOWN, previousCount, now);
+    return new DebateVoter(voterId, articleId, debateId, state, previousCount, now);
   }
 
   private final UUID voterId;
@@ -124,4 +117,7 @@ public class DebateVoter {
     return result;
   }
 
+  public DebateVoterDto toDto() {
+    return new DebateVoterDto(debateId, voteState, previousCount, updateTime.toEpochMilli());
+  }
 }

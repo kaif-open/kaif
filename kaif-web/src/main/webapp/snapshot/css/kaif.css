@@ -447,7 +447,11 @@ main {
     outline: 0;
 }
 
-.article-vote-box.vote-box-voted {
+.vote-box-voted {
+    color: red;
+}
+
+.vote-box-voted a.voted {
     color: red;
 }
 

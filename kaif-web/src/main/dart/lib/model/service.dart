@@ -273,4 +273,23 @@ class VoteService extends _AbstractService {
     .then((List<Map> list) => list.map((raw) => new ArticleVoter.decode(raw)).toList());
   }
 
+  Future voteDebate(VoteState newState, String zone, String articleId, String debateId,
+                    VoteState previousState, int previousCount) {
+    var json = {
+        'newState':newState, 'zone':zone, 'articleId':articleId, 'debateId':debateId,
+        'previousState':previousState, 'previousCount':previousCount
+    };
+    return _postJson(_getUrl('/debate'), json)
+    .then((res) => null);
+  }
+
+  Future<List<DebateVoter>> listDebateVoters(String articleId) {
+    var params = {
+        'articleId':articleId
+    };
+
+    return _get(_getUrl('/debate-voters'), params:params)
+    .then((req) => JSON.decode(req.responseText))
+    .then((List<Map> list) => list.map((raw) => new DebateVoter.decode(raw)).toList());
+  }
 }

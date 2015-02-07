@@ -26,6 +26,8 @@ head=headContent
     <div class="pure-u-1 pure-u-md-3-4">
     ${article.title}
         <div class="debate-tree" debate-tree>
+            <input type="hidden" name="zoneInput" value="${zoneInfo.name}">
+            <input type="hidden" name="articleIdInput" value="${article.articleId}">
         <#-- place holder debate-form will replace by comp-template
          keep place holder looks the same as comp-template
         -->
