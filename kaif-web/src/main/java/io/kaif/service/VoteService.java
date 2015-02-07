@@ -13,4 +13,6 @@ public interface VoteService {
   List<ArticleVoter> listArticleVotersInRage(UUID accountId,
       FlakeId startArticleId,
       FlakeId endArticleId);
+
+  void cancelVoteArticle(Zone zone, FlakeId articleId, UUID accountId);
 }

@@ -34,7 +34,11 @@ class ArticleList {
   }
 }
 
-
+/**
+ * initially voteBox is not click-able (unless user not signed in)
+ *
+ * it is vote-able after first ajax call completed (check signed in user is voted or not)
+ */
 class ArticleVoteBox {
 
   static const String VOTED_CLASS = 'vote-box-voted';
@@ -55,60 +59,86 @@ class ArticleVoteBox {
   }
 
   void applyVoters(List<ArticleVoter> voters) {
-    voters.where((voter) => voter.articleId == articleId)
+    voters
+    .where((voter) => voter.articleId == articleId)
+    .where((voter) => !voter.cancel)
     .forEach((voter) {
       if (previousCount <= voter.previousCount) {
         // web page is cached (counting is stale)
-        _plusOne();
+        _changeCount(delta:1);
       }
-      _markVoted();
+      _mark(voted:true);
     });
 
     //allow vote after voters applied
-    if (accountSession.isSignIn) {
-      if (isVoted) {
-        upVoteAnchorElem.onClick.listen(_onCancelVote);
-      } else {
-        upVoteAnchorElem.onClick.listen(_onUpVote);
-      }
-    } else {
-      upVoteAnchorElem.onClick.listen(_onSignUpHint);
-    }
-    //TODO guard click too fast
+    _refreshClickListener();
+
+    //TODO back off click too fast
     //TODO total vote CD time
   }
 
-  void _onSignUpHint(Event e) {
-    //TODO prompt sign-up-hint
+  void _refreshClickListener() {
+    // clickListener is enabled once, after processing complete, re-enable again
+    // so while processing the link is not click-able
+    if (accountSession.isSignIn) {
+      Function voteListener = isVoted ? _onCancelVote : _onUpVote;
+      upVoteAnchorElem.onClick.first
+      .then(voteListener)
+      .whenComplete(_refreshClickListener);
+    } else {
+      upVoteAnchorElem.onClick.first
+      .then(_onSignUpHint)
+      .whenComplete(_refreshClickListener);
+    }
+  }
+
+  Future _onSignUpHint(Event e) {
+    //TODO prompt sign-up-hint, after hint close return future
     print("TODO sign up hint");
+    return new Future.value(null);
   }
 
-  void _onCancelVote(Event e) {
-    //TODO cancel if voted
-    print("TODO cancel");
-
-    //TODO switch to vote mode after success
-  }
-
-  void _onUpVote(Event e) {
-    _markVoted();
-    _plusOne();
-    voteService.upVoteArticle(zone, articleId, previousCount).then((_) {
-      //TODO switch to cancel mode
+  Future _onCancelVote(Event e) {
+    _mark(voted:false);
+    _changeCount(delta:-1);
+    return voteService.cancelVoteArticle(zone, articleId).then((_) {
+      // does nothing
     }).catchError((e) {
-      //revert
-      voteCountElem.text = "${previousCount}";
-      elem.classes.toggle(VOTED_CLASS, false);
+      // revert
+      _mark(voted:true);
+      _changeCount(delta:0);
       new Toast.error('$e', seconds:5).render();
     });
   }
 
-  void _plusOne() {
-    voteCountElem.text = "${previousCount + 1}";
+  Future _onUpVote(Event e) {
+    var original = _changeCount(delta:1);
+    _mark(voted:true);
+    return voteService.upVoteArticle(zone, articleId, original).then((_) {
+      // does nothing
+    }).catchError((e) {
+      //revert
+      _mark(voted:false);
+      _changeCount(delta:0);
+      new Toast.error('$e', seconds:5).render();
+    });
   }
 
-  void _markVoted() {
-    elem.classes.toggle(VOTED_CLASS, true);
+  /**
+   * return vote count before change
+   */
+  int _changeCount({int delta}) {
+    var old = previousCount;
+    previousCount += delta;
+    voteCountElem.text = "${previousCount}";
+    return old;
+  }
+
+  /**
+   * changing voted state and apply visually
+   */
+  void _mark({bool voted}) {
+    elem.classes.toggle(VOTED_CLASS, voted);
   }
 
   bool get isVoted => elem.classes.contains(VOTED_CLASS);

@@ -34,6 +34,14 @@ public class VoteResource {
     public Long previousCount;
   }
 
+  static class CancelVoteArticle {
+    @NotNull
+    public FlakeId articleId;
+
+    @NotNull
+    public Zone zone;
+  }
+
   @Autowired
   private VoteService voteService;
 
@@ -44,6 +52,13 @@ public class VoteResource {
         request.articleId,
         token.getAccountId(),
         request.previousCount);
+  }
+
+  @RequestMapping(value = "/article-canel", method = RequestMethod.POST, consumes = {
+      MediaType.APPLICATION_JSON_VALUE })
+  public void cancelVoteArticle(AccountAccessToken token,
+      @Valid @RequestBody CancelVoteArticle request) {
+    voteService.cancelVoteArticle(request.zone, request.articleId, token.getAccountId());
   }
 
   @RequestMapping(value = "/article-voters", method = RequestMethod.GET)

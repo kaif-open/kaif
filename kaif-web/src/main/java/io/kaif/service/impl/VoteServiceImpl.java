@@ -38,4 +38,10 @@ public class VoteServiceImpl implements VoteService {
       FlakeId endArticleId) {
     return voteDao.listArticleVotersInRage(accountId, startArticleId, endArticleId);
   }
+
+  @Override
+  public void cancelVoteArticle(Zone zone, FlakeId articleId, UUID accountId) {
+    VoteDelta voteDelta = voteDao.cancelVoteArticle(articleId, accountId, Instant.now());
+    articleDao.changeUpVote(zone, articleId, voteDelta.getChangedValue());
+  }
 }

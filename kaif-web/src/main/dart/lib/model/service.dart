@@ -255,6 +255,14 @@ class VoteService extends _AbstractService {
     .then((res) => null);
   }
 
+  Future cancelVoteArticle(String zone, String articleId) {
+    var json = {
+        'zone':zone, 'articleId':articleId
+    };
+    return _postJson(_getUrl('/article-canel'), json)
+    .then((res) => null);
+  }
+
   Future<List<ArticleVoter>> listArticleVotersInRange(String startArticleId, String endArticleId) {
     var params = {
         'startArticleId':startArticleId, 'endArticleId':endArticleId
