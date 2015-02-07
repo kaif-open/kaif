@@ -21,10 +21,11 @@ class SignUpForm {
     var namePattern = new RegExp(r'^[a-zA-Z_0-9]{3,15}$');
 
     nameInput.onKeyUp.map((e) => nameInput.value.trim()).listen((partial) {
-      if (!namePattern.hasMatch(partial)) {
+      if (!namePattern.hasMatch(partial) || partial.toLowerCase() == 'null') {
         _showHint(i18n('sign-up.invalid-name'), ok:false);
         return;
       }
+      // TODO throttle speed ?
       accountService.isNameAvailable(partial).then((available) {
         String hintText = available ? 'sign-up.available' : 'sign-up.name-already-taken';
         _showHint(i18n(hintText), ok:available);
