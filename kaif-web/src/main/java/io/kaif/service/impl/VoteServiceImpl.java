@@ -14,7 +14,9 @@ import io.kaif.model.vote.ArticleVoter;
 import io.kaif.model.vote.VoteDao;
 import io.kaif.model.vote.VoteDelta;
 import io.kaif.model.zone.Zone;
+import io.kaif.model.zone.ZoneDao;
 import io.kaif.service.VoteService;
+import io.kaif.web.support.AccessDeniedException;
 
 @Service
 @Transactional
@@ -26,19 +28,29 @@ public class VoteServiceImpl implements VoteService {
   @Autowired
   private VoteDao voteDao;
 
+  @Autowired
+  private ZoneDao zoneDao;
+
   @Override
   public void upVoteArticle(Zone zone,
       FlakeId articleId,
       Authorization authorization,
       long previousCount) {
 
-    //relax article up vote verification, no check zone and account in Database
+    checkVoteAuthority(zone, authorization);
 
     VoteDelta voteDelta = voteDao.upVoteArticle(articleId,
         authorization.authenticatedId(),
         previousCount,
         Instant.now());
     articleDao.changeUpVote(zone, articleId, voteDelta.getChangedValue());
+  }
+
+  private void checkVoteAuthority(Zone zone, Authorization authorization) {
+    //relax article up vote verification, no check zone and account in Database
+    if (!zoneDao.loadZone(zone).canUpVote(authorization)) {
+      throw new AccessDeniedException("not allow vote in zone: " + zone + " auth:" + authorization);
+    }
   }
 
   @Override
@@ -53,7 +65,7 @@ public class VoteServiceImpl implements VoteService {
   @Override
   public void cancelVoteArticle(Zone zone, FlakeId articleId, Authorization authorization) {
 
-    //relax article cancel vote verification, no check zone and account in Database
+    checkVoteAuthority(zone, authorization);
 
     VoteDelta voteDelta = voteDao.cancelVoteArticle(articleId,
         authorization.authenticatedId(),

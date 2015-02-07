@@ -15,6 +15,7 @@ import io.kaif.model.article.ArticleDao;
 import io.kaif.model.vote.ArticleVoter;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.test.DbIntegrationTests;
+import io.kaif.web.support.AccessDeniedException;
 
 public class VoteServiceImplTest extends DbIntegrationTests {
 
@@ -34,6 +35,22 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     Account author = savedAccountCitizen("hc1");
     article = savedArticle(zoneInfo, author, "new cython 3");
     voter = savedAccountCitizen("vt");
+  }
+
+  @Test
+  public void vote_accessDenied() throws Exception {
+    Account tourist = savedAccountTourist("no_permit");
+
+    try {
+      service.upVoteArticle(zoneInfo.getZone(), article.getArticleId(), tourist, 100);
+      fail("AccessDeniedException expected");
+    } catch (AccessDeniedException expected) {
+    }
+    try {
+      service.cancelVoteArticle(zoneInfo.getZone(), article.getArticleId(), tourist);
+      fail("AccessDeniedException expected");
+    } catch (AccessDeniedException expected) {
+    }
   }
 
   @Test
