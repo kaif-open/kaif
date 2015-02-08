@@ -44,7 +44,8 @@ public class VoteServiceImpl implements VoteService {
   private AccountDao accountDao;
 
   private void checkVoteAuthority(Zone zone, Authorization authorization) {
-    //relax article up vote verification, no check zone and account in Database
+    // relax verification when voting, no check zone and account in Database because voting
+    // is not critical
     if (!zoneDao.loadZone(zone).canUpVote(authorization)) {
       throw new AccessDeniedException("not allow vote in zone: " + zone + " auth:" + authorization);
     }
@@ -114,6 +115,10 @@ public class VoteServiceImpl implements VoteService {
     debateDao.changeTotalVote(articleId, debateId, upVoteDelta, downVoteDelta);
 
     UUID debaterId = debateDao.loadDebaterId(debateId);
-    accountDao.changeTotalVotedDebate(debaterId, upVoteDelta, downVoteDelta);
+    // exclude vote to self's debate. so if user playing up/down in test zone,
+    // the stats are not affected
+    if (!voter.authenticatedId().equals(debaterId)) {
+      accountDao.changeTotalVotedDebate(debaterId, upVoteDelta, downVoteDelta);
+    }
   }
 }

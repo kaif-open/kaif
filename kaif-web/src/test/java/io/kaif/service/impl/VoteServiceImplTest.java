@@ -5,6 +5,7 @@ import static io.kaif.model.vote.VoteState.EMPTY;
 import static io.kaif.model.vote.VoteState.UP;
 import static org.junit.Assert.*;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.junit.Before;
@@ -46,12 +47,13 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   private FlakeId debateId;
   private Account voter;
   private Account debater;
+  private Article article;
 
   @Before
   public void setUp() throws Exception {
     ZoneInfo zoneInfo = savedZoneDefault("hacker");
     Account author = savedAccountCitizen("hc1");
-    Article article = savedArticle(zoneInfo, author, "new cython 3");
+    article = savedArticle(zoneInfo, author, "new cython 3");
     Debate debate = savedDebate(article, "it is slow", null);
 
     voter = savedAccountCitizen("vt");
@@ -236,6 +238,16 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     DebateVoter debateVoter = debateVoters.get(0);
     assertEquals(DOWN, debateVoter.getVoteState());
     assertEquals(49, debateVoter.getPreviousCount());
+  }
+
+  @Test
+  public void debate_exclude_debater_stats_if_voter_is_self() throws Exception {
+    Debate voterDebate = debateDao.create(article, null, "ff", voter, Instant.now());
+
+    service.voteDebate(UP, zone, articleId, voterDebate.getDebateId(), voter, EMPTY, 20);
+
+    AccountStats stats = accountDao.loadStats(voter.getUsername());
+    assertEquals(0, stats.getDebateUpVoted());
   }
 
   @Test
