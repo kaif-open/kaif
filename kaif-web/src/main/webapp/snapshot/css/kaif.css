@@ -371,6 +371,20 @@ main {
     right: 0;
 }
 
+.snack-bar {
+    position: fixed;
+    z-index: 10000;
+    top: 1em;
+    width: 50%;
+    left: 50%;
+    margin-left: -25%;
+    display: flex;
+}
+
+.snack-bar .action {
+    margin-left: auto;
+}
+
 [comp-template] {
     display: none !important;
 }

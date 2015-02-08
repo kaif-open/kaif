@@ -47,6 +47,7 @@
                 <@spring.messageText "account-menu.sign-in" "Sign In" />
             </button>
             <p class="pure-form-message">
+                <a class="" href="/account/sign-up">註冊新帳號</a>
                 <a class="" href="/account/forget-password">忘記密碼 ?</a>
             </p>
         </div>

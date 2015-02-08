@@ -177,9 +177,10 @@ class _WaitSignUpState extends _VotableState {
 
   State process(_VotableTrigger trigger) {
     if (trigger.upVoting == true || trigger.downVoting == true) {
-      //TODO prompt sign-up-hint, after hint close return future
-      print("TODO sign up hint");
-      return new _WaitSignUpState(votable);
+      var actionElem = new AnchorElement()
+        ..href = route.signIn
+        ..text = i18n('account-menu.sign-in');
+      new SnackBar(i18n('votable.sign-in-to-vote'), action:actionElem).render();
     }
     return StateMachineControl.RETAIN;
   }
@@ -271,6 +272,8 @@ class _VotingState extends _VotableState {
     }).catchError((e) {
       //revert
       votable._changeCount(delta:-delta);
+
+      //TODO handle not enough permission
       new Toast.error('$e', seconds:5).render();
       votable._triggerVotingCompleted(previousState);
     });
