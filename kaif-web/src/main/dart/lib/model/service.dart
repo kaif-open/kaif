@@ -1,7 +1,7 @@
 library model_service;
 
 import 'account.dart';
-import 'article.dart';
+import 'vote.dart';
 import 'package:kaif_web/util.dart';
 import 'dart:html';
 import 'dart:convert';
