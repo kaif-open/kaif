@@ -109,14 +109,16 @@ public class ArticleDao implements DaoOperations {
         article.getArticleId().value());
   }
 
-  public void changeTotalVote(Zone zone, FlakeId articleId, long upVoteDelta) {
-    if (upVoteDelta == 0) {
+  public void changeTotalVote(Zone zone, FlakeId articleId, long upVoteDelta, int downVoteDelta) {
+    if (upVoteDelta == 0 && downVoteDelta == 0) {
       return;
     }
-    jdbc().update(" UPDATE Article SET upVote = upVote + (?) WHERE ZONE = ? AND articleId = ? ",
-        upVoteDelta,
-        zone.value(),
-        articleId.value());
+    jdbc().update(""
+        + " UPDATE Article "
+        + "    SET upVote = upVote + (?) "
+        + "      , downVote = downVote + (?) "
+        + "  WHERE zone = ? "
+        + "    AND articleId = ? ", upVoteDelta, downVoteDelta, zone.value(), articleId.value());
   }
 
 }

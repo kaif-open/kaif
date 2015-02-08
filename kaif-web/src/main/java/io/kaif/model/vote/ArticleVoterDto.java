@@ -4,15 +4,26 @@ import io.kaif.flake.FlakeId;
 
 public class ArticleVoterDto {
   private final FlakeId articleId;
-  private final boolean cancel;
+  private final VoteState voteState;
   private final long previousCount;
   private final long updateTime;
 
-  public ArticleVoterDto(FlakeId articleId, boolean cancel, long previousCount, long updateTime) {
+  public ArticleVoterDto(FlakeId articleId,
+      VoteState voteState,
+      long previousCount,
+      long updateTime) {
     this.articleId = articleId;
-    this.cancel = cancel;
+    this.voteState = voteState;
     this.previousCount = previousCount;
     this.updateTime = updateTime;
+  }
+
+  public long getUpdateTime() {
+    return updateTime;
+  }
+
+  public FlakeId getArticleId() {
+    return articleId;
   }
 
   @Override
@@ -26,9 +37,6 @@ public class ArticleVoterDto {
 
     ArticleVoterDto that = (ArticleVoterDto) o;
 
-    if (cancel != that.cancel) {
-      return false;
-    }
     if (previousCount != that.previousCount) {
       return false;
     }
@@ -38,6 +46,9 @@ public class ArticleVoterDto {
     if (articleId != null ? !articleId.equals(that.articleId) : that.articleId != null) {
       return false;
     }
+    if (voteState != that.voteState) {
+      return false;
+    }
 
     return true;
   }
@@ -45,7 +56,7 @@ public class ArticleVoterDto {
   @Override
   public int hashCode() {
     int result = articleId != null ? articleId.hashCode() : 0;
-    result = 31 * result + (cancel ? 1 : 0);
+    result = 31 * result + (voteState != null ? voteState.hashCode() : 0);
     result = 31 * result + (int) (previousCount ^ (previousCount >>> 32));
     result = 31 * result + (int) (updateTime ^ (updateTime >>> 32));
     return result;
@@ -55,22 +66,14 @@ public class ArticleVoterDto {
   public String toString() {
     return "ArticleVoterDto{" +
         "articleId=" + articleId +
-        ", cancel=" + cancel +
+        ", voteState=" + voteState +
         ", previousCount=" + previousCount +
         ", updateTime=" + updateTime +
         '}';
   }
 
-  public long getUpdateTime() {
-    return updateTime;
-  }
-
-  public FlakeId getArticleId() {
-    return articleId;
-  }
-
-  public boolean isCancel() {
-    return cancel;
+  public VoteState getVoteState() {
+    return voteState;
   }
 
   public long getPreviousCount() {

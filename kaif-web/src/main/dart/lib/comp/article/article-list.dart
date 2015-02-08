@@ -3,6 +3,7 @@ library article_list;
 import 'dart:html';
 import 'package:kaif_web/util.dart';
 import 'package:kaif_web/model.dart';
+import '../vote/votable.dart';
 import 'dart:async';
 
 class ArticleList {
@@ -34,112 +35,46 @@ class ArticleList {
   }
 }
 
-/**
- * initially voteBox is not click-able (unless user not signed in)
- *
- * it is vote-able after first ajax call completed (check signed in user is voted or not)
- */
-class ArticleVoteBox {
+class ArticleVoteBox extends Votable {
 
-  static const String VOTED_CLASS = 'vote-box-voted';
-  final Element elem;
   final VoteService voteService;
   final AccountSession accountSession;
   final String zone;
-  int previousCount;
   String articleId;
-  Element upVoteAnchorElem;
-  Element voteCountElem;
 
-  ArticleVoteBox(this.elem, this.voteService, this.accountSession, this.zone) {
-    upVoteAnchorElem = elem.querySelector('[article-up-vote]');
-    voteCountElem = elem.querySelector('[article-vote-count]');
-    previousCount = int.parse(elem.dataset['article-vote-count']);
+  ArticleVoteBox(Element elem, this.voteService, this.accountSession, this.zone)
+  : super(elem) {
     articleId = elem.dataset['article-id'];
+
+    var upVoteElem = elem.querySelector('[article-up-vote]');
+    var voteCountElem = elem.querySelector('[article-vote-count]');
+    var currentCount = int.parse(elem.dataset['article-vote-count']);
+
+    //not support down vote
+    var fakeDownVoteElem = new SpanElement();
+
+    init(currentCount, upVoteElem, fakeDownVoteElem, voteCountElem);
   }
 
   void applyVoters(List<ArticleVoter> voters) {
-    voters
-    .where((voter) => voter.articleId == articleId)
-    .where((voter) => !voter.cancel)
-    .forEach((voter) {
-      if (previousCount <= voter.previousCount) {
-        // web page is cached (counting is stale)
-        _changeCount(delta:1);
-      }
-      _mark(voted:true);
-    });
-
-    //allow vote after voters applied
-    _refreshClickListener();
-
-    //TODO back off click too fast
-    //TODO total vote CD time
-  }
-
-  void _refreshClickListener() {
-    // clickListener is enabled once, after processing complete, re-enable again
-    // so while processing the link is not click-able
-    if (accountSession.isSignIn) {
-      Function voteListener = isVoted ? _onCancelVote : _onUpVote;
-      upVoteAnchorElem.onClick.first
-      .then(voteListener)
-      .whenComplete(_refreshClickListener);
-    } else {
-      upVoteAnchorElem.onClick.first
-      .then(_onSignUpHint)
-      .whenComplete(_refreshClickListener);
+    if (!accountSession.isSignIn) {
+      applyNotSignIn();
+      return;
     }
+
+    var voter = voters
+    .firstWhere((voter) => voter.articleId == articleId, orElse:() => null);
+
+    if (voter == null) {
+      applyNoVoter();
+      return;
+    }
+
+    applyVoterReady(voter);
   }
 
-  Future _onSignUpHint(Event e) {
-    //TODO prompt sign-up-hint, after hint close return future
-    print("TODO sign up hint");
-    return new Future.value(null);
+  Future onVote(VoteState newState, VoteState previousState, int previousCount) {
+    return voteService.voteArticle(
+        newState, zone, articleId, previousState, previousCount);
   }
-
-  Future _onCancelVote(Event e) {
-    _mark(voted:false);
-    _changeCount(delta:-1);
-    return voteService.cancelVoteArticle(zone, articleId).then((_) {
-      // does nothing
-    }).catchError((e) {
-      // revert
-      _mark(voted:true);
-      _changeCount(delta:1);
-      new Toast.error('$e', seconds:5).render();
-    });
-  }
-
-  Future _onUpVote(Event e) {
-    var original = _changeCount(delta:1);
-    _mark(voted:true);
-    return voteService.upVoteArticle(zone, articleId, original).then((_) {
-      // does nothing
-    }).catchError((e) {
-      //revert
-      _mark(voted:false);
-      _changeCount(delta:-1);
-      new Toast.error('$e', seconds:5).render();
-    });
-  }
-
-  /**
-   * return vote count before change
-   */
-  int _changeCount({int delta}) {
-    var old = previousCount;
-    previousCount += delta;
-    voteCountElem.text = "${previousCount}";
-    return old;
-  }
-
-  /**
-   * changing voted state and apply visually
-   */
-  void _mark({bool voted}) {
-    elem.classes.toggle(VOTED_CLASS, voted);
-  }
-
-  bool get isVoted => elem.classes.contains(VOTED_CLASS);
 }

@@ -78,11 +78,11 @@ CREATE TABLE DebateHistory (
 
 -- foreign key is intended exclude
 CREATE TABLE ArticleVoter (
-  voterId       UUID      NOT NULL,
-  articleId     BIGINT    NOT NULL,
-  cancel        BOOLEAN   NOT NULL,
-  previousCount BIGINT    NOT NULL,
-  updateTime    TIMESTAMP NOT NULL,
+  voterId       UUID          NOT NULL,
+  articleId     BIGINT        NOT NULL,
+  voteState     VARCHAR(4096) NOT NULL,
+  previousCount BIGINT        NOT NULL,
+  updateTime    TIMESTAMP     NOT NULL,
   PRIMARY KEY (voterId, articleId)
 );
 

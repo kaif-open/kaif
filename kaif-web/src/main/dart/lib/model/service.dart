@@ -247,19 +247,13 @@ class VoteService extends _AbstractService {
 
   String _getUrl(String path) => '/api/vote$path';
 
-  Future upVoteArticle(String zone, String articleId, int previousCount) {
+  Future voteArticle(VoteState newState, String zone, String articleId,
+                     VoteState previousState, int previousCount) {
     var json = {
-        'zone':zone, 'articleId':articleId, 'previousCount':previousCount
+        'newState':newState, 'zone':zone, 'articleId':articleId,
+        'previousState':previousState, 'previousCount':previousCount
     };
     return _postJson(_getUrl('/article'), json)
-    .then((res) => null);
-  }
-
-  Future cancelVoteArticle(String zone, String articleId) {
-    var json = {
-        'zone':zone, 'articleId':articleId
-    };
-    return _postJson(_getUrl('/article-cancel'), json)
     .then((res) => null);
   }
 

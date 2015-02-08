@@ -1,5 +1,8 @@
 package io.kaif.service.impl;
 
+import static io.kaif.model.vote.VoteState.DOWN;
+import static io.kaif.model.vote.VoteState.EMPTY;
+import static io.kaif.model.vote.VoteState.UP;
 import static org.junit.Assert.*;
 
 import java.util.List;
@@ -9,6 +12,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 
+import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
 import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleDao;
@@ -16,7 +20,7 @@ import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateDao;
 import io.kaif.model.vote.ArticleVoter;
 import io.kaif.model.vote.DebateVoter;
-import io.kaif.model.vote.VoteState;
+import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.test.DbIntegrationTests;
 import io.kaif.web.support.AccessDeniedException;
@@ -29,20 +33,24 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   @Autowired
   private ArticleDao articleDao;
 
-  private ZoneInfo zoneInfo;
-  private Article article;
-  private Account voter;
-  private Debate debate;
   @Autowired
   private DebateDao debateDao;
+  private Zone zone;
+  private FlakeId articleId;
+  private FlakeId debateId;
+  private Account voter;
 
   @Before
   public void setUp() throws Exception {
-    zoneInfo = savedZoneDefault("hacker");
+    ZoneInfo zoneInfo = savedZoneDefault("hacker");
     Account author = savedAccountCitizen("hc1");
-    article = savedArticle(zoneInfo, author, "new cython 3");
+    Article article = savedArticle(zoneInfo, author, "new cython 3");
+    Debate debate = savedDebate(article, "it is slow", null);
+
     voter = savedAccountCitizen("vt");
-    debate = savedDebate(article, "it is slow", null);
+    zone = zoneInfo.getZone();
+    articleId = article.getArticleId();
+    debateId = debate.getDebateId();
   }
 
   @Test
@@ -50,189 +58,134 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     Account tourist = savedAccountTourist("no_permit");
 
     try {
-      service.upVoteArticle(zoneInfo.getZone(), article.getArticleId(), tourist, 100);
+      service.voteArticle(UP, zone, articleId, tourist, EMPTY, 100);
       fail("AccessDeniedException expected");
     } catch (AccessDeniedException expected) {
     }
     try {
-      service.cancelVoteArticle(zoneInfo.getZone(), article.getArticleId(), tourist);
+      service.voteDebate(UP, zone, articleId, debateId, tourist, EMPTY, 100);
       fail("AccessDeniedException expected");
     } catch (AccessDeniedException expected) {
     }
+  }
+
+  @Test
+  public void articleNotAllowDownVote() throws Exception {
     try {
-      service.voteDebate(VoteState.UP,
-          zoneInfo.getZone(),
-          article.getArticleId(),
-          debate.getDebateId(),
-          tourist,
-          VoteState.EMPTY,
-          100);
-      fail("AccessDeniedException expected");
-    } catch (AccessDeniedException expected) {
+      service.voteArticle(DOWN, zone, articleId, voter, EMPTY, 100);
+      fail("IllegalArgumentException expected");
+    } catch (IllegalArgumentException expected) {
     }
   }
 
   @Test
   public void upVoteArticle() throws Exception {
-    service.upVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter, 100);
-    assertEquals(1,
-        articleDao.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getUpVote());
+    service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
 
-    List<ArticleVoter> votes = service.listArticleVotersInRage(voter,
-        article.getArticleId(),
-        article.getArticleId());
+    assertArticleTotalVote(1);
+
+    List<ArticleVoter> votes = service.listArticleVotersInRage(voter, articleId, articleId);
     assertEquals(1, votes.size());
     ArticleVoter vote = votes.get(0);
     assertEquals(voter.getAccountId(), vote.getVoterId());
-    assertEquals(article.getArticleId(), vote.getArticleId());
+    assertEquals(articleId, vote.getArticleId());
     assertEquals(100, vote.getPreviousCount());
-    assertFalse(vote.isCancel());
+    assertEquals(UP, vote.getVoteState());
     assertNotNull(vote.getUpdateTime());
   }
 
   @Test
-  public void upVoteArticle_not_allow_duplicate() throws Exception {
-    service.upVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter, 100);
-    try {
-      service.upVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter, 101);
-      fail("DuplicateKeyException expected");
-    } catch (DuplicateKeyException expected) {
-    }
+  public void upVoteArticle_ignore_duplicate() throws Exception {
+    service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
+    service.voteArticle(UP, zone, articleId, voter, UP, 100);
+    assertArticleTotalVote(1);
   }
 
   @Test
   public void cancelVoteArticle_no_effect_if_not_exist() throws Exception {
-    service.cancelVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter);
-    assertEquals(0,
-        articleDao.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getUpVote());
+    service.voteArticle(EMPTY, zone, articleId, voter, EMPTY, 10);
+    assertArticleTotalVote(0);
 
-    List<ArticleVoter> votes = service.listArticleVotersInRage(voter,
-        article.getArticleId(),
-        article.getArticleId());
-    assertEquals(0, votes.size());
+    List<ArticleVoter> votes = service.listArticleVotersInRage(voter, articleId, articleId);
+    assertEquals(EMPTY, votes.get(0).getVoteState());
   }
 
   @Test
   public void upVoteArticle_allow_on_canceled_vote() throws Exception {
-    service.upVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter, 100);
-    service.cancelVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter);
-    service.upVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter, 102);
+    service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
+    service.voteArticle(EMPTY, zone, articleId, voter, UP, 20);
+    service.voteArticle(UP, zone, articleId, voter, EMPTY, 102);
 
-    assertEquals(1,
-        articleDao.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getUpVote());
+    assertArticleTotalVote(1);
 
-    List<ArticleVoter> votes = service.listArticleVotersInRage(voter,
-        article.getArticleId(),
-        article.getArticleId());
+    List<ArticleVoter> votes = service.listArticleVotersInRage(voter, articleId, articleId);
     assertEquals(1, votes.size());
     ArticleVoter vote = votes.get(0);
-    assertFalse(vote.isCancel());
+    assertEquals(UP, vote.getVoteState());
     assertEquals(102, vote.getPreviousCount());
   }
 
   @Test
   public void cancelVoteArticle() throws Exception {
-    service.upVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter, 100);
-    service.cancelVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter);
-    assertEquals(0,
-        articleDao.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getUpVote());
+    service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
+    service.voteArticle(EMPTY, zone, articleId, voter, UP, 0);
+    assertArticleTotalVote(0);
 
-    List<ArticleVoter> votes = service.listArticleVotersInRage(voter,
-        article.getArticleId(),
-        article.getArticleId());
+    List<ArticleVoter> votes = service.listArticleVotersInRage(voter, articleId, articleId);
     assertEquals(1, votes.size());
     ArticleVoter vote = votes.get(0);
-    assertTrue(vote.isCancel());
+    assertEquals(EMPTY, vote.getVoteState());
     assertEquals(0, vote.getPreviousCount());
   }
 
   @Test
   public void cancelVoteArticle_twice() throws Exception {
-    service.upVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter, 100);
-    service.cancelVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter);
-    service.cancelVoteArticle(zoneInfo.getZone(), article.getArticleId(), voter);
-    assertEquals(0,
-        articleDao.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getUpVote());
+    service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
+    service.voteArticle(EMPTY, zone, articleId, voter, UP, 100);
+    service.voteArticle(EMPTY, zone, articleId, voter, EMPTY, 100);
+    assertEquals(0, articleDao.findArticle(zone, articleId).get().getUpVote());
   }
 
   @Test
   public void voteDebate_ignore_duplicate() throws Exception {
-    service.voteDebate(VoteState.UP,
-        zoneInfo.getZone(),
-        article.getArticleId(),
-        debate.getDebateId(),
-        voter,
-        VoteState.EMPTY,
-        20);
+    service.voteDebate(UP, zone, articleId, debateId, voter, EMPTY, 20);
     assertDebateTotalVote(1, 0);
-    service.voteDebate(VoteState.UP,
-        zoneInfo.getZone(),
-        article.getArticleId(),
-        debate.getDebateId(),
-        voter,
-        VoteState.UP,
-        20);
+    service.voteDebate(UP, zone, articleId, debateId, voter, UP, 20);
     assertDebateTotalVote(1, 0);
-    assertEquals(VoteState.UP,
-        service.listDebateVoters(voter, article.getArticleId()).get(0).getVoteState());
+    assertEquals(UP, service.listDebateVoters(voter, articleId).get(0).getVoteState());
   }
 
   @Test
   public void upVoteDebate() throws Exception {
-    service.voteDebate(VoteState.UP,
-        zoneInfo.getZone(),
-        article.getArticleId(),
-        debate.getDebateId(),
-        voter,
-        VoteState.EMPTY,
-        20);
+    service.voteDebate(UP, zone, articleId, debateId, voter, EMPTY, 20);
 
     assertDebateTotalVote(1, 0);
 
-    List<DebateVoter> debateVoters = service.listDebateVoters(voter, article.getArticleId());
+    List<DebateVoter> debateVoters = service.listDebateVoters(voter, articleId);
     assertEquals(1, debateVoters.size());
     DebateVoter debateVoter = debateVoters.get(0);
     assertEquals(voter.getAccountId(), debateVoter.getVoterId());
-    assertEquals(article.getArticleId(), debateVoter.getArticleId());
-    assertEquals(VoteState.UP, debateVoter.getVoteState());
+    assertEquals(articleId, debateVoter.getArticleId());
+    assertEquals(UP, debateVoter.getVoteState());
     assertNotNull(debateVoter.getUpdateTime());
     assertEquals(20, debateVoter.getPreviousCount());
   }
 
   @Test
   public void cancelVoteDebate_no_change_if_not_exist() throws Exception {
-    service.voteDebate(VoteState.EMPTY,
-        zoneInfo.getZone(),
-        article.getArticleId(),
-        debate.getDebateId(),
-        voter,
-        VoteState.EMPTY,
-        0);
+    service.voteDebate(EMPTY, zone, articleId, debateId, voter, EMPTY, 0);
 
     assertDebateTotalVote(0, 0);
-    assertEquals(VoteState.EMPTY,
-        service.listDebateVoters(voter, article.getArticleId()).get(0).getVoteState());
+    assertEquals(EMPTY, service.listDebateVoters(voter, articleId).get(0).getVoteState());
   }
 
   @Test
   public void voteDebate_not_allow_wrong_previous_state() throws Exception {
-    service.voteDebate(VoteState.DOWN,
-        zoneInfo.getZone(),
-        article.getArticleId(),
-        debate.getDebateId(),
-        voter,
-        VoteState.EMPTY,
-        20);
+    service.voteDebate(DOWN, zone, articleId, debateId, voter, EMPTY, 20);
 
     //wrong previous state:
     try {
-      service.voteDebate(VoteState.EMPTY,
-          zoneInfo.getZone(),
-          article.getArticleId(),
-          debate.getDebateId(),
-          voter,
-          VoteState.UP,
-          0);
+      service.voteDebate(EMPTY, zone, articleId, debateId, voter, UP, 0);
       fail("DuplicateKeyException expected");
     } catch (DuplicateKeyException expected) {
     }
@@ -241,69 +194,39 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void voteDebate_up_then_cancel() throws Exception {
-    service.voteDebate(VoteState.UP,
-        zoneInfo.getZone(),
-        article.getArticleId(),
-        debate.getDebateId(),
-        voter,
-        VoteState.EMPTY,
-        20);
+    service.voteDebate(UP, zone, articleId, debateId, voter, EMPTY, 20);
 
-    service.voteDebate(VoteState.EMPTY,
-        zoneInfo.getZone(),
-        article.getArticleId(),
-        debate.getDebateId(),
-        voter,
-        VoteState.UP,
-        0);
+    service.voteDebate(EMPTY, zone, articleId, debateId, voter, UP, 0);
 
     assertDebateTotalVote(0, 0);
 
-    DebateVoter debateVoter = service.listDebateVoters(voter, article.getArticleId()).get(0);
-    assertEquals(VoteState.EMPTY, debateVoter.getVoteState());
+    DebateVoter debateVoter = service.listDebateVoters(voter, articleId).get(0);
+    assertEquals(EMPTY, debateVoter.getVoteState());
     assertEquals(0, debateVoter.getPreviousCount());
   }
 
   @Test
   public void downVoteDebate() throws Exception {
-    service.voteDebate(VoteState.DOWN,
-        zoneInfo.getZone(),
-        article.getArticleId(),
-        debate.getDebateId(),
-        voter,
-        VoteState.EMPTY,
-        20);
+    service.voteDebate(DOWN, zone, articleId, debateId, voter, EMPTY, 20);
     assertDebateTotalVote(0, 1);
 
-    List<DebateVoter> debateVoters = service.listDebateVoters(voter, article.getArticleId());
+    List<DebateVoter> debateVoters = service.listDebateVoters(voter, articleId);
     DebateVoter debateVoter = debateVoters.get(0);
-    assertEquals(VoteState.DOWN, debateVoter.getVoteState());
+    assertEquals(DOWN, debateVoter.getVoteState());
     assertNotNull(debateVoter.getUpdateTime());
     assertEquals(20, debateVoter.getPreviousCount());
   }
 
   @Test
   public void debate_upVote_then_downVote() throws Exception {
-    service.voteDebate(VoteState.UP,
-        zoneInfo.getZone(),
-        article.getArticleId(),
-        debate.getDebateId(),
-        voter,
-        VoteState.EMPTY,
-        20);
+    service.voteDebate(UP, zone, articleId, debateId, voter, EMPTY, 20);
 
-    service.voteDebate(VoteState.DOWN,
-        zoneInfo.getZone(),
-        article.getArticleId(),
-        debate.getDebateId(),
-        voter,
-        VoteState.UP,
-        49);
+    service.voteDebate(DOWN, zone, articleId, debateId, voter, UP, 49);
     assertDebateTotalVote(0, 1);
 
-    List<DebateVoter> debateVoters = service.listDebateVoters(voter, article.getArticleId());
+    List<DebateVoter> debateVoters = service.listDebateVoters(voter, articleId);
     DebateVoter debateVoter = debateVoters.get(0);
-    assertEquals(VoteState.DOWN, debateVoter.getVoteState());
+    assertEquals(DOWN, debateVoter.getVoteState());
     assertEquals(49, debateVoter.getPreviousCount());
   }
 
@@ -311,59 +234,34 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   public void debateVoteChain_up_down_up_cancel_down() throws Exception {
     assertDebateTotalVote(0, 0);
 
-    service.voteDebate(VoteState.UP,
-        zoneInfo.getZone(),
-        article.getArticleId(),
-        debate.getDebateId(),
-        voter,
-        VoteState.EMPTY,
-        20);
+    service.voteDebate(UP, zone, articleId, debateId, voter, EMPTY, 20);
     assertDebateTotalVote(1, 0);
 
-    service.voteDebate(VoteState.DOWN,
-        zoneInfo.getZone(),
-        article.getArticleId(),
-        debate.getDebateId(),
-        voter,
-        VoteState.UP,
-        49);
+    service.voteDebate(DOWN, zone, articleId, debateId, voter, UP, 49);
     assertDebateTotalVote(0, 1);
 
-    service.voteDebate(VoteState.UP,
-        zoneInfo.getZone(),
-        article.getArticleId(),
-        debate.getDebateId(),
-        voter,
-        VoteState.DOWN,
-        30);
+    service.voteDebate(UP, zone, articleId, debateId, voter, DOWN, 30);
     assertDebateTotalVote(1, 0);
 
-    service.voteDebate(VoteState.EMPTY,
-        zoneInfo.getZone(),
-        article.getArticleId(),
-        debate.getDebateId(),
-        voter,
-        VoteState.UP,
-        0);
+    service.voteDebate(EMPTY, zone, articleId, debateId, voter, UP, 0);
     assertDebateTotalVote(0, 0);
 
-    service.voteDebate(VoteState.DOWN,
-        zoneInfo.getZone(),
-        article.getArticleId(),
-        debate.getDebateId(),
-        voter,
-        VoteState.EMPTY,
-        90);
+    service.voteDebate(DOWN, zone, articleId, debateId, voter, EMPTY, 90);
     assertDebateTotalVote(0, 1);
 
-    DebateVoter debateVoter = service.listDebateVoters(voter, article.getArticleId()).get(0);
-    assertEquals(VoteState.DOWN, debateVoter.getVoteState());
+    DebateVoter debateVoter = service.listDebateVoters(voter, articleId).get(0);
+    assertEquals(DOWN, debateVoter.getVoteState());
     assertEquals(90, debateVoter.getPreviousCount());
   }
 
   private void assertDebateTotalVote(long upVote, long downVote) {
-    Debate changedDebate = debateDao.findDebate(article.getArticleId(), debate.getDebateId()).get();
+    Debate changedDebate = debateDao.findDebate(articleId, debateId).get();
     assertEquals(downVote, changedDebate.getDownVote());
     assertEquals(upVote, changedDebate.getUpVote());
+  }
+
+  private void assertArticleTotalVote(long upVote) {
+    Article changed = articleDao.findArticle(zone, articleId).get();
+    assertEquals(upVote, changed.getUpVote());
   }
 }

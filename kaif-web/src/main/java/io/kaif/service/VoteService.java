@@ -11,13 +11,16 @@ import io.kaif.model.zone.Zone;
 
 public interface VoteService {
 
-  void upVoteArticle(Zone zone, FlakeId articleId, Authorization authorization, long previousCount);
+  void voteArticle(VoteState newState,
+      Zone zone,
+      FlakeId articleId,
+      Authorization authorization,
+      VoteState previousState,
+      long previousCount);
 
   List<ArticleVoter> listArticleVotersInRage(Authorization authorization,
       FlakeId startArticleId,
       FlakeId endArticleId);
-
-  void cancelVoteArticle(Zone zone, FlakeId articleId, Authorization authorization);
 
   List<DebateVoter> listDebateVoters(Authorization voter, FlakeId articleId);
 

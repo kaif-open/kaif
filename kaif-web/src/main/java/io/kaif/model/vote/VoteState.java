@@ -4,21 +4,21 @@ public enum VoteState {
 
   UP, DOWN, EMPTY;
 
-  public VoteDelta downVoteDelta(VoteState previousState) {
+  public int downVoteDeltaFrom(VoteState previousState) {
     if (this == DOWN && previousState != DOWN) {
-      return VoteDelta.INCREASED;
+      return 1;
     } else if (this != DOWN && previousState == DOWN) {
-      return VoteDelta.DECREASED;
+      return -1;
     }
-    return VoteDelta.NO_CHANGE;
+    return 0;
   }
 
-  public VoteDelta upVoteDelta(VoteState previousState) {
+  public int upVoteDeltaFrom(VoteState previousState) {
     if (this == UP && previousState != UP) {
-      return VoteDelta.INCREASED;
+      return 1;
     } else if (this != UP && previousState == UP) {
-      return VoteDelta.DECREASED;
+      return -1;
     }
-    return VoteDelta.NO_CHANGE;
+    return 0;
   }
 }

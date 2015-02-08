@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.base.Preconditions;
+
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Authorization;
 import io.kaif.model.article.ArticleDao;
@@ -14,7 +16,6 @@ import io.kaif.model.debate.DebateDao;
 import io.kaif.model.vote.ArticleVoter;
 import io.kaif.model.vote.DebateVoter;
 import io.kaif.model.vote.VoteDao;
-import io.kaif.model.vote.VoteDelta;
 import io.kaif.model.vote.VoteState;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneDao;
@@ -37,21 +38,6 @@ public class VoteServiceImpl implements VoteService {
   @Autowired
   private DebateDao debateDao;
 
-  @Override
-  public void upVoteArticle(Zone zone,
-      FlakeId articleId,
-      Authorization authorization,
-      long previousCount) {
-
-    checkVoteAuthority(zone, authorization);
-
-    VoteDelta voteDelta = voteDao.upVoteArticle(articleId,
-        authorization.authenticatedId(),
-        previousCount,
-        Instant.now());
-    articleDao.changeTotalVote(zone, articleId, voteDelta.getChangedValue());
-  }
-
   private void checkVoteAuthority(Zone zone, Authorization authorization) {
     //relax article up vote verification, no check zone and account in Database
     if (!zoneDao.loadZone(zone).canUpVote(authorization)) {
@@ -69,19 +55,33 @@ public class VoteServiceImpl implements VoteService {
   }
 
   @Override
-  public void cancelVoteArticle(Zone zone, FlakeId articleId, Authorization authorization) {
-
-    checkVoteAuthority(zone, authorization);
-
-    VoteDelta voteDelta = voteDao.cancelVoteArticle(articleId,
-        authorization.authenticatedId(),
-        Instant.now());
-    articleDao.changeTotalVote(zone, articleId, voteDelta.getChangedValue());
+  public List<DebateVoter> listDebateVoters(Authorization voter, FlakeId articleId) {
+    return voteDao.listDebateVotersByArticle(voter.authenticatedId(), articleId);
   }
 
   @Override
-  public List<DebateVoter> listDebateVoters(Authorization voter, FlakeId articleId) {
-    return voteDao.listDebateVotersByArticle(voter.authenticatedId(), articleId);
+  public void voteArticle(VoteState newState,
+      Zone zone,
+      FlakeId articleId,
+      Authorization authorization,
+      VoteState previousState,
+      long previousCount) {
+
+    //no support down vote yet
+    Preconditions.checkArgument(newState != VoteState.DOWN);
+
+    checkVoteAuthority(zone, authorization);
+
+    voteDao.voteArticle(newState,
+        articleId,
+        authorization.authenticatedId(),
+        previousState,
+        previousCount,
+        Instant.now());
+
+    int upVoteDelta = newState.upVoteDeltaFrom(previousState);
+    int downVoteDelta = newState.downVoteDeltaFrom(previousState);
+    articleDao.changeTotalVote(zone, articleId, upVoteDelta, downVoteDelta);
   }
 
   @Override
@@ -103,13 +103,10 @@ public class VoteServiceImpl implements VoteService {
         previousCount,
         Instant.now());
 
-    VoteDelta upVoteDelta = newState.upVoteDelta(previousState);
-    VoteDelta downVoteDelta = newState.downVoteDelta(previousState);
+    int upVoteDelta = newState.upVoteDeltaFrom(previousState);
+    int downVoteDelta = newState.downVoteDeltaFrom(previousState);
 
-    debateDao.changeTotalVote(articleId,
-        debateId,
-        upVoteDelta.getChangedValue(),
-        downVoteDelta.getChangedValue());
+    debateDao.changeTotalVote(articleId, debateId, upVoteDelta, downVoteDelta);
   }
 
 }

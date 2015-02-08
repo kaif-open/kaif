@@ -8,17 +8,17 @@ abstract class Voter {
   DateTime get updateTime;
 }
 
-class ArticleVoter {
+class ArticleVoter implements Voter {
   final String articleId;
-  final bool cancel;
+  final VoteState voteState;
   final int previousCount;
   final DateTime updateTime;
 
-  ArticleVoter(this.articleId, this.cancel, this.previousCount, this.updateTime);
+  ArticleVoter(this.articleId, this.voteState, this.previousCount, this.updateTime);
 
   ArticleVoter.decode(Map raw) : this(
       raw['articleId'],
-      raw['cancel'],
+      VoteState.valueOf(raw['voteState']),
       raw['previousCount'],
       new DateTime.fromMillisecondsSinceEpoch(raw['updateTime']));
 }

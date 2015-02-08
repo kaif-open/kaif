@@ -29,7 +29,7 @@ import io.kaif.service.VoteService;
 @RequestMapping("/api/vote")
 public class VoteResource {
 
-  static class UpVoteArticle {
+  static class VoteArticle {
     @NotNull
     public FlakeId articleId;
 
@@ -38,14 +38,12 @@ public class VoteResource {
 
     @NotNull
     public Long previousCount;
-  }
-
-  static class CancelVoteArticle {
-    @NotNull
-    public FlakeId articleId;
 
     @NotNull
-    public Zone zone;
+    public VoteState newState;
+
+    @NotNull
+    public VoteState previousState;
   }
 
   static class VoteDebate {
@@ -70,36 +68,18 @@ public class VoteResource {
 
   }
 
-  static class CancelVoteDebate {
-
-    @NotNull
-    public FlakeId articleId;
-
-    @NotNull
-    public FlakeId debateId;
-
-    @NotNull
-    public Zone zone;
-
-    @NotNull
-    public VoteState previousState;
-
-  }
-
   @Autowired
   private VoteService voteService;
 
   @RequestMapping(value = "/article", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
-  public void upVoteArticle(AccountAccessToken token, @Valid @RequestBody UpVoteArticle request) {
-    voteService.upVoteArticle(request.zone, request.articleId, token, request.previousCount);
-  }
-
-  @RequestMapping(value = "/article-cancel", method = RequestMethod.POST, consumes = {
-      MediaType.APPLICATION_JSON_VALUE })
-  public void cancelVoteArticle(AccountAccessToken token,
-      @Valid @RequestBody CancelVoteArticle request) {
-    voteService.cancelVoteArticle(request.zone, request.articleId, token);
+  public void voteArticle(AccountAccessToken token, @Valid @RequestBody VoteArticle request) {
+    voteService.voteArticle(request.newState,
+        request.zone,
+        request.articleId,
+        token,
+        request.previousState,
+        request.previousCount);
   }
 
   @RequestMapping(value = "/debate", method = RequestMethod.POST, consumes = {

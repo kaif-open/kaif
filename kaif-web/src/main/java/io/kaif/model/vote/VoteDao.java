@@ -25,7 +25,7 @@ public class VoteDao implements DaoOperations {
   private RowMapper<ArticleVoter> articleVoterMapper = (rs, rowNum) -> {
     return new ArticleVoter(UUID.fromString(rs.getString("voterId")),
         FlakeId.valueOf(rs.getLong("articleId")),
-        rs.getBoolean("cancel"),
+        VoteState.valueOf(rs.getString("voteState")),
         rs.getLong("previousCount"),
         rs.getTimestamp("updateTime").toInstant());
   };
@@ -38,54 +38,6 @@ public class VoteDao implements DaoOperations {
         rs.getLong("previousCount"),
         rs.getTimestamp("updateTime").toInstant());
   };
-
-  public VoteDelta upVoteArticle(FlakeId articleId,
-      UUID accountId,
-      long previousCount,
-      Instant now) {
-    ArticleVoter voter = ArticleVoter.upVote(articleId, accountId, previousCount, now);
-
-    // allow two cases:
-    //
-    // 1) no data: just do INSERT
-    // 2) a canceled vote exist: update to voted again
-    //
-    // thus, the result of success execution always mean vote + 1
-    //
-    // note that we do not allow update a non-canceled voter.
-
-    String upsert = ""
-        + "   WITH UpsertVote "
-        + "     AS ("
-        + "             UPDATE ArticleVoter "
-        + "                SET cancel = :cancel "
-        + "                  , previousCount = :previousCount "
-        + "                  , updateTime = :updateTime "
-        + "              WHERE articleId = :articleId "
-        + "                AND voterId = :voterId "
-        + "                AND cancel = TRUE "
-        + "          RETURNING * "
-        + "        ) "
-        + " INSERT "
-        + "   INTO ArticleVoter "
-        + "        (voterId, articleId, cancel, previousCount, updateTime) "
-        + " SELECT :voterId, :articleId, :cancel, :previousCount, :updateTime "
-        + "  WHERE NOT EXISTS (SELECT * FROM UpsertVote) ";
-
-    Map<String, Object> params = ImmutableMap.of("voterId",
-        voter.getVoterId(),
-        "articleId",
-        voter.getArticleId().value(),
-        "cancel",
-        voter.isCancel(),
-        "previousCount",
-        voter.getPreviousCount(),
-        "updateTime",
-        Timestamp.from(voter.getUpdateTime()));
-
-    namedJdbc().update(upsert, params);
-    return VoteDelta.INCREASED;
-  }
 
   @Override
   public NamedParameterJdbcTemplate namedJdbc() {
@@ -104,18 +56,6 @@ public class VoteDao implements DaoOperations {
         accountId,
         startArticleId.value(),
         endArticleId.value());
-  }
-
-  public VoteDelta cancelVoteArticle(FlakeId articleId, UUID accountId, Instant now) {
-    int changed = jdbc().update(""
-        + " UPDATE ArticleVoter "
-        + "    SET cancel = TRUE "
-        + "      , previousCount = 0 "
-        + "      , updateTime = ? "
-        + "  WHERE voterId = ? "
-        + "    AND articleId = ? "
-        + "    AND cancel = FALSE ", Timestamp.from(now), accountId, articleId.value());
-    return changed == 1 ? VoteDelta.DECREASED : VoteDelta.NO_CHANGE;
   }
 
   public void voteDebate(VoteState newState,
@@ -156,7 +96,7 @@ public class VoteDao implements DaoOperations {
         + " INSERT "
         + "   INTO DebateVoter "
         + "        (voterId, articleId, debateId, previousCount, updateTime, voteState) "
-        + " SELECT :voterId, :articleId, :debateId, :previousCount, :updateTime, :voteState"
+        + " SELECT :voterId, :articleId, :debateId, :previousCount, :updateTime, :voteState "
         + "  WHERE NOT EXISTS (SELECT * FROM UpsertVote) ";
 
     Map<String, Object> params = ImmutableMap.<String, Object>builder()
@@ -180,4 +120,45 @@ public class VoteDao implements DaoOperations {
         + "    AND articleId = ? ", debateVoterMapper, accountId, articleId.value());
   }
 
+  public void voteArticle(VoteState newState,
+      FlakeId articleId,
+      UUID voterId,
+      VoteState previousState,
+      long previousCount,
+      Instant now) {
+
+    ArticleVoter voter = ArticleVoter.create(newState, articleId, voterId, previousCount, now);
+
+    /*
+     * implementation similar to voteDebate, see document there for explanation
+     */
+    String upsert = ""
+        + "   WITH UpsertVote "
+        + "     AS ("
+        + "             UPDATE ArticleVoter "
+        + "                SET previousCount = :previousCount "
+        + "                  , updateTime = :updateTime "
+        + "                  , voteState = :voteState "
+        + "              WHERE articleId = :articleId "
+        + "                AND voterId = :voterId "
+        + "                AND voteState = :previousState "
+        + "          RETURNING * "
+        + "        ) "
+        + " INSERT "
+        + "   INTO ArticleVoter "
+        + "        (voterId, articleId, previousCount, updateTime, voteState) "
+        + " SELECT :voterId, :articleId, :previousCount, :updateTime, :voteState "
+        + "  WHERE NOT EXISTS (SELECT * FROM UpsertVote) ";
+
+    Map<String, Object> params = ImmutableMap.<String, Object>builder()
+        .put("voterId", voter.getVoterId())
+        .put("articleId", voter.getArticleId().value())
+        .put("previousCount", voter.getPreviousCount())
+        .put("updateTime", Timestamp.from(voter.getUpdateTime()))
+        .put("voteState", voter.getVoteState().name())
+        .put("previousState", previousState.name())
+        .build();
+
+    namedJdbc().update(upsert, params);
+  }
 }
