@@ -1,6 +1,7 @@
 library model_service;
 
 import 'account.dart';
+import 'vote.dart';
 import 'package:kaif_web/util.dart';
 import 'dart:html';
 import 'dart:convert';
@@ -236,5 +237,53 @@ class ArticleService extends _AbstractService {
     };
     return _putJson(_getUrl('/debate'), json)
     .then((res) => null);
+  }
+}
+
+class VoteService extends _AbstractService {
+
+  VoteService(ServerType serverType, accessTokenProvider _provider)
+  : super(serverType, _provider);
+
+  String _getUrl(String path) => '/api/vote$path';
+
+  Future voteArticle(VoteState newState, String zone, String articleId,
+                     VoteState previousState, int previousCount) {
+    var json = {
+        'newState':newState, 'zone':zone, 'articleId':articleId,
+        'previousState':previousState, 'previousCount':previousCount
+    };
+    return _postJson(_getUrl('/article'), json)
+    .then((res) => null);
+  }
+
+  Future<List<ArticleVoter>> listArticleVotersInRange(String startArticleId, String endArticleId) {
+    var params = {
+        'startArticleId':startArticleId, 'endArticleId':endArticleId
+    };
+
+    return _get(_getUrl('/article-voters'), params:params)
+    .then((req) => JSON.decode(req.responseText))
+    .then((List<Map> list) => list.map((raw) => new ArticleVoter.decode(raw)).toList());
+  }
+
+  Future voteDebate(VoteState newState, String zone, String articleId, String debateId,
+                    VoteState previousState, int previousCount) {
+    var json = {
+        'newState':newState, 'zone':zone, 'articleId':articleId, 'debateId':debateId,
+        'previousState':previousState, 'previousCount':previousCount
+    };
+    return _postJson(_getUrl('/debate'), json)
+    .then((res) => null);
+  }
+
+  Future<List<DebateVoter>> listDebateVoters(String articleId) {
+    var params = {
+        'articleId':articleId
+    };
+
+    return _get(_getUrl('/debate-voters'), params:params)
+    .then((req) => JSON.decode(req.responseText))
+    .then((List<Map> list) => list.map((raw) => new DebateVoter.decode(raw)).toList());
   }
 }

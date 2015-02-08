@@ -7,27 +7,28 @@ import io.kaif.flake.FlakeId;
 
 public class ArticleVoter {
 
-  public static ArticleVoter upVote(FlakeId articleId,
+  public static ArticleVoter create(VoteState state,
+      FlakeId articleId,
       UUID accountId,
       long previousCount,
       Instant now) {
-    return new ArticleVoter(accountId, articleId, false, previousCount, now);
+    return new ArticleVoter(accountId, articleId, state, previousCount, now);
   }
 
   private final UUID voterId;
   private final FlakeId articleId;
-  private final boolean cancel;
+  private final VoteState voteState;
   private final long previousCount;
   private final Instant updateTime;
 
   public ArticleVoter(UUID voterId,
       FlakeId articleId,
-      boolean cancel,
+      VoteState voteState,
       long previousCount,
       Instant updateTime) {
     this.voterId = voterId;
     this.articleId = articleId;
-    this.cancel = cancel;
+    this.voteState = voteState;
     this.previousCount = previousCount;
     this.updateTime = updateTime;
   }
@@ -40,16 +41,20 @@ public class ArticleVoter {
     return articleId;
   }
 
-  public boolean isCancel() {
-    return cancel;
-  }
-
   public long getPreviousCount() {
     return previousCount;
   }
 
   public Instant getUpdateTime() {
     return updateTime;
+  }
+
+  public VoteState getVoteState() {
+    return voteState;
+  }
+
+  public ArticleVoterDto toDto() {
+    return new ArticleVoterDto(articleId, voteState, previousCount, updateTime.toEpochMilli());
   }
 
   @Override
@@ -63,7 +68,16 @@ public class ArticleVoter {
 
     ArticleVoter that = (ArticleVoter) o;
 
+    if (previousCount != that.previousCount) {
+      return false;
+    }
     if (articleId != null ? !articleId.equals(that.articleId) : that.articleId != null) {
+      return false;
+    }
+    if (updateTime != null ? !updateTime.equals(that.updateTime) : that.updateTime != null) {
+      return false;
+    }
+    if (voteState != that.voteState) {
       return false;
     }
     if (voterId != null ? !voterId.equals(that.voterId) : that.voterId != null) {
@@ -77,6 +91,9 @@ public class ArticleVoter {
   public int hashCode() {
     int result = voterId != null ? voterId.hashCode() : 0;
     result = 31 * result + (articleId != null ? articleId.hashCode() : 0);
+    result = 31 * result + (voteState != null ? voteState.hashCode() : 0);
+    result = 31 * result + (int) (previousCount ^ (previousCount >>> 32));
+    result = 31 * result + (updateTime != null ? updateTime.hashCode() : 0);
     return result;
   }
 
@@ -85,7 +102,7 @@ public class ArticleVoter {
     return "ArticleVoter{" +
         "voterId=" + voterId +
         ", articleId=" + articleId +
-        ", cancel=" + cancel +
+        ", voteState=" + voteState +
         ", previousCount=" + previousCount +
         ", updateTime=" + updateTime +
         '}';

@@ -1,21 +1,21 @@
 package io.kaif.service.impl;
 
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
+
+import javax.annotation.Nullable;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import javax.annotation.Nullable;
-
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountDao;
+import io.kaif.model.account.Authorization;
 import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleDao;
 import io.kaif.model.debate.Debate;
@@ -45,15 +45,22 @@ public class ArticleServiceImpl implements ArticleService {
   private DebateDao debateDao;
 
   @Override
-  public Article createExternalLink(UUID accountId, Zone zone, String title, String url) {
+  public Article createExternalLink(Authorization authorization,
+      Zone zone,
+      String title,
+      String url) {
     //creating article should not use cache
     ZoneInfo zoneInfo = zoneDao.loadZoneWithoutCache(zone);
-    Account author = accountDao.findById(accountId)
+
+    Account author = accountDao.strongVerifyAccount(authorization)
         .filter(zoneInfo::canWriteArticle)
         .orElseThrow(() -> new AccessDeniedException("no write to create article at zone:" + zone));
 
-    Article article = articleDao.createExternalLink(zone, author,
-        HtmlUtils.htmlEscape(title), HtmlUtils.htmlEscape(url), Instant.now());
+    Article article = articleDao.createExternalLink(zone,
+        author,
+        HtmlUtils.htmlEscape(title),
+        HtmlUtils.htmlEscape(url),
+        Instant.now());
     accountDao.increaseArticleCount(author);
     return article;
   }
@@ -76,13 +83,13 @@ public class ArticleServiceImpl implements ArticleService {
   public Debate debate(Zone zone,
       FlakeId articleId,
       @Nullable FlakeId parentDebateId,
-      UUID debaterId,
+      Authorization debaterAuth,
       String content) {
     //creating debate should not use cache
     ZoneInfo zoneInfo = zoneDao.loadZoneWithoutCache(zone);
     Article article = articleDao.loadArticle(zoneInfo.getZone(), articleId);
 
-    Account debater = accountDao.findById(debaterId)
+    Account debater = accountDao.strongVerifyAccount(debaterAuth)
         .filter(zoneInfo::canDebate)
         .orElseThrow(() -> new AccessDeniedException("no write to debate at zone:"
             + article.getZone()));
@@ -90,7 +97,10 @@ public class ArticleServiceImpl implements ArticleService {
     Debate parent = Optional.ofNullable(parentDebateId)
         .flatMap(pId -> debateDao.findDebate(article.getArticleId(), pId))
         .orElse(null);
-    Debate debate = debateDao.create(article, parent, HtmlUtils.htmlEscape(content), debater,
+    Debate debate = debateDao.create(article,
+        parent,
+        HtmlUtils.htmlEscape(content),
+        debater,
         Instant.now());
 
     //may improve later to make it async, but async has transaction problem
@@ -107,6 +117,7 @@ public class ArticleServiceImpl implements ArticleService {
     //TODO cache
     //TODO paging
     //TODO order by rank
+    //TODO do not use offset, use start item instead
     return debateDao.listTreeByArticle(articleId);
   }
 }

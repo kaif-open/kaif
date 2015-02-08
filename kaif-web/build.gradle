@@ -124,7 +124,10 @@ dependencies {
 
   compile 'org.springframework.security:spring-security-crypto:3.2.5.RELEASE';
 
-  compile 'org.postgresql:postgresql:9.3-1102-jdbc41'
+  compile('org.postgresql:postgresql:9.4-1200-jdbc41') {
+    exclude group: 'org.slf4j'
+  }
+
   compile 'com.google.guava:guava:18.0'
 
   // postgresql driver not better fit HikariCP
@@ -134,7 +137,8 @@ dependencies {
   compile 'com.google.code.findbugs:jsr305:3.0.0'
   compile 'javax.inject:javax.inject:1'
 
-  compile 'com.fasterxml.jackson.module:jackson-module-afterburner:2.4.0'
+  compile 'com.fasterxml.jackson.module:jackson-module-afterburner:2.4.5'
+  compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.4.5'
 
   // webjars
   compile 'org.webjars:font-awesome:4.2.0'
@@ -142,6 +146,5 @@ dependencies {
 
   // aws will depends on jackson/joda/httpclient
   compile 'com.amazonaws:aws-java-sdk-ses:1.9.16'
-
 }
 

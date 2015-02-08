@@ -7,6 +7,7 @@ import 'package:kaif_web/comp/account/reset_password_form.dart';
 import 'package:kaif_web/comp/account/account_menu.dart';
 import 'package:kaif_web/comp/account/account_settings.dart';
 import 'package:kaif_web/comp/article/external_link_article_form.dart';
+import 'package:kaif_web/comp/article/article-list.dart';
 import 'package:kaif_web/comp/debate/debate_tree.dart';
 import 'package:kaif_web/comp/server_part_loader.dart';
 import 'dart:html';
@@ -31,6 +32,7 @@ class AppModule {
   AccountSession accountSession;
   AccountService accountService;
   ArticleService articleService;
+  VoteService voteService;
   PartService partService;
   ServerPartLoader serverPartLoader;
 
@@ -41,12 +43,14 @@ class AppModule {
     var accessTokenProvider = accountSession.provideAccessToken;
     accountService = new AccountService(serverType, accessTokenProvider);
     articleService = new ArticleService(serverType, accessTokenProvider);
+    voteService = new VoteService(serverType, accessTokenProvider);
     partService = new PartService(serverType, accessTokenProvider);
 
     serverPartLoader = new ServerPartLoader(partService, _initializeComponents);
   }
 
   void _initializeComponents(dynamic parent) {
+    //TODO group in url module
     parent.querySelectorAll('[sign-up-form]').forEach((el) {
       new SignUpForm(el, accountService);
     });
@@ -66,7 +70,10 @@ class AppModule {
       new ExternalLinkArticleForm(el, articleService);
     });
     parent.querySelectorAll('[debate-tree]').forEach((el) {
-      new DebateTree(el, articleService);
+      new DebateTree(el, articleService, voteService, accountSession);
+    });
+    parent.querySelectorAll('[article-list]').forEach((el) {
+      new ArticleList(el, articleService, voteService, accountSession);
     });
   }
 

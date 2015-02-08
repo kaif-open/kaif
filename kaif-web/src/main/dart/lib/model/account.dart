@@ -3,31 +3,12 @@ library model_account;
 class PermissionError extends Error {
 }
 
-class Authority {
-  static const Authority NORMAL = const Authority._('NORMAL');
-  static const Authority ZONE_ADMIN = const Authority._('ZONE_ADMIN');
-  static const Authority ROOT = const Authority._('ROOT');
-  static const List<Authority> ALL = const [NORMAL, ZONE_ADMIN, ROOT];
-  final name;
-
-  const Authority._(this.name);
-
-  static Set<Authority> decodeSet(Set<String> raws) {
-    return raws.map((s) => valueOf(s)).toSet();
-  }
-
-  static Authority valueOf(String name) {
-    return ALL.firstWhere((auth) => auth.name == name);
-  }
-
-  toJson() => name;
-}
-
 class AccountAuth {
   final String username;
   final String accessToken;
   final DateTime expireTime;
   final DateTime generateTime;
+
   AccountAuth(this.username, this.accessToken, this.expireTime, this.generateTime) {
     if (username == null || accessToken == null || expireTime == null || generateTime == null) {
       //someone corrupt data, force abort
@@ -58,4 +39,5 @@ class AccountAuth {
     return now.isAfter(expireTime);
   }
 }
+
 

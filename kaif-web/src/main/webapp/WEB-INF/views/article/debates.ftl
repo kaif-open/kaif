@@ -26,6 +26,8 @@ head=headContent
     <div class="pure-u-1 pure-u-md-3-4">
     ${article.title}
         <div class="debate-tree" debate-tree>
+            <input type="hidden" name="zoneInput" value="${zoneInfo.name}">
+            <input type="hidden" name="articleIdInput" value="${article.articleId}">
         <#-- place holder debate-form will replace by comp-template
          keep place holder looks the same as comp-template
         -->
@@ -34,9 +36,19 @@ head=headContent
                 <button type="submit" class="pure-button pure-button-primary">留言</button>
             </div>
             <#list debates as debate>
-                <div class="debate" style="margin-left: ${(debate.level-1) * 15}px;">
-                    <div class="debate-author">
-                    ${debate.debaterName}
+                <div class="debate" style="margin-left: ${(debate.level-1) * 20}px;"
+                     debate>
+                    <div>
+                        <span class="debate-author">
+                        ${debate.debaterName}
+                        </span>
+                        <span class="debate-vote-box" debate-vote-box
+                              data-debate-id="${debate.debateId}"
+                              data-debate-vote-count="${debate.totalVote}">
+                            <a href="#" debate-up-vote><i class="fa fa-chevron-up"></i></a>
+                            <a href="#" debate-down-vote><i class="fa fa-chevron-down"></i></a>
+                            <span debate-vote-count>${debate.totalVote}</span>
+                        </span>
                     </div>
                     <div class="debate-content">
                     ${debate.content}

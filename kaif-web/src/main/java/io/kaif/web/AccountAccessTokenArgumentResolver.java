@@ -1,9 +1,5 @@
 package io.kaif.web;
 
-import java.util.Optional;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -27,23 +23,14 @@ public class AccountAccessTokenArgumentResolver implements HandlerMethodArgument
     return parameter.getParameterType() == AccountAccessToken.class;
   }
 
-  //TODO unit test
   @Override
   public AccountAccessToken resolveArgument(MethodParameter parameter,
       ModelAndViewContainer mavContainer,
       NativeWebRequest webRequest,
       WebDataBinderFactory binderFactory) throws Exception {
     String token = webRequest.getHeader(AccountAccessToken.HEADER_KEY);
-    HttpServletRequest nativeRequest = webRequest.getNativeRequest(HttpServletRequest.class);
-    Optional<AccountAccessToken> verified;
-
-    //GET operation are calculated in memory only
-    if (nativeRequest.getMethod().equalsIgnoreCase("GET")) {
-      verified = accountService.tryDecodeAccessToken(token);
-    } else {
-      //for other mutation operation, always check in db
-      verified = accountService.verifyAccessToken(token);
-    }
-    return verified.orElseThrow(AccessDeniedException::new);
+    // we only verify in memory for all request http method
+    // service layer should decide check database if mutation is critical
+    return accountService.tryDecodeAccessToken(token).orElseThrow(AccessDeniedException::new);
   }
 }

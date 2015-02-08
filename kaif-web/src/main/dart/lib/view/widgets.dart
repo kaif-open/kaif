@@ -70,7 +70,7 @@ class LargeErrorModal {
 
   void render() {
 
-    //do not embed ${message} within trustHtml !
+    //do not embed ${message} within _unSafeHtml !
     var dangerUnSafeElem = _unSafeHtml(
         """
       <div class="large-error-modal">
@@ -86,6 +86,61 @@ class LargeErrorModal {
     //must use `.text = message` to ensure html safety !!
     safeHtmlElem.text = message;
     (window.document as HtmlDocument).body.append(dangerUnSafeElem);
+  }
+}
+
+/**
+    material design snack bar
+    http://www.google.com/design/spec/components/snackbars-toasts.html#
+
+    snack bar is singleton
+ */
+class SnackBar {
+
+  static SnackBar _INSTANCE = new SnackBar._();
+
+  factory SnackBar(String message, {AnchorElement action}) {
+    return _INSTANCE
+      .._message = message
+      .._actionElem = action;
+
+  }
+
+  String _message;
+  Element _dangerUnSafeElem;
+  Element _actionElem;
+  Timer _timer;
+
+  SnackBar._() {
+    _dangerUnSafeElem = _unSafeHtml(
+        """
+       <div class="snack-bar alert alert-warning">
+         <span class="safeMessage"></span>
+         <span class="action"></span>
+       </div>
+    """);
+  }
+
+  void render({int seconds:100000000}) {
+    var actionWrapper = _dangerUnSafeElem.querySelector('.action');
+    actionWrapper.nodes.clear();
+    if (_actionElem != null) {
+      actionWrapper.append(_actionElem);
+    }
+
+    _dangerUnSafeElem.querySelector('.safeMessage').text = _message;
+
+    //animation ?
+    (window.document as HtmlDocument).body.append(_dangerUnSafeElem);
+
+    if (_timer != null) {
+      _timer.cancel();
+    }
+    _timer = new Timer(new Duration(seconds:seconds), () {
+      _dangerUnSafeElem.remove();
+      actionWrapper.nodes.clear();
+      _timer = null;
+    });
   }
 }
 

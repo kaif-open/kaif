@@ -78,28 +78,24 @@ CREATE TABLE DebateHistory (
 
 -- foreign key is intended exclude
 CREATE TABLE ArticleVoter (
-  voterId       UUID      NOT NULL,
-  articleId     BIGINT    NOT NULL,
-  cancel        BOOLEAN   NOT NULL,
-  previousCount BIGINT    NOT NULL,
-  updateTime    TIMESTAMP NOT NULL,
+  voterId       UUID          NOT NULL,
+  articleId     BIGINT        NOT NULL,
+  voteState     VARCHAR(4096) NOT NULL,
+  previousCount BIGINT        NOT NULL,
+  updateTime    TIMESTAMP     NOT NULL,
   PRIMARY KEY (voterId, articleId)
 );
 
-CREATE INDEX ArticleVoterUpdateTime ON ArticleVoter (updateTime);
-
 -- foreign key is intended exclude
 CREATE TABLE DebateVoter (
-  voterId       UUID      NOT NULL,
-  debateId      BIGINT    NOT NULL,
-  voteType      BOOLEAN   NOT NULL,
-  cancel        BOOLEAN   NOT NULL,
-  previousCount BIGINT    NOT NULL,
-  updateTime    TIMESTAMP NOT NULL,
-  PRIMARY KEY (voterId, debateId)
+  voterId       UUID          NOT NULL,
+  articleId     BIGINT        NOT NULL,
+  debateId      BIGINT        NOT NULL,
+  voteState     VARCHAR(4096) NOT NULL,
+  previousCount BIGINT        NOT NULL,
+  updateTime    TIMESTAMP     NOT NULL,
+  PRIMARY KEY (voterId, articleId, debateId)
 );
-
-CREATE INDEX DebateVoterUpdateTime ON DebateVoter (updateTime);
 
 CREATE TABLE AccountStats (
   accountId       UUID   NOT NULL REFERENCES Account (accountId),
@@ -107,6 +103,5 @@ CREATE TABLE AccountStats (
   articleCount    BIGINT NOT NULL DEFAULT 0,
   debateUpVoted   BIGINT NOT NULL DEFAULT 0,
   debateDownVoted BIGINT NOT NULL DEFAULT 0,
-  articleUpVoted  BIGINT NOT NULL DEFAULT 0,
   PRIMARY KEY (accountId)
 );

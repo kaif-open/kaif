@@ -18,6 +18,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.AccountAccessToken;
+import io.kaif.model.article.ArticlePage;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.ArticleService;
@@ -39,7 +40,8 @@ public class ZoneController {
       throws IOException {
     return resolveZone(request, rawZone, zoneInfo -> {
       return new ModelAndView("zone/articles")//
-          .addObject("zoneInfo", zoneInfo).addObject("articles", Collections.emptyList());
+          .addObject("zoneInfo", zoneInfo)
+          .addObject("articlePage", new ArticlePage(Collections.emptyList()));
     });
   }
 
@@ -79,7 +81,8 @@ public class ZoneController {
     return resolveZone(request, rawZone, zoneInfo -> {
       return new ModelAndView("zone/articles")//
           .addObject("zoneInfo", zoneInfo)
-          .addObject("articles", articleService.listLatestArticles(zoneInfo.getZone(), page));
+          .addObject("articlePage",
+              new ArticlePage(articleService.listLatestArticles(zoneInfo.getZone(), page)));
     });
   }
 
@@ -98,7 +101,7 @@ public class ZoneController {
         throw new AccessDeniedException("not allow write article at zone:"
             + zoneInfo.getZone()
             + ", account:"
-            + accessToken.getAccountId());
+            + accessToken.authenticatedId());
       }
       return new ModelAndView("article/create.part").addObject("zoneInfo", zoneInfo);
     });

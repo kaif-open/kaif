@@ -7,12 +7,12 @@ import static org.junit.Assert.*;
 
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.UUID;
 
 import org.junit.Test;
 
+import io.kaif.model.account.Account;
 import io.kaif.model.account.Authority;
 import io.kaif.model.account.Authorization;
 
@@ -28,13 +28,19 @@ public class ZoneInfoTest {
     }
 
     @Override
-    public boolean belongToAccounts(Collection<UUID> accountIds) {
-      return accountIds.contains(accountId);
+    public UUID authenticatedId() {
+      return accountId;
     }
 
     @Override
     public boolean containsAuthority(Authority authority) {
       return authorities.contains(authority);
+    }
+
+    @Override
+    public boolean matches(Account account) {
+      //note used here
+      return false;
     }
   }
 

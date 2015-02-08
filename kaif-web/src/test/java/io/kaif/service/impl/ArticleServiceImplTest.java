@@ -1,12 +1,17 @@
 package io.kaif.service.impl;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.*;
+import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.IntStream;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
@@ -22,15 +27,6 @@ import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.AccountService;
 import io.kaif.test.DbIntegrationTests;
 import io.kaif.web.support.AccessDeniedException;
-
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class ArticleServiceImplTest extends DbIntegrationTests {
 
@@ -60,7 +56,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     Debate created = service.debate(zoneInfo.getZone(),
         article.getArticleId(),
         Debate.NO_PARENT,
-        debater.getAccountId(),
+        debater,
         "pixel art is better");
 
     Debate debate = debateDao.findDebate(article.getArticleId(), created.getDebateId()).get();
@@ -79,7 +75,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertEquals(1,
         service.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getDebateCount());
 
-    assertEquals(1, accountService.loadAccountStats(debater.getAccountId()).getDebateCount());
+    assertEquals(1, accountService.loadAccountStats(debater.getUsername()).getDebateCount());
   }
 
   @Test
@@ -88,12 +84,28 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     Debate created = service.debate(zoneInfo.getZone(),
         article.getArticleId(),
         Debate.NO_PARENT,
-        debater.getAccountId(),
+        debater,
         "pixel art is better<evil>hi</evil>");
 
     Debate debate = debateDao.findDebate(article.getArticleId(), created.getDebateId()).get();
     assertEquals(DebateContentType.MARK_DOWN, debate.getContentType());
     assertEquals("pixel art is better&lt;evil&gt;hi&lt;/evil&gt;", debate.getContent());
+  }
+
+  @Test
+  public void loadDebaterId_cache() throws Exception {
+    Account debater = savedAccountCitizen("debater1");
+    Debate created = service.debate(zoneInfo.getZone(),
+        article.getArticleId(),
+        Debate.NO_PARENT,
+        debater,
+        "pixel art is better");
+
+    UUID debaterId = debateDao.loadDebaterId(created.getDebateId());
+    assertEquals(debater.getAccountId(), debaterId);
+    assertSame("cached should be same instance",
+        debaterId,
+        debateDao.loadDebaterId(created.getDebateId()));
   }
 
   @Test
@@ -106,7 +118,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         .mapToObj(i -> service.debate(zone,
             articleId,
             Debate.NO_PARENT,
-            citizen.getAccountId(),
+            citizen,
             "debate-content-" + i))
         .collect(toList());
 
@@ -141,7 +153,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     return service.debate(zoneInfo.getZone(),
         article.getArticleId(),
         Optional.ofNullable(parent).map(Debate::getDebateId).orElse(Debate.NO_PARENT),
-        citizen.getAccountId(),
+        citizen,
         "debate-content-" + Math.random());
   }
 
@@ -154,17 +166,13 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
       last = service.debate(zoneInfo.getZone(),
           article.getArticleId(),
           parentId,
-          debater.getAccountId(),
+          debater,
           "nested");
       parentId = last.getDebateId();
     }
     assertTrue(last.isMaxLevel());
     try {
-      service.debate(zoneInfo.getZone(),
-          article.getArticleId(),
-          parentId,
-          debater.getAccountId(),
-          "failed");
+      service.debate(zoneInfo.getZone(), article.getArticleId(), parentId, debater, "failed");
       fail("IllegalArgumentException expected");
     } catch (IllegalArgumentException expected) {
     }
@@ -176,12 +184,12 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     Debate l1 = service.debate(zoneInfo.getZone(),
         article.getArticleId(),
         Debate.NO_PARENT,
-        debater.getAccountId(),
+        debater,
         "pixel art is better");
     Debate l2 = service.debate(zoneInfo.getZone(),
         article.getArticleId(),
         l1.getDebateId(),
-        debater.getAccountId(),
+        debater,
         "i think so");
     assertEquals(2, l2.getLevel());
     assertTrue(l2.hasParent());
@@ -193,7 +201,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     Debate l3 = service.debate(zoneInfo.getZone(),
         article.getArticleId(),
         l2.getDebateId(),
-        debater.getAccountId(),
+        debater,
         "no no no");
 
     assertEquals(3, l3.getLevel());
@@ -214,7 +222,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
       service.debate(zoneRequireCitizen.getZone(),
           article.getArticleId(),
           Debate.NO_PARENT,
-          tourist.getAccountId(),
+          tourist,
           "pixel art is better");
       fail("AccessDeniedException expected");
     } catch (AccessDeniedException expected) {
@@ -225,25 +233,16 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   public void listNewArticles() throws Exception {
     Account author = savedAccountCitizen("citizen");
     ZoneInfo fooZone = savedZoneDefault("foo");
-    Article a1 = service.createExternalLink(author.getAccountId(),
-        fooZone.getZone(),
-        "title1",
-        "http://foo1.com");
-    Article a2 = service.createExternalLink(author.getAccountId(),
-        fooZone.getZone(),
-        "title2",
-        "http://foo2.com");
-    Article a3 = service.createExternalLink(author.getAccountId(),
-        fooZone.getZone(),
-        "title2",
-        "http://foo2.com");
+    Article a1 = service.createExternalLink(author, fooZone.getZone(), "title1", "http://foo1.com");
+    Article a2 = service.createExternalLink(author, fooZone.getZone(), "title2", "http://foo2.com");
+    Article a3 = service.createExternalLink(author, fooZone.getZone(), "title2", "http://foo2.com");
 
     assertEquals(asList(a3, a2, a1), service.listLatestArticles(fooZone.getZone(), 0));
   }
 
   @Test
   public void createExternalLink_escape_content() throws Exception {
-    Article created = service.createExternalLink(citizen.getAccountId(),
+    Article created = service.createExternalLink(citizen,
         zoneInfo.getZone(),
         "title1<script>alert('123');</script>",
         "http://foo.com<script>alert('123');</script>");
@@ -255,7 +254,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void createExternalLink() throws Exception {
-    Article created = service.createExternalLink(citizen.getAccountId(),
+    Article created = service.createExternalLink(citizen,
         zoneInfo.getZone(),
         "title1",
         "http://foo.com");
@@ -274,7 +273,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertEquals(0, article.getDownVote());
     assertEquals(0, article.getDebateCount());
 
-    AccountStats stats = accountService.loadAccountStats(citizen.getAccountId());
+    AccountStats stats = accountService.loadAccountStats(citizen.getUsername());
     assertEquals(1, stats.getArticleCount());
   }
 
@@ -283,10 +282,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     ZoneInfo zoneRequireCitizen = savedZoneDefault("fun");
     Account tourist = savedAccountTourist("notActivated");
     try {
-      service.createExternalLink(tourist.getAccountId(),
-          zoneRequireCitizen.getZone(),
-          "title1",
-          "http://foo.com");
+      service.createExternalLink(tourist, zoneRequireCitizen.getZone(), "title1", "http://foo.com");
       fail("AccessDeniedException expected");
     } catch (AccessDeniedException expected) {
     }

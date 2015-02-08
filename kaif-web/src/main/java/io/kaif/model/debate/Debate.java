@@ -181,6 +181,10 @@ public class Debate {
         '}';
   }
 
+  public long getTotalVote() {
+    return upVote - downVote;
+  }
+
   public boolean isMaxLevel() {
     return level >= MAX_LEVEL;
   }

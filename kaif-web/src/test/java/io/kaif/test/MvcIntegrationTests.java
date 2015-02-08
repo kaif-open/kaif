@@ -31,6 +31,7 @@ import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.service.AccountService;
 import io.kaif.service.ArticleService;
+import io.kaif.service.VoteService;
 import io.kaif.service.ZoneService;
 
 @ActiveProfiles(SpringProfile.TEST)
@@ -64,6 +65,11 @@ public abstract class MvcIntegrationTests implements ModelFixture {
     public ZoneService zoneService() {
       return Mockito.mock(ZoneService.class);
     }
+
+    @Bean
+    public VoteService voteService() {
+      return Mockito.mock(VoteService.class);
+    }
   }
 
   @Autowired
@@ -76,6 +82,9 @@ public abstract class MvcIntegrationTests implements ModelFixture {
   protected ArticleService articleService;
 
   @Autowired
+  protected VoteService voteService;
+
+  @Autowired
   private WebApplicationContext wac;
 
   protected MockMvc mockMvc;
@@ -83,7 +92,7 @@ public abstract class MvcIntegrationTests implements ModelFixture {
   @Before
   public void setUp() {
     mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
-    Mockito.reset(accountService, zoneService, articleService);
+    Mockito.reset(accountService, zoneService, articleService, voteService);
   }
 
   protected final String prepareAccessToken(Account account) {

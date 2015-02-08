@@ -51,8 +51,7 @@ public class AccountDao implements DaoOperations {
         rs.getLong("debateCount"),
         rs.getLong("articleCount"),
         rs.getLong("debateUpVoted"),
-        rs.getLong("debateDownVoted"),
-        rs.getLong("articleUpVoted"));
+        rs.getLong("debateDownVoted"));
   };
 
   @Autowired
@@ -91,19 +90,22 @@ public class AccountDao implements DaoOperations {
             + " INSERT "
             + "   INTO AccountStats "
             + "        (accountId, debateCount, articleCount, debateUpVoted, "
-            + "         debateDownVoted, articleUpVoted ) "
+            + "         debateDownVoted) "
             + " VALUES "
-            + questions(6),
+            + questions(5),
         stats.getAccountId(),
         stats.getDebateCount(),
         stats.getArticleCount(),
         stats.getDebateUpVoted(),
-        stats.getDebateDownVoted(),
-        stats.getArticleUpVoted());
+        stats.getDebateDownVoted());
   }
 
   private Array authoritiesToVarcharArray(Set<Authority> authorities) {
     return createVarcharArray(authorities.stream().map(Authority::name));
+  }
+
+  public Optional<Account> strongVerifyAccount(Authorization authorization) {
+    return findById(authorization.authenticatedId()).filter(authorization::matches);
   }
 
   public Optional<Account> findById(UUID accountId) {
@@ -117,11 +119,17 @@ public class AccountDao implements DaoOperations {
         username).stream().findAny();
   }
 
-  public void updateAuthorities(UUID accountId, EnumSet<Authority> authorities) {
-    Preconditions.checkArgument(!authorities.contains(Authority.FORBIDDEN));
+  public Account loadByUsername(String username) {
+    return jdbc().queryForObject(" SELECT * FROM Account WHERE username = lower(?) ",
+        accountMapper,
+        username);
+  }
+
+  public void updateAuthorities(Account account, EnumSet<Authority> authorities) {
+    Account updated = account.withAuthorities(authorities);
     jdbc().update(" UPDATE Account SET authorities = ? WHERE accountId = ? ",
-        authoritiesToVarcharArray(authorities),
-        accountId);
+        authoritiesToVarcharArray(updated.getAuthorities()),
+        updated.getAccountId());
   }
 
   public void updatePasswordHash(UUID accountId, String passwordHash) {
@@ -171,24 +179,32 @@ public class AccountDao implements DaoOperations {
         onceToken.getToken());
   }
 
-  public AccountStats loadStats(UUID accountId) {
-    return jdbc().queryForObject(" SELECT * FROM AccountStats WHERE accountId = ? ",
-        statsMapper,
-        accountId);
+  public AccountStats loadStats(String username) {
+    return jdbc().queryForObject(""
+        + " SELECT ass.* "
+        + "   FROM AccountStats ass "
+        + "   JOIN Account a ON (ass.accountId = a.accountId) "
+        + "  WHERE a.username = ? ", statsMapper, username);
   }
 
   public void increaseArticleCount(Account author) {
-    increaseStats(author, "articleCount");
-  }
-
-  private void increaseStats(Account account, String field) {
-    String sql = String.format(" UPDATE AccountStats SET %s = %s + 1 WHERE accountId = ? ",
-        field,
-        field);
-    jdbc().update(sql, account.getAccountId());
+    jdbc().update(" UPDATE AccountStats SET articleCount  = articleCount + 1 WHERE accountId = ? ",
+        author.getAccountId());
   }
 
   public void increaseDebateCount(Account debater) {
-    increaseStats(debater, "debateCount");
+    jdbc().update(" UPDATE AccountStats SET debateCount  = debateCount + 1 WHERE accountId = ? ",
+        debater.getAccountId());
+  }
+
+  public void changeTotalVotedDebate(UUID accountId, long upVoteDelta, long downVoteDelta) {
+    if (upVoteDelta == 0 && downVoteDelta == 0) {
+      return;
+    }
+    jdbc().update(""
+        + " UPDATE AccountStats "
+        + "    SET debateUpVoted = debateUpVoted + (?) "
+        + "      , debateDownVoted = debateDownVoted + (?) "
+        + "  WHERE accountId = ? ", upVoteDelta, downVoteDelta, accountId);
   }
 }

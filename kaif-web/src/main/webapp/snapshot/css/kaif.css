@@ -371,6 +371,20 @@ main {
     right: 0;
 }
 
+.snack-bar {
+    position: fixed;
+    z-index: 10000;
+    top: 1em;
+    width: 50%;
+    left: 50%;
+    margin-left: -25%;
+    display: flex;
+}
+
+.snack-bar .action {
+    margin-left: auto;
+}
+
 [comp-template] {
     display: none !important;
 }
@@ -398,15 +412,15 @@ main {
     background-color: #eee;
 }
 
-.article {
+.article-list {
     margin-top: 1em;
 }
 
-.article > div {
+.article-list > div {
     margin-bottom: 1em;
 }
 
-.article .article-title {
+.article-list .article-title {
     line-height: 1.2em;
 }
 
@@ -424,7 +438,7 @@ main {
     font-size: 0.8em;
 }
 
-.article .article-info {
+.article-list .article-info {
     font-size: 0.8em;
 }
 
@@ -436,10 +450,35 @@ main {
     color: dimgray;
 }
 
-.article-voting {
+.article-vote-box {
     text-align: right;
     padding-right: 1em;
 }
 
-.article-voting a {
+.article-vote-box a,
+.article-vote-box a:focus,
+.article-vote-box a:visited {
+    outline: 0;
+}
+
+.vote-box-voted {
+    color: red;
+}
+
+.vote-box-voted a.voted {
+    color: red;
+}
+
+.debate {
+
+}
+
+.debate-vote-box {
+
+}
+
+.debate-vote-box a,
+.debate-vote-box a:focus,
+.debate-vote-box a:visited {
+    outline: 0;
 }

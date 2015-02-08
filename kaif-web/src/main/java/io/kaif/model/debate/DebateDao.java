@@ -10,6 +10,8 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -120,5 +122,34 @@ public class DebateDao implements DaoOperations {
         "articleId", articleId.value(), "noParent", Debate.NO_PARENT.value());
 
     return namedJdbc().query(sql, params, debateMapper);
+  }
+
+  public void changeTotalVote(FlakeId articleId,
+      FlakeId debateId,
+      long upVoteDelta,
+      long downVoteDelta) {
+    if (upVoteDelta == 0 && downVoteDelta == 0) {
+      return;
+    }
+    jdbc().update(""
+            + " UPDATE Debate "
+            + "    SET upVote = upVote + (?) "
+            + "      , downVote = downVote + (?) "
+            + "  WHERE debateId = ? "
+            + "    AND articleId = ? ",
+        upVoteDelta,
+        downVoteDelta,
+        debateId.value(),
+        articleId.value());
+  }
+
+  /**
+   * @see io.kaif.config.UtilConfiguration#debaterIdCacheManager()
+   */
+  @Cacheable(value = "DebaterId")
+  public UUID loadDebaterId(FlakeId debateId) throws EmptyResultDataAccessException {
+    return UUID.fromString(jdbc().queryForObject(" SELECT debaterId FROM Debate WHERE debateId = ? ",
+        String.class,
+        debateId.value()));
   }
 }

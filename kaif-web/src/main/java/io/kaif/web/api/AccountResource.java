@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.kaif.service.AccountService;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountAuth;
 import io.kaif.model.exception.AuthenticateFailException;
+import io.kaif.service.AccountService;
 import io.kaif.web.support.SingleWrapper;
 
 @RestController
@@ -114,7 +114,7 @@ public class AccountResource {
   @RequestMapping(value = "/resend-activation", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
   public void resendActivation(AccountAccessToken token, Locale locale) {
-    accountService.resendActivation(token.getAccountId(), locale);
+    accountService.resendActivation(token, locale);
   }
 
   @RequestMapping(value = "/email-available")
@@ -136,9 +136,9 @@ public class AccountResource {
 
   @RequestMapping(value = "/update-password-with-token", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
-  public void updatePasswordWithToken(@Valid @RequestBody UpdatePasswordWithTokenRequest request,
-      Locale locale) {
-    accountService.updatePasswordWithToken(request.token, request.password, locale);
+  public void updatePasswordWithOnceToken(
+      @Valid @RequestBody UpdatePasswordWithTokenRequest request, Locale locale) {
+    accountService.updatePasswordWithOnceToken(request.token, request.password, locale);
   }
 
   @RequestMapping(value = "/update-new-password", method = RequestMethod.POST, consumes = {
@@ -146,7 +146,7 @@ public class AccountResource {
   public AccountAuth updateNewPassword(AccountAccessToken accessToken,
       @Valid @RequestBody UpdateNewPasswordRequest request,
       Locale locale) {
-    return accountService.updateNewPassword(accessToken.getAccountId(),
+    return accountService.updateNewPassword(accessToken,
         request.oldPassword,
         request.newPassword,
         locale);

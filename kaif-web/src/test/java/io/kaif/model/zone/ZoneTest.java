@@ -47,6 +47,8 @@ public class ZoneTest {
     assertEquals("111111111", Zone.valueOf("111111111").value());
 
     assertInvalidZone(null);
+    assertInvalidZone("null");
+    assertInvalidZone("NULL");
     assertInvalidZone("");
     assertInvalidZone("   ");
     assertInvalidZone("a");
