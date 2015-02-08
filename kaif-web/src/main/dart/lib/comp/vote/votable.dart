@@ -15,7 +15,6 @@ import 'dart:html';
 abstract class Votable {
 
   final Element elem;
-  final List<StreamSubscription> _clickSubscriptions = [];
 
   StateMachine _machine;
   int _currentCount;
@@ -36,6 +35,7 @@ abstract class Votable {
     _downVoteElem = downVoteElem;
     _voteCountElem = voteCountElem;
     _machine.initialize();
+    _registerClick();
   }
 
   void applyNotSignIn() {
@@ -70,7 +70,9 @@ abstract class Votable {
   }
 
   void _registerClick() {
-    _clickSubscriptions.add(_upVoteElem.onClick.listen((e) {
+    // no need to un-subscribe listener when voting or not allow vote,
+    // it is protected by trigger processing
+    _upVoteElem.onClick.listen((e) {
       e
         ..stopPropagation()
         ..preventDefault();
@@ -78,8 +80,8 @@ abstract class Votable {
       _machine.processTrigger(
           new _VotableTrigger()
             ..upVoting = true);
-    }));
-    _clickSubscriptions.add(_downVoteElem.onClick.listen((e) {
+    });
+    _downVoteElem.onClick.listen((e) {
       e
         ..stopPropagation()
         ..preventDefault();
@@ -87,12 +89,7 @@ abstract class Votable {
       _machine.processTrigger(
           new _VotableTrigger()
             ..downVoting = true);
-    }));
-  }
-
-  void _unregisterClick() {
-    _clickSubscriptions.forEach((sub) => sub.cancel());
-    _clickSubscriptions.clear();
+    });
   }
 
   void _changeCount({int delta}) {
@@ -176,11 +173,6 @@ class _WaitSignUpState extends _VotableState {
 
   void enter() {
     votable._markVisualState(VoteState.EMPTY);
-    votable._registerClick();
-  }
-
-  void exit() {
-    votable._unregisterClick();
   }
 
   State process(_VotableTrigger trigger) {
@@ -199,11 +191,6 @@ class _EmptyVoteState extends _VotableState {
 
   void enter() {
     votable._markVisualState(VoteState.EMPTY);
-    votable._registerClick();
-  }
-
-  void exit() {
-    votable._unregisterClick();
   }
 
   State process(_VotableTrigger trigger) {
@@ -225,11 +212,6 @@ class _UpVotedState extends _VotableState {
 
   void enter() {
     votable._markVisualState(VoteState.UP);
-    votable._registerClick();
-  }
-
-  void exit() {
-    votable._unregisterClick();
   }
 
   State process(_VotableTrigger trigger) {
@@ -251,11 +233,6 @@ class _DownVotedState extends _VotableState {
 
   void enter() {
     votable._markVisualState(VoteState.DOWN);
-    votable._registerClick();
-  }
-
-  void exit() {
-    votable._unregisterClick();
   }
 
   State process(_VotableTrigger trigger) {
