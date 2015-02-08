@@ -5,7 +5,7 @@ import java.util.UUID;
 public class AccountStats {
 
   public static AccountStats zero(UUID accountId) {
-    return new AccountStats(accountId, 0, 0, 0, 0, 0);
+    return new AccountStats(accountId, 0, 0, 0, 0);
   }
 
   private final UUID accountId;
@@ -22,45 +22,16 @@ public class AccountStats {
   //total count of debate down voted
   private final long debateDownVoted;
 
-  //total count of article up voted
-  private final long articleUpVoted;
-
   AccountStats(UUID accountId,
       long debateCount,
       long articleCount,
       long debateUpVoted,
-      long debateDownVoted,
-      long articleUpVoted) {
+      long debateDownVoted) {
     this.accountId = accountId;
     this.debateCount = debateCount;
     this.articleCount = articleCount;
     this.debateUpVoted = debateUpVoted;
     this.debateDownVoted = debateDownVoted;
-    this.articleUpVoted = articleUpVoted;
-  }
-
-  public UUID getAccountId() {
-    return accountId;
-  }
-
-  public long getDebateCount() {
-    return debateCount;
-  }
-
-  public long getArticleCount() {
-    return articleCount;
-  }
-
-  public long getDebateUpVoted() {
-    return debateUpVoted;
-  }
-
-  public long getDebateDownVoted() {
-    return debateDownVoted;
-  }
-
-  public long getArticleUpVoted() {
-    return articleUpVoted;
   }
 
   @Override
@@ -71,7 +42,6 @@ public class AccountStats {
         ", articleCount=" + articleCount +
         ", debateUpVoted=" + debateUpVoted +
         ", debateDownVoted=" + debateDownVoted +
-        ", articleUpVoted=" + articleUpVoted +
         '}';
   }
 
@@ -87,9 +57,6 @@ public class AccountStats {
     AccountStats that = (AccountStats) o;
 
     if (articleCount != that.articleCount) {
-      return false;
-    }
-    if (articleUpVoted != that.articleUpVoted) {
       return false;
     }
     if (debateCount != that.debateCount) {
@@ -115,7 +82,27 @@ public class AccountStats {
     result = 31 * result + (int) (articleCount ^ (articleCount >>> 32));
     result = 31 * result + (int) (debateUpVoted ^ (debateUpVoted >>> 32));
     result = 31 * result + (int) (debateDownVoted ^ (debateDownVoted >>> 32));
-    result = 31 * result + (int) (articleUpVoted ^ (articleUpVoted >>> 32));
     return result;
   }
+
+  public UUID getAccountId() {
+    return accountId;
+  }
+
+  public long getDebateCount() {
+    return debateCount;
+  }
+
+  public long getArticleCount() {
+    return articleCount;
+  }
+
+  public long getDebateUpVoted() {
+    return debateUpVoted;
+  }
+
+  public long getDebateDownVoted() {
+    return debateDownVoted;
+  }
+
 }

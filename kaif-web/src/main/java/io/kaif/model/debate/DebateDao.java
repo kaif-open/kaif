@@ -10,6 +10,8 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -139,5 +141,15 @@ public class DebateDao implements DaoOperations {
         downVoteDelta,
         debateId.value(),
         articleId.value());
+  }
+
+  /**
+   * @see io.kaif.config.UtilConfiguration#debaterIdCacheManager()
+   */
+  @Cacheable(value = "DebaterId")
+  public UUID loadDebaterId(FlakeId debateId) throws EmptyResultDataAccessException {
+    return UUID.fromString(jdbc().queryForObject(" SELECT debaterId FROM Debate WHERE debateId = ? ",
+        String.class,
+        debateId.value()));
   }
 }

@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.IntStream;
 
 import org.junit.Before;
@@ -89,6 +90,22 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     Debate debate = debateDao.findDebate(article.getArticleId(), created.getDebateId()).get();
     assertEquals(DebateContentType.MARK_DOWN, debate.getContentType());
     assertEquals("pixel art is better&lt;evil&gt;hi&lt;/evil&gt;", debate.getContent());
+  }
+
+  @Test
+  public void loadDebaterId_cache() throws Exception {
+    Account debater = savedAccountCitizen("debater1");
+    Debate created = service.debate(zoneInfo.getZone(),
+        article.getArticleId(),
+        Debate.NO_PARENT,
+        debater,
+        "pixel art is better");
+
+    UUID debaterId = debateDao.loadDebaterId(created.getDebateId());
+    assertEquals(debater.getAccountId(), debaterId);
+    assertSame("cached should be same instance",
+        debaterId,
+        debateDao.loadDebaterId(created.getDebateId()));
   }
 
   @Test

@@ -2,6 +2,7 @@ package io.kaif.service.impl;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.base.Preconditions;
 
 import io.kaif.flake.FlakeId;
+import io.kaif.model.account.AccountDao;
 import io.kaif.model.account.Authorization;
 import io.kaif.model.article.ArticleDao;
 import io.kaif.model.debate.DebateDao;
@@ -37,6 +39,9 @@ public class VoteServiceImpl implements VoteService {
 
   @Autowired
   private DebateDao debateDao;
+
+  @Autowired
+  private AccountDao accountDao;
 
   private void checkVoteAuthority(Zone zone, Authorization authorization) {
     //relax article up vote verification, no check zone and account in Database
@@ -107,6 +112,8 @@ public class VoteServiceImpl implements VoteService {
     int downVoteDelta = newState.downVoteDeltaFrom(previousState);
 
     debateDao.changeTotalVote(articleId, debateId, upVoteDelta, downVoteDelta);
-  }
 
+    UUID debaterId = debateDao.loadDebaterId(debateId);
+    accountDao.changeTotalVotedDebate(debaterId, upVoteDelta, downVoteDelta);
+  }
 }

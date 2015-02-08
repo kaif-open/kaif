@@ -14,6 +14,8 @@ import org.springframework.dao.DuplicateKeyException;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
+import io.kaif.model.account.AccountDao;
+import io.kaif.model.account.AccountStats;
 import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleDao;
 import io.kaif.model.debate.Debate;
@@ -31,14 +33,19 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   private VoteServiceImpl service;
 
   @Autowired
+  private AccountDao accountDao;
+
+  @Autowired
   private ArticleDao articleDao;
 
   @Autowired
   private DebateDao debateDao;
+
   private Zone zone;
   private FlakeId articleId;
   private FlakeId debateId;
   private Account voter;
+  private Account debater;
 
   @Before
   public void setUp() throws Exception {
@@ -51,6 +58,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     zone = zoneInfo.getZone();
     articleId = article.getArticleId();
     debateId = debate.getDebateId();
+    debater = accountDao.findById(debate.getDebaterId()).get();
   }
 
   @Test
@@ -258,6 +266,10 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     Debate changedDebate = debateDao.findDebate(articleId, debateId).get();
     assertEquals(downVote, changedDebate.getDownVote());
     assertEquals(upVote, changedDebate.getUpVote());
+
+    AccountStats stats = accountDao.loadStats(debater.getUsername());
+    assertEquals(downVote, stats.getDebateDownVoted());
+    assertEquals(upVote, stats.getDebateUpVoted());
   }
 
   private void assertArticleTotalVote(long upVote) {

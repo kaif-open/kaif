@@ -51,8 +51,7 @@ public class AccountDao implements DaoOperations {
         rs.getLong("debateCount"),
         rs.getLong("articleCount"),
         rs.getLong("debateUpVoted"),
-        rs.getLong("debateDownVoted"),
-        rs.getLong("articleUpVoted"));
+        rs.getLong("debateDownVoted"));
   };
 
   @Autowired
@@ -91,15 +90,14 @@ public class AccountDao implements DaoOperations {
             + " INSERT "
             + "   INTO AccountStats "
             + "        (accountId, debateCount, articleCount, debateUpVoted, "
-            + "         debateDownVoted, articleUpVoted ) "
+            + "         debateDownVoted) "
             + " VALUES "
-            + questions(6),
+            + questions(5),
         stats.getAccountId(),
         stats.getDebateCount(),
         stats.getArticleCount(),
         stats.getDebateUpVoted(),
-        stats.getDebateDownVoted(),
-        stats.getArticleUpVoted());
+        stats.getDebateDownVoted());
   }
 
   private Array authoritiesToVarcharArray(Set<Authority> authorities) {
@@ -190,17 +188,23 @@ public class AccountDao implements DaoOperations {
   }
 
   public void increaseArticleCount(Account author) {
-    increaseStats(author, "articleCount");
-  }
-
-  private void increaseStats(Account account, String field) {
-    String sql = String.format(" UPDATE AccountStats SET %s = %s + 1 WHERE accountId = ? ",
-        field,
-        field);
-    jdbc().update(sql, account.getAccountId());
+    jdbc().update(" UPDATE AccountStats SET articleCount  = articleCount + 1 WHERE accountId = ? ",
+        author.getAccountId());
   }
 
   public void increaseDebateCount(Account debater) {
-    increaseStats(debater, "debateCount");
+    jdbc().update(" UPDATE AccountStats SET debateCount  = debateCount + 1 WHERE accountId = ? ",
+        debater.getAccountId());
+  }
+
+  public void changeTotalVotedDebate(UUID accountId, long upVoteDelta, long downVoteDelta) {
+    if (upVoteDelta == 0 && downVoteDelta == 0) {
+      return;
+    }
+    jdbc().update(""
+        + " UPDATE AccountStats "
+        + "    SET debateUpVoted = debateUpVoted + (?) "
+        + "      , debateDownVoted = debateDownVoted + (?) "
+        + "  WHERE accountId = ? ", upVoteDelta, downVoteDelta, accountId);
   }
 }

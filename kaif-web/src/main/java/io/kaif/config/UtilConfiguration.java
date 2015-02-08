@@ -5,9 +5,11 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.guava.GuavaCacheManager;
+import org.springframework.cache.support.CompositeCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -23,12 +25,22 @@ public class UtilConfiguration {
     return new BCryptPasswordEncoder();
   }
 
-  /**
-   * zoneInfo is not change frequently, so even we have multiple web servers, it is allowed cached
-   * locally. one minute later the update will be showed in all servers
-   *
-   * @see io.kaif.model.zone.ZoneDao
-   */
+  @Bean
+  @Primary
+  public CacheManager compositeCacheManager() {
+    return new CompositeCacheManager(debaterIdCacheManager(), zoneInfoCacheManager());
+  }
+
+  @Bean
+  public CacheManager debaterIdCacheManager() {
+    CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
+        .expireAfterWrite(1, TimeUnit.DAYS)
+        .maximumSize(2000);
+    GuavaCacheManager cacheManager = new GuavaCacheManager("DebaterId");
+    cacheManager.setCacheBuilder(cacheBuilder);
+    return cacheManager;
+  }
+
   @Bean
   public CacheManager zoneInfoCacheManager() {
     CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
@@ -38,4 +50,6 @@ public class UtilConfiguration {
     cacheManager.setCacheBuilder(cacheBuilder);
     return cacheManager;
   }
+
 }
+
