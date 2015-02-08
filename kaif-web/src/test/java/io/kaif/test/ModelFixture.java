@@ -26,6 +26,15 @@ public interface ModelFixture {
     return Account.create(username, username + "@example.com", username + "pwd", Instant.now());
   }
 
+  default Account accountCitizen(String username) {
+    Account account = Account.create(username,
+        username + "@example.com",
+        username + "pwd",
+        Instant.now());
+    return account.withAuthorities(Stream.of(Authority.CITIZEN, Authority.TOURIST)
+        .collect(Collectors.toSet()));
+  }
+
   default Account accountWithAuth(String passwordHash, Authority... authorities) {
     Account account = Account.create(passwordHash + "-user",
         passwordHash + "@example.com",

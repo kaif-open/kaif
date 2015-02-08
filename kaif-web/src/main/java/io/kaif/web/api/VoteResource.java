@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -74,24 +75,35 @@ public class VoteResource {
   @RequestMapping(value = "/article", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
   public void voteArticle(AccountAccessToken token, @Valid @RequestBody VoteArticle request) {
-    voteService.voteArticle(request.newState,
-        request.zone,
-        request.articleId,
-        token,
-        request.previousState,
-        request.previousCount);
+    ignoreDuplicateVote(() -> //
+        voteService.voteArticle(request.newState,
+            request.zone,
+            request.articleId,
+            token,
+            request.previousState,
+            request.previousCount));
+  }
+
+  private void ignoreDuplicateVote(Runnable runnable) {
+    try {
+      runnable.run();
+    } catch (DuplicateKeyException ignore) {
+      // user duplicate vote, this mostly happened when user press browser back.
+      // this typically is fine, we safely ignore
+    }
   }
 
   @RequestMapping(value = "/debate", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
   public void voteDebate(AccountAccessToken token, @Valid @RequestBody VoteDebate request) {
-    voteService.voteDebate(request.newState,
-        request.zone,
-        request.articleId,
-        request.debateId,
-        token,
-        request.previousState,
-        request.previousCount);
+    ignoreDuplicateVote(() -> //
+        voteService.voteDebate(request.newState,
+            request.zone,
+            request.articleId,
+            request.debateId,
+            token,
+            request.previousState,
+            request.previousCount));
   }
 
   @RequestMapping(value = "/article-voters", method = RequestMethod.GET)

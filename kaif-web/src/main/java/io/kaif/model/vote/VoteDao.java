@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -64,7 +65,7 @@ public class VoteDao implements DaoOperations {
       UUID voterId,
       VoteState previousState,
       long previousCount,
-      Instant now) {
+      Instant now) throws DuplicateKeyException {
 
     DebateVoter voter = DebateVoter.create(newState,
         articleId,
@@ -125,7 +126,7 @@ public class VoteDao implements DaoOperations {
       UUID voterId,
       VoteState previousState,
       long previousCount,
-      Instant now) {
+      Instant now) throws DuplicateKeyException {
 
     ArticleVoter voter = ArticleVoter.create(newState, articleId, voterId, previousCount, now);
 
