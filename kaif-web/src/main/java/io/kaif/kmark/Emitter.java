@@ -267,7 +267,7 @@ class Emitter {
       }
       switch (mt) {
         case LINK:
-          temp.setLength(0);
+          temp.reset();
           b = this.checkLink(temp, in, pos, mt);
           if (b > 0) {
             out.append(temp);
@@ -278,7 +278,7 @@ class Emitter {
           break;
         case EM_STAR:
         case EM_UNDERSCORE:
-          temp.setLength(0);
+          temp.reset();
           b = this.recursiveEmitLine(temp, in, pos + 1, mt);
           if (b > 0) {
             this.config.decorator.openEmphasis(out);
@@ -291,7 +291,7 @@ class Emitter {
           break;
         case STRONG_STAR:
         case STRONG_UNDERSCORE:
-          temp.setLength(0);
+          temp.reset();
           b = this.recursiveEmitLine(temp, in, pos + 2, mt);
           if (b > 0) {
             this.config.decorator.openStrong(out);
@@ -303,7 +303,7 @@ class Emitter {
           }
           break;
         case STRIKE:
-          temp.setLength(0);
+          temp.reset();
           b = this.recursiveEmitLine(temp, in, pos + 2, mt);
           if (b > 0) {
             this.config.decorator.openStrike(out);
@@ -315,7 +315,7 @@ class Emitter {
           }
           break;
         case SUPER:
-          temp.setLength(0);
+          temp.reset();
           b = this.recursiveEmitLine(temp, in, pos + 1, mt);
           if (b > 0) {
             this.config.decorator.openSuper(out);

@@ -10,17 +10,18 @@ public class HtmlEscapeStringBuilder {
     this.stringBuilder = new StringBuilder();
   }
 
-  public HtmlEscapeStringBuilder appendHtml(String html) {
-    this.stringBuilder.append(html);
-    return this;
-  }
-  public HtmlEscapeStringBuilder appendHtml(char c) {
-    this.stringBuilder.append(Character.toString(c));
+  public HtmlEscapeStringBuilder appendHtml(String htmlText) {
+    this.stringBuilder.append(htmlText);
     return this;
   }
 
-  public HtmlEscapeStringBuilder append(String text) {
-    this.stringBuilder.append(HtmlUtils.htmlEscape(text));
+  public HtmlEscapeStringBuilder appendHtml(char htmlChar) {
+    this.stringBuilder.append(Character.toString(htmlChar));
+    return this;
+  }
+
+  public HtmlEscapeStringBuilder append(String unsafeText) {
+    this.stringBuilder.append(HtmlUtils.htmlEscape(unsafeText));
     return this;
   }
 
@@ -38,13 +39,13 @@ public class HtmlEscapeStringBuilder {
     return this;
   }
 
-  public HtmlEscapeStringBuilder append(final char c) {
-    stringBuilder.append(HtmlUtils.htmlEscape(Character.toString(c)));
+  public HtmlEscapeStringBuilder append(final char unsafeChar) {
+    stringBuilder.append(HtmlUtils.htmlEscape(Character.toString(unsafeChar)));
     return this;
   }
 
-  public void setLength(final int length) {
-    stringBuilder.setLength(length);
+  public void reset() {
+    stringBuilder.setLength(0);
   }
 
 }
