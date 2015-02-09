@@ -35,7 +35,7 @@ public interface Decorator {
    *
    * @param out The StringBuilder to write to.
    */
-  public void openParagraph(final StringBuilder out);
+  public void openParagraph(final HtmlEscapeStringBuilder out);
 
   /**
    * Called when a paragraph is closed.
@@ -50,7 +50,7 @@ public interface Decorator {
    *
    * @param out The StringBuilder to write to.
    */
-  public void closeParagraph(final StringBuilder out);
+  public void closeParagraph(final HtmlEscapeStringBuilder out);
 
   /**
    * Called when a code block is opened.
@@ -65,7 +65,7 @@ public interface Decorator {
    *
    * @param out The StringBuilder to write to.
    */
-  public void openCodeBlock(final StringBuilder out);
+  public void openCodeBlock(final HtmlEscapeStringBuilder out);
 
   /**
    * Called when a code block is closed.
@@ -80,7 +80,7 @@ public interface Decorator {
    *
    * @param out The StringBuilder to write to.
    */
-  public void closeCodeBlock(final StringBuilder out);
+  public void closeCodeBlock(final HtmlEscapeStringBuilder out);
 
   /**
    * Called when a code span is opened.
@@ -95,7 +95,7 @@ public interface Decorator {
    *
    * @param out The StringBuilder to write to.
    */
-  public void openCodeSpan(final StringBuilder out);
+  public void openCodeSpan(final HtmlEscapeStringBuilder out);
 
   /**
    * Called when a code span is closed.
@@ -110,7 +110,7 @@ public interface Decorator {
    *
    * @param out The StringBuilder to write to.
    */
-  public void closeCodeSpan(final StringBuilder out);
+  public void closeCodeSpan(final HtmlEscapeStringBuilder out);
 
   /**
    * Called when a strong span is opened.
@@ -125,7 +125,7 @@ public interface Decorator {
    *
    * @param out The StringBuilder to write to.
    */
-  public void openStrong(final StringBuilder out);
+  public void openStrong(final HtmlEscapeStringBuilder out);
 
   /**
    * Called when a strong span is closed.
@@ -140,7 +140,7 @@ public interface Decorator {
    *
    * @param out The StringBuilder to write to.
    */
-  public void closeStrong(final StringBuilder out);
+  public void closeStrong(final HtmlEscapeStringBuilder out);
 
   /**
    * Called when a strike span is opened.
@@ -155,7 +155,7 @@ public interface Decorator {
    *
    * @param out The StringBuilder to write to.
    */
-  public void openStrike(final StringBuilder out);
+  public void openStrike(final HtmlEscapeStringBuilder out);
 
   /**
    * Called when a strike span is closed.
@@ -170,7 +170,7 @@ public interface Decorator {
    *
    * @param out The StringBuilder to write to.
    */
-  public void closeStrike(final StringBuilder out);
+  public void closeStrike(final HtmlEscapeStringBuilder out);
 
   /**
    * Called when an emphasis span is opened.
@@ -185,7 +185,7 @@ public interface Decorator {
    *
    * @param out The StringBuilder to write to.
    */
-  public void openEmphasis(final StringBuilder out);
+  public void openEmphasis(final HtmlEscapeStringBuilder out);
 
   /**
    * Called when an emphasis span is closed.
@@ -200,7 +200,7 @@ public interface Decorator {
    *
    * @param out The StringBuilder to write to.
    */
-  public void closeEmphasis(final StringBuilder out);
+  public void closeEmphasis(final HtmlEscapeStringBuilder out);
 
   /**
    * Called when a superscript span is opened.
@@ -215,7 +215,7 @@ public interface Decorator {
    *
    * @param out The StringBuilder to write to.
    */
-  public void openSuper(final StringBuilder out);
+  public void openSuper(final HtmlEscapeStringBuilder out);
 
   /**
    * Called when a superscript span is closed.
@@ -230,7 +230,7 @@ public interface Decorator {
    *
    * @param out The StringBuilder to write to.
    */
-  public void closeSuper(final StringBuilder out);
+  public void closeSuper(final HtmlEscapeStringBuilder out);
 
   /**
    * Called when an ordered list is opened.
@@ -245,7 +245,7 @@ public interface Decorator {
    *
    * @param out The StringBuilder to write to.
    */
-  public void openOrderedList(final StringBuilder out);
+  public void openOrderedList(final HtmlEscapeStringBuilder out);
 
   /**
    * Called when an ordered list is closed.
@@ -260,7 +260,7 @@ public interface Decorator {
    *
    * @param out The StringBuilder to write to.
    */
-  public void closeOrderedList(final StringBuilder out);
+  public void closeOrderedList(final HtmlEscapeStringBuilder out);
 
   /**
    * Called when an unordered list is opened.
@@ -275,7 +275,7 @@ public interface Decorator {
    *
    * @param out The StringBuilder to write to.
    */
-  public void openUnorderedList(final StringBuilder out);
+  public void openUnorderedList(final HtmlEscapeStringBuilder out);
 
   /**
    * Called when an unordered list is closed.
@@ -290,7 +290,7 @@ public interface Decorator {
    *
    * @param out The StringBuilder to write to.
    */
-  public void closeUnorderedList(final StringBuilder out);
+  public void closeUnorderedList(final HtmlEscapeStringBuilder out);
 
   /**
    * Called when a list item is opened.
@@ -308,7 +308,7 @@ public interface Decorator {
    *
    * @param out The StringBuilder to write to.
    */
-  public void openListItem(final StringBuilder out);
+  public void openListItem(final HtmlEscapeStringBuilder out);
 
   /**
    * Called when a list item is closed.
@@ -323,7 +323,7 @@ public interface Decorator {
    *
    * @param out The StringBuilder to write to.
    */
-  public void closeListItem(final StringBuilder out);
+  public void closeListItem(final HtmlEscapeStringBuilder out);
 
   /**
    * Called when a link is opened.
@@ -341,6 +341,34 @@ public interface Decorator {
    *
    * @param out The StringBuilder to write to.
    */
-  public void openLink(final StringBuilder out);
+  public void openLink(final HtmlEscapeStringBuilder out);
+
+  /**
+   * Called when a blockquote is opened.
+   * <p>
+   * Default implementation is:
+   * <p>
+   * <pre>
+   * <code>out.append("&lt;blockquote>");</code>
+   * </pre>
+   *
+   * @param out The StringBuilder to write to.
+   */
+  public void openBlockquote(final HtmlEscapeStringBuilder out);
+
+  /**
+   * Called when a blockquote is closed.
+   * <p>
+   * <p>
+   * Default implementation is:
+   * </p>
+   * <p>
+   * <pre>
+   * <code>out.append("&lt;/blockquote>\n");</code>
+   * </pre>
+   *
+   * @param out The StringBuilder to write to.
+   */
+  public void closeBlockquote(final HtmlEscapeStringBuilder out);
 
 }

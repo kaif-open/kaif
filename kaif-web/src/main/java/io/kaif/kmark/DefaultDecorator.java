@@ -26,9 +26,9 @@ package io.kaif.kmark;
  * <code>public class MyDecorator extends DefaultDecorator
  * {
  *     &#64;Override
- *     public void openParagraph(StringBuilder out)
+ *     public void openParagraph(HtmlEscapeStringBuilder out)
  *     {
- *         out.append("&lt;p class=\"myclass\">");
+ *         out.appendHtml("&lt;p class=\"myclass\">");
  *     }
  * }
  * </code>
@@ -46,108 +46,118 @@ public class DefaultDecorator implements Decorator {
   }
 
   @Override
-  public void openParagraph(StringBuilder out) {
-    out.append("<p>");
+  public void openParagraph(HtmlEscapeStringBuilder out) {
+    out.appendHtml("<p>");
   }
 
   @Override
-  public void closeParagraph(StringBuilder out) {
-    out.append("</p>\n");
+  public void closeParagraph(HtmlEscapeStringBuilder out) {
+    out.appendHtml("</p>\n");
   }
 
   @Override
-  public void openCodeBlock(StringBuilder out) {
-    out.append("<pre><code>");
+  public void openCodeBlock(HtmlEscapeStringBuilder out) {
+    out.appendHtml("<pre><code>");
   }
 
   @Override
-  public void closeCodeBlock(StringBuilder out) {
-    out.append("</code></pre>\n");
+  public void closeCodeBlock(HtmlEscapeStringBuilder out) {
+    out.appendHtml("</code></pre>\n");
   }
 
   @Override
-  public void openCodeSpan(StringBuilder out) {
-    out.append("<code>");
+  public void openCodeSpan(HtmlEscapeStringBuilder out) {
+    out.appendHtml("<code>");
   }
 
   @Override
-  public void closeCodeSpan(StringBuilder out) {
-    out.append("</code>");
+  public void closeCodeSpan(HtmlEscapeStringBuilder out) {
+    out.appendHtml("</code>");
   }
 
   @Override
-  public void openStrong(StringBuilder out) {
-    out.append("<strong>");
+  public void openStrong(HtmlEscapeStringBuilder out) {
+    out.appendHtml("<strong>");
   }
 
   @Override
-  public void closeStrong(StringBuilder out) {
-    out.append("</strong>");
+  public void closeStrong(HtmlEscapeStringBuilder out) {
+    out.appendHtml("</strong>");
   }
 
   @Override
-  public void openStrike(StringBuilder out) {
-    out.append("<s>");
+  public void openStrike(HtmlEscapeStringBuilder out) {
+    out.appendHtml("<s>");
   }
 
   @Override
-  public void closeStrike(StringBuilder out) {
-    out.append("</s>");
+  public void closeStrike(HtmlEscapeStringBuilder out) {
+    out.appendHtml("</s>");
   }
 
   @Override
-  public void openEmphasis(StringBuilder out) {
-    out.append("<em>");
+  public void openEmphasis(HtmlEscapeStringBuilder out) {
+    out.appendHtml("<em>");
   }
 
   @Override
-  public void closeEmphasis(StringBuilder out) {
-    out.append("</em>");
+  public void closeEmphasis(HtmlEscapeStringBuilder out) {
+    out.appendHtml("</em>");
   }
 
   @Override
-  public void openSuper(StringBuilder out) {
-    out.append("<sup>");
+  public void openSuper(HtmlEscapeStringBuilder out) {
+    out.appendHtml("<sup>");
   }
 
   @Override
-  public void closeSuper(StringBuilder out) {
-    out.append("</sup>");
+  public void closeSuper(HtmlEscapeStringBuilder out) {
+    out.appendHtml("</sup>");
   }
 
   @Override
-  public void openOrderedList(StringBuilder out) {
-    out.append("<ol>\n");
+  public void openOrderedList(HtmlEscapeStringBuilder out) {
+    out.appendHtml("<ol>\n");
   }
 
   @Override
-  public void closeOrderedList(StringBuilder out) {
-    out.append("</ol>\n");
+  public void closeOrderedList(HtmlEscapeStringBuilder out) {
+    out.appendHtml("</ol>\n");
   }
 
   @Override
-  public void openUnorderedList(StringBuilder out) {
-    out.append("<ul>\n");
+  public void openUnorderedList(HtmlEscapeStringBuilder out) {
+    out.appendHtml("<ul>\n");
   }
 
   @Override
-  public void closeUnorderedList(StringBuilder out) {
-    out.append("</ul>\n");
+  public void closeUnorderedList(HtmlEscapeStringBuilder out) {
+    out.appendHtml("</ul>\n");
   }
 
   @Override
-  public void openListItem(StringBuilder out) {
-    out.append("<li");
+  public void openListItem(HtmlEscapeStringBuilder out) {
+    out.appendHtml("<li");
   }
 
   @Override
-  public void closeListItem(StringBuilder out) {
-    out.append("</li>\n");
+  public void closeListItem(HtmlEscapeStringBuilder out) {
+    out.appendHtml("</li>\n");
   }
 
   @Override
-  public void openLink(StringBuilder out) {
-    out.append("<a");
+  public void openLink(HtmlEscapeStringBuilder out) {
+    out.appendHtml("<a");
+  }
+
+  @Override
+  public void openBlockquote(HtmlEscapeStringBuilder out) {
+    out.appendHtml("<blockquote>");
+  }
+
+  @Override
+  public void closeBlockquote(HtmlEscapeStringBuilder out) {
+    out.appendHtml("</blockquote>\n");
   }
 
 }

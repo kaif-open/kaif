@@ -26,30 +26,18 @@ public class Configuration {
   final String encoding;
   final Decorator decorator;
   final BlockEmitter codeBlockEmitter;
-
-  /**
-   * <p>
-   * This is the default configuration for txtmark's <code>process</code>
-   * methods
-   * </p>
-   * <p>
-   * <ul>
-   * <li><code>safeMode = false</code></li>
-   * <li><code>encoding = UTF-8</code></li>
-   * <li><code>decorator = DefaultDecorator</code></li>
-   * <li><code>codeBlockEmitter = null</code></li>
-   * </ul>
-   */
-  public final static Configuration DEFAULT = Configuration.builder().build();
+  final String linkAnchorPrefix;
 
   Configuration(
       String encoding,
       Decorator decorator,
-      BlockEmitter codeBlockEmitter
+      BlockEmitter codeBlockEmitter,
+      String linkAnchorPrefix
   ) {
     this.encoding = encoding;
     this.decorator = decorator;
     this.codeBlockEmitter = codeBlockEmitter;
+    this.linkAnchorPrefix = linkAnchorPrefix;
   }
 
   /**
@@ -72,6 +60,7 @@ public class Configuration {
     private String encoding = "UTF-8";
     private Decorator decorator = new DefaultDecorator();
     private BlockEmitter codeBlockEmitter = new CodeBlockEmitter();
+    private String linkAnchorPrefix = "";
 
     /**
      * Constructor.
@@ -125,13 +114,28 @@ public class Configuration {
     }
 
     /**
+     * will append to kmark's ref link
+     * eg. aaa will become #aaa-1, #aaa-2, #aaa-3
+     *
+     * @param linkAnchorPrefix
+     * @return
+     */
+    public Builder setLinkAnchorPrefix(String linkAnchorPrefix) {
+      this.linkAnchorPrefix = linkAnchorPrefix;
+      return this;
+    }
+
+    /**
      * Builds a configuration instance.
      *
      * @return a Configuration instance
      * @since 0.7
      */
     public Configuration build() {
-      return new Configuration(this.encoding, this.decorator, this.codeBlockEmitter);
+      return new Configuration(this.encoding,
+          this.decorator,
+          this.codeBlockEmitter,
+          this.linkAnchorPrefix);
     }
 
     public Decorator getDecorator() {

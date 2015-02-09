@@ -196,10 +196,10 @@ class Line {
     if (this.isEmpty) {
       return LineType.EMPTY;
     }
-
-    if (this.leading > 3) {
-      return LineType.CODE;
+    if (this.value.charAt(this.leading) == '>') {
+      return LineType.BQUOTE;
     }
+
     if (this.value.length() - this.leading - this.trailing > 2 && (this.value.charAt(this.leading)
         == '`'
         || this.value.charAt(this.leading) == '~')) {

@@ -1,6 +1,8 @@
 <p>As you probably guessed, indented 4 spaces. By the way, instead of
 indenting the block, you can use delimited blocks, if you like:</p>
 <pre><code>define foobar() {
-    print "Welcome to flavor country!";
+    print &quot;Welcome to flavor country!這是中文&quot;;
+    這是中文
 }
+&lt;html&gt;code&lt;/html&gt;
 </code></pre>

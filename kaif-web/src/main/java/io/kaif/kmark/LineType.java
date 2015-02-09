@@ -17,19 +17,28 @@ package io.kaif.kmark;
 
 /**
  * Line type enumeration.
- * 
+ *
  * @author René Jeschke <rene_jeschke@yahoo.de>
  */
-enum LineType
-{
-    /** Empty line. */
-    EMPTY,
-    /** Undefined content. */
-    OTHER,
-    /** A code block line. */
-    CODE,
-    /** A list. */
-    ULIST, OLIST,
-    /** Fenced code block start/end */
-    FENCED_CODE
+enum LineType {
+  /**
+   * Empty line.
+   */
+  EMPTY,
+  /**
+   * Undefined content.
+   */
+  OTHER,
+  /**
+   * A list.
+   */
+  ULIST, OLIST,
+  /**
+   * Fenced code block start/end
+   */
+  FENCED_CODE,
+  /**
+   * A block quote.
+   */
+  BQUOTE
 }

@@ -26,10 +26,6 @@ enum BlockType {
    */
   NONE,
   /**
-   * A code block.
-   */
-  CODE,
-  /**
    * A fenced code block.
    */
   FENCED_CODE,
@@ -48,5 +44,11 @@ enum BlockType {
   /**
    * An unordered list.
    */
-  UNORDERED_LIST
+  UNORDERED_LIST,
+
+  /**
+   * Block Quote
+   */
+  BLOCKQUOTE,
+  
 }

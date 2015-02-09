@@ -71,11 +71,29 @@ class Block {
     }
   }
 
-
+  /**
+   * Used for nested block quotes. Removes '>' char.
+   */
+  public void removeBlockQuotePrefix() {
+    Line line = this.lines;
+    while (line != null) {
+      if (!line.isEmpty) {
+        if (line.value.charAt(line.leading) == '>') {
+          int rem = line.leading + 1;
+          if (line.leading + 1 < line.value.length()
+              && line.value.charAt(line.leading + 1) == ' ') {
+            rem++;
+          }
+          line.value = line.value.substring(rem);
+          line.initLeading();
+        }
+      }
+      line = line.next;
+    }
+  }
 
   /**
    * Used for nested lists. Removes list markers and up to 4 leading spaces.
-   *
    */
   public void removeListIndent() {
     Line line = this.lines;

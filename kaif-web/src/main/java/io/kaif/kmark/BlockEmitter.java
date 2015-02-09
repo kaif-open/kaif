@@ -65,5 +65,5 @@ public interface BlockEmitter {
    * @param lines List of lines
    * @param meta  Meta information as a single String (if any) or empty String
    */
-  public void emitBlock(StringBuilder out, List<String> lines, String meta);
+  public void emitBlock(HtmlEscapeStringBuilder out, List<String> lines, String meta);
 }

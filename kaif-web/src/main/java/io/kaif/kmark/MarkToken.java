@@ -58,10 +58,6 @@ enum MarkToken {
    */
   LINK,               // [
   /**
-   * ![
-   */
-  IMAGE,              // ![
-  /**
    * \
    */
   ESCAPE,             // \x
@@ -69,52 +65,4 @@ enum MarkToken {
    * Extended: ^
    */
   SUPER,              // ^
-  /**
-   * Extended: (C)
-   */
-  X_COPY,             // (C)
-  /**
-   * Extended: (R)
-   */
-  X_REG,              // (R)
-  /**
-   * Extended: (TM)
-   */
-  X_TRADE,            // (TM)
-  /**
-   * Extended: &lt;&lt;
-   */
-  X_LAQUO,            // <<
-  /**
-   * Extended: >>
-   */
-  X_RAQUO,            // >>
-  /**
-   * Extended: --
-   */
-  X_NDASH,            // --
-  /**
-   * Extended: ---
-   */
-  X_MDASH,            // ---
-  /**
-   * Extended: &#46;&#46;&#46;
-   */
-  X_HELLIP,           // ...
-  /**
-   * Extended: "x
-   */
-  X_RDQUO,            // "
-  /**
-   * Extended: x"
-   */
-  X_LDQUO,            // "
-  /**
-   * [[
-   */
-  X_LINK_OPEN,        // [[
-  /**
-   * ]]
-   */
-  X_LINK_CLOSE,       // ]]
 }

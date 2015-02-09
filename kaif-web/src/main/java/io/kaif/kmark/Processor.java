@@ -97,15 +97,9 @@ public class Processor {
     }
   }
 
-  /**
-   * Transforms an input String into HTML using the default Configuration.
-   *
-   * @param input The String to process.
-   * @return The processed String.
-   * @see Configuration#DEFAULT
-   */
-  public static String process(final String input) {
-    return process(input, Configuration.DEFAULT);
+  public static String process(final String input, final String linkAnchorPrefix) {
+    return process(input,
+        new Configuration.Builder().setLinkAnchorPrefix(linkAnchorPrefix).build());
   }
 
   /**
@@ -119,7 +113,7 @@ public class Processor {
    */
   private Block readLines() throws IOException {
     final Block block = new Block();
-    final StringBuilder sb = new StringBuilder(80);
+    final StringBuilder sb = new StringBuilder(200);
     int c = this.reader.read();
     LinkRef lastLinkRef = null;
     while (c != -1) {
@@ -212,9 +206,7 @@ public class Processor {
 
       if (isLinkRef) {
         // Store linkRef and skip line
-        final LinkRef lr = new LinkRef(link, comment, comment != null
-            && (link.length() == 1 && link.charAt(0) == '*'));
-        this.emitter.addLinkRef(id, lr);
+        final LinkRef lr = this.emitter.addLinkRef(id, link, comment);
         if (comment == null) {
           lastLinkRef = lr;
         }
@@ -297,7 +289,7 @@ public class Processor {
                 || t == LineType.ULIST)) {
               break;
             }
-            if (t == LineType.CODE || t == LineType.FENCED_CODE) {
+            if (t == LineType.FENCED_CODE || t == LineType.BQUOTE) {
               break;
             }
             line = line.next;
@@ -316,13 +308,22 @@ public class Processor {
           line = root.lines;
           break;
         }
-        case CODE:
-          while (line != null && (line.isEmpty || line.leading > 3)) {
+        case BQUOTE:
+          while (line != null) {
+            if (!line.isEmpty
+                && (line.prevEmpty
+                && line.leading == 0
+                && line.getLineType() != LineType.BQUOTE)) {
+              break;
+            }
             line = line.next;
           }
           block = root.split(line != null ? line.previous : root.lineTail);
-          block.type = BlockType.CODE;
+          block.type = BlockType.BLOCKQUOTE;
           block.removeSurroundingEmptyLines();
+          block.removeBlockQuotePrefix();
+          this.recurse(block, false);
+          line = root.lines;
           break;
         case FENCED_CODE:
           line = line.next;
@@ -385,16 +386,16 @@ public class Processor {
    * @throws IOException If an IO error occurred.
    */
   private String process() throws IOException {
-    final StringBuilder out = new StringBuilder();
+    final HtmlEscapeStringBuilder out = new HtmlEscapeStringBuilder();
     final Block parent = this.readLines();
     parent.removeSurroundingEmptyLines();
-
     this.recurse(parent, false);
     Block block = parent.blocks;
     while (block != null) {
       this.emitter.emit(out, block);
       block = block.next;
     }
+    this.emitter.emitRefLinks(out);
     return out.toString();
   }
 }
