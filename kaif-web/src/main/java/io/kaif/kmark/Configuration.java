@@ -23,32 +23,6 @@ package io.kaif.kmark;
  */
 public class Configuration {
 
-  final String encoding;
-  final Decorator decorator;
-  final BlockEmitter codeBlockEmitter;
-  final String linkAnchorPrefix;
-
-  Configuration(
-      String encoding,
-      Decorator decorator,
-      BlockEmitter codeBlockEmitter,
-      String linkAnchorPrefix
-  ) {
-    this.encoding = encoding;
-    this.decorator = decorator;
-    this.codeBlockEmitter = codeBlockEmitter;
-    this.linkAnchorPrefix = linkAnchorPrefix;
-  }
-
-  /**
-   * Creates a new Builder instance.
-   *
-   * @return A new Builder instance.
-   */
-  public static Builder builder() {
-    return new Builder();
-  }
-
   /**
    * Configuration builder.
    *
@@ -74,7 +48,8 @@ public class Configuration {
      * <p>
      * Default: <code>&quot;UTF-8&quot;</code>
      *
-     * @param encoding The encoding
+     * @param encoding
+     *     The encoding
      * @return This builder
      * @since 0.7
      */
@@ -84,26 +59,12 @@ public class Configuration {
     }
 
     /**
-     * Sets the decorator for txtmark.
-     * <p>
-     * Default: <code>DefaultDecorator()</code>
-     *
-     * @param decorator The decorator
-     * @return This builder
-     * @see DefaultDecorator
-     * @since 0.7
-     */
-    public Builder setDecorator(Decorator decorator) {
-      this.decorator = decorator;
-      return this;
-    }
-
-    /**
      * Sets the code block emitter.
      * <p>
      * Default: <code>null</code>
      *
-     * @param emitter The BlockEmitter
+     * @param emitter
+     *     The BlockEmitter
      * @return This builder
      * @see BlockEmitter
      * @since 0.7
@@ -141,5 +102,44 @@ public class Configuration {
     public Decorator getDecorator() {
       return decorator;
     }
+
+    /**
+     * Sets the decorator for txtmark.
+     * <p>
+     * Default: <code>DefaultDecorator()</code>
+     *
+     * @param decorator
+     *     The decorator
+     * @return This builder
+     * @see DefaultDecorator
+     * @since 0.7
+     */
+    public Builder setDecorator(Decorator decorator) {
+      this.decorator = decorator;
+      return this;
+    }
+  }
+
+  /**
+   * Creates a new Builder instance.
+   *
+   * @return A new Builder instance.
+   */
+  public static Builder builder() {
+    return new Builder();
+  }
+  final String encoding;
+  final Decorator decorator;
+  final BlockEmitter codeBlockEmitter;
+  final String linkAnchorPrefix;
+
+  Configuration(String encoding,
+      Decorator decorator,
+      BlockEmitter codeBlockEmitter,
+      String linkAnchorPrefix) {
+    this.encoding = encoding;
+    this.decorator = decorator;
+    this.codeBlockEmitter = codeBlockEmitter;
+    this.linkAnchorPrefix = linkAnchorPrefix;
   }
 }

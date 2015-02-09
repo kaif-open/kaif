@@ -33,7 +33,8 @@ public interface Decorator {
    * <code>out.append("&lt;p>");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void openParagraph(final HtmlEscapeStringBuilder out);
 
@@ -48,7 +49,8 @@ public interface Decorator {
    * <code>out.append("&lt;/p>\n");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void closeParagraph(final HtmlEscapeStringBuilder out);
 
@@ -63,7 +65,8 @@ public interface Decorator {
    * <code>out.append("&lt;pre>&lt;code>");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void openCodeBlock(final HtmlEscapeStringBuilder out);
 
@@ -78,7 +81,8 @@ public interface Decorator {
    * <code>out.append("&lt;/code>&lt;/pre>\n");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void closeCodeBlock(final HtmlEscapeStringBuilder out);
 
@@ -93,7 +97,8 @@ public interface Decorator {
    * <code>out.append("&lt;code>");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void openCodeSpan(final HtmlEscapeStringBuilder out);
 
@@ -108,7 +113,8 @@ public interface Decorator {
    * <code>out.append("&lt;/code>");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void closeCodeSpan(final HtmlEscapeStringBuilder out);
 
@@ -123,7 +129,8 @@ public interface Decorator {
    * <code>out.append("&lt;strong>");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void openStrong(final HtmlEscapeStringBuilder out);
 
@@ -138,7 +145,8 @@ public interface Decorator {
    * <code>out.append("&lt;/strong>");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void closeStrong(final HtmlEscapeStringBuilder out);
 
@@ -153,7 +161,8 @@ public interface Decorator {
    * <code>out.append("&lt;s>");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void openStrike(final HtmlEscapeStringBuilder out);
 
@@ -168,7 +177,8 @@ public interface Decorator {
    * <code>out.append("&lt;/s>");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void closeStrike(final HtmlEscapeStringBuilder out);
 
@@ -183,7 +193,8 @@ public interface Decorator {
    * <code>out.append("&lt;em>");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void openEmphasis(final HtmlEscapeStringBuilder out);
 
@@ -198,7 +209,8 @@ public interface Decorator {
    * <code>out.append("&lt;/em>");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void closeEmphasis(final HtmlEscapeStringBuilder out);
 
@@ -213,7 +225,8 @@ public interface Decorator {
    * <code>out.append("&lt;sup>");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void openSuper(final HtmlEscapeStringBuilder out);
 
@@ -228,7 +241,8 @@ public interface Decorator {
    * <code>out.append("&lt;/sup>");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void closeSuper(final HtmlEscapeStringBuilder out);
 
@@ -243,7 +257,8 @@ public interface Decorator {
    * <code>out.append("&lt;ol>\n");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void openOrderedList(final HtmlEscapeStringBuilder out);
 
@@ -258,7 +273,8 @@ public interface Decorator {
    * <code>out.append("&lt;/ol>\n");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void closeOrderedList(final HtmlEscapeStringBuilder out);
 
@@ -273,7 +289,8 @@ public interface Decorator {
    * <code>out.append("&lt;ul>\n");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void openUnorderedList(final HtmlEscapeStringBuilder out);
 
@@ -288,7 +305,8 @@ public interface Decorator {
    * <code>out.append("&lt;/ul>\n");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void closeUnorderedList(final HtmlEscapeStringBuilder out);
 
@@ -306,7 +324,8 @@ public interface Decorator {
    * <code>out.append("&lt;li");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void openListItem(final HtmlEscapeStringBuilder out);
 
@@ -321,7 +340,8 @@ public interface Decorator {
    * <code>out.append("&lt;/li>\n");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void closeListItem(final HtmlEscapeStringBuilder out);
 
@@ -339,7 +359,8 @@ public interface Decorator {
    * <code>out.append("&lt;a");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void openLink(final HtmlEscapeStringBuilder out);
 
@@ -352,7 +373,8 @@ public interface Decorator {
    * <code>out.append("&lt;blockquote>");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void openBlockquote(final HtmlEscapeStringBuilder out);
 
@@ -367,7 +389,8 @@ public interface Decorator {
    * <code>out.append("&lt;/blockquote>\n");</code>
    * </pre>
    *
-   * @param out The StringBuilder to write to.
+   * @param out
+   *     The StringBuilder to write to.
    */
   public void closeBlockquote(final HtmlEscapeStringBuilder out);
 

@@ -26,6 +26,16 @@ import java.util.LinkedHashMap;
 class Emitter {
 
   /**
+   * Turns every whitespace character into a space character.
+   *
+   * @param c
+   *     Character to check
+   * @return 32 is c was a whitespace, c otherwise
+   */
+  private static char whitespaceToSpace(char c) {
+    return Character.isWhitespace(c) ? ' ' : c;
+  }
+  /**
    * Link references.
    */
   private final LinkedHashMap<String, LinkRef> linkRefs = new LinkedHashMap<>();
@@ -44,7 +54,8 @@ class Emitter {
   /**
    * Adds a LinkRef to this set of LinkRefs.
    *
-   * @param key The key/id.
+   * @param key
+   *     The key/id.
    */
   public LinkRef addLinkRef(final String key, final String link, final String title) {
     final String lowerCase = key.toLowerCase();
@@ -61,8 +72,10 @@ class Emitter {
   /**
    * Transforms the given block recursively into HTML.
    *
-   * @param out  The StringBuilder to write to.
-   * @param root The Block to process.
+   * @param out
+   *     The StringBuilder to write to.
+   * @param root
+   *     The Block to process.
    */
   public void emit(final HtmlEscapeStringBuilder out, final Block root) {
     root.removeSurroundingEmptyLines();
@@ -132,8 +145,10 @@ class Emitter {
   /**
    * Transforms lines into HTML.
    *
-   * @param out   The StringBuilder to write to.
-   * @param block The Block to process.
+   * @param out
+   *     The StringBuilder to write to.
+   * @param block
+   *     The Block to process.
    */
   private void emitLines(final HtmlEscapeStringBuilder out, final Block block) {
     switch (block.type) {
@@ -152,9 +167,12 @@ class Emitter {
   /**
    * Finds the position of the given Token in the given String.
    *
-   * @param in    The String to search on.
-   * @param start The starting character position.
-   * @param token The token to find.
+   * @param in
+   *     The String to search on.
+   * @param start
+   *     The starting character position.
+   * @param token
+   *     The token to find.
    * @return The position of the token or -1 if none could be found.
    */
   private int findToken(final String in, int start, MarkToken token) {
@@ -171,10 +189,14 @@ class Emitter {
   /**
    * Checks if there is a valid markdown link definition.
    *
-   * @param out   The StringBuilder containing the generated output.
-   * @param in    Input String.
-   * @param start Starting position.
-   * @param token Either LINK or IMAGE.
+   * @param out
+   *     The StringBuilder containing the generated output.
+   * @param in
+   *     Input String.
+   * @param start
+   *     Starting position.
+   * @param token
+   *     Either LINK or IMAGE.
    * @return The new position or -1 if there is no valid markdown link.
    */
   private int checkLink(final HtmlEscapeStringBuilder out,
@@ -242,10 +264,14 @@ class Emitter {
    * Recursively scans through the given line, taking care of any markdown
    * stuff.
    *
-   * @param out   The StringBuilder to write to.
-   * @param in    Input String.
-   * @param start Start position.
-   * @param token The matching Token (for e.g. '*')
+   * @param out
+   *     The StringBuilder to write to.
+   * @param in
+   *     Input String.
+   * @param start
+   *     Start position.
+   * @param token
+   *     The matching Token (for e.g. '*')
    * @return The position of the matching Token or -1 if token was NONE or no
    * Token could be found.
    */
@@ -258,11 +284,9 @@ class Emitter {
     while (pos < in.length()) {
 
       final MarkToken mt = this.getToken(in, pos);
-      if (token != MarkToken.NONE
-          && (mt == token
+      if (token != MarkToken.NONE && (mt == token
           || token == MarkToken.EM_STAR && mt == MarkToken.STRONG_STAR
-          || token == MarkToken.EM_UNDERSCORE
-          && mt == MarkToken.STRONG_UNDERSCORE)) {
+          || token == MarkToken.EM_UNDERSCORE && mt == MarkToken.STRONG_UNDERSCORE)) {
         return pos;
       }
       switch (mt) {
@@ -360,20 +384,12 @@ class Emitter {
   }
 
   /**
-   * Turns every whitespace character into a space character.
-   *
-   * @param c Character to check
-   * @return 32 is c was a whitespace, c otherwise
-   */
-  private static char whitespaceToSpace(char c) {
-    return Character.isWhitespace(c) ? ' ' : c;
-  }
-
-  /**
    * Check if there is any markdown Token.
    *
-   * @param in  Input String.
-   * @param pos Starting position.
+   * @param in
+   *     Input String.
+   * @param pos
+   *     Starting position.
    * @return The Token.
    */
   private MarkToken getToken(final String in, final int pos) {
@@ -436,8 +452,10 @@ class Emitter {
   /**
    * Writes a set of markdown lines into the StringBuilder.
    *
-   * @param out   The StringBuilder to write to.
-   * @param lines The lines to write.
+   * @param out
+   *     The StringBuilder to write to.
+   * @param lines
+   *     The lines to write.
    */
   private void emitMarkedLines(final HtmlEscapeStringBuilder out, final Line lines) {
     final StringBuilder in = new StringBuilder();
@@ -460,9 +478,12 @@ class Emitter {
   /**
    * Writes a code block into the StringBuilder.
    *
-   * @param out   The StringBuilder to write to.
-   * @param lines The lines to write.
-   * @param meta  Meta information.
+   * @param out
+   *     The StringBuilder to write to.
+   * @param lines
+   *     The lines to write.
+   * @param meta
+   *     Meta information.
    */
   private void emitCodeLines(final HtmlEscapeStringBuilder out,
       final Line lines,

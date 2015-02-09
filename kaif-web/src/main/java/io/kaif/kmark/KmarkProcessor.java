@@ -37,53 +37,33 @@ import java.io.StringReader;
 public class KmarkProcessor {
 
   /**
-   * The reader.
-   */
-  private final Reader reader;
-  /**
-   * The emitter.
-   */
-  private final Emitter emitter;
-  /**
-   * The Configuration.
-   */
-  final Configuration config;
-
-  /**
-   * Constructor.
-   *
-   * @param reader The input reader.
-   */
-  protected KmarkProcessor(final Reader reader, final Configuration config) {
-    this.reader = reader;
-    this.config = config;
-    this.emitter = new Emitter(this.config);
-  }
-
-  /**
    * Transforms an input stream into HTML using the given Configuration.
    *
-   * @param reader        The Reader to process.
-   * @param configuration The Configuration.
+   * @param reader
+   *     The Reader to process.
+   * @param configuration
+   *     The Configuration.
    * @return The processed String.
-   * @throws IOException if an IO error occurs
+   * @throws IOException
+   *     if an IO error occurs
    * @see Configuration
    * @since 0.7
    */
   public static String process(final Reader reader, final Configuration configuration)
       throws IOException {
-    final KmarkProcessor p = new KmarkProcessor(!(reader instanceof BufferedReader) ?
-        new BufferedReader(reader) :
-        reader,
-        configuration);
+    final KmarkProcessor p = new KmarkProcessor(!(reader instanceof BufferedReader)
+                                                ? new BufferedReader(reader)
+                                                : reader, configuration);
     return p.process();
   }
 
   /**
    * Transforms an input String into HTML using the given Configuration.
    *
-   * @param input         The String to process.
-   * @param configuration The Configuration.
+   * @param input
+   *     The String to process.
+   * @param configuration
+   *     The Configuration.
    * @return The processed String.
    * @see Configuration
    * @since 0.7
@@ -101,6 +81,30 @@ public class KmarkProcessor {
     return process(input,
         new Configuration.Builder().setLinkAnchorPrefix(linkAnchorPrefix).build());
   }
+  /**
+   * The reader.
+   */
+  private final Reader reader;
+  /**
+   * The emitter.
+   */
+  private final Emitter emitter;
+  /**
+   * The Configuration.
+   */
+  final Configuration config;
+
+  /**
+   * Constructor.
+   *
+   * @param reader
+   *     The input reader.
+   */
+  protected KmarkProcessor(final Reader reader, final Configuration config) {
+    this.reader = reader;
+    this.config = config;
+    this.emitter = new Emitter(this.config);
+  }
 
   /**
    * Reads all lines from our reader.
@@ -109,7 +113,8 @@ public class KmarkProcessor {
    * </p>
    *
    * @return A Block containing all lines.
-   * @throws IOException If an IO error occurred.
+   * @throws IOException
+   *     If an IO error occurred.
    */
   private Block readLines() throws IOException {
     final Block block = new Block();
@@ -241,7 +246,8 @@ public class KmarkProcessor {
   /**
    * Initializes a list block by separating it into list item blocks.
    *
-   * @param root The Block to process.
+   * @param root
+   *     The Block to process.
    */
   private void initListBlock(final Block root) {
     Line line = root.lines;
@@ -260,8 +266,10 @@ public class KmarkProcessor {
   /**
    * Recursively process the given Block.
    *
-   * @param root     The Block to process.
-   * @param listMode Flag indicating that we're in a list item block.
+   * @param root
+   *     The Block to process.
+   * @param listMode
+   *     Flag indicating that we're in a list item block.
    */
   private void recurse(final Block root, boolean listMode) {
     Block block, list;
@@ -285,8 +293,7 @@ public class KmarkProcessor {
           final boolean wasEmpty = line.prevEmpty;
           while (line != null && !line.isEmpty) {
             final LineType t = line.getLineType();
-            if ((listMode) && (t == LineType.OLIST
-                || t == LineType.ULIST)) {
+            if ((listMode) && (t == LineType.OLIST || t == LineType.ULIST)) {
               break;
             }
             if (t == LineType.FENCED_CODE || t == LineType.BQUOTE) {
@@ -300,8 +307,9 @@ public class KmarkProcessor {
             root.split(line.previous).type = bt;
             root.removeLeadingEmptyLines();
           } else {
-            bt = (listMode && (line == null || !line.isEmpty) && !wasEmpty) ? BlockType.NONE
-                : BlockType.PARAGRAPH;
+            bt = (listMode && (line == null || !line.isEmpty) && !wasEmpty)
+                 ? BlockType.NONE
+                 : BlockType.PARAGRAPH;
             root.split(line == null ? root.lineTail : line).type = bt;
             root.removeLeadingEmptyLines();
           }
@@ -310,8 +318,7 @@ public class KmarkProcessor {
         }
         case BQUOTE:
           while (line != null) {
-            if (!line.isEmpty
-                && (line.prevEmpty
+            if (!line.isEmpty && (line.prevEmpty
                 && line.leading == 0
                 && line.getLineType() != LineType.BQUOTE)) {
               break;
@@ -351,8 +358,7 @@ public class KmarkProcessor {
         case ULIST:
           while (line != null) {
             final LineType t = line.getLineType();
-            if (!line.isEmpty
-                && (line.prevEmpty && line.leading == 0 && !(t == LineType.OLIST
+            if (!line.isEmpty && (line.prevEmpty && line.leading == 0 && !(t == LineType.OLIST
                 || t == LineType.ULIST))) {
               break;
             }
@@ -383,7 +389,8 @@ public class KmarkProcessor {
    * Does all the processing.
    *
    * @return The processed String.
-   * @throws IOException If an IO error occurred.
+   * @throws IOException
+   *     If an IO error occurred.
    */
   private String process() throws IOException {
     final HtmlEscapeStringBuilder out = new HtmlEscapeStringBuilder();

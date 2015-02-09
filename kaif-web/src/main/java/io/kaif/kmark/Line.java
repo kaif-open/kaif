@@ -108,7 +108,8 @@ class Line {
   /**
    * Reads chars from this line until any 'end' char is reached.
    *
-   * @param end Delimiting character(s)
+   * @param end
+   *     Delimiting character(s)
    * @return The read String or <code>null</code> if no 'end' char was
    * reached.
    */
@@ -201,8 +202,7 @@ class Line {
     }
 
     if (this.value.length() - this.leading - this.trailing > 2 && (this.value.charAt(this.leading)
-        == '`'
-        || this.value.charAt(this.leading) == '~')) {
+        == '`' || this.value.charAt(this.leading) == '~')) {
       if (this.countCharsStart('`') >= 3) {
         return LineType.FENCED_CODE;
       }
@@ -241,7 +241,8 @@ class Line {
   /**
    * Counts the amount of 'ch' at the start of this line ignoring spaces.
    *
-   * @param ch The char to count.
+   * @param ch
+   *     The char to count.
    * @return Number of characters found.
    * @since 0.7
    */
@@ -323,8 +324,8 @@ class Line {
         if (found) {
           final String id = this.value.substring(start, p).trim();
           if (this.leading != 0) {
-            this.value = this.value.substring(0, this.leading)
-                + this.value.substring(this.leading, start - 2).trim();
+            this.value = this.value.substring(0, this.leading) + this.value.substring(this.leading,
+                start - 2).trim();
           } else {
             this.value = this.value.substring(this.leading, start - 2).trim();
           }

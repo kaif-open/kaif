@@ -25,8 +25,10 @@ class Utils {
   /**
    * Skips spaces in the given String.
    *
-   * @param in    Input String.
-   * @param start Starting position.
+   * @param in
+   *     Input String.
+   * @param start
+   *     Starting position.
    * @return The new position or -1 if EOL has been reached.
    */
   public final static int skipSpaces(final String in, final int start) {
@@ -40,9 +42,12 @@ class Utils {
   /**
    * Reads a markdown link ID.
    *
-   * @param out   The StringBuilder to write to.
-   * @param in    Input String.
-   * @param start Starting position.
+   * @param out
+   *     The StringBuilder to write to.
+   * @param in
+   *     Input String.
+   * @param start
+   *     Starting position.
    * @return The new position or -1 if this is no valid markdown link ID.
    */
   public final static int readMdLinkId(final StringBuilder out, final String in, final int start) {
@@ -84,10 +89,14 @@ class Utils {
    * Reads characters until the end character is encountered, ignoring escape
    * sequences.
    *
-   * @param out   The StringBuilder to write to.
-   * @param in    The Input String.
-   * @param start Starting position.
-   * @param end   End characters.
+   * @param out
+   *     The StringBuilder to write to.
+   * @param in
+   *     The Input String.
+   * @param start
+   *     Starting position.
+   * @param end
+   *     End characters.
    * @return The new position or -1 if no 'end' char was found.
    */
   public final static int readRawUntil(final StringBuilder out,
@@ -110,7 +119,8 @@ class Utils {
   /**
    * Removes trailing <code>`</code> and trims spaces.
    *
-   * @param fenceLine Fenced code block starting line
+   * @param fenceLine
+   *     Fenced code block starting line
    * @return Rest of the line after trimming and backtick removal
    * @since 0.7
    */

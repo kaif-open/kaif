@@ -30,7 +30,8 @@ public class HtmlEscapeStringBuilder {
     return this;
   }
 
-  @Override public String toString() {
+  @Override
+  public String toString() {
     return stringBuilder.toString();
   }
 

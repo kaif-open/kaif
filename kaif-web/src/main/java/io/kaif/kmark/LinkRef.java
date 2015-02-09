@@ -39,8 +39,10 @@ class LinkRef {
   /**
    * Constructor.
    *
-   * @param link  The link.
-   * @param title The title (may be <code>null</code>).
+   * @param link
+   *     The link.
+   * @param title
+   *     The title (may be <code>null</code>).
    */
   public LinkRef(final int seqNumber, final String link, final String title) {
     this.seqNumber = seqNumber;

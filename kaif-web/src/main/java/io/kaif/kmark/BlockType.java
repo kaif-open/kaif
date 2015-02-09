@@ -50,5 +50,5 @@ enum BlockType {
    * Block Quote
    */
   BLOCKQUOTE,
-  
+
 }

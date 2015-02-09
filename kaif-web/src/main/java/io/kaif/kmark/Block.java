@@ -147,7 +147,8 @@ class Block {
    * Splits this block's lines, creating a new child block having 'line' as
    * it's lineTail.
    *
-   * @param line The line to split from.
+   * @param line
+   *     The line to split from.
    * @return The newly created Block.
    */
   public Block split(final Line line) {
@@ -176,7 +177,8 @@ class Block {
   /**
    * Removes the given line from this block.
    *
-   * @param line Line to remove.
+   * @param line
+   *     Line to remove.
    */
   public void removeLine(final Line line) {
     if (line.previous == null) {
@@ -195,7 +197,8 @@ class Block {
   /**
    * Appends the given line to this block.
    *
-   * @param line Line to append.
+   * @param line
+   *     Line to append.
    */
   public void appendLine(final Line line) {
     if (this.lineTail == null) {

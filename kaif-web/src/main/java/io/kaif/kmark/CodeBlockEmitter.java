@@ -11,9 +11,7 @@ public class CodeBlockEmitter implements BlockEmitter {
       out.appendHtml(" class=\"").append(meta).appendHtml("\"");
     }
     out.appendHtml(">");
-    lines.stream()
-        .map(s -> s + '\n')
-        .forEach(out::append);
+    lines.stream().map(s -> s + '\n').forEach(out::append);
     out.appendHtml("</code></pre>\n");
   }
 
