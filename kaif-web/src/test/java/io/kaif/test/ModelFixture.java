@@ -50,6 +50,7 @@ public interface ModelFixture {
         FlakeId.startOf(now.toEpochMilli()),
         parent,
         content,
+        content,
         debater,
         now);
   }

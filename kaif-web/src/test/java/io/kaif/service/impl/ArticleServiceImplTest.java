@@ -57,7 +57,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         article.getArticleId(),
         Debate.NO_PARENT,
         debater,
-        "pixel art is better");
+        "pixel art is *better*");
 
     Debate debate = debateDao.findDebate(article.getArticleId(), created.getDebateId()).get();
     assertEquals(DebateContentType.MARK_DOWN, debate.getContentType());
@@ -66,7 +66,8 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertFalse(debate.hasParent());
     assertFalse(debate.isMaxLevel());
     assertEquals(1, debate.getLevel());
-    assertEquals("pixel art is better", debate.getContent());
+    assertEquals("pixel art is *better*", debate.getContent());
+    assertEquals("<p>pixel art is <em>better</em></p>\n", debate.getRenderContent());
     assertEquals(0L, debate.getDownVote());
     assertEquals(0L, debate.getUpVote());
     assertNotNull(debate.getCreateTime());
@@ -89,7 +90,30 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
     Debate debate = debateDao.findDebate(article.getArticleId(), created.getDebateId()).get();
     assertEquals(DebateContentType.MARK_DOWN, debate.getContentType());
-    assertEquals("pixel art is better&lt;evil&gt;hi&lt;/evil&gt;", debate.getContent());
+    assertEquals("pixel art is better<evil>hi</evil>", debate.getContent());
+    assertEquals("<p>pixel art is better&lt;evil&gt;hi&lt;/evil&gt;</p>\n",
+        debate.getRenderContent());
+  }
+
+  @Test
+  public void debate_with_link() throws Exception {
+    Account debater = savedAccountCitizen("debater1");
+    Debate created = service.debate(zoneInfo.getZone(),
+        article.getArticleId(),
+        Debate.NO_PARENT,
+        debater,
+        "pixel art is better at [9gaga][1]\n"//
+            + "\n" + "[1]: http://www.google.com");
+
+    Debate debate = debateDao.findDebate(article.getArticleId(), created.getDebateId()).get();
+    assertEquals(DebateContentType.MARK_DOWN, debate.getContentType());
+    assertEquals("pixel art is better at [9gaga][1]\n\n[1]: http://www.google.com",
+        debate.getContent());
+    assertEquals("<p>pixel art is better at <a href=\"#"
+            + debate.getDebateId()
+            + "-1\">9gaga</a></p>\n"
+            + "<p>[1] <a href=\"http://www.google.com\" >http://www.google.com</a><br>\n</p>",
+        debate.getRenderContent());
   }
 
   @Test

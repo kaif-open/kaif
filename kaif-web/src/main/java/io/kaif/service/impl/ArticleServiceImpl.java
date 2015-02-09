@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 
 import io.kaif.flake.FlakeId;
+import io.kaif.kmark.KmarkProcessor;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountDao;
 import io.kaif.model.account.Authorization;
@@ -99,7 +100,7 @@ public class ArticleServiceImpl implements ArticleService {
         .orElse(null);
     Debate debate = debateDao.create(article,
         parent,
-        HtmlUtils.htmlEscape(content),
+        content,
         debater,
         Instant.now());
 

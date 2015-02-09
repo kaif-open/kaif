@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableMap;
 
 import io.kaif.database.DaoOperations;
 import io.kaif.flake.FlakeId;
+import io.kaif.kmark.KmarkProcessor;
 import io.kaif.model.account.Account;
 import io.kaif.model.article.Article;
 
@@ -39,6 +40,7 @@ public class DebateDao implements DaoOperations {
         FlakeId.valueOf(rs.getLong("parentDebateId")),
         rs.getInt("level"),
         rs.getString("content"),
+        rs.getString("renderContent"),
         DebateContentType.valueOf(rs.getString("contentType")),
         UUID.fromString(rs.getString("debaterId")),
         rs.getString("debaterName"),
@@ -57,15 +59,18 @@ public class DebateDao implements DaoOperations {
     jdbc().update(""
             + " INSERT "
             + "   INTO Debate "
-            + "        (articleid, debateid, parentdebateid, level, content, contenttype, "
-            + "         debaterid, debatername, upvote, downvote, createtime, lastupdatetime)"
+            +
+            "        (articleid, debateid, parentdebateid, level, content, renderContent, contenttype, "
+            +
+            "         debaterid, debatername, upvote, downvote, createtime, lastupdatetime)"
             + " VALUES "
-            + questions(12),
+            + questions(13),
         debate.getArticleId().value(),
         debate.getDebateId().value(),
         debate.getParentDebateId().value(),
         debate.getLevel(),
         debate.getContent(),
+        debate.getRenderContent(),
         debate.getContentType().name(),
         debate.getDebaterId(),
         debate.getDebaterName(),
@@ -89,10 +94,12 @@ public class DebateDao implements DaoOperations {
       String content,
       Account debater,
       Instant now) {
+    FlakeId debateId = debateFlakeIdGenerator.next();
     return insertDebate(Debate.create(article,
-        debateFlakeIdGenerator.next(),
+        debateId,
         parent,
         content,
+        KmarkProcessor.process(content, debateId.toString()),
         debater,
         now));
   }

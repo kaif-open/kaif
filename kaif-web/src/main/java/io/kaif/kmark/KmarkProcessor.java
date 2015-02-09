@@ -34,7 +34,7 @@ import java.io.StringReader;
  *
  * @author René Jeschke <rene_jeschke@yahoo.de>
  */
-public class Processor {
+public class KmarkProcessor {
 
   /**
    * The reader.
@@ -54,7 +54,7 @@ public class Processor {
    *
    * @param reader The input reader.
    */
-  protected Processor(final Reader reader, final Configuration config) {
+  protected KmarkProcessor(final Reader reader, final Configuration config) {
     this.reader = reader;
     this.config = config;
     this.emitter = new Emitter(this.config);
@@ -72,7 +72,7 @@ public class Processor {
    */
   public static String process(final Reader reader, final Configuration configuration)
       throws IOException {
-    final Processor p = new Processor(!(reader instanceof BufferedReader) ?
+    final KmarkProcessor p = new KmarkProcessor(!(reader instanceof BufferedReader) ?
         new BufferedReader(reader) :
         reader,
         configuration);

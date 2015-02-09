@@ -23,6 +23,7 @@ public class Debate {
       FlakeId debateId,
       @Nullable Debate parent,
       String content,
+      String renderContent,
       Account debater,
       Instant now) {
     Optional<Debate> optParent = Optional.ofNullable(parent);
@@ -33,6 +34,7 @@ public class Debate {
         parentId,
         parentLevel + 1,
         content,
+        renderContent,
         DebateContentType.MARK_DOWN,
         debater.getAccountId(),
         debater.getUsername(),
@@ -47,6 +49,7 @@ public class Debate {
   private final FlakeId parentDebateId;
   private final int level;
   private final String content;
+  private final String renderContent;
   private final DebateContentType contentType;
   private final UUID debaterId;
   private final String debaterName;
@@ -60,6 +63,7 @@ public class Debate {
       FlakeId parentDebateId,
       int level,
       String content,
+      String renderContent,
       DebateContentType contentType,
       UUID debaterId,
       String debaterName,
@@ -74,6 +78,7 @@ public class Debate {
     this.parentDebateId = parentDebateId;
     this.level = level;
     this.content = content;
+    this.renderContent = renderContent;
     this.contentType = contentType;
     this.debaterId = debaterId;
     this.debaterName = debaterName;
@@ -135,6 +140,10 @@ public class Debate {
     return lastUpdateTime;
   }
 
+  public String getRenderContent() {
+    return renderContent;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -171,6 +180,7 @@ public class Debate {
         ", parentDebateId=" + parentDebateId +
         ", level=" + level +
         ", content='" + content + '\'' +
+        ", renderContent='" + renderContent + '\'' +
         ", contentType=" + contentType +
         ", debaterId=" + debaterId +
         ", debaterName='" + debaterName + '\'' +

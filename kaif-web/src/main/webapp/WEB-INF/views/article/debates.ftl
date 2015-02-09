@@ -51,7 +51,7 @@ head=headContent
                         </span>
                     </div>
                     <div class="debate-content">
-                    ${debate.content}
+                    ${debate.renderContent}
                     </div>
                     <div class="debate-info">
                         <#if !debate.maxLevel>
