@@ -1,0 +1,50 @@
+/* widgets.dart */
+
+.large-center-loading {
+  font-size: 400%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* this is not truely center, it just work in our template */
+  min-height: 70vh;
+}
+
+.large-error-modal {
+  position: fixed;
+  z-index: 10000;
+  background-color: rgba(0, 0, 0, 0.4);
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.large-error-modal > .alert {
+  position: relative;
+  top: 2em;
+  width: 50%;
+  left: 25%;
+}
+
+.toast {
+  position: fixed;
+  z-index: 10000;
+  top: 1em;
+  width: 50%;
+  left: 25%;
+  right: 0;
+}
+
+.snack-bar {
+  position: fixed;
+  z-index: 10000;
+  top: 1em;
+  width: 50%;
+  left: 50%;
+  margin-left: -25%;
+  display: flex;
+}
+
+.snack-bar .action {
+  margin-left: auto;
+}

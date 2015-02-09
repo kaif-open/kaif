@@ -52,7 +52,13 @@ sample configs:
     <link rel='stylesheet' href='/webjars/yui-pure/0.5.0/pure-min.css'>
     <link rel='stylesheet' href='/webjars/yui-pure/0.5.0/grids-responsive-min.css'>
     <link rel="stylesheet" href="/webjars/font-awesome/4.2.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="<@url.dynamicRes/>/css/kaif.css">
+
+    <#if kaif.profilesActive?contains('dev')>
+    <#-- require dart pub serve, please run `./gradlew pubServe` -->
+        <link rel="stylesheet" href="//localhost:15980/kaif.css">
+    <#else>
+        <link rel="stylesheet" href="<@url.dynamicRes/>/web/kaif.css">
+    </#if>
 
     <#if head?length == 0>
         <title>kaif.io</title>
