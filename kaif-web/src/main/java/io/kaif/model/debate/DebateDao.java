@@ -20,7 +20,6 @@ import com.google.common.collect.ImmutableMap;
 
 import io.kaif.database.DaoOperations;
 import io.kaif.flake.FlakeId;
-import io.kaif.kmark.KmarkProcessor;
 import io.kaif.model.account.Account;
 import io.kaif.model.article.Article;
 
@@ -95,13 +94,7 @@ public class DebateDao implements DaoOperations {
       Account debater,
       Instant now) {
     FlakeId debateId = debateFlakeIdGenerator.next();
-    return insertDebate(Debate.create(article,
-        debateId,
-        parent,
-        content,
-        KmarkProcessor.process(content, debateId.toString()),
-        debater,
-        now));
+    return insertDebate(Debate.create(article, debateId, parent, content, debater, now));
   }
 
   public List<Debate> listTreeByArticle(FlakeId articleId) {

@@ -15,111 +15,42 @@
  */
 package io.kaif.kmark;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-/**
- * Markdown processor class.
- * <p>
- * <p>
- * Example usage:
- * </p>
- * <p>
- * <pre>
- * <code>String result = Processor.process("This is ***TXTMARK***");
- * </code>
- * </pre>
- *
- * @author René Jeschke <rene_jeschke@yahoo.de>
- */
 public class KmarkProcessor {
 
-  /**
-   * Transforms an input stream into HTML using the given Configuration.
-   *
-   * @param reader
-   *     The Reader to process.
-   * @param configuration
-   *     The Configuration.
-   * @return The processed String.
-   * @throws IOException
-   *     if an IO error occurs
-   * @see Configuration
-   * @since 0.7
-   */
-  public static String process(final Reader reader, final Configuration configuration)
-      throws IOException {
-    final KmarkProcessor p = new KmarkProcessor(!(reader instanceof BufferedReader)
-                                                ? new BufferedReader(reader)
-                                                : reader, configuration);
-    return p.process();
+  public String process(final Reader reader, final String linkAnchorPrefix) throws IOException {
+    Configuration configuration = new Configuration.Builder().setLinkAnchorPrefix(linkAnchorPrefix)
+        .build();
+    Emitter emitter = new Emitter(configuration);
+    final HtmlEscapeStringBuilder out = new HtmlEscapeStringBuilder();
+    final Block parent = this.readLines(reader, emitter);
+    parent.removeSurroundingEmptyLines();
+    this.recurse(parent, false);
+    Block block = parent.blocks;
+    while (block != null) {
+      emitter.emit(out, block);
+      block = block.next;
+    }
+    emitter.emitRefLinks(out);
+    return out.toString();
   }
 
-  /**
-   * Transforms an input String into HTML using the given Configuration.
-   *
-   * @param input
-   *     The String to process.
-   * @param configuration
-   *     The Configuration.
-   * @return The processed String.
-   * @see Configuration
-   * @since 0.7
-   */
-  public static String process(final String input, final Configuration configuration) {
+  public String process(final String input, final String linkAnchorPrefix) {
     try {
-      return process(new StringReader(input), configuration);
-    } catch (IOException e) {
-      // This _can never_ happen
+      return process(new StringReader(input), linkAnchorPrefix);
+    } catch (IOException ignore) {
+      //never happen
       return null;
     }
   }
 
-  public static String process(final String input, final String linkAnchorPrefix) {
-    return process(input,
-        new Configuration.Builder().setLinkAnchorPrefix(linkAnchorPrefix).build());
-  }
-  /**
-   * The reader.
-   */
-  private final Reader reader;
-  /**
-   * The emitter.
-   */
-  private final Emitter emitter;
-  /**
-   * The Configuration.
-   */
-  final Configuration config;
-
-  /**
-   * Constructor.
-   *
-   * @param reader
-   *     The input reader.
-   */
-  protected KmarkProcessor(final Reader reader, final Configuration config) {
-    this.reader = reader;
-    this.config = config;
-    this.emitter = new Emitter(this.config);
-  }
-
-  /**
-   * Reads all lines from our reader.
-   * <p>
-   * Takes care of markdown link references.
-   * </p>
-   *
-   * @return A Block containing all lines.
-   * @throws IOException
-   *     If an IO error occurred.
-   */
-  private Block readLines() throws IOException {
+  private Block readLines(final Reader reader, final Emitter emitter) throws IOException {
     final Block block = new Block();
     final StringBuilder sb = new StringBuilder(200);
-    int c = this.reader.read();
+    int c = reader.read();
     LinkRef lastLinkRef = null;
     while (c != -1) {
       sb.setLength(0);
@@ -131,16 +62,16 @@ public class KmarkProcessor {
             eol = true;
             break;
           case '\n':
-            c = this.reader.read();
+            c = reader.read();
             if (c == '\r') {
-              c = this.reader.read();
+              c = reader.read();
             }
             eol = true;
             break;
           case '\r':
-            c = this.reader.read();
+            c = reader.read();
             if (c == '\n') {
-              c = this.reader.read();
+              c = reader.read();
             }
             eol = true;
             break;
@@ -150,13 +81,13 @@ public class KmarkProcessor {
               sb.append(' ');
               pos++;
             }
-            c = this.reader.read();
+            c = reader.read();
             break;
           }
           default:
             pos++;
             sb.append((char) c);
-            c = this.reader.read();
+            c = reader.read();
             break;
         }
       }
@@ -211,7 +142,7 @@ public class KmarkProcessor {
 
       if (isLinkRef) {
         // Store linkRef and skip line
-        final LinkRef lr = this.emitter.addLinkRef(id, link, comment);
+        final LinkRef lr = emitter.addLinkRef(id, link, comment);
         if (comment == null) {
           lastLinkRef = lr;
         }
@@ -385,24 +316,4 @@ public class KmarkProcessor {
     }
   }
 
-  /**
-   * Does all the processing.
-   *
-   * @return The processed String.
-   * @throws IOException
-   *     If an IO error occurred.
-   */
-  private String process() throws IOException {
-    final HtmlEscapeStringBuilder out = new HtmlEscapeStringBuilder();
-    final Block parent = this.readLines();
-    parent.removeSurroundingEmptyLines();
-    this.recurse(parent, false);
-    Block block = parent.blocks;
-    while (block != null) {
-      this.emitter.emit(out, block);
-      block = block.next;
-    }
-    this.emitter.emitRefLinks(out);
-    return out.toString();
-  }
 }

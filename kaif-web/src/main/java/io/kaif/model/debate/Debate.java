@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import com.google.common.base.Preconditions;
 
 import io.kaif.flake.FlakeId;
+import io.kaif.kmark.KmarkProcessor;
 import io.kaif.model.account.Account;
 import io.kaif.model.article.Article;
 
@@ -23,7 +24,6 @@ public class Debate {
       FlakeId debateId,
       @Nullable Debate parent,
       String content,
-      String renderContent,
       Account debater,
       Instant now) {
     Optional<Debate> optParent = Optional.ofNullable(parent);
@@ -34,7 +34,7 @@ public class Debate {
         parentId,
         parentLevel + 1,
         content,
-        renderContent,
+        new KmarkProcessor().process(content, debateId.toString()),
         DebateContentType.MARK_DOWN,
         debater.getAccountId(),
         debater.getUsername(),
