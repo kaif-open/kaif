@@ -46,14 +46,17 @@
             <button type="submit" class="pure-button pure-button-primary">
                 <@spring.messageText "account-menu.sign-in" "Sign In" />
             </button>
-            <p class="pure-form-message">
-                <a class="" href="/account/sign-up">註冊新帳號</a>
-                <a class="" href="/account/forget-password">忘記密碼 ?</a>
-            </p>
         </div>
-
     </fieldset>
-
+    <fieldset>
+        <legend>
+            其他
+        </legend>
+        <div class="pure-controls">
+            <a class="pure-button button-sm" href="/account/sign-up">註冊新帳號</a>
+            <a class="pure-button button-sm" href="/account/forget-password">忘記密碼 ?</a>
+        </div>
+    </fieldset>
 </form>
 
 </@template.page>
