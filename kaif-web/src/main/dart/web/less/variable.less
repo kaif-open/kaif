@@ -1,0 +1,111 @@
+// Colors
+
+@gray-base: #000;
+@gray-darker: lighten(@gray-base, 13.5%);
+@gray-dark: lighten(@gray-base, 20%);
+@gray: lighten(@gray-base, 33.5%);
+@gray-light: lighten(@gray-base, 46.7%);
+@gray-lighter: lighten(@gray-base, 93.5%);
+
+@brand-primary: #1f8dd6;
+@brand-success: #5eb95e;
+@brand-info: lighten(@brand-primary, 20%);
+@brand-warning: rgb(250, 210, 50);
+@brand-danger: #dd514c;
+
+//** Background color for `<body>`.
+@body-bg: #fff;
+//** Global text color on `<body>`.
+@text-color: @gray-dark;
+
+//** Global textual link color.
+@link-color: @brand-primary;
+//** Link hover color set via `darken()` function.
+@link-hover-color: darken(@link-color, 15%);
+//** Link hover decoration.
+@link-hover-decoration: underline;
+
+// Typography
+
+@font-family-sans-serif: "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-serif: Georgia, "Times New Roman", Times, serif;
+//** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
+@font-family-monospace: Menlo, Monaco, Consolas, "Courier New", monospace;
+@font-family-base: @font-family-sans-serif;
+
+// Media queries breakpoints
+
+// Small screen / phone
+// 568px
+@screen-sm-min: 35.5em;
+
+// Medium screen / tablet
+// 768px
+@screen-md-min: 48em;
+
+// Large screen desktop
+// 1024px
+@screen-lg-min: 64em;
+
+// wide screen desktop
+// 1280px
+@screen-xl-min: 80em;
+
+// So media queries don't overlap when required, provide a maximum
+@screen-xs-max: (@screen-sm-min - 1px);
+@screen-sm-max: (@screen-md-min - 1px);
+@screen-md-max: (@screen-lg-min - 1px);
+@screen-lg-max: (@screen-xl-min - 1px);
+
+//== Container sizes
+//
+//## Define the maximum width of `.container` for different screen sizes.
+@grid-gutter-width: 2em;
+
+// Small screen / phone
+//** For `@screen-sm-min` and up.
+@container-sm: (33em + @grid-gutter-width);
+
+// Medium screen / tablet
+//** For `@screen-md-min` and up.
+@container-md: (45em + @grid-gutter-width);
+
+// Large screen desktop
+//** For `@screen-lg-min` and up.
+@container-lg: (61em + @grid-gutter-width);
+
+// Wide screen desktop
+//** For `@screen-xl-min` and up.
+@container-xl: (77em + @grid-gutter-width);
+
+// z index
+@zindex-navbar: 1000;
+@zindex-dropdown: 1000;
+@zindex-navbar-fixed: 1030;
+@zindex-modal: 1040;
+@zindex-popover: 1060;
+@zindex-tooltip: 1070;
+
+//== Components
+//
+//## Define common padding and border radius sizes and more. Values based on 14px text and 1.428 line-height (~20px to start).
+
+@padding-vertical: 6px;
+@padding-horizontal: 12px;
+
+@padding-lg-vertical: 10px;
+@padding-lg-horizontal: 16px;
+
+@padding-sm-vertical: 5px;
+@padding-sm-horizontal: 10px;
+
+@padding-xs-vertical: 1px;
+@padding-xs-horizontal: 5px;
+
+@line-height-lg: 1.3333333;
+// extra decimals for Win 8.1 Chrome
+@line-height-sm: 1.5;
+
+@border-radius: 4px;
+@border-radius-lg: 6px;
+@border-radius-sm: 3px;

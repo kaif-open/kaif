@@ -68,47 +68,54 @@ sample configs:
 
 </head>
 <body>
+
 <header class="header">
-    <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal">
-        <a class="pure-menu-heading" href="/">Kaif.io</a>
-        <ul account-menu>
-        <#-- mock
+    <div class="container">
+        <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal">
+            <a class="pure-menu-heading" href="/">Kaif.io</a>
+            <ul account-menu>
+            <#-- mock
             <li><a href="/account/sign-up">Sign Up</a></li>
             <li><a href="/account/sign-in">Sign In</a></li>
             <li><a href="/account/settings">myname</a></li>
             <li><a href="/account/sign-out">Sign Out</a></li>
             -->
-        </ul>
+            </ul>
+        </div>
     </div>
 </header>
 
-<main class="content">
-    <#if (config.layout)! == 'small'>
-        <div class="pure-g">
-            <div class="pure-u pure-u-md-1-5"></div>
-            <div class="pure-u-1 pure-u-md-3-5 l-box">
-                <#nested>
+<main>
+    <div class="container">
+        <#if (config.layout)! == 'small'>
+            <div class="pure-g">
+                <div class="pure-u pure-u-md-1-5"></div>
+                <div class="pure-u-1 pure-u-md-3-5 l-box">
+                    <#nested>
+                </div>
+                <div class="pure-u pure-u-md-1-5"></div>
             </div>
-            <div class="pure-u pure-u-md-1-5"></div>
-        </div>
-    <#elseif (config.layout)! == 'full'>
-    <#-- full layout let nested take full control -->
-        <#nested>
-    <#else>
-    <#-- TODO other grid 24 layout-->
-        <#nested>
-    </#if>
+        <#elseif (config.layout)! == 'full'>
+        <#-- full layout let nested take full control -->
+            <#nested>
+        <#else>
+        <#-- TODO other grid 24 layout-->
+            <#nested>
+        </#if>
+    </div>
 </main>
 
 <footer class="footer l-box">
-    <ul class="footer-item">
-        <li>
-            &#169; 2015 All Rights Reserved
-        </li>
-        <li>
-            <a href="/z/kaif-faq">常見問題</a>
-        </li>
-    </ul>
+    <div class="container">
+        <ul class="footer-item">
+            <li>
+                &#169; 2015 All Rights Reserved
+            </li>
+            <li>
+                <a href="/z/kaif-faq">常見問題</a>
+            </li>
+        </ul>
+    </div>
 </footer>
 <#-- Error page will not enable js, for security reason -->
     <#if !((config.errorPage)!false) >
