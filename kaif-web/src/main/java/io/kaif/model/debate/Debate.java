@@ -19,6 +19,7 @@ public class Debate {
   private static final int MAX_LEVEL = 10;
   public static final int CONTENT_MIN = 10;
   public static final int CONTENT_MAX = 4096;
+  public static final KmarkProcessor kmarkProcessor = new KmarkProcessor();
 
   public static Debate create(Article article,
       FlakeId debateId,
@@ -34,7 +35,7 @@ public class Debate {
         parentId,
         parentLevel + 1,
         content,
-        new KmarkProcessor().process(content, debateId.toString()),
+        kmarkProcessor.process(content, debateId.toString()),
         DebateContentType.MARK_DOWN,
         debater.getAccountId(),
         debater.getUsername(),
