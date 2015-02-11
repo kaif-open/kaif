@@ -28,7 +28,7 @@ public class DebateTest implements ModelFixture {
     assertEquals(
         "<p>pixel art is better at <a href=\"#bbccdd-1\" class=\"reference-link\">9gaga</a></p>\n"
             + "<p class=\"reference-appendix-block\"><span class=\"reference-appendix-index\">1</span>"
-            + "<a href=\"http://www.google.com\" rel=\"nofollow\" id=\"#bbccdd-1\">"
+            + "<a id=\"bbccdd-1\"></a><a href=\"http://www.google.com\" rel=\"nofollow\">"
             + "http://www.google.com</a><br>\n"
             + "</p>",
         debate.getRenderContent());

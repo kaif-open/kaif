@@ -511,17 +511,18 @@ class Emitter {
       out.appendHtml("<span class=\"reference-appendix-index\">")
           .append(linkRef.seqNumber)
           .appendHtml("</span>")
+          .appendHtml("<a id=\"")
+          .append(config.linkAnchorPrefix)
+          .append("-")
+          .append(linkRef.seqNumber)
+          .appendHtml("\"></a>")
           .appendHtml("<a href=\"")
           .append(linkRef.link)
           .appendHtml("\"");
       if (linkRef.title != null && linkRef.title.isEmpty()) {
         out.appendHtml(" title=\"").append(linkRef.title).appendHtml("\"");
       }
-      out.appendHtml(" rel=\"nofollow\" id=\"#")
-          .append(config.linkAnchorPrefix)
-          .appendHtml("-")
-          .append(linkRef.seqNumber)
-          .appendHtml("\">")
+      out.appendHtml(" rel=\"nofollow\">")
           .append(linkRef.link)
           .appendHtml("</a><br>\n");
     });
