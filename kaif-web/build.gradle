@@ -5,7 +5,7 @@ buildscript {
   dependencies {
     classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
     classpath "com.github.houbie:lesscss-gradle-plugin:1.0.3-less-1.7.0"
-
+    classpath 'me.champeau.gradle:jmh-gradle-plugin:0.1.3'
     // enable advance class hot swap. don't know if work
     // classpath 'org.springframework:springloaded:1.2.0.RELEASE'
   }
@@ -14,6 +14,10 @@ buildscript {
 def appBuild = 'build-' + new Date().format('yyyy-MM-dd-HH-mm-ss')
 
 apply plugin: 'war'
+
+/** jmh & let idea can see jmh dependencies **/
+apply plugin: 'idea'
+apply plugin: 'me.champeau.gradle.jmh'
 
 /** spring boot begin **/
 apply plugin: 'spring-boot'
@@ -175,4 +179,3 @@ dependencies {
   // aws will depends on jackson/joda/httpclient
   compile 'com.amazonaws:aws-java-sdk-ses:1.9.16'
 }
-
