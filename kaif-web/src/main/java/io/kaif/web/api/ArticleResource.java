@@ -62,8 +62,6 @@ public class ArticleResource {
   @Autowired
   private ArticleService articleService;
 
-  private KmarkProcessor kmarkProcessor = new KmarkProcessor();
-
   @RequestMapping(value = "/external-link", method = RequestMethod.PUT, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
   public void createExternalLink(AccountAccessToken token,
@@ -87,6 +85,6 @@ public class ArticleResource {
   @RequestMapping(value = "/preview-kmark", method = RequestMethod.PUT, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
   public String previewKmark(AccountAccessToken token, @Valid @RequestBody PreviewKmark request) {
-    return kmarkProcessor.process(request.content, "");
+    return KmarkProcessor.process(request.content, "");
   }
 }

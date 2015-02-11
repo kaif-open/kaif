@@ -21,7 +21,20 @@ import java.io.StringReader;
 
 public class KmarkProcessor {
 
-  public String process(final Reader reader, final String linkAnchorPrefix) throws IOException {
+  private KmarkProcessor() {
+
+  }
+
+  public static String process(final String input, final String linkAnchorPrefix) {
+    try {
+      return new KmarkProcessor().process(new StringReader(input), linkAnchorPrefix);
+    } catch (IOException ignore) {
+      //never happen, it's string reader
+      return null;
+    }
+  }
+
+  private String process(final Reader reader, final String linkAnchorPrefix) throws IOException {
     Configuration configuration = new Configuration.Builder().setLinkAnchorPrefix(linkAnchorPrefix)
         .build();
     Emitter emitter = new Emitter(configuration);
@@ -36,15 +49,6 @@ public class KmarkProcessor {
     }
     emitter.emitRefLinks(out);
     return out.toString();
-  }
-
-  public String process(final String input, final String linkAnchorPrefix) {
-    try {
-      return process(new StringReader(input), linkAnchorPrefix);
-    } catch (IOException ignore) {
-      //never happen
-      return null;
-    }
   }
 
   private Block readLines(final Reader reader, final Emitter emitter) throws IOException {
