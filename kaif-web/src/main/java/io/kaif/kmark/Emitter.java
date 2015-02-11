@@ -35,6 +35,7 @@ class Emitter {
   private static char whitespaceToSpace(char c) {
     return Character.isWhitespace(c) ? ' ' : c;
   }
+
   /**
    * Link references.
    */
@@ -253,7 +254,7 @@ class Emitter {
       this.config.decorator.openLink(out);
       out.appendHtml(" href=\"");
       out.append(link);
-      out.appendHtml("\">");
+      out.appendHtml("\" class=\"reference-link\">");
       this.recursiveEmitLine(out, name, 0, MarkToken.NONE);
       out.appendHtml("</a>");
     }
@@ -505,14 +506,18 @@ class Emitter {
     if (linkRefs.isEmpty()) {
       return;
     }
-    out.appendHtml("<p>");
+    out.appendHtml("<p class=\"reference-appendix-block\">");
     linkRefs.forEach((s, linkRef) -> {
-      out.appendHtml("[").append(linkRef.seqNumber).appendHtml("] ").
-          appendHtml("<a href=\"").append(linkRef.link).appendHtml("\"");
+      out.appendHtml("<span class=\"reference-appendix-index\">")
+          .append(linkRef.seqNumber)
+          .appendHtml("</span>")
+          .appendHtml("<a href=\"")
+          .append(linkRef.link)
+          .appendHtml("\"");
       if (linkRef.title != null && linkRef.title.isEmpty()) {
         out.appendHtml(" title=\"").append(linkRef.title).appendHtml("\"");
       }
-      out.appendHtml(" >").append(linkRef.link).appendHtml("</a><br>\n");
+      out.appendHtml(" rel=\"nofollow\">").append(linkRef.link).appendHtml("</a><br>\n");
     });
     out.appendHtml("</p>");
   }
