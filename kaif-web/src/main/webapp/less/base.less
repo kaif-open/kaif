@@ -12,11 +12,11 @@
 //
 body {
   line-height: 1.7em;
-  font-size: 13px;
+  font-size: @font-size-sm;
   font-family: @font-family-base;
   @media (min-width: @screen-md-min) {
     & {
-      font-size: 16px;
+      font-size: @font-size;
     }
   }
 }
@@ -76,10 +76,10 @@ main {
 
 // default padding for main content
 main {
-  padding: @padding-vertical @padding-horizontal;
+  padding: 0 @padding-horizontal;
   @media (min-width: @screen-md-min) {
     & {
-      padding: @padding-lg-vertical @padding-lg-horizontal;
+      padding: 0 @padding-lg-horizontal;
     }
   }
 }
@@ -111,11 +111,19 @@ ul.footer-item li {
 
   a, a:visited {
     text-decoration: none;
-    color: lighten(@link-color, 15%);
+    color: lighten(@link-color, 25%);
   }
   a:hover {
     text-decoration: none;
-    color: lighten(@link-color, 25%);
+    color: lighten(@link-color, 35%);
   }
 }
 
+//
+// site left margin
+//
+
+@convex-row-width: 96px;
+
+@aside-width: 320px;
+@aside-width-sm: @aside-width * 0.7;
