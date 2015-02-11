@@ -18,7 +18,28 @@
 </ul>
 <p>Paragraphs are separated by a blank line.</p>
 <ol>
-<li>this one</li>
-<li>that one</li>
-<li>the other one</li>
+<li><p>this one</p>
+</li>
+<li><p>that one</p>
+</li>
+<li><p>the other one</p>
+</li>
+<li><p>1</p>
+</li>
+<li><p>2</p>
+</li>
+<li><p>1&lt;br&gt;</p>
+</li>
+<li><p>3333</p>
+</li>
+</ol>
+<p>next list</p>
+<ol>
+<li><p>This is a list item with two paragraphs. Lorem ipsum dolor
+sit amet, consectetuer adipiscing elit. Aliquam hendrerit
+mi posuere lectus.</p>
+<p>Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus. Donec sit amet nisl. Aliquam semper ipsum sit amet velit.</p>
+</li>
+<li><p>Suspendisse id sem consectetuer libero luctus adipiscing.</p>
+</li>
 </ol>
