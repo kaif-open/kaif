@@ -4,6 +4,7 @@ buildscript {
   }
   dependencies {
     classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    classpath "com.github.houbie:lesscss-gradle-plugin:1.0.3-less-1.7.0"
 
     // enable advance class hot swap. don't know if work
     // classpath 'org.springframework:springloaded:1.2.0.RELEASE'
@@ -72,6 +73,22 @@ war.dependsOn buildDart
 
 /** dart configuration end **/
 
+/** less configuration begin **/
+
+apply plugin: "lesscss"
+
+def lessDist = "less_dist"
+
+lessc {
+  sourceDir "$webAppDirName/less"
+  include "kaif.less"
+  destinationDir = "$buildDir/$lessDist"
+}
+
+war.dependsOn lessc
+
+/** less configuration end **/
+
 import org.apache.tools.ant.filters.*
 
 // replace @app.build@ in application-prod.yml
@@ -90,11 +107,16 @@ jar {
 war {
   baseName = 'kaif-web'
   from("${buildDir}/$dartDist") {
-    into "${appBuild}/"
+    into "${appBuild}"
+  }
+  from("${buildDir}/$lessDist") {
+    into "${appBuild}/css"
   }
   from("${webAppDirName}/snapshot") {
     into "${appBuild}"
   }
+  exclude "snapshot"
+  exclude "less"
 }
 
 dependencies {
@@ -143,6 +165,12 @@ dependencies {
   // webjars
   compile 'org.webjars:font-awesome:4.2.0'
   compile 'org.webjars:yui-pure:0.5.0'
+
+  // we are use old less 1.7.0 because lesscss-gradle-plugin use old one
+  //
+  // @see buildscript - lesscss-gradle-plugin
+  // @see webapp/WEB-INF/views/macros/template.ftl
+  compile 'org.webjars:less:1.7.0'
 
   // aws will depends on jackson/joda/httpclient
   compile 'com.amazonaws:aws-java-sdk-ses:1.9.16'

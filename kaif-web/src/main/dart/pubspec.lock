@@ -29,10 +29,6 @@ packages:
     description: intl
     source: hosted
     version: "0.12.0+1"
-  less_dart:
-    description: less_dart
-    source: hosted
-    version: "0.1.4"
   logging:
     description: logging
     source: hosted
@@ -53,10 +49,6 @@ packages:
     description: pool
     source: hosted
     version: "1.0.1"
-  source_maps:
-    description: source_maps
-    source: hosted
-    version: "0.10.0+1"
   source_span:
     description: source_span
     source: hosted
@@ -69,10 +61,6 @@ packages:
     description: unittest
     source: hosted
     version: "0.11.5"
-  utf:
-    description: utf
-    source: hosted
-    version: "0.9.0+2"
   watcher:
     description: watcher
     source: hosted

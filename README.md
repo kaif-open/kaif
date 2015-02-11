@@ -54,17 +54,7 @@
 
 ### LESS process pipeline
 
- * we choose dart's less compiler to compile LESS, so our web UI pipeline
-   depends only on `pub serve/build`
-
- * LESS source code in kaif-web/src/main/dart/web/less, all sources will
-   compiled as `kaif.css` in production
-
- * if you have another plain css, place in
-   kaif-web/src/main/webapp/snapshot/css
-
- * dart LESS compiler is 1.7.x version and do not support javascript.
-   it may be buggy now. see https://github.com/AdalbertoLacruz/less_dart
+ * use quite old version of lessc because lesscss-gradle-plugin
 
  * Intellij may prompt you use .less filewatcher, we don't use it, just dismiss.
 

@@ -13,7 +13,7 @@ public class HomeControllerTest extends MvcIntegrationTests {
   public void dynamicRes() throws Exception {
     mockMvc.perform(get("/"))
         .andExpect(content().encoding("UTF-8"))
-        .andExpect(content().string(containsString("/snapshot/web/kaif.css")))
+        .andExpect(content().string(containsString("/snapshot/css/kaif.css")))
         .andExpect(content().string(containsString("/snapshot/web/main.dart.js")));
   }
 }

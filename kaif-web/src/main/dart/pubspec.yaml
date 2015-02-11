@@ -5,14 +5,9 @@ dependencies:
   barback: any
   intl: any
   cookie: ">=0.0.4 <0.1.0"
-  less_dart: ">=0.1.4 <0.2.0"
 dev_dependencies:
   unittest: any
 transformers:
-  - less_dart:
-     entry_point: web/less/builder.less
-     include_path: web/less
-     output: web/kaif.css
   - kaif_web:
      $include: ["lib/intl/messages_*.dart", "lib/i18n_link/messages_*.properties"]
   - $dart2js:
