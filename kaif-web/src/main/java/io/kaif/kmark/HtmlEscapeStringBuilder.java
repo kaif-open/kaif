@@ -25,7 +25,7 @@ public class HtmlEscapeStringBuilder {
     return this;
   }
 
-  public HtmlEscapeStringBuilder append(HtmlEscapeStringBuilder builder) {
+  public HtmlEscapeStringBuilder appendHtml(HtmlEscapeStringBuilder builder) {
     this.stringBuilder.append(builder.stringBuilder);
     return this;
   }

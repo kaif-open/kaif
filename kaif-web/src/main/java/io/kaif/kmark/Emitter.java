@@ -295,10 +295,10 @@ class Emitter {
           temp.reset();
           b = this.checkLink(temp, in, pos, mt);
           if (b > 0) {
-            out.append(temp);
+            out.appendHtml(temp);
             pos = b;
           } else {
-            out.append(in.charAt(pos));
+            out.appendHtml(in.charAt(pos));
           }
           break;
         case EM_STAR:
@@ -307,11 +307,11 @@ class Emitter {
           b = this.recursiveEmitLine(temp, in, pos + 1, mt);
           if (b > 0) {
             this.config.decorator.openEmphasis(out);
-            out.append(temp);
+            out.appendHtml(temp);
             this.config.decorator.closeEmphasis(out);
             pos = b;
           } else {
-            out.append(in.charAt(pos));
+            out.appendHtml(in.charAt(pos));
           }
           break;
         case STRONG_STAR:
@@ -320,11 +320,11 @@ class Emitter {
           b = this.recursiveEmitLine(temp, in, pos + 2, mt);
           if (b > 0) {
             this.config.decorator.openStrong(out);
-            out.append(temp);
+            out.appendHtml(temp);
             this.config.decorator.closeStrong(out);
             pos = b + 1;
           } else {
-            out.append(in.charAt(pos));
+            out.appendHtml(in.charAt(pos));
           }
           break;
         case STRIKE:
@@ -332,11 +332,11 @@ class Emitter {
           b = this.recursiveEmitLine(temp, in, pos + 2, mt);
           if (b > 0) {
             this.config.decorator.openStrike(out);
-            out.append(temp);
+            out.appendHtml(temp);
             this.config.decorator.closeStrike(out);
             pos = b + 1;
           } else {
-            out.append(in.charAt(pos));
+            out.appendHtml(in.charAt(pos));
           }
           break;
         case SUPER:
@@ -344,11 +344,11 @@ class Emitter {
           b = this.recursiveEmitLine(temp, in, pos + 1, mt);
           if (b > 0) {
             this.config.decorator.openSuper(out);
-            out.append(temp);
+            out.appendHtml(temp);
             this.config.decorator.closeSuper(out);
             pos = b;
           } else {
-            out.append(in.charAt(pos));
+            out.appendHtml(in.charAt(pos));
           }
           break;
         case CODE_SINGLE:
@@ -365,18 +365,18 @@ class Emitter {
                 b--;
               }
               this.config.decorator.openCodeSpan(out);
-              out.append(in.substring(a, b));
+              out.appendHtml(in.substring(a, b));
               this.config.decorator.closeCodeSpan(out);
             }
           } else {
-            out.append(in.charAt(pos));
+            out.appendHtml(in.charAt(pos));
           }
           break;
         case ESCAPE:
           pos++;
           //$FALL-THROUGH$
         default:
-          out.append(in.charAt(pos));
+          out.appendHtml(in.charAt(pos));
           break;
       }
       pos++;
@@ -459,13 +459,13 @@ class Emitter {
    *     The lines to write.
    */
   private void emitMarkedLines(final HtmlEscapeStringBuilder out, final Line lines) {
-    final StringBuilder in = new StringBuilder();
+    final HtmlEscapeStringBuilder in = new HtmlEscapeStringBuilder();
     Line line = lines;
     while (line != null) {
       if (!line.isEmpty) {
         in.append(line.value.substring(line.leading, line.value.length() - line.trailing));
         if (line.trailing >= 2) {
-          in.append("<br>");
+          in.appendHtml("<br>");
         }
       }
       if (line.next != null) {

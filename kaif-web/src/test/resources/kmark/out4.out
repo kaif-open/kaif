@@ -1,3 +1,3 @@
 <p>As you probably guessed, indented 4 spaces. By the way, instead of
 indenting &lt;span attr=&quot;evil&quot;&gt;the&lt;/span&gt; &lt;script&gt;no!!&lt;/script&gt; block, you can use delimited blocks,
-if you like:</p>
+if you like:\&#39;&#39;&quot;\&quot;\&lt;&lt;</p>

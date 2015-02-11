@@ -65,4 +65,5 @@ enum MarkToken {
    * Extended: ^
    */
   SUPER,              // ^
+  BR,
 }

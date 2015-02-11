@@ -31,6 +31,21 @@ public class KmarkProcessorTest {
   }
 
   /**
+   * a(_space_)(_space_)
+   * b 
+   * ///////////////////////////
+   * a<br>
+   * b
+   *
+   * @throws Exception
+   */
+  @Test
+  public void process_2_space_for_new_line() throws Exception {
+    assertEquals(readTestFile("kmark/out11.out"),
+        kmarkProcessor.process(readTestFile("kmark/in11.md"), ""));
+  }
+
+  /**
    * > abc
    * > def
    * ///////////////////////////
