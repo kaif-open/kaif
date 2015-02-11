@@ -517,7 +517,13 @@ class Emitter {
       if (linkRef.title != null && linkRef.title.isEmpty()) {
         out.appendHtml(" title=\"").append(linkRef.title).appendHtml("\"");
       }
-      out.appendHtml(" rel=\"nofollow\">").append(linkRef.link).appendHtml("</a><br>\n");
+      out.appendHtml(" rel=\"nofollow\" id=\"#")
+          .append(config.linkAnchorPrefix)
+          .appendHtml("-")
+          .append(linkRef.seqNumber)
+          .appendHtml("\">")
+          .append(linkRef.link)
+          .appendHtml("</a><br>\n");
     });
     out.appendHtml("</p>");
   }

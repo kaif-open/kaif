@@ -1,7 +1,7 @@
 <p>hello world <a href="#aAbBz-1" class="reference-link">yahoo</a>, <a href="#aAbBz-2" class="reference-link">google</a>, <a href="#aAbBz-3" class="reference-link">likName</a>, <a href="#aAbBz-5" class="reference-link">example</a>, <a href="#aAbBz-4" class="reference-link">bar</a></p>
-<p class="reference-appendix-block"><span class="reference-appendix-index">1</span><a href="http://yahoo.com.tw" rel="nofollow">http://yahoo.com.tw</a><br>
-<span class="reference-appendix-index">2</span><a href="http://google.com" rel="nofollow">http://google.com</a><br>
-<span class="reference-appendix-index">3</span><a href="http://foo.com" rel="nofollow">http://foo.com</a><br>
-<span class="reference-appendix-index">4</span><a href="http://bar.com" rel="nofollow">http://bar.com</a><br>
-<span class="reference-appendix-index">5</span><a href="https://example.com" rel="nofollow">https://example.com</a><br>
+<p class="reference-appendix-block"><span class="reference-appendix-index">1</span><a href="http://yahoo.com.tw" rel="nofollow" id="#aAbBz-1">http://yahoo.com.tw</a><br>
+<span class="reference-appendix-index">2</span><a href="http://google.com" rel="nofollow" id="#aAbBz-2">http://google.com</a><br>
+<span class="reference-appendix-index">3</span><a href="http://foo.com" rel="nofollow" id="#aAbBz-3">http://foo.com</a><br>
+<span class="reference-appendix-index">4</span><a href="http://bar.com" rel="nofollow" id="#aAbBz-4">http://bar.com</a><br>
+<span class="reference-appendix-index">5</span><a href="https://example.com" rel="nofollow" id="#aAbBz-5">https://example.com</a><br>
 </p>
