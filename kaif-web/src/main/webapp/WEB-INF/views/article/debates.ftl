@@ -42,11 +42,15 @@ head=headContent
                         <span class="debate-author">
                         ${debate.debaterName}
                         </span>
-                        <span class="debate-vote-box" debate-vote-box
+                        <span class="debate-vote-box votable" debate-vote-box
                               data-debate-id="${debate.debateId}"
                               data-debate-vote-count="${debate.totalVote}">
-                            <a href="#" debate-up-vote><i class="fa fa-chevron-up"></i></a>
-                            <a href="#" debate-down-vote><i class="fa fa-chevron-down"></i></a>
+                            <a href="#" debate-up-vote>
+                                <div class="up-triangle"></div>
+                            </a>
+                            <a href="#" debate-down-vote>
+                                <div class="down-triangle"></div>
+                            </a>
                             <span debate-vote-count>${debate.totalVote}</span>
                         </span>
                     </div>

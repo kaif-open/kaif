@@ -1,0 +1,20 @@
+.mixin-up-triangle(@color; @width;) {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 @width @width * 1.9 @width;
+  border-color: transparent transparent @color transparent;
+  display: inline-block;
+  //  -webkit-transform:rotate(360deg);
+}
+
+.mixin-down-triangle(@color; @width;) {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: @width * 1.9 @width 0 @width;
+  border-color: @color transparent transparent transparent;
+  display: inline-block;
+  //  -webkit-transform:rotate(360deg);
+}
+

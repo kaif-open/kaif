@@ -2,8 +2,9 @@
   display: none !important;
 }
 
-/** zone articles **/
-
+//
+// zone
+//
 .zone {
 
 }
@@ -61,6 +62,10 @@ a.create-article {
   width: 100%;
 }
 
+//
+// article
+//
+
 .article-list {
 }
 
@@ -79,12 +84,6 @@ a.create-article {
   text-align: right;
   font-size: @font-size-lg;
   white-space: nowrap;
-}
-
-.article-vote-box a,
-.article-vote-box a:focus,
-.article-vote-box a:visited {
-  outline: 0;
 }
 
 .article-body {
@@ -130,13 +129,9 @@ a.create-article {
   }
 }
 
-.vote-box-voted {
-  color: red;
-}
-
-.vote-box-voted a.voted {
-  color: red;
-}
+//
+// debate
+//
 
 .debate {
 
@@ -146,8 +141,53 @@ a.create-article {
 
 }
 
-.debate-vote-box a,
-.debate-vote-box a:focus,
-.debate-vote-box a:visited {
-  outline: 0;
+//
+// votable
+//
+// @see votable.dart
+//
+
+@empty-vote-color: lighten(@gray-base, 70%);
+@up-voted-color: #ff5619;
+@down-voted-color: rgba(86, 79, 255, 0.75);
+@triangle-width: 8px;
+
+.votable {
+  a, a:focus, a:visited {
+    outline: 0;
+    text-decoration: none;
+  }
 }
+
+.votable-empty {
+  color: @empty-vote-color;
+}
+
+.votable-up {
+  color: @up-voted-color;
+}
+
+.votable-down {
+  color: @down-voted-color;
+}
+
+.up-triangle {
+  .mixin-up-triangle(@color: @empty-vote-color; @width: @triangle-width);
+  transition: all 0.5s ease;
+}
+
+.votable-up .up-triangle {
+  .mixin-up-triangle(@color: @up-voted-color; @width: @triangle-width);
+  transform: rotate(360deg);
+}
+
+.down-triangle {
+  .mixin-down-triangle(@color: @empty-vote-color; @width: @triangle-width);
+  transition: all 0.5s ease;
+}
+
+.votable-down .down-triangle {
+  .mixin-down-triangle(@color: @down-voted-color; @width: @triangle-width);
+  transform: rotate(-360deg);
+}
+

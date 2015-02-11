@@ -36,11 +36,13 @@ head=headContent
             <input type="hidden" name="endArticleIdInput" value="${articlePage.endArticleId}">
             <#list articlePage.articles as article>
                 <div class="article">
-                    <div class="article-vote-box" article-vote-box
+                    <div class="article-vote-box votable" article-vote-box
                          data-article-id="${article.articleId}"
                          data-article-vote-count="${article.upVote}">
                         <span article-vote-count>${article.upVote}</span>
-                        <a href="#" article-up-vote><i class="fa fa-chevron-up"></i></a>
+                        <a href="#" article-up-vote>
+                            <div class="up-triangle"></div>
+                        </a>
                     </div>
                     <div class="article-body">
                         <div class="article-title">
