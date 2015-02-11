@@ -229,7 +229,15 @@ class ArticleService extends _AbstractService {
     return _putJson(_getUrl('/external-link'), json)
     .then((res) => null);
   }
-
+  
+  Future<String> previewKmark(String content){
+    var json = {
+        'content':content
+    };
+    return _putJson(_getUrl('/preview-kmark'), json)
+    .then((req) => req.responseText);
+  }
+  
   Future debate(String zone, String articleId, String parentDebateId, String content) {
     String parent = isStringBlank(parentDebateId) ? null : parentDebateId;
     var json = {

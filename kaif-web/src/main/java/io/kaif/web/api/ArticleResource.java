@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.kaif.flake.FlakeId;
+import io.kaif.kmark.KmarkProcessor;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.article.Article;
 import io.kaif.model.debate.Debate;
@@ -53,8 +54,15 @@ public class ArticleResource {
     public String content;
   }
 
+  static class PreviewKmark {
+    @NotNull
+    public String content;
+  }
+
   @Autowired
   private ArticleService articleService;
+
+  private KmarkProcessor kmarkProcessor = new KmarkProcessor();
 
   @RequestMapping(value = "/external-link", method = RequestMethod.PUT, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
@@ -74,5 +82,11 @@ public class ArticleResource {
         request.parentDebateId,
         token,
         request.content.trim());
+  }
+
+  @RequestMapping(value = "/preview-kmark", method = RequestMethod.PUT, consumes = {
+      MediaType.APPLICATION_JSON_VALUE })
+  public String previewKmark(AccountAccessToken token, @Valid @RequestBody PreviewKmark request) {
+    return kmarkProcessor.process(request.content, "");
   }
 }

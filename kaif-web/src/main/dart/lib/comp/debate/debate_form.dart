@@ -28,10 +28,44 @@ class DebateForm {
 
   DebateForm._(Element placeHolderElem, this._articleService) {
     _elem = _debateFormTemplate.createElement();
+    _elem.querySelector('[kmark-preview]').onClick.listen(_onPreview);
     placeHolderElem.replaceWith(_elem);
 
     _alert = new Alert.append(_elem);
     _elem.onSubmit.listen(_onSubmit);
+  }
+
+  void _onPreview(Event e) {
+    e
+      ..preventDefault()
+      ..stopPropagation();
+
+    Element previewer = elem.querySelector('[kmark-previewer]');
+    TextInputElement contentInput = elem.querySelector('textarea[name=contentInput]');
+    if (!previewer.hidden) {
+      previewer
+        ..setInnerHtml('')
+        ..hidden = true;
+      contentInput.hidden = false;
+      return;
+    }
+
+    ButtonElement previewBtn = elem.querySelector('[kmark-preview]');
+    previewBtn.disabled = true;
+    var loading = new Loading.small()
+      ..renderAfter(previewBtn);
+    _articleService.previewKmark(contentInput.value.trim())
+    .then((preview) {
+      contentInput.hidden = true;
+      previewer
+        ..setInnerHtml(preview)
+        ..hidden = false;
+    }).catchError((e) {
+      _alert.renderError('${e}');
+    }).whenComplete(() {
+      previewBtn.disabled = false;
+      loading.remove();
+    });
   }
 
   void _onSubmit(Event e) {

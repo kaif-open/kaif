@@ -73,7 +73,9 @@ head=headContent
 <form class="pure-form hidden" comp-template="debate-form">
     <input type="hidden" name="zoneInput" value="${article.zone}">
     <input type="hidden" name="articleInput" value="${article.articleId}">
+    <div kmark-previewer hidden></div>
     <textarea name="contentInput" maxlength="4096" rows="3"></textarea>
     <button type="submit" class="pure-button pure-button-primary">留言</button>
+    <button class="pure-button" kmark-preview>預覽</button>
 </form>
 </@template.page>
