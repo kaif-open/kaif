@@ -56,7 +56,6 @@ CREATE TABLE Debate (
   parentDebateId BIGINT         NOT NULL,
   level          INT            NOT NULL,
   content        VARCHAR(16384) NOT NULL,
-  renderContent  VARCHAR(65535) NOT NULL,
   contentType    VARCHAR(4096)  NOT NULL,
   debaterId      UUID           NOT NULL REFERENCES Account (accountId),
   debaterName    VARCHAR(4096)  NOT NULL,
@@ -73,7 +72,6 @@ CREATE TABLE DebateHistory (
   debateId         BIGINT         NOT NULL,
   revision         INT            NOT NULL,
   content          VARCHAR(16384) NOT NULL,
-  renderContent    VARCHAR(16384) NOT NULL,
   createTime       TIMESTAMP      NOT NULL,
   PRIMARY KEY (debateId, revision)
 );

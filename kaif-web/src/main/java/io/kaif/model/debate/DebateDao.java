@@ -39,7 +39,6 @@ public class DebateDao implements DaoOperations {
         FlakeId.valueOf(rs.getLong("parentDebateId")),
         rs.getInt("level"),
         rs.getString("content"),
-        rs.getString("renderContent"),
         DebateContentType.valueOf(rs.getString("contentType")),
         UUID.fromString(rs.getString("debaterId")),
         rs.getString("debaterName"),
@@ -59,17 +58,16 @@ public class DebateDao implements DaoOperations {
             + " INSERT "
             + "   INTO Debate "
             +
-            "        (articleid, debateid, parentdebateid, level, content, renderContent, contenttype, "
+            "        (articleid, debateid, parentdebateid, level, content, contenttype, "
             +
             "         debaterid, debatername, upvote, downvote, createtime, lastupdatetime)"
             + " VALUES "
-            + questions(13),
+            + questions(12),
         debate.getArticleId().value(),
         debate.getDebateId().value(),
         debate.getParentDebateId().value(),
         debate.getLevel(),
         debate.getContent(),
-        debate.getRenderContent(),
         debate.getContentType().name(),
         debate.getDebaterId(),
         debate.getDebaterName(),
