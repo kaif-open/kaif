@@ -1,20 +1,29 @@
+//
+// pure css triangle
+//
+// although @width is variable, but in some browser bad value cause alias
+//
+// the current tested good value is width=8px, (height=16px) triangle. it
+// looks good on firefox and chrome
+//
+// there is a hack `-moz-transform: scale(.9999);` for firefox antialias
+// but since we have another transform, so we can't use this trick
+//
 .mixin-up-triangle(@color; @width;) {
   width: 0;
   height: 0;
   border-style: solid;
-  border-width: 0 @width @width * 1.9 @width;
+  border-width: 0 @width @width * 2 @width;
   border-color: transparent transparent @color transparent;
   display: inline-block;
-  //  -webkit-transform:rotate(360deg);
 }
 
 .mixin-down-triangle(@color; @width;) {
   width: 0;
   height: 0;
   border-style: solid;
-  border-width: @width * 1.9 @width 0 @width;
+  border-width: @width * 2 @width 0 @width;
   border-color: @color transparent transparent transparent;
   display: inline-block;
-  //  -webkit-transform:rotate(360deg);
 }
 
