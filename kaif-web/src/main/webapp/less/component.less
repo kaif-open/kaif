@@ -10,7 +10,7 @@
 }
 
 .zone-header {
-  border-bottom: solid 1px @gray-lighter;
+  border-bottom: solid 1px @gray-lightest;
   padding-left: @convex-row-width;
   padding-top: @padding-lg-vertical;
   padding-bottom: @padding-lg-vertical;
@@ -100,10 +100,14 @@ a.create-article {
   a {
     text-decoration: none;
   }
-
   a:hover {
     color: @link-hover-color;
   }
+  a:visited {
+    color: @gray-lighter;
+  }
+  // note <a> 's outline is preserved
+  // it used as a hint for user just visited that link
 }
 
 .article-link-hint {
@@ -147,7 +151,7 @@ a.create-article {
 // @see votable.dart
 //
 
-@empty-vote-color: lighten(@gray-base, 70%);
+@empty-vote-color: @gray-lighter;
 @up-voted-color: #ff5619;
 @down-voted-color: rgba(86, 79, 255, 0.75);
 @triangle-width: 8px;
