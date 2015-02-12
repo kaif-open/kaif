@@ -38,11 +38,12 @@
 <#macro debate data article>
     <#local debate=data />
 <#-- TODO adjust margin-left -->
-<div class="debate" debate style="margin-left: ${(debate.level-1) * 30}px;">
+<div class="debate" style="margin-left: ${(debate.level-1) * 30}px;"
+     debate
+     data-debate-id="${debate.debateId}">
     <div class="debate-vote-box votable" debate-vote-box
-         data-debate-id="${debate.debateId}"
+
          data-debate-vote-count="${debate.totalVote}">
-        <span debate-vote-count>${debate.totalVote}</span>
         <a href="#" debate-up-vote>
             <div class="up-vote"></div>
         </a>
@@ -54,7 +55,8 @@
         <div class="debate-title">
             <a class="debate-author"
                href="/u/${article.authorName}">${debate.debaterName}</a>
-            發表於 ${relativeTime(debate.createTime)}
+            積分
+            ( <span debate-vote-count>${debate.totalVote}</span> )
         </div>
         <div class="debate-content">
             <div class="kmark">
@@ -69,6 +71,7 @@
             <#if debate.hasParent()>
                 <a>parent</a>
             </#if>
+            <span>${relativeTime(debate.createTime)}</span>
         </div>
     </div>
 </div>
