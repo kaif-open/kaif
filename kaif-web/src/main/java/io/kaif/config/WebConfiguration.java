@@ -24,12 +24,11 @@ import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
-import com.google.common.collect.ImmutableMap;
 
-import freemarker.template.SimpleHash;
 import freemarker.template.TemplateModelException;
 import io.kaif.service.AccountService;
 import io.kaif.web.AccountAccessTokenArgumentResolver;
+import io.kaif.web.support.RelativeTime;
 
 @Configuration
 public class WebConfiguration extends WebMvcConfigurerAdapter {
@@ -101,7 +100,7 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
     variables.put("appBuild", appProperties.getBuild());
     variables.put("profilesActive",
         Arrays.stream(environment.getActiveProfiles()).collect(Collectors.joining(",")));
-    freeMarkerConfiguration.setAllSharedVariables(new SimpleHash(ImmutableMap.of("kaif", variables),
-        freeMarkerConfiguration.getObjectWrapper()));
+    freeMarkerConfiguration.setSharedVariable("kaif", variables);
+    freeMarkerConfiguration.setSharedVariable("relativeTime", new RelativeTime());
   }
 }

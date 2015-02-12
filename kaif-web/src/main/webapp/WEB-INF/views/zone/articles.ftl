@@ -57,7 +57,7 @@ head=headContent
                             <span>
                                 <a class="article-author"
                                    href="/u/${article.authorName}">/u/${article.authorName}</a>
-                                張貼於 ${article.createTime}
+                                張貼於 ${relativeTime(article.createTime)}
                             </span>
                         </div>
                     </div>

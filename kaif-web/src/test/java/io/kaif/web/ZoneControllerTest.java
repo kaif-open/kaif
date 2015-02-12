@@ -46,7 +46,8 @@ public class ZoneControllerTest extends MvcIntegrationTests {
         .andExpect(content().string(containsString("programming-alias")))
         .andExpect(content().string(containsString("java")))
         .andExpect(content().string(containsString("golang")))
-        .andExpect(content().string(containsString("ruby")));
+        .andExpect(content().string(containsString("ruby")))
+        .andExpect(content().string(containsString("moments ago"))); // relativeTime()
   }
 
   @Test
