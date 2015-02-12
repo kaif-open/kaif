@@ -32,7 +32,7 @@
   background-color: #eee;
 }
 
-.zone-content {
+.zone-body {
   display: flex;
   flex-flow: column;
   justify-content: space-between;
@@ -67,6 +67,7 @@ a.create-article {
 //
 
 .article-list {
+  padding-right: @padding-lg-horizontal;
 }
 
 .article {
@@ -87,7 +88,7 @@ a.create-article {
 }
 
 .article-body {
-  padding-right: @padding-lg-horizontal;
+
 }
 
 .article-title {
@@ -115,21 +116,20 @@ a.create-article {
   font-size: @font-size-sm;
 }
 
-.article-list .article-info {
-  font-size: @font-size-sm;
-}
+.article-info {
+  & > * {
+    padding-right: @padding-horizontal;
+  }
 
-.article-info > * {
-  padding-right: @padding-horizontal;
-}
+  span {
 
-.article-info span {
-}
+  }
 
-.article-info a {
-  color: @gray-light;
-  &:hover {
-    color: @link-hover-color;
+  a {
+    color: @gray-light;
+    &:hover {
+      color: @link-hover-color;
+    }
   }
 }
 
@@ -137,12 +137,89 @@ a.create-article {
 // debate
 //
 
-.debate {
+.debate-container {
+  display: flex;
+  flex-flow: column;
 
+  @media (min-width: @screen-md-min) {
+    flex-flow: row;
+  }
+
+  .debate-tree {
+    padding-right: @padding-lg-horizontal;
+  }
+
+  .debate-aside {
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: @aside-width-sm;
+    padding-left: @convex-row-width;
+    @media (min-width: @screen-lg-min) {
+      flex-basis: @aside-width;
+    }
+    @media (min-width: @screen-md-min) {
+      padding-left: 0;
+    }
+  }
+}
+
+.debate-form-container {
+  padding-top: @padding-lg-vertical;
+  margin-left: @convex-row-width;
+  margin-top: @padding-lg-vertical;
+  border-top: 1px dashed @gray-lighter;
+}
+
+.debate {
+  display: flex;
+  flex-flow: row;
 }
 
 .debate-vote-box {
+  padding-right: @padding-lg-horizontal;
+  padding-top: @padding-lg-vertical;
+  padding-bottom: @padding-lg-vertical;
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-basis: @convex-row-width;
+  text-align: right;
+  font-size: @font-size-lg;
+  white-space: nowrap;
+}
 
+//TODO remove hack
+[debate-down-vote] {
+  display: block;
+}
+
+.debate-body {
+  padding-top: @padding-lg-vertical;
+}
+
+.debate-info {
+  & > * {
+    padding-right: @padding-horizontal;
+  }
+
+  span {
+  }
+
+  a {
+    color: @gray-light;
+    &:hover {
+      color: @link-hover-color;
+    }
+  }
+}
+
+//
+// kmark
+//
+
+.kmark {
+  p {
+    margin: @padding-sm-vertical 0;
+  }
 }
 
 //

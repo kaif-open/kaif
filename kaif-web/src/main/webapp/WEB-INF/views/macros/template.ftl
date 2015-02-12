@@ -160,3 +160,21 @@ sample configs:
     || springMacroRequestContext.getRequestUri() == (href + '.part') ) />
 <li class="${selected?string('pure-menu-selected','')}"><a href="${href}">${name}</a></li>
 </#macro>
+
+<#macro zone data menus="">
+
+    <#local zoneInfo=data />
+
+<div class="zone ${zoneInfo.theme}">
+    <div class="zone-header">
+        <div class="zone-title">${zoneInfo.aliasName} -
+            /z/${zoneInfo.name}</div>
+    </div>
+    <nav class="zone-menu pure-menu pure-menu-open pure-menu-horizontal">
+        <@template.menuLink '/z/${zoneInfo.name}' '熱門'/>
+        <@template.menuLink '/z/${zoneInfo.name}/new' '最新'/>
+        ${menus}
+    </nav>
+    <#nested/>
+</div>
+</#macro>
