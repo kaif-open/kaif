@@ -46,10 +46,10 @@ head=headContent
                               data-debate-id="${debate.debateId}"
                               data-debate-vote-count="${debate.totalVote}">
                             <a href="#" debate-up-vote>
-                                <div class="up-triangle"></div>
+                                <div class="up-vote"></div>
                             </a>
                             <a href="#" debate-down-vote>
-                                <div class="down-triangle"></div>
+                                <div class="down-vote"></div>
                             </a>
                             <span debate-vote-count>${debate.totalVote}</span>
                         </span>

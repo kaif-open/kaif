@@ -157,9 +157,6 @@ a.create-article {
     outline: 0;
     text-decoration: none;
   }
-}
-
-.votable-empty {
   color: @empty-vote-color;
 }
 
@@ -171,22 +168,22 @@ a.create-article {
   color: @down-voted-color;
 }
 
-.up-triangle {
+.up-vote {
   .mixin-up-triangle(@color: @empty-vote-color; @width: @triangle-width);
   transition: all 0.5s ease;
 }
 
-.votable-up .up-triangle {
+.votable-up .up-vote {
   .mixin-up-triangle(@color: @up-voted-color; @width: @triangle-width);
   transform: rotate(360deg);
 }
 
-.down-triangle {
+.down-vote {
   .mixin-down-triangle(@color: @empty-vote-color; @width: @triangle-width);
   transition: all 0.5s ease;
 }
 
-.votable-down .down-triangle {
+.votable-down .down-vote {
   .mixin-down-triangle(@color: @down-voted-color; @width: @triangle-width);
   transform: rotate(-360deg);
 }

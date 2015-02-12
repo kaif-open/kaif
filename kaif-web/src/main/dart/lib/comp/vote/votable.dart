@@ -64,7 +64,6 @@ abstract class Votable {
 
   void _markVisualState(VoteState voteState) {
     //the implementation should be idempotent because it may invoke multiple times.
-    elem.classes.toggle('votable-empty', voteState == VoteState.EMPTY);
     elem.classes.toggle('votable-up', voteState == VoteState.UP);
     elem.classes.toggle('votable-down', voteState == VoteState.DOWN);
   }

@@ -41,7 +41,7 @@ head=headContent
                          data-article-vote-count="${article.upVote}">
                         <span article-vote-count>${article.upVote}</span>
                         <a href="#" article-up-vote>
-                            <div class="up-triangle"></div>
+                            <div class="up-vote"></div>
                         </a>
                     </div>
                     <div class="article-body">
