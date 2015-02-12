@@ -47,7 +47,7 @@ head=headContent
                     <div class="article-body">
                         <div class="article-title">
                             <a href="${article.content}" target="_blank">${article.title}</a>
-                            <span class="article-link-hint">(${article.content})</span>
+                            <span class="article-link-hint">(${article.linkHint})</span>
                         </div>
                         <div class="article-info">
                             <span>

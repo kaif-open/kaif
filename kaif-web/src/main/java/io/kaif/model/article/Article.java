@@ -1,5 +1,7 @@
 package io.kaif.model.article;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -173,5 +175,18 @@ public class Article {
         "/z/" + zone +
         "/article/" + articleId +
         "/" + title;
+  }
+
+  public String getLinkHint() {
+    if (linkType == ArticleLinkType.EXTERNAL) {
+      try {
+        return new URL(content).getHost();
+      } catch (MalformedURLException e) {
+        return "--bad--";
+      }
+    } else {
+      //TODO for other type
+      return linkType.name().toLowerCase();
+    }
   }
 }

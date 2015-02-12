@@ -26,7 +26,7 @@
                     <label for="urlInput">文章連結</label>
                     <input id="urlInput" type="url" placeholder="http://..."
                            maxlength="512" required
-                           title="連結必填"
+                           title="連結必填, 必須以 http 開頭"
                            class="pure-input-1">
                 </div>
 
