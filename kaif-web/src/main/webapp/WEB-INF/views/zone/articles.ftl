@@ -26,8 +26,8 @@ head=headContent
     <div class="zone-body">
         <div class="article-list" article-list>
             <input type="hidden" name="zoneInput" value="${zoneInfo.name}">
-            <input type="hidden" name="startArticleIdInput" value="${articlePage.startArticleId}">
-            <input type="hidden" name="endArticleIdInput" value="${articlePage.endArticleId}">
+            <input type="hidden" name="oldestArticleIdInput" value="${articlePage.oldestArticleId}">
+            <input type="hidden" name="newestArticleIdInput" value="${articlePage.newestArticleId}">
             <#list articlePage.articles as article>
                 <@comp.article data=article />
             </#list>
@@ -36,7 +36,8 @@ head=headContent
                     沒有文章
                 </#if>
                 <#if articlePage.hasNext()>
-                    <a href="<@url.current start=articlePage.startArticleId />" class="pure-button"><i
+                    <a href="<@url.current start=articlePage.lastArticleId />"
+                       class="pure-button"><i
                             class="fa fa-caret-right"></i> 下一頁</a>
                 </#if>
             </div>

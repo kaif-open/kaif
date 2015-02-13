@@ -53,11 +53,11 @@ public class VoteServiceImpl implements VoteService {
 
   @Override
   public List<ArticleVoter> listArticleVotersInRage(Authorization authorization,
-      FlakeId startArticleId,
-      FlakeId endArticleId) {
+      FlakeId oldestArticleId,
+      FlakeId newestArticleId) {
     return voteDao.listArticleVotersInRage(authorization.authenticatedId(),
-        startArticleId,
-        endArticleId);
+        oldestArticleId,
+        newestArticleId);
   }
 
   @Override

@@ -22,9 +22,9 @@ class ArticleList {
 
     Future<List<ArticleVoter>> future;
     if (accountSession.isSignIn) {
-      var startArticleId = (elem.querySelector('[name=startArticleIdInput]') as HiddenInputElement).value;
-      var endArticleId = (elem.querySelector('[name=endArticleIdInput]') as HiddenInputElement).value;
-      future = voteService.listArticleVotersInRange(startArticleId, endArticleId);
+      var oldestArticleId = (elem.querySelector('[name=oldestArticleIdInput]') as HiddenInputElement).value;
+      var newestArticleId = (elem.querySelector('[name=newestArticleIdInput]') as HiddenInputElement).value;
+      future = voteService.listArticleVotersInRange(oldestArticleId, newestArticleId);
     } else {
       future = new Future.value([]);
     }

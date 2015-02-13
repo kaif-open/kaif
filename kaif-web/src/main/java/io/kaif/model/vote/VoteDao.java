@@ -46,8 +46,8 @@ public class VoteDao implements DaoOperations {
   }
 
   public List<ArticleVoter> listArticleVotersInRage(UUID accountId,
-      FlakeId startArticleId,
-      FlakeId endArticleId) {
+      FlakeId oldestArticleId,
+      FlakeId newestArticleId) {
     return jdbc().query(""
             + " SELECT * "
             + "   FROM ArticleVoter "
@@ -55,8 +55,8 @@ public class VoteDao implements DaoOperations {
             + "    AND articleId BETWEEN ? AND ? ",
         articleVoterMapper,
         accountId,
-        startArticleId.value(),
-        endArticleId.value());
+        oldestArticleId.value(),
+        newestArticleId.value());
   }
 
   public void voteDebate(VoteState newState,

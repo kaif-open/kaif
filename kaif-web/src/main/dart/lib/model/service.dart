@@ -229,15 +229,15 @@ class ArticleService extends _AbstractService {
     return _putJson(_getUrl('/external-link'), json)
     .then((res) => null);
   }
-  
-  Future<String> previewKmark(String content){
+
+  Future<String> previewKmark(String content) {
     var json = {
         'content':content
     };
     return _putJson(_getUrl('/preview-kmark'), json)
     .then((req) => req.responseText);
   }
-  
+
   Future debate(String zone, String articleId, String parentDebateId, String content) {
     String parent = isStringBlank(parentDebateId) ? null : parentDebateId;
     var json = {
@@ -265,11 +265,11 @@ class VoteService extends _AbstractService {
     .then((res) => null);
   }
 
-  Future<List<ArticleVoter>> listArticleVotersInRange(String startArticleId, String endArticleId) {
+  Future<List<ArticleVoter>> listArticleVotersInRange(String oldestArticleId,
+                                                      String newestArticleId) {
     var params = {
-        'startArticleId':startArticleId, 'endArticleId':endArticleId
+        'oldestArticleId':oldestArticleId, 'newestArticleId':newestArticleId
     };
-
     return _get(_getUrl('/article-voters'), params:params)
     .then((req) => JSON.decode(req.responseText))
     .then((List<Map> list) => list.map((raw) => new ArticleVoter.decode(raw)).toList());

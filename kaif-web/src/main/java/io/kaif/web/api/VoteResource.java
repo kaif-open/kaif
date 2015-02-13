@@ -108,11 +108,11 @@ public class VoteResource {
 
   @RequestMapping(value = "/article-voters", method = RequestMethod.GET)
   public List<ArticleVoterDto> listArticleVotersInRage(AccountAccessToken token,
-      @RequestParam("startArticleId") String startArticleId,
-      @RequestParam("endArticleId") String endArticleId) {
+      @RequestParam("oldestArticleId") String oldestArticleId,
+      @RequestParam("newestArticleId") String newestArticleId) {
     return voteService.listArticleVotersInRage(token,
-        FlakeId.fromString(startArticleId),
-        FlakeId.fromString(endArticleId)).stream().map(ArticleVoter::toDto).collect(toList());
+        FlakeId.fromString(oldestArticleId),
+        FlakeId.fromString(newestArticleId)).stream().map(ArticleVoter::toDto).collect(toList());
   }
 
   @RequestMapping(value = "/debate-voters", method = RequestMethod.GET)

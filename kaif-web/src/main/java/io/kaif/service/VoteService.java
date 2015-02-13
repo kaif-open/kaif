@@ -19,8 +19,8 @@ public interface VoteService {
       long previousCount);
 
   List<ArticleVoter> listArticleVotersInRage(Authorization authorization,
-      FlakeId startArticleId,
-      FlakeId endArticleId);
+      FlakeId oldestArticleId,
+      FlakeId newestArticleId);
 
   List<DebateVoter> listDebateVoters(Authorization voter, FlakeId articleId);
 
