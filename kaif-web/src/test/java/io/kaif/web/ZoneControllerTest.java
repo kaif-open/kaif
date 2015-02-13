@@ -40,7 +40,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
   public void newArticles() throws Exception {
     Zone z = zoneInfo.getZone();
     when(zoneService.loadZone(z)).thenReturn(zoneInfo);
-    when(articleService.listLatestArticles(z, 0)).thenReturn(//
+    when(articleService.listLatestArticles(z, null)).thenReturn(//
         asList(article(z, "java"), article(z, "ruby"), article(z, "golang")));
     mockMvc.perform(get("/z/programming/new"))
         .andExpect(content().string(containsString("programming-alias")))
@@ -48,6 +48,19 @@ public class ZoneControllerTest extends MvcIntegrationTests {
         .andExpect(content().string(containsString("golang")))
         .andExpect(content().string(containsString("ruby")))
         .andExpect(content().string(containsString("moments ago"))); // relativeTime()
+  }
+
+  @Test
+  public void newArticlesWithPaging() throws Exception {
+    Zone z = zoneInfo.getZone();
+    when(zoneService.loadZone(z)).thenReturn(zoneInfo);
+    Article start = article(z, "erlang");
+    when(articleService.listLatestArticles(z, FlakeId.fromString("abcdefg"))).thenReturn(//
+        asList(start, article(z, "python")));
+    String expectNextPager = String.format("href=\"/z/programming/new?start=%s\"",
+        start.getArticleId());
+    mockMvc.perform(get("/z/programming/new?start=abcdefg"))
+        .andExpect(content().string(containsString(expectNextPager)));
   }
 
   @Test

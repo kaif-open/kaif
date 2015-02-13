@@ -37,7 +37,7 @@ head=headContent
             <input type="hidden" name="zoneInput" value="${zoneInfo.name}">
             <input type="hidden" name="articleIdInput" value="${article.articleId}">
 
-            <div class="debate-form-container">
+            <div class="debate-form-container convex-row">
 
             <#-- place holder debate-form will replace by comp-template
              keep place holder looks the same as comp-template

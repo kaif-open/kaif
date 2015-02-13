@@ -18,6 +18,7 @@ public class ArticlePageTest implements ModelFixture {
     ArticlePage page = new ArticlePage(Collections.<Article>emptyList());
     assertEquals(FlakeId.MIN, page.getStartArticleId());
     assertEquals(FlakeId.MIN, page.getEndArticleId());
+    assertFalse(page.hasNext());
 
     Zone zone = Zone.valueOf("abc");
     Article a1 = article(zone, "t1");
@@ -25,6 +26,7 @@ public class ArticlePageTest implements ModelFixture {
 
     assertEquals(a1.getArticleId(), page.getStartArticleId());
     assertEquals(a1.getArticleId(), page.getEndArticleId());
+    assertTrue(page.hasNext());
 
     Article a2 = article(zone, "t2");
     Article a3 = article(zone, "t3");
@@ -33,5 +35,6 @@ public class ArticlePageTest implements ModelFixture {
 
     assertEquals(a1.getArticleId(), page.getStartArticleId());
     assertEquals(a4.getArticleId(), page.getEndArticleId());
+    assertTrue(page.hasNext());
   }
 }

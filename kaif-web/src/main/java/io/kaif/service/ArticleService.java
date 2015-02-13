@@ -14,7 +14,7 @@ public interface ArticleService {
 
   Article createExternalLink(Authorization author, Zone zone, String title, String url);
 
-  List<Article> listLatestArticles(Zone zone, int page);
+  List<Article> listLatestArticles(Zone zone, @Nullable FlakeId startArticleId);
 
   Article loadArticle(Zone zone, FlakeId articleId);
 

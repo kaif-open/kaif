@@ -2,6 +2,7 @@ package io.kaif.web;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.function.Function;
 
 import javax.servlet.http.HttpServletRequest;
@@ -76,13 +77,15 @@ public class ZoneController {
 
   @RequestMapping("/{zone}/new")
   public Object newArticles(@PathVariable("zone") String rawZone,
-      @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+      @RequestParam(value = "start", required = false) String start,
       HttpServletRequest request) {
     return resolveZone(request, rawZone, zoneInfo -> {
+      FlakeId startArticleId = Optional.ofNullable(start).map(FlakeId::fromString).orElse(null);
       return new ModelAndView("zone/articles")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("articlePage",
-              new ArticlePage(articleService.listLatestArticles(zoneInfo.getZone(), page)));
+              new ArticlePage(articleService.listLatestArticles(zoneInfo.getZone(),
+                  startArticleId)));
     });
   }
 

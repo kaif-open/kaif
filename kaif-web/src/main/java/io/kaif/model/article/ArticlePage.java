@@ -37,4 +37,8 @@ public class ArticlePage {
   public FlakeId getEndArticleId() {
     return endArticleId;
   }
+
+  public boolean hasNext() {
+    return !articles.isEmpty();
+  }
 }

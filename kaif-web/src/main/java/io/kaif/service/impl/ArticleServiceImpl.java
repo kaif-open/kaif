@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 
 import io.kaif.flake.FlakeId;
-import io.kaif.kmark.KmarkProcessor;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountDao;
 import io.kaif.model.account.Authorization;
@@ -71,8 +70,8 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public List<Article> listLatestArticles(Zone zone, int page) {
-    return articleDao.listArticlesDesc(zone, page * PAGE_SIZE, PAGE_SIZE);
+  public List<Article> listLatestArticles(Zone zone, @Nullable FlakeId startArticleId) {
+    return articleDao.listArticlesDesc(zone, startArticleId, PAGE_SIZE);
   }
 
   @Override
@@ -98,11 +97,7 @@ public class ArticleServiceImpl implements ArticleService {
     Debate parent = Optional.ofNullable(parentDebateId)
         .flatMap(pId -> debateDao.findDebate(article.getArticleId(), pId))
         .orElse(null);
-    Debate debate = debateDao.create(article,
-        parent,
-        content,
-        debater,
-        Instant.now());
+    Debate debate = debateDao.create(article, parent, content, debater, Instant.now());
 
     //may improve later to make it async, but async has transaction problem
     articleDao.increaseDebateCount(article);

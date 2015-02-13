@@ -240,7 +240,8 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     Article a2 = service.createExternalLink(author, fooZone.getZone(), "title2", "http://foo2.com");
     Article a3 = service.createExternalLink(author, fooZone.getZone(), "title2", "http://foo2.com");
 
-    assertEquals(asList(a3, a2, a1), service.listLatestArticles(fooZone.getZone(), 0));
+    assertEquals(asList(a3, a2, a1), service.listLatestArticles(fooZone.getZone(), null));
+    assertEquals(asList(a1), service.listLatestArticles(fooZone.getZone(), a2.getArticleId()));
   }
 
   @Test

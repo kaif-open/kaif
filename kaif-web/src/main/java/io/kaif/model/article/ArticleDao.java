@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
@@ -79,9 +81,16 @@ public class ArticleDao implements DaoOperations {
     return jdbc().query(sql, articleMapper, zone.value(), articleId.value()).stream().findAny();
   }
 
-  public List<Article> listArticlesDesc(Zone zone, int offset, int limit) {
-    final String sql = " SELECT * FROM Article WHERE zone = ? ORDER BY articleId DESC OFFSET ? LIMIT ? ";
-    return jdbc().query(sql, articleMapper, zone.value(), offset, limit);
+  public List<Article> listArticlesDesc(Zone zone, @Nullable FlakeId startFlakeId, int limit) {
+    FlakeId start = Optional.ofNullable(startFlakeId).orElse(FlakeId.MAX);
+    final String sql = ""
+        + " SELECT * "
+        + "   FROM Article "
+        + "  WHERE zone = ? "
+        + "    AND articleId < ? "
+        + "  ORDER BY articleId DESC "
+        + "  LIMIT ? ";
+    return jdbc().query(sql, articleMapper, zone.value(), start.value(), limit);
   }
 
   public Article createExternalLink(Zone zone,

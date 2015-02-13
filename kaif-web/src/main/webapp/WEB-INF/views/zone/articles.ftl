@@ -31,12 +31,21 @@ head=headContent
             <#list articlePage.articles as article>
                 <@comp.article data=article />
             </#list>
+            <div class="article-list-pager convex-row">
+                <#if articlePage.articles?size == 0 >
+                    沒有文章
+                </#if>
+                <#if articlePage.hasNext()>
+                    <a href="<@url.current start=articlePage.startArticleId />" class="pure-button"><i
+                            class="fa fa-caret-right"></i> 下一頁</a>
+                </#if>
+            </div>
         </div>
         <aside class="zone-aside">
         <#-- TODO enable when ajax permission load -->
             <a href="/z/${zoneInfo.name}/article/create"
                class="pure-button pure-button-primary create-article"
-               create-article>建立文章 &gt; </a>
+               create-article><i class="fa fa-caret-right"></i> 建立文章</a>
         </aside>
     </div>
 
