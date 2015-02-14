@@ -16,7 +16,7 @@ import io.kaif.model.zone.ZoneInfo;
 /**
  * reusable test fixture for model, design for implements by test case
  */
-public interface ModelFixture {
+public interface ModelFixture extends TimeFixture {
 
   default ZoneInfo zoneDefault(String zone) {
     return ZoneInfo.createDefault(zone, zone + "-alias", Instant.now());
