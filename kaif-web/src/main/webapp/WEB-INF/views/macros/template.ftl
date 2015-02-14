@@ -82,7 +82,7 @@ sample configs:
 
 <header class="header">
     <div class="container">
-        <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal">
+        <div class="top-menu pure-menu pure-menu-open pure-menu-horizontal">
             <a class="pure-menu-heading" href="/">Kaif.io</a>
             <ul account-menu>
             <#-- mock
@@ -146,6 +146,9 @@ sample configs:
 
 </#macro>
 
+<#--
+ menuLink
+-->
 <#macro menuLink href name>
 <#-- here we have a tricky hack
      the landing page is `/z/programm/article/create`
@@ -156,11 +159,14 @@ sample configs:
 
      TODO menuLink in part template should use dart to render and highlight
   -->
-    <#local selected = (springMacroRequestContext.getRequestUri() == href
-    || springMacroRequestContext.getRequestUri() == (href + '.part') ) />
+    <#local uri = springMacroRequestContext.getRequestUri()/>
+    <#local selected = (uri == href || uri == (href + '.part')) />
 <li class="${selected?string('pure-menu-selected','')}"><a href="${href}">${name}</a></li>
 </#macro>
 
+<#--
+ zone layout
+-->
 <#macro zone data menus="">
 
     <#local zoneInfo=data />
@@ -174,6 +180,21 @@ sample configs:
         <@template.menuLink '/z/${zoneInfo.name}' '熱門'/>
         <@template.menuLink '/z/${zoneInfo.name}/new' '最新'/>
         ${menus}
+    </nav>
+    <#nested/>
+</div>
+</#macro>
+
+<#--
+ home layout
+-->
+<#macro home>
+
+<div class="home">
+    <nav class="home-menu pure-menu pure-menu-open pure-menu-horizontal">
+        <@template.menuLink '/' '綜合熱門'/>
+        <@template.menuLink '/new' '綜合最新'/>
+        <@template.menuLink '/zones' '所有討論區'/>
     </nav>
     <#nested/>
 </div>

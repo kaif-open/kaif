@@ -15,16 +15,14 @@ config={
 head=headContent
 >
 
-<div >
-    <h1>Page Title</h1>
-
-    <h2>A subtitle for your page goes here</h2>
-
-    <ul>
-        <li><a href="/z/programming">Programming</a></li>
-    </ul>
-</div>
-
+    <@template.home>
+    <div class="home-body">
+        article lists
+        <aside class="home-aside">
+            side bar
+        </aside>
+    </div>
+    </@template.home>
 
 </@template.page>
 
