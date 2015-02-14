@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.*;
 import static org.junit.Assert.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,6 +19,7 @@ import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountStats;
 import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleContentType;
+import io.kaif.model.article.ArticleDao;
 import io.kaif.model.article.ArticleLinkType;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateContentType;
@@ -42,6 +44,8 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   private ZoneInfo zoneInfo;
   private Article article;
   private Account citizen;
+  @Autowired
+  private ArticleDao articleDao;
 
   @Before
   public void setUp() throws Exception {
@@ -242,6 +246,26 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
     assertEquals(asList(a3, a2, a1), service.listLatestArticles(fooZone.getZone(), null));
     assertEquals(asList(a1), service.listLatestArticles(fooZone.getZone(), a2.getArticleId()));
+  }
+
+  @Test
+  public void listHotArticles() throws Exception {
+    Account author = savedAccountCitizen("citizen");
+    ZoneInfo fooZone = savedZoneDefault("foo");
+    List<Article> articles = IntStream.rangeClosed(1, 100).mapToObj(i -> {
+      Article a = savedArticle(fooZone, author, "title-" + i);
+      articleDao.changeTotalVote(fooZone.getZone(), a.getArticleId(), i * 10, 0);
+      return a;
+    }).collect(toList());
+
+    Collections.reverse(articles);
+
+    List<Article> firstPage = articles.stream().limit(25).collect(toList());
+    assertEquals(firstPage, service.listHotArticles(fooZone.getZone(), null));
+
+    List<Article> secondPage = articles.stream().skip(25).limit(25).collect(toList());
+    assertEquals(secondPage,
+        service.listHotArticles(fooZone.getZone(), firstPage.get(24).getArticleId()));
   }
 
   @Test

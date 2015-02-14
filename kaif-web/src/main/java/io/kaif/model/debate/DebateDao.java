@@ -57,10 +57,8 @@ public class DebateDao implements DaoOperations {
     jdbc().update(""
             + " INSERT "
             + "   INTO Debate "
-            +
-            "        (articleid, debateid, parentdebateid, level, content, contenttype, "
-            +
-            "         debaterid, debatername, upvote, downvote, createtime, lastupdatetime)"
+            + "        (articleid, debateid, parentdebateid, level, content, contenttype, "
+            + "         debaterid, debatername, upvote, downvote, createtime, lastupdatetime)"
             + " VALUES "
             + questions(12),
         debate.getArticleId().value(),

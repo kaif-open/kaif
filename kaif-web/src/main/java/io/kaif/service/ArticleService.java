@@ -25,4 +25,6 @@ public interface ArticleService {
       String content);
 
   List<Debate> listHotDebates(Zone zone, FlakeId articleId, int offset);
+
+  List<Article> listHotArticles(Zone zone, FlakeId startArticleId);
 }

@@ -28,12 +28,22 @@ public class ZoneControllerTest extends MvcIntegrationTests {
   ZoneInfo zoneInfo = zoneDefault("programming");
 
   @Test
-  public void hot() throws Exception {
-    when(zoneService.loadZone(Zone.valueOf("programming"))).thenReturn(zoneInfo);
-    mockMvc.perform(get("/z/programming"))
-        .andExpect(content().encoding("UTF-8"))
+  public void hotArticlesWithPaging() throws Exception {
+
+    Zone z = zoneInfo.getZone();
+    when(zoneService.loadZone(z)).thenReturn(zoneInfo);
+
+    Article article1 = article(z, "javascript");
+    Article article2 = article(z, FlakeId.fromString("phpone"), "php-lang");
+
+    when(articleService.listHotArticles(z, FlakeId.fromString("123456"))).thenReturn(//
+        asList(article1, article2));
+
+    mockMvc.perform(get("/z/programming?start=123456"))
         .andExpect(content().string(containsString("/snapshot/css/z-theme-default.css")))
-        .andExpect(content().string(containsString("programming-alias")));
+        .andExpect(content().string(containsString("programming-alias")))
+        .andExpect(content().string(containsString("php-lang")))
+        .andExpect(content().string(containsString("href=\"/z/programming?start=phpone\"")));
   }
 
   @Test
@@ -54,13 +64,14 @@ public class ZoneControllerTest extends MvcIntegrationTests {
   public void newArticlesWithPaging() throws Exception {
     Zone z = zoneInfo.getZone();
     when(zoneService.loadZone(z)).thenReturn(zoneInfo);
-    Article start = article(z, "erlang");
-    when(articleService.listLatestArticles(z, FlakeId.fromString("abcdefg"))).thenReturn(//
-        asList(start, article(z, "python")));
-    String expectNextPager = String.format("href=\"/z/programming/new?start=%s\"",
-        start.getArticleId());
-    mockMvc.perform(get("/z/programming/new?start=abcdefg"))
-        .andExpect(content().string(containsString(expectNextPager)));
+
+    Article article1 = article(z, "erlang");
+    Article article2 = article(z, FlakeId.fromString("csharp"), "C#");
+    when(articleService.listLatestArticles(z, FlakeId.fromString("bcdefg"))).thenReturn(//
+        asList(article1, article2));
+
+    mockMvc.perform(get("/z/programming/new?start=bcdefg"))
+        .andExpect(content().string(containsString("href=\"/z/programming/new?start=csharp\"")));
   }
 
   @Test

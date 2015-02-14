@@ -140,4 +140,32 @@ public class ArticleDao implements DaoOperations {
         downVoted,
         Timestamp.from(createTime));
   }
+
+  //TODO cache
+  public List<Article> listHotArticles(Zone zone, @Nullable FlakeId startArticleId, int limit) {
+    //TODO this is naive implementation, should improve performance later
+    //possible improving is use startArticleId's max score as createTime hint
+    if (startArticleId == null) {
+      final String sql = ""
+          + " SELECT * "
+          + "   FROM Article "
+          + "  WHERE zone = ? "
+          + "  ORDER BY hotRanking(upVote, downVote, createTime) DESC "
+          + "  LIMIT ? ";
+      return jdbc().query(sql, articleMapper, zone.value(), limit);
+    }
+    final String sql = ""
+        + " WITH RankArticle "
+        + "   AS ( "
+        + "       SELECT *, hotRanking(upVote, downVote, createTime) AS hot "
+        + "         FROM Article "
+        + "        WHERE zone = ? "
+        + "      ) "
+        + " SELECT * "
+        + "   FROM RankArticle "
+        + "  WHERE hot < ( SELECT hot FROM RankArticle WHERE articleId = ? ) "
+        + "  ORDER BY hot DESC "
+        + "  LIMIT ? ";
+    return jdbc().query(sql, articleMapper, zone.value(), startArticleId.value(), limit);
+  }
 }

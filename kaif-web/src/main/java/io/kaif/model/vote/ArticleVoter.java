@@ -21,7 +21,7 @@ public class ArticleVoter {
   private final long previousCount;
   private final Instant updateTime;
 
-  public ArticleVoter(UUID voterId,
+  ArticleVoter(UUID voterId,
       FlakeId articleId,
       VoteState voteState,
       long previousCount,
