@@ -75,6 +75,10 @@ public abstract class DbIntegrationTests extends AbstractTransactionalJUnit4Spri
     Mockito.reset(mockMailAgent);
   }
 
+  protected final ZoneInfo savedZoneKaif(String zone) {
+    return zoneDao.create(ZoneInfo.createKaif(zone, "kaif-" + zone, Instant.now()));
+  }
+
   protected final ZoneInfo savedZoneDefault(String zone) {
     return zoneDao.create(zoneDefault(zone));
   }

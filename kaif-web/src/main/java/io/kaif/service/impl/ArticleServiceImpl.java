@@ -31,7 +31,7 @@ import io.kaif.web.support.AccessDeniedException;
 @Transactional
 public class ArticleServiceImpl implements ArticleService {
 
-  private static final int PAGE_SIZE = 30;
+  private static final int PAGE_SIZE = 25;
 
   @Autowired
   private AccountDao accountDao;
@@ -71,8 +71,8 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public List<Article> listLatestArticles(Zone zone, int page) {
-    return articleDao.listArticlesDesc(zone, page * PAGE_SIZE, PAGE_SIZE);
+  public List<Article> listLatestZoneArticles(Zone zone, @Nullable FlakeId startArticleId) {
+    return articleDao.listZoneArticlesDesc(zone, startArticleId, PAGE_SIZE);
   }
 
   @Override
@@ -145,5 +145,22 @@ public class ArticleServiceImpl implements ArticleService {
     //TODO order by rank
     //TODO do not use offset, use start item instead
     return debateDao.listTreeByArticle(articleId);
+  }
+
+  @Override
+  public List<Article> listHotZoneArticles(Zone zone, FlakeId startArticleId) {
+    //TODO cache
+    return articleDao.listZoneHotArticles(zone, startArticleId, PAGE_SIZE);
+  }
+
+  @Override
+  public List<Article> listLatestArticles(@Nullable FlakeId startArticleId) {
+    return articleDao.listArticlesDesc(startArticleId, PAGE_SIZE);
+  }
+
+  @Override
+  public List<Article> listTopArticles(@Nullable FlakeId startArticleId) {
+    //TODO cache
+    return articleDao.listHotArticlesExcludeHidden(startArticleId, PAGE_SIZE);
   }
 }

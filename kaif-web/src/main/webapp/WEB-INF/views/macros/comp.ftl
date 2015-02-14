@@ -5,9 +5,8 @@
 
     <#local article=data />
 
-<div class="article">
+<div class="article" article data-article-id="${article.articleId}" data-zone="${article.zone}">
     <div class="article-vote-box votable" article-vote-box
-         data-article-id="${article.articleId}"
          data-article-vote-count="${article.upVote}">
         <span article-vote-count>${article.upVote}</span>
         <a href="#" article-up-vote>
@@ -21,7 +20,7 @@
         </div>
         <div class="article-info">
             <span>
-                <a href="/z/${zoneInfo.name}/debates/${article.articleId}">
+                <a href="/z/${article.zone}/debates/${article.articleId}">
                 ${article.debateCount} 則討論</a>
             </span>
             <span>
@@ -77,6 +76,24 @@
             </#if>
             <span>${relativeTime(debate.createTime)}</span>
         </div>
+    </div>
+</div>
+</#macro>
+
+<#macro articleList data>
+    <#local articlePage=data />
+<div class="article-list" article-list>
+    <#list articlePage.articles as article>
+        <@comp.article data=article />
+    </#list>
+    <div class="article-list-pager convex-row">
+        <#if articlePage.articles?size == 0 >
+            沒有文章
+        </#if>
+        <#if articlePage.hasNext()>
+            <a href="<@url.current start=articlePage.lastArticleId />"
+               class="pure-button"><i class="fa fa-caret-right"></i> 下一頁</a>
+        </#if>
     </div>
 </div>
 </#macro>

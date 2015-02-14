@@ -3,6 +3,17 @@
 }
 
 //
+// home
+//
+.home-menu {
+  padding-left: @convex-row-width;
+}
+
+.home-menu .pure-menu-selected {
+  background-color: @gray-lightest;
+}
+
+//
 // zone
 //
 .zone {
@@ -25,11 +36,11 @@
 }
 
 .zone-menu .pure-menu-selected {
-  background-color: #eee;
+  background-color: @gray-lightest;
 }
 
 .zone-menu li a:hover {
-  background-color: #eee;
+  background-color: @gray-lightest;
 }
 
 .zone-body {
@@ -68,6 +79,11 @@ a.create-article {
 
 .article-list {
   padding-right: @padding-lg-horizontal;
+  margin-bottom: @padding-lg-vertical;
+}
+
+.article-list-pager {
+  padding-top: @padding-lg-vertical;
 }
 
 .article {
@@ -140,13 +156,14 @@ a.create-article {
 .debate-container {
   display: flex;
   flex-flow: column;
-
   @media (min-width: @screen-md-min) {
+    justify-content: space-between;
     flex-flow: row;
   }
 
   .debate-tree {
     padding-right: @padding-lg-horizontal;
+    margin-bottom: @padding-lg-vertical;
   }
 
   .debate-aside {
@@ -165,7 +182,6 @@ a.create-article {
 
 .debate-form-container {
   padding-top: @padding-lg-vertical;
-  margin-left: @convex-row-width;
   margin-top: @padding-lg-vertical;
   border-top: 1px dashed @gray-lighter;
 }

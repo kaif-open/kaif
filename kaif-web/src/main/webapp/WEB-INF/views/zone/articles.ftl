@@ -24,19 +24,14 @@ head=headContent
     <@template.zone data=zoneInfo>
 
     <div class="zone-body">
-        <div class="article-list" article-list>
-            <input type="hidden" name="zoneInput" value="${zoneInfo.name}">
-            <input type="hidden" name="startArticleIdInput" value="${articlePage.startArticleId}">
-            <input type="hidden" name="endArticleIdInput" value="${articlePage.endArticleId}">
-            <#list articlePage.articles as article>
-                <@comp.article data=article />
-            </#list>
-        </div>
+
+        <@comp.articleList data=articlePage></@comp.articleList>
+
         <aside class="zone-aside">
         <#-- TODO enable when ajax permission load -->
             <a href="/z/${zoneInfo.name}/article/create"
                class="pure-button pure-button-primary create-article"
-               create-article>建立文章 &gt; </a>
+               create-article><i class="fa fa-caret-right"></i> 建立文章</a>
         </aside>
     </div>
 

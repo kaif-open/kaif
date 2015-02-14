@@ -1,16 +1,21 @@
 package io.kaif.model.article;
 
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import javax.annotation.Nullable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import com.google.common.annotations.VisibleForTesting;
 
 import io.kaif.database.DaoOperations;
 import io.kaif.flake.FlakeId;
@@ -79,9 +84,34 @@ public class ArticleDao implements DaoOperations {
     return jdbc().query(sql, articleMapper, zone.value(), articleId.value()).stream().findAny();
   }
 
-  public List<Article> listArticlesDesc(Zone zone, int offset, int limit) {
-    final String sql = " SELECT * FROM Article WHERE zone = ? ORDER BY articleId DESC OFFSET ? LIMIT ? ";
-    return jdbc().query(sql, articleMapper, zone.value(), offset, limit);
+  public List<Article> listZoneArticlesDesc(Zone zone,
+      @Nullable FlakeId startArticleId,
+      int limit) {
+    FlakeId start = Optional.ofNullable(startArticleId).orElse(FlakeId.MAX);
+    final String sql = ""
+        + " SELECT * "
+        + "   FROM Article "
+        + "  WHERE zone = ? "
+        + "    AND articleId < ? "
+        + "    AND deleted = FALSE "
+        + "  ORDER BY articleId DESC "
+        + "  LIMIT ? ";
+    return jdbc().query(sql, articleMapper, zone.value(), start.value(), limit);
+  }
+
+  /**
+   * this is global articles list, but we don't filter hideFromTop articles
+   */
+  public List<Article> listArticlesDesc(@Nullable FlakeId startArticleId, int limit) {
+    FlakeId start = Optional.ofNullable(startArticleId).orElse(FlakeId.MAX);
+    final String sql = ""
+        + " SELECT * "
+        + "   FROM Article "
+        + "  WHERE articleId < ? "
+        + "    AND deleted = FALSE "
+        + "  ORDER BY articleId DESC "
+        + "  LIMIT ? ";
+    return jdbc().query(sql, articleMapper, start.value(), limit);
   }
 
   public Article createExternalLink(Zone zone,
@@ -119,6 +149,93 @@ public class ArticleDao implements DaoOperations {
         + "      , downVote = downVote + (?) "
         + "  WHERE zone = ? "
         + "    AND articleId = ? ", upVoteDelta, downVoteDelta, zone.value(), articleId.value());
+  }
+
+  @VisibleForTesting
+  double hotRanking(long upVoted, long downVoted, Instant createTime) {
+    return jdbc().queryForObject(" SELECT hotRanking(?, ?, ?) ",
+        Double.class,
+        upVoted,
+        downVoted,
+        Timestamp.from(createTime));
+  }
+
+  public List<Article> listZoneHotArticles(Zone zone, @Nullable FlakeId startArticleId, int limit) {
+    //TODO this is naive implementation, should improve performance later
+    //possible improving is use startArticleId's max score as createTime hint
+    if (startArticleId == null) {
+      final String sql = ""
+          + " SELECT * "
+          + "   FROM Article "
+          + "  WHERE zone = ? "
+          + "    AND deleted = FALSE "
+          + "  ORDER BY hotRanking(upVote, downVote, createTime) DESC "
+          + "  LIMIT ? ";
+      return jdbc().query(sql, articleMapper, zone.value(), limit);
+    }
+    final String sql = ""
+        + " WITH RankArticle "
+        + "   AS ( "
+        + "       SELECT *, hotRanking(upVote, downVote, createTime) AS hot "
+        + "         FROM Article "
+        + "        WHERE zone = ? "
+        + "      ) "
+        + " SELECT * "
+        + "   FROM RankArticle "
+        + "  WHERE hot < ( SELECT hot FROM RankArticle WHERE articleId = ? ) "
+        + "    AND deleted = FALSE "
+        + "  ORDER BY hot DESC "
+        + "  LIMIT ? ";
+    return jdbc().query(sql, articleMapper, zone.value(), startArticleId.value(), limit);
+  }
+
+  public List<Article> listHotArticlesExcludeHidden(@Nullable FlakeId startArticleId, int limit) {
+    //TODO this is naive implementation, should improve performance later
+
+    //TODO test upper time bound
+    Instant startTime = Optional.ofNullable(startArticleId)
+        .map(FlakeId::epochMilli)
+        .map(Instant::ofEpochMilli)
+        .orElseGet(Instant::now);
+
+    //query record up to 7 days ago, we can reduce days if articles grow after go production
+    FlakeId upperTimeBound = FlakeId.startOf(startTime.minus(Duration.ofDays(7)).toEpochMilli());
+
+    if (startArticleId == null) {
+      final String sql = ""
+          + " SELECT a.* "
+          + "   FROM Article a "
+          + "   JOIN ZoneInfo z ON a.zone = z.zone "
+          + "  WHERE a.articleId > ? "
+          + "    AND z.hideFromTop = FALSE "
+          + "    AND a.deleted = FALSE "
+          + "  ORDER BY hotRanking(a.upVote, a.downVote, a.createTime) DESC "
+          + "  LIMIT ? ";
+      return jdbc().query(sql, articleMapper, upperTimeBound.value(), limit);
+    }
+    final String sql = ""
+        + " WITH RankArticle "
+        + "   AS ( "
+        + "       SELECT a.*, hotRanking(a.upVote, a.downVote, a.createTime) AS hot "
+        + "         FROM Article a"
+        + "         JOIN ZoneInfo z ON a.zone = z.zone "
+        + "        WHERE a.articleId > ? "
+        + "          AND z.hideFromTop = FALSE "
+        + "      ) "
+        + " SELECT * "
+        + "   FROM RankArticle "
+        + "  WHERE hot < ( SELECT hot FROM RankArticle WHERE articleId = ? ) "
+        + "    AND deleted = FALSE "
+        + "  ORDER BY hot DESC "
+        + "  LIMIT ? ";
+    return jdbc().query(sql, articleMapper, upperTimeBound.value(), startArticleId.value(), limit);
+  }
+
+  //TODO evict any related cache
+  public void markAsDeleted(Article article) {
+    jdbc().update(" UPDATE Article SET deleted = TRUE WHERE zone = ? AND articleId = ? ",
+        article.getZone().value(),
+        article.getArticleId().value());
   }
 
 }

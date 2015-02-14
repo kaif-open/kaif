@@ -16,7 +16,7 @@ import io.kaif.model.zone.ZoneInfo;
 /**
  * reusable test fixture for model, design for implements by test case
  */
-public interface ModelFixture {
+public interface ModelFixture extends TimeFixture {
 
   default ZoneInfo zoneDefault(String zone) {
     return ZoneInfo.createDefault(zone, zone + "-alias", Instant.now());
@@ -63,6 +63,16 @@ public interface ModelFixture {
         title,
         "http://example.com/" + title,
         now);
+  }
+
+  default Article article(Zone zone, FlakeId articleId, String title) {
+    Account author = accountTourist("user" + new Random().nextInt(100));
+    return Article.createExternalLink(zone,
+        articleId,
+        author,
+        title,
+        "http://example.com/" + title,
+        Instant.now());
   }
 
 }

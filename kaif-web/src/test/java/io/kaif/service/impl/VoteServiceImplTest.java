@@ -3,15 +3,21 @@ package io.kaif.service.impl;
 import static io.kaif.model.vote.VoteState.DOWN;
 import static io.kaif.model.vote.VoteState.EMPTY;
 import static io.kaif.model.vote.VoteState.UP;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+
+import com.google.common.collect.Sets;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
@@ -48,10 +54,11 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   private Account voter;
   private Account debater;
   private Article article;
+  private ZoneInfo zoneInfo;
 
   @Before
   public void setUp() throws Exception {
-    ZoneInfo zoneInfo = savedZoneDefault("hacker");
+    zoneInfo = savedZoneDefault("hacker");
     Account author = savedAccountCitizen("hc1");
     article = savedArticle(zoneInfo, author, "new cython 3");
     Debate debate = savedDebate(article, "it is slow", null);
@@ -89,12 +96,27 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
+  public void listArticleVoters() throws Exception {
+    assertEquals(0, service.listArticleVoters(voter, Collections.emptyList()).size());
+
+    service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
+    Article a2 = savedArticle(zoneInfo, savedAccountCitizen("author2"), "t");
+    service.voteArticle(UP, zone, a2.getArticleId(), voter, EMPTY, 200);
+
+    Set<FlakeId> actual = service.listArticleVoters(voter, asList(articleId, a2.getArticleId()))
+        .stream()
+        .map(ArticleVoter::getArticleId)
+        .collect(Collectors.toSet());
+    assertEquals(Sets.newHashSet(articleId, a2.getArticleId()), actual);
+  }
+
+  @Test
   public void upVoteArticle() throws Exception {
     service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
 
     assertArticleTotalVote(1);
 
-    List<ArticleVoter> votes = service.listArticleVotersInRage(voter, articleId, articleId);
+    List<ArticleVoter> votes = service.listArticleVoters(voter, asList(articleId));
     assertEquals(1, votes.size());
     ArticleVoter vote = votes.get(0);
     assertEquals(voter.getAccountId(), vote.getVoterId());
@@ -116,7 +138,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     service.voteArticle(EMPTY, zone, articleId, voter, EMPTY, 10);
     assertArticleTotalVote(0);
 
-    List<ArticleVoter> votes = service.listArticleVotersInRage(voter, articleId, articleId);
+    List<ArticleVoter> votes = service.listArticleVoters(voter, asList(articleId));
     assertEquals(EMPTY, votes.get(0).getVoteState());
   }
 
@@ -128,7 +150,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
     assertArticleTotalVote(1);
 
-    List<ArticleVoter> votes = service.listArticleVotersInRage(voter, articleId, articleId);
+    List<ArticleVoter> votes = service.listArticleVoters(voter, asList(articleId));
     assertEquals(1, votes.size());
     ArticleVoter vote = votes.get(0);
     assertEquals(UP, vote.getVoteState());
@@ -141,7 +163,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     service.voteArticle(EMPTY, zone, articleId, voter, UP, 0);
     assertArticleTotalVote(0);
 
-    List<ArticleVoter> votes = service.listArticleVotersInRage(voter, articleId, articleId);
+    List<ArticleVoter> votes = service.listArticleVoters(voter, asList(articleId));
     assertEquals(1, votes.size());
     ArticleVoter vote = votes.get(0);
     assertEquals(EMPTY, vote.getVoteState());

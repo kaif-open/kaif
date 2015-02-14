@@ -4,7 +4,7 @@ CREATE TABLE Account (
   email        VARCHAR(4096) NOT NULL,
   passwordHash VARCHAR(4096) NOT NULL,
   authorities  TEXT []       NOT NULL,
-  createTime   TIMESTAMP     NOT NULL
+  createTime   TIMESTAMPTZ   NOT NULL
 );
 
 CREATE UNIQUE INDEX AccountUsernameIndex ON Account (LOWER(username));
@@ -15,7 +15,7 @@ CREATE TABLE AccountOnceToken (
   accountId  UUID          NOT NULL REFERENCES Account (accountId),
   complete   BOOLEAN       NOT NULL,
   tokenType  VARCHAR(4096) NOT NULL,
-  createTime TIMESTAMP     NOT NULL
+  createTime TIMESTAMPTZ   NOT NULL
 );
 
 CREATE TABLE ZoneInfo (
@@ -27,7 +27,7 @@ CREATE TABLE ZoneInfo (
   writeAuthority  VARCHAR(4096) NOT NULL,
   adminAccountIds UUID []       NOT NULL,
   hideFromTop     BOOLEAN       NOT NULL,
-  createTime      TIMESTAMP     NOT NULL
+  createTime      TIMESTAMPTZ   NOT NULL
 );
 
 CREATE TABLE Article (
@@ -36,7 +36,7 @@ CREATE TABLE Article (
   title       VARCHAR(4096)  NOT NULL,
   urlName     VARCHAR(4096)  NULL,
   linkType    VARCHAR(4096)  NOT NULL,
-  createTime  TIMESTAMP      NOT NULL,
+  createTime  TIMESTAMPTZ    NOT NULL,
   content     VARCHAR(16384) NOT NULL,
   contentType VARCHAR(4096)  NOT NULL,
   authorId    UUID           NOT NULL REFERENCES Account (accountId),
@@ -61,18 +61,18 @@ CREATE TABLE Debate (
   debaterName    VARCHAR(4096)  NOT NULL,
   upVote         BIGINT         NOT NULL DEFAULT 0,
   downVote       BIGINT         NOT NULL DEFAULT 0,
-  createTime     TIMESTAMP      NOT NULL,
-  lastUpdateTime TIMESTAMP      NOT NULL,
+  createTime     TIMESTAMPTZ    NOT NULL,
+  lastUpdateTime TIMESTAMPTZ    NOT NULL,
   PRIMARY KEY (articleId, debateId)
 );
 
 CREATE INDEX DebaterIndex ON Debate (debaterId);
 
 CREATE TABLE DebateHistory (
-  debateId         BIGINT         NOT NULL,
-  revision         INT            NOT NULL,
-  content          VARCHAR(16384) NOT NULL,
-  createTime       TIMESTAMP      NOT NULL,
+  debateId   BIGINT         NOT NULL,
+  revision   INT            NOT NULL,
+  content    VARCHAR(16384) NOT NULL,
+  createTime TIMESTAMPTZ    NOT NULL,
   PRIMARY KEY (debateId, revision)
 );
 
@@ -82,7 +82,7 @@ CREATE TABLE ArticleVoter (
   articleId     BIGINT        NOT NULL,
   voteState     VARCHAR(4096) NOT NULL,
   previousCount BIGINT        NOT NULL,
-  updateTime    TIMESTAMP     NOT NULL,
+  updateTime    TIMESTAMPTZ   NOT NULL,
   PRIMARY KEY (voterId, articleId)
 );
 
@@ -93,7 +93,7 @@ CREATE TABLE DebateVoter (
   debateId      BIGINT        NOT NULL,
   voteState     VARCHAR(4096) NOT NULL,
   previousCount BIGINT        NOT NULL,
-  updateTime    TIMESTAMP     NOT NULL,
+  updateTime    TIMESTAMPTZ   NOT NULL,
   PRIMARY KEY (voterId, articleId, debateId)
 );
 
@@ -105,3 +105,10 @@ CREATE TABLE AccountStats (
   debateDownVoted BIGINT NOT NULL DEFAULT 0,
   PRIMARY KEY (accountId)
 );
+
+-- see HotRanking.java
+CREATE FUNCTION hotRanking(upVoted BIGINT, downVoted BIGINT, createTime TIMESTAMPTZ)
+  RETURNS NUMERIC AS $$
+SELECT round(cast(log(greatest(abs($1 - $2), 1)) * sign($1 - $2) +
+                  (EXTRACT(EPOCH FROM $3) - 1420070400) / 45000.0 AS NUMERIC), 7)
+$$ LANGUAGE SQL IMMUTABLE;

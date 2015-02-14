@@ -28,19 +28,29 @@ public class ZoneControllerTest extends MvcIntegrationTests {
   ZoneInfo zoneInfo = zoneDefault("programming");
 
   @Test
-  public void hot() throws Exception {
-    when(zoneService.loadZone(Zone.valueOf("programming"))).thenReturn(zoneInfo);
-    mockMvc.perform(get("/z/programming"))
-        .andExpect(content().encoding("UTF-8"))
+  public void hotArticlesWithPaging() throws Exception {
+
+    Zone z = zoneInfo.getZone();
+    when(zoneService.loadZone(z)).thenReturn(zoneInfo);
+
+    Article article1 = article(z, "javascript");
+    Article article2 = article(z, FlakeId.fromString("phpone"), "php-lang");
+
+    when(articleService.listHotZoneArticles(z, FlakeId.fromString("123456"))).thenReturn(//
+        asList(article1, article2));
+
+    mockMvc.perform(get("/z/programming?start=123456"))
         .andExpect(content().string(containsString("/snapshot/css/z-theme-default.css")))
-        .andExpect(content().string(containsString("programming-alias")));
+        .andExpect(content().string(containsString("programming-alias")))
+        .andExpect(content().string(containsString("php-lang")))
+        .andExpect(content().string(containsString("href=\"/z/programming?start=phpone\"")));
   }
 
   @Test
   public void newArticles() throws Exception {
     Zone z = zoneInfo.getZone();
     when(zoneService.loadZone(z)).thenReturn(zoneInfo);
-    when(articleService.listLatestArticles(z, 0)).thenReturn(//
+    when(articleService.listLatestZoneArticles(z, null)).thenReturn(//
         asList(article(z, "java"), article(z, "ruby"), article(z, "golang")));
     mockMvc.perform(get("/z/programming/new"))
         .andExpect(content().string(containsString("programming-alias")))
@@ -48,6 +58,20 @@ public class ZoneControllerTest extends MvcIntegrationTests {
         .andExpect(content().string(containsString("golang")))
         .andExpect(content().string(containsString("ruby")))
         .andExpect(content().string(containsString("moments ago"))); // relativeTime()
+  }
+
+  @Test
+  public void newArticlesWithPaging() throws Exception {
+    Zone z = zoneInfo.getZone();
+    when(zoneService.loadZone(z)).thenReturn(zoneInfo);
+
+    Article article1 = article(z, "erlang");
+    Article article2 = article(z, FlakeId.fromString("csharp"), "C#");
+    when(articleService.listLatestZoneArticles(z, FlakeId.fromString("bcdefg"))).thenReturn(//
+        asList(article1, article2));
+
+    mockMvc.perform(get("/z/programming/new?start=bcdefg"))
+        .andExpect(content().string(containsString("href=\"/z/programming/new?start=csharp\"")));
   }
 
   @Test

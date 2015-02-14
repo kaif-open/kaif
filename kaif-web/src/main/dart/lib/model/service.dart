@@ -69,7 +69,7 @@ abstract class _AbstractService {
     var parts = [];
     params.forEach((key, value) {
       if (value != null) {
-        String strValue = value.toString();
+        String strValue = (value is Iterable) ? (value as Iterable).join(',') : value.toString();
         parts.add('${Uri.encodeQueryComponent(key)}=' '${Uri.encodeQueryComponent(strValue)}');
       }
     });
@@ -229,8 +229,8 @@ class ArticleService extends _AbstractService {
     return _putJson(_getUrl('/external-link'), json)
     .then((res) => null);
   }
-
-  Future<String> previewKmark(String content) {
+  
+  Future<String> previewKmark(String content){
     var json = {
         'content':content
     };
@@ -282,11 +282,10 @@ class VoteService extends _AbstractService {
     .then((res) => null);
   }
 
-  Future<List<ArticleVoter>> listArticleVotersInRange(String startArticleId, String endArticleId) {
+  Future<List<ArticleVoter>> listArticleVoters(List<String> articleIds) {
     var params = {
-        'startArticleId':startArticleId, 'endArticleId':endArticleId
+        'articleIds':articleIds
     };
-
     return _get(_getUrl('/article-voters'), params:params)
     .then((req) => JSON.decode(req.responseText))
     .then((List<Map> list) => list.map((raw) => new ArticleVoter.decode(raw)).toList());

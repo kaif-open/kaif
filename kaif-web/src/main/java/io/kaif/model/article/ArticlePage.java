@@ -5,24 +5,26 @@ import static java.util.stream.Collectors.*;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import io.kaif.flake.FlakeId;
 
 public class ArticlePage {
   private final List<Article> articles;
-  private final FlakeId startArticleId;
-  private final FlakeId endArticleId;
+  private final FlakeId oldestArticleId;
+  private final FlakeId newestArticleId;
 
   public ArticlePage(List<Article> articles) {
     this.articles = articles;
     if (articles.isEmpty()) {
-      this.startArticleId = FlakeId.MIN;
-      this.endArticleId = FlakeId.MIN;
+      this.oldestArticleId = FlakeId.MIN;
+      this.newestArticleId = FlakeId.MIN;
     } else {
       List<Article> sorted = articles.stream()
           .sorted(Comparator.comparing(Article::getArticleId))
           .collect(toList());
-      this.startArticleId = sorted.get(0).getArticleId();
-      this.endArticleId = sorted.get(sorted.size() - 1).getArticleId();
+      this.oldestArticleId = sorted.get(0).getArticleId();
+      this.newestArticleId = sorted.get(sorted.size() - 1).getArticleId();
     }
   }
 
@@ -30,11 +32,20 @@ public class ArticlePage {
     return articles;
   }
 
-  public FlakeId getStartArticleId() {
-    return startArticleId;
+  public FlakeId getOldestArticleId() {
+    return oldestArticleId;
   }
 
-  public FlakeId getEndArticleId() {
-    return endArticleId;
+  public FlakeId getNewestArticleId() {
+    return newestArticleId;
+  }
+
+  public boolean hasNext() {
+    return !articles.isEmpty();
+  }
+
+  @Nullable
+  public FlakeId getLastArticleId() {
+    return hasNext() ? articles.get(articles.size() - 1).getArticleId() : null;
   }
 }

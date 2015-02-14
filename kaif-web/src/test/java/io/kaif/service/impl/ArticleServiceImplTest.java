@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.*;
 import static org.junit.Assert.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,12 +20,12 @@ import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountStats;
 import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleContentType;
+import io.kaif.model.article.ArticleDao;
 import io.kaif.model.article.ArticleLinkType;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateContentType;
 import io.kaif.model.debate.DebateDao;
 import io.kaif.model.zone.Zone;
-import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.AccountService;
 import io.kaif.test.DbIntegrationTests;
@@ -42,7 +43,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   private DebateDao debateDao;
 
   @Autowired
-  private ZoneDao zoneDao;
+  private ArticleDao articleDao;
 
   private ZoneInfo zoneInfo;
   private Article article;
@@ -238,14 +239,88 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
-  public void listNewArticles() throws Exception {
+  public void listLatestZoneArticles() throws Exception {
+    ZoneInfo zone1 = savedZoneDefault("foo");
+    ZoneInfo zone2 = savedZoneDefault("zoo");
+    Article a1 = service.createExternalLink(citizen, zone1.getZone(), "title1", "http://foo1.com");
+    Article a2 = service.createExternalLink(citizen, zone1.getZone(), "title2", "http://foo2.com");
+    Article a3 = service.createExternalLink(citizen, zone2.getZone(), "title3", "http://foo2.com");
+    Article a4 = service.createExternalLink(citizen, zone2.getZone(), "title4", "http://foo2.com");
+    articleDao.markAsDeleted(a1);
+
+    assertEquals(asList(a4, a3, a2, article), service.listLatestArticles(null));
+    assertEquals(asList(a2, article), service.listLatestArticles(a3.getArticleId()));
+  }
+
+  @Test
+  public void listLatestArticles() throws Exception {
     Account author = savedAccountCitizen("citizen");
     ZoneInfo fooZone = savedZoneDefault("foo");
     Article a1 = service.createExternalLink(author, fooZone.getZone(), "title1", "http://foo1.com");
     Article a2 = service.createExternalLink(author, fooZone.getZone(), "title2", "http://foo2.com");
     Article a3 = service.createExternalLink(author, fooZone.getZone(), "title2", "http://foo2.com");
 
-    assertEquals(asList(a3, a2, a1), service.listLatestArticles(fooZone.getZone(), 0));
+    assertEquals(asList(a3, a2, a1), service.listLatestZoneArticles(fooZone.getZone(), null));
+    assertEquals(asList(a1), service.listLatestZoneArticles(fooZone.getZone(), a2.getArticleId()));
+    articleDao.markAsDeleted(a1);
+    assertEquals("listLatest should exclude deleted",
+        asList(a3, a2),
+        service.listLatestZoneArticles(fooZone.getZone(), null));
+  }
+
+  @Test
+  public void listHotZoneArticles() throws Exception {
+    Account author = savedAccountCitizen("citizen");
+    ZoneInfo fooZone = savedZoneDefault("foo");
+    List<Article> articles = IntStream.rangeClosed(1, 100).mapToObj(i -> {
+      Article a = savedArticle(fooZone, author, "title-" + i);
+      articleDao.changeTotalVote(fooZone.getZone(), a.getArticleId(), i * 10, 0);
+      return a;
+    }).collect(toList());
+
+    Collections.reverse(articles);
+
+    List<Article> firstPage = articles.stream().limit(25).collect(toList());
+    assertEquals(firstPage, service.listHotZoneArticles(fooZone.getZone(), null));
+
+    List<Article> secondPage = articles.stream().skip(25).limit(25).collect(toList());
+    assertEquals(secondPage,
+        service.listHotZoneArticles(fooZone.getZone(), firstPage.get(24).getArticleId()));
+
+    articleDao.markAsDeleted(articles.get(0));
+    articleDao.markAsDeleted(articles.get(1));
+
+    List<Article> firstPageWithoutDeleted = articles.stream().skip(2).limit(25).collect(toList());
+    assertEquals(firstPageWithoutDeleted, service.listHotZoneArticles(fooZone.getZone(), null));
+  }
+
+  @Test
+  public void listTopArticles() throws Exception {
+    Account author = savedAccountCitizen("citizen");
+    ZoneInfo defaultZone = savedZoneDefault("foo");
+    List<Article> articles = IntStream.rangeClosed(1, 30).mapToObj(i -> {
+      Article a = savedArticle(defaultZone, author, "title-" + i);
+      articleDao.changeTotalVote(defaultZone.getZone(), a.getArticleId(), i * 10, 0);
+      return a;
+    }).collect(toList());
+
+    ZoneInfo kaifZone = savedZoneKaif("faq");
+    //hideFromTop articles will be ignored
+    savedArticle(kaifZone, author, "title-faq");
+
+    Collections.reverse(articles);
+
+    //deleted will be ignored
+    articleDao.markAsDeleted(articles.get(0));
+
+    //add article from setUp()
+    articles.add(article);
+
+    List<Article> firstPage = articles.stream().skip(1).limit(25).collect(toList());
+    List<Article> secondPage = articles.stream().skip(26).collect(toList());
+
+    assertEquals(firstPage, service.listTopArticles(null));
+    assertEquals(secondPage, service.listTopArticles(firstPage.get(24).getArticleId()));
   }
 
   @Test

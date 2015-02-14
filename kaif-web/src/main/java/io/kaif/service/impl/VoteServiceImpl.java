@@ -52,15 +52,6 @@ public class VoteServiceImpl implements VoteService {
   }
 
   @Override
-  public List<ArticleVoter> listArticleVotersInRage(Authorization authorization,
-      FlakeId startArticleId,
-      FlakeId endArticleId) {
-    return voteDao.listArticleVotersInRage(authorization.authenticatedId(),
-        startArticleId,
-        endArticleId);
-  }
-
-  @Override
   public List<DebateVoter> listDebateVoters(Authorization voter, FlakeId articleId) {
     return voteDao.listDebateVotersByArticle(voter.authenticatedId(), articleId);
   }
@@ -120,5 +111,10 @@ public class VoteServiceImpl implements VoteService {
     if (!voter.authenticatedId().equals(debaterId)) {
       accountDao.changeTotalVotedDebate(debaterId, upVoteDelta, downVoteDelta);
     }
+  }
+
+  @Override
+  public List<ArticleVoter> listArticleVoters(Authorization voter, List<FlakeId> articleIds) {
+    return voteDao.listArticleVoters(voter.authenticatedId(), articleIds);
   }
 }
