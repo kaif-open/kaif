@@ -1,6 +1,7 @@
 package io.kaif.model.article;
 
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -190,16 +191,27 @@ public class ArticleDao implements DaoOperations {
 
   public List<Article> listHotArticlesExcludeHidden(@Nullable FlakeId startArticleId, int limit) {
     //TODO this is naive implementation, should improve performance later
+
+    //TODO test upper time bound
+    Instant startTime = Optional.ofNullable(startArticleId)
+        .map(FlakeId::epochMilli)
+        .map(Instant::ofEpochMilli)
+        .orElseGet(Instant::now);
+
+    //query record up to 7 days ago, we can reduce days if articles grow after go production
+    FlakeId upperTimeBound = FlakeId.startOf(startTime.minus(Duration.ofDays(7)).toEpochMilli());
+
     if (startArticleId == null) {
       final String sql = ""
           + " SELECT a.* "
           + "   FROM Article a "
           + "   JOIN ZoneInfo z ON a.zone = z.zone "
-          + "  WHERE z.hideFromTop = FALSE "
+          + "  WHERE a.articleId > ? "
+          + "    AND z.hideFromTop = FALSE "
           + "    AND a.deleted = FALSE "
           + "  ORDER BY hotRanking(a.upVote, a.downVote, a.createTime) DESC "
           + "  LIMIT ? ";
-      return jdbc().query(sql, articleMapper, limit);
+      return jdbc().query(sql, articleMapper, upperTimeBound.value(), limit);
     }
     final String sql = ""
         + " WITH RankArticle "
@@ -207,7 +219,8 @@ public class ArticleDao implements DaoOperations {
         + "       SELECT a.*, hotRanking(a.upVote, a.downVote, a.createTime) AS hot "
         + "         FROM Article a"
         + "         JOIN ZoneInfo z ON a.zone = z.zone "
-        + "        WHERE z.hideFromTop = FALSE "
+        + "        WHERE a.articleId > ? "
+        + "          AND z.hideFromTop = FALSE "
         + "      ) "
         + " SELECT * "
         + "   FROM RankArticle "
@@ -215,7 +228,7 @@ public class ArticleDao implements DaoOperations {
         + "    AND deleted = FALSE "
         + "  ORDER BY hot DESC "
         + "  LIMIT ? ";
-    return jdbc().query(sql, articleMapper, startArticleId.value(), limit);
+    return jdbc().query(sql, articleMapper, upperTimeBound.value(), startArticleId.value(), limit);
   }
 
   //TODO evict any related cache
