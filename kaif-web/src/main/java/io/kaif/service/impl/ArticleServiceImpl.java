@@ -70,7 +70,7 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public List<Article> listLatestArticles(Zone zone, @Nullable FlakeId startArticleId) {
+  public List<Article> listLatestZoneArticles(Zone zone, @Nullable FlakeId startArticleId) {
     return articleDao.listZoneArticlesDesc(zone, startArticleId, PAGE_SIZE);
   }
 
@@ -118,8 +118,19 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public List<Article> listHotArticles(Zone zone, FlakeId startArticleId) {
+  public List<Article> listHotZoneArticles(Zone zone, FlakeId startArticleId) {
     //TODO cache
     return articleDao.listZoneHotArticles(zone, startArticleId, PAGE_SIZE);
+  }
+
+  @Override
+  public List<Article> listLatestArticles(@Nullable FlakeId startArticleId) {
+    return articleDao.listArticlesDesc(startArticleId, PAGE_SIZE);
+  }
+
+  @Override
+  public List<Article> listTopArticles(@Nullable FlakeId startArticleId) {
+    //TODO cache
+    return articleDao.listHotArticlesExcludeHidden(startArticleId, PAGE_SIZE);
   }
 }

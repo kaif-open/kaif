@@ -14,7 +14,7 @@ public interface ArticleService {
 
   Article createExternalLink(Authorization author, Zone zone, String title, String url);
 
-  List<Article> listLatestArticles(Zone zone, @Nullable FlakeId startArticleId);
+  List<Article> listLatestZoneArticles(Zone zone, @Nullable FlakeId startArticleId);
 
   Article loadArticle(Zone zone, FlakeId articleId);
 
@@ -26,5 +26,9 @@ public interface ArticleService {
 
   List<Debate> listHotDebates(Zone zone, FlakeId articleId, int offset);
 
-  List<Article> listHotArticles(Zone zone, FlakeId startArticleId);
+  List<Article> listHotZoneArticles(Zone zone, FlakeId startArticleId);
+
+  List<Article> listLatestArticles(@Nullable FlakeId startArticleId);
+
+  List<Article> listTopArticles(@Nullable FlakeId startArticleId);
 }

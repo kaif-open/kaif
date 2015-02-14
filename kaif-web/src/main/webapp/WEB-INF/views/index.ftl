@@ -1,5 +1,7 @@
 <#import "/spring.ftl" as spring />
 <#import "macros/template.ftl" as template>
+<#import "macros/comp.ftl" as comp>
+<#import "macros/url.ftl" as url>
 
 <#assign headContent>
 
@@ -17,7 +19,7 @@ head=headContent
 
     <@template.home>
     <div class="home-body">
-        article lists
+        <@comp.articleList data=articlePage></@comp.articleList>
         <aside class="home-aside">
             side bar
         </aside>

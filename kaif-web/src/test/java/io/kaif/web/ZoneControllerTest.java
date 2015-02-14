@@ -36,7 +36,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
     Article article1 = article(z, "javascript");
     Article article2 = article(z, FlakeId.fromString("phpone"), "php-lang");
 
-    when(articleService.listHotArticles(z, FlakeId.fromString("123456"))).thenReturn(//
+    when(articleService.listHotZoneArticles(z, FlakeId.fromString("123456"))).thenReturn(//
         asList(article1, article2));
 
     mockMvc.perform(get("/z/programming?start=123456"))
@@ -50,7 +50,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
   public void newArticles() throws Exception {
     Zone z = zoneInfo.getZone();
     when(zoneService.loadZone(z)).thenReturn(zoneInfo);
-    when(articleService.listLatestArticles(z, null)).thenReturn(//
+    when(articleService.listLatestZoneArticles(z, null)).thenReturn(//
         asList(article(z, "java"), article(z, "ruby"), article(z, "golang")));
     mockMvc.perform(get("/z/programming/new"))
         .andExpect(content().string(containsString("programming-alias")))
@@ -67,7 +67,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
 
     Article article1 = article(z, "erlang");
     Article article2 = article(z, FlakeId.fromString("csharp"), "C#");
-    when(articleService.listLatestArticles(z, FlakeId.fromString("bcdefg"))).thenReturn(//
+    when(articleService.listLatestZoneArticles(z, FlakeId.fromString("bcdefg"))).thenReturn(//
         asList(article1, article2));
 
     mockMvc.perform(get("/z/programming/new?start=bcdefg"))

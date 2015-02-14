@@ -24,21 +24,9 @@ head=headContent
     <@template.zone data=zoneInfo>
 
     <div class="zone-body">
-        <div class="article-list" article-list>
-            <#list articlePage.articles as article>
-                <@comp.article data=article />
-            </#list>
-            <div class="article-list-pager convex-row">
-                <#if articlePage.articles?size == 0 >
-                    沒有文章
-                </#if>
-                <#if articlePage.hasNext()>
-                    <a href="<@url.current start=articlePage.lastArticleId />"
-                       class="pure-button"><i
-                            class="fa fa-caret-right"></i> 下一頁</a>
-                </#if>
-            </div>
-        </div>
+
+        <@comp.articleList data=articlePage></@comp.articleList>
+
         <aside class="zone-aside">
         <#-- TODO enable when ajax permission load -->
             <a href="/z/${zoneInfo.name}/article/create"

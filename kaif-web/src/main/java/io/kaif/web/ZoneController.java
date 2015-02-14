@@ -44,7 +44,8 @@ public class ZoneController {
       return new ModelAndView("zone/articles")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("articlePage",
-              new ArticlePage(articleService.listHotArticles(zoneInfo.getZone(), startArticleId)));
+              new ArticlePage(articleService.listHotZoneArticles(zoneInfo.getZone(),
+                  startArticleId)));
     });
   }
 
@@ -86,7 +87,7 @@ public class ZoneController {
       return new ModelAndView("zone/articles")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("articlePage",
-              new ArticlePage(articleService.listLatestArticles(zoneInfo.getZone(),
+              new ArticlePage(articleService.listLatestZoneArticles(zoneInfo.getZone(),
                   startArticleId)));
     });
   }

@@ -20,7 +20,7 @@
         </div>
         <div class="article-info">
             <span>
-                <a href="/z/${zoneInfo.name}/debates/${article.articleId}">
+                <a href="/z/${article.zone}/debates/${article.articleId}">
                 ${article.debateCount} 則討論</a>
             </span>
             <span>
@@ -72,6 +72,24 @@
             </#if>
             <span>${relativeTime(debate.createTime)}</span>
         </div>
+    </div>
+</div>
+</#macro>
+
+<#macro articleList data>
+    <#local articlePage=data />
+<div class="article-list" article-list>
+    <#list articlePage.articles as article>
+        <@comp.article data=article />
+    </#list>
+    <div class="article-list-pager convex-row">
+        <#if articlePage.articles?size == 0 >
+            沒有文章
+        </#if>
+        <#if articlePage.hasNext()>
+            <a href="<@url.current start=articlePage.lastArticleId />"
+               class="pure-button"><i class="fa fa-caret-right"></i> 下一頁</a>
+        </#if>
     </div>
 </div>
 </#macro>

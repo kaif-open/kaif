@@ -83,8 +83,10 @@ public class ArticleDao implements DaoOperations {
     return jdbc().query(sql, articleMapper, zone.value(), articleId.value()).stream().findAny();
   }
 
-  public List<Article> listZoneArticlesDesc(Zone zone, @Nullable FlakeId startFlakeId, int limit) {
-    FlakeId start = Optional.ofNullable(startFlakeId).orElse(FlakeId.MAX);
+  public List<Article> listZoneArticlesDesc(Zone zone,
+      @Nullable FlakeId startArticleId,
+      int limit) {
+    FlakeId start = Optional.ofNullable(startArticleId).orElse(FlakeId.MAX);
     final String sql = ""
         + " SELECT * "
         + "   FROM Article "
@@ -94,6 +96,21 @@ public class ArticleDao implements DaoOperations {
         + "  ORDER BY articleId DESC "
         + "  LIMIT ? ";
     return jdbc().query(sql, articleMapper, zone.value(), start.value(), limit);
+  }
+
+  /**
+   * this is global articles list, but we don't filter hideFromTop articles
+   */
+  public List<Article> listArticlesDesc(@Nullable FlakeId startArticleId, int limit) {
+    FlakeId start = Optional.ofNullable(startArticleId).orElse(FlakeId.MAX);
+    final String sql = ""
+        + " SELECT * "
+        + "   FROM Article "
+        + "  WHERE articleId < ? "
+        + "    AND deleted = FALSE "
+        + "  ORDER BY articleId DESC "
+        + "  LIMIT ? ";
+    return jdbc().query(sql, articleMapper, start.value(), limit);
   }
 
   public Article createExternalLink(Zone zone,
@@ -171,10 +188,41 @@ public class ArticleDao implements DaoOperations {
     return jdbc().query(sql, articleMapper, zone.value(), startArticleId.value(), limit);
   }
 
+  public List<Article> listHotArticlesExcludeHidden(@Nullable FlakeId startArticleId, int limit) {
+    //TODO this is naive implementation, should improve performance later
+    if (startArticleId == null) {
+      final String sql = ""
+          + " SELECT a.* "
+          + "   FROM Article a "
+          + "   JOIN ZoneInfo z ON a.zone = z.zone "
+          + "  WHERE z.hideFromTop = FALSE "
+          + "    AND a.deleted = FALSE "
+          + "  ORDER BY hotRanking(a.upVote, a.downVote, a.createTime) DESC "
+          + "  LIMIT ? ";
+      return jdbc().query(sql, articleMapper, limit);
+    }
+    final String sql = ""
+        + " WITH RankArticle "
+        + "   AS ( "
+        + "       SELECT a.*, hotRanking(a.upVote, a.downVote, a.createTime) AS hot "
+        + "         FROM Article a"
+        + "         JOIN ZoneInfo z ON a.zone = z.zone "
+        + "        WHERE z.hideFromTop = FALSE "
+        + "      ) "
+        + " SELECT * "
+        + "   FROM RankArticle "
+        + "  WHERE hot < ( SELECT hot FROM RankArticle WHERE articleId = ? ) "
+        + "    AND deleted = FALSE "
+        + "  ORDER BY hot DESC "
+        + "  LIMIT ? ";
+    return jdbc().query(sql, articleMapper, startArticleId.value(), limit);
+  }
+
   //TODO evict any related cache
   public void markAsDeleted(Article article) {
     jdbc().update(" UPDATE Article SET deleted = TRUE WHERE zone = ? AND articleId = ? ",
         article.getZone().value(),
         article.getArticleId().value());
   }
+
 }
