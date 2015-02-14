@@ -8,7 +8,8 @@ import java.time.Duration;
 import java.time.Instant;
 
 /**
- * see also http://amix.dk/blog/post/19588
+ * see schema.sql FUNCTION hotRanking
+ * see http://amix.dk/blog/post/19588
  */
 public class HotRanking {
 

@@ -14,6 +14,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import io.kaif.database.DaoOperations;
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
@@ -130,4 +132,12 @@ public class ArticleDao implements DaoOperations {
         + "    AND articleId = ? ", upVoteDelta, downVoteDelta, zone.value(), articleId.value());
   }
 
+  @VisibleForTesting
+  double hotRanking(long upVoted, long downVoted, Instant createTime) {
+    return jdbc().queryForObject(" SELECT hotRanking(?, ?, ?) ",
+        Double.class,
+        upVoted,
+        downVoted,
+        Timestamp.from(createTime));
+  }
 }
