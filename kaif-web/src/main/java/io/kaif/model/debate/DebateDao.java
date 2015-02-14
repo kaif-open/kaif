@@ -150,4 +150,19 @@ public class DebateDao implements DaoOperations {
         String.class,
         debateId.value()));
   }
+
+  public Debate loadDebate(FlakeId articleId, FlakeId debateId) {
+    return jdbc().queryForObject(" SELECT * FROM Debate WHERE debateId = ? AND articleId = ? ",
+        debateMapper,
+        debateId.value(),
+        articleId.value());
+  }
+
+  public void changeContent(FlakeId articleId, FlakeId debateId, String content) {
+    jdbc().update(" UPDATE Debate SET content = ? WHERE debateId = ? AND articleId = ? ",
+        content,
+        debateId.value(),
+        articleId.value());
+
+  }
 }

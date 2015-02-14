@@ -12,6 +12,7 @@ import java.util.stream.IntStream;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.util.HtmlUtils;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
@@ -23,6 +24,7 @@ import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateContentType;
 import io.kaif.model.debate.DebateDao;
 import io.kaif.model.zone.Zone;
+import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.AccountService;
 import io.kaif.test.DbIntegrationTests;
@@ -38,6 +40,9 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
   @Autowired
   private DebateDao debateDao;
+
+  @Autowired
+  private ZoneDao zoneDao;
 
   private ZoneInfo zoneInfo;
   private Article article;
@@ -288,6 +293,38 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
       service.createExternalLink(tourist, zoneRequireCitizen.getZone(), "title1", "http://foo.com");
       fail("AccessDeniedException expected");
     } catch (AccessDeniedException expected) {
+    }
+  }
+
+  @Test
+  public void updateDebateContent() throws Exception {
+    Debate d1 = savedDebate(null);
+    String result = service.updateDebateContent(d1.getArticleId(),
+        d1.getDebateId(),
+        citizen,
+        "pixel art is better<evil>hi</evil>*hi*");
+    assertEquals("<p>pixel art is better&lt;evil&gt;hi&lt;/evil&gt;<em>hi</em></p>\n", result);
+  }
+
+  @Test
+  public void loadEditableDebate() throws Exception {
+    Debate d1 = savedDebate(null);
+    String content = service.loadEditableDebateContent(d1.getArticleId(),
+        d1.getDebateId(),
+        citizen);
+    assertEquals(HtmlUtils.htmlEscape(d1.getContent()), content);
+  }
+
+  @Test
+  public void loadEditableDebate_not_editor() throws Exception {
+    Debate d1 = savedDebate(null);
+    try {
+      service.loadEditableDebateContent(d1.getArticleId(),
+          d1.getDebateId(),
+          savedAccountCitizen("not-editor"));
+      fail("AccessDeniedException expected");
+    } catch (AccessDeniedException expected) {
+
     }
   }
 }

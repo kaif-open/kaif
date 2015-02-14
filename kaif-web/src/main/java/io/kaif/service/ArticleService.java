@@ -25,4 +25,11 @@ public interface ArticleService {
       String content);
 
   List<Debate> listHotDebates(Zone zone, FlakeId articleId, int offset);
+
+  String loadEditableDebateContent(FlakeId articleId, FlakeId debateId, Authorization editor);
+
+  String updateDebateContent(FlakeId articleId,
+      FlakeId debateId,
+      Authorization editor,
+      String content);
 }

@@ -51,6 +51,10 @@ class AccountSession {
 
   bool get isSignIn => current != null;
 
+  bool isSelf(String username) {
+    return isSignIn && username == current.username;
+  }
+
   String provideAccessToken() {
     return _current != null ? _current.accessToken : null;
   }

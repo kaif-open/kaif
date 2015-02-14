@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.kaif.flake.FlakeId;
@@ -54,6 +55,18 @@ public class ArticleResource {
     public String content;
   }
 
+  static class UpdateDebate {
+    @NotNull
+    public FlakeId articleId;
+
+    @NotNull
+    public FlakeId debateId;
+
+    @Size(min = Debate.CONTENT_MIN, max = Debate.CONTENT_MAX)
+    @NotNull
+    public String content;
+  }
+
   static class PreviewKmark {
     @NotNull
     public String content;
@@ -82,9 +95,29 @@ public class ArticleResource {
         request.content.trim());
   }
 
+  @RequestMapping(value = "/debate/content", method = RequestMethod.PUT, consumes = {
+      MediaType.APPLICATION_JSON_VALUE })
+  public String editDebateContent(AccountAccessToken token,
+      @Valid @RequestBody UpdateDebate request) {
+    return articleService.updateDebateContent(request.articleId,
+        request.debateId,
+        token,
+        request.content.trim());
+  }
+
   @RequestMapping(value = "/preview-kmark", method = RequestMethod.PUT, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
   public String previewKmark(AccountAccessToken token, @Valid @RequestBody PreviewKmark request) {
     return KmarkProcessor.process(request.content, "");
   }
+
+  @RequestMapping(value = "/debate-content", method = RequestMethod.GET)
+  public String loadEditableDebate(AccountAccessToken token,
+      @RequestParam String articleId,
+      @RequestParam String debateId) {
+    return articleService.loadEditableDebateContent(FlakeId.fromString(articleId),
+        FlakeId.fromString(debateId),
+        token);
+  }
+
 }

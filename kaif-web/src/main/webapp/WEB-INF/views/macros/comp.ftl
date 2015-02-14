@@ -40,7 +40,8 @@
 <#-- TODO adjust margin-left -->
 <div class="debate" style="margin-left: ${(debate.level-1) * 30}px;"
      debate
-     data-debate-id="${debate.debateId}">
+     data-debate-id="${debate.debateId}"
+     data-debater-name="${debate.debaterName}">
     <div class="debate-vote-box votable" debate-vote-box
 
          data-debate-vote-count="${debate.totalVote}">
@@ -59,14 +60,17 @@
             ( <span debate-vote-count>${debate.totalVote}</span> )
         </div>
         <div class="debate-content">
-            <div class="kmark">
+            <div class="kmark" debate-content>
             ${debate.renderContent}
             </div>
+            <div debate-content-edit hidden></div>
         </div>
         <div class="debate-info">
             <#if !debate.maxLevel>
                 <a href="#" debate-replier
                    data-debate-id="${debate.debateId}">回應</a>
+                <a href="#" debate-editor
+                   data-debate-id="${debate.debateId}" hidden>編輯</a>
             </#if>
             <#if debate.hasParent()>
                 <a>parent</a>

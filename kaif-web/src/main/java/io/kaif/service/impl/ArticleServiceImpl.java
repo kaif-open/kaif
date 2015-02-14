@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 
 import io.kaif.flake.FlakeId;
-import io.kaif.kmark.KmarkProcessor;
 import io.kaif.model.account.Account;
+import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountDao;
 import io.kaif.model.account.Authorization;
 import io.kaif.model.article.Article;
@@ -81,6 +81,35 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
+  public String loadEditableDebateContent(FlakeId articleId,
+      FlakeId debateId,
+      Authorization editor) {
+    Debate debate = debateDao.loadDebate(articleId, debateId);
+    if (!debate.canEdit(editor)) {
+      throw new AccessDeniedException("no permission to edit debate:" + debate.getDebateId());
+    }
+    return HtmlUtils.htmlEscape(debate.getContent());
+  }
+
+  @Override
+  public String updateDebateContent(FlakeId articleId,
+      FlakeId debateId,
+      Authorization editorAuth,
+      String content) {
+
+    Account editor = accountDao.strongVerifyAccount(editorAuth)
+        .orElseThrow(() -> new AccessDeniedException("no permission to edit debate:" + debateId));
+
+    Debate debate = debateDao.loadDebate(articleId, debateId);
+    if (!debate.canEdit(editor)) {
+      throw new AccessDeniedException("no permission to edit debate:" + debate.getDebateId());
+    }
+    debateDao.changeContent(articleId, debateId, content);
+
+    return debateDao.loadDebate(articleId, debateId).getRenderContent();
+  }
+
+  @Override
   public Debate debate(Zone zone,
       FlakeId articleId,
       @Nullable FlakeId parentDebateId,
@@ -98,11 +127,7 @@ public class ArticleServiceImpl implements ArticleService {
     Debate parent = Optional.ofNullable(parentDebateId)
         .flatMap(pId -> debateDao.findDebate(article.getArticleId(), pId))
         .orElse(null);
-    Debate debate = debateDao.create(article,
-        parent,
-        content,
-        debater,
-        Instant.now());
+    Debate debate = debateDao.create(article, parent, content, debater, Instant.now());
 
     //may improve later to make it async, but async has transaction problem
     articleDao.increaseDebateCount(article);

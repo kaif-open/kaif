@@ -229,15 +229,32 @@ class ArticleService extends _AbstractService {
     return _putJson(_getUrl('/external-link'), json)
     .then((res) => null);
   }
-  
-  Future<String> previewKmark(String content){
+
+  Future<String> previewKmark(String content) {
     var json = {
         'content':content
     };
     return _putJson(_getUrl('/preview-kmark'), json)
     .then((req) => req.responseText);
   }
-  
+
+  Future<String> loadEditableDebate(String articleId, String debateId) {
+    var params = {
+        'articleId':articleId,
+        'debateId':debateId
+    };
+    return _get(_getUrl('/debate-content'), params:params)
+    .then((req) => req.responseText);
+  }
+
+  Future<String> editDebateContent(String articleId, String debateId, String content) {
+    var json = {
+        'articleId':articleId, 'debateId':debateId, 'content':content
+    };
+    return _putJson(_getUrl('/debate/content'), json)
+    .then((req) => req.responseText);
+  }
+
   Future debate(String zone, String articleId, String parentDebateId, String content) {
     String parent = isStringBlank(parentDebateId) ? null : parentDebateId;
     var json = {

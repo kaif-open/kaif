@@ -11,6 +11,10 @@ public interface Authorization {
     return accountIds.contains(authenticatedId());
   }
 
+  default boolean belongToAccount(UUID accountId) {
+    return authenticatedId().equals(accountId);
+  }
+
   boolean containsAuthority(Authority authority);
 
   /**

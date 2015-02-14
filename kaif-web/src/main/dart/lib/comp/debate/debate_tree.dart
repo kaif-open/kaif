@@ -5,6 +5,7 @@ import 'package:kaif_web/util.dart';
 import 'package:kaif_web/model.dart';
 import '../vote/votable.dart';
 import 'debate_form.dart';
+import 'debate_edit_form.dart';
 import 'dart:async';
 
 class DebateTree {
@@ -55,12 +56,14 @@ class DebateComp {
   final String zone;
   final String articleId;
   String debateId;
+  String debaterName;
 
   DebateVoteBox voteBox;
 
   DebateComp(this.elem, this.articleService, this.voteService, this.accountSession, this.zone,
              this.articleId) {
     debateId = elem.dataset['debate-id'];
+    debaterName = elem.dataset['debater-name'];
 
     var voteElem = elem.querySelector('[debate-vote-box]');
     var voteCountElem = elem.querySelector('[debate-vote-count]');
@@ -68,7 +71,51 @@ class DebateComp {
 
     var replierElem = elem.querySelector('[debate-replier]');
     new DebateReplier(replierElem, articleService, debateId);
+
+    if (accountSession.isSelf(debaterName)) {
+      Element contentElem = elem.querySelector('[debate-content]');
+      Element contentEditElem = elem.querySelector('[debate-content-edit]');
+      var editorElem = elem.querySelector('[debate-editor]');
+      new DebateEditor(contentElem, contentEditElem, editorElem, this);
+    }
   }
+}
+
+class DebateEditor {
+  final DebateComp debateComp;
+  final Element contentElem;
+  final Element contentEditElem;
+  final Element elem;
+  DebateEditForm form;
+
+  DebateEditor(this.contentElem, this.contentEditElem, this.elem, this.debateComp) {
+    this.elem.hidden = false;
+    elem.onClick.listen(_onClick);
+  }
+
+  void _onClick(Event e) {
+    e
+      ..preventDefault()
+      ..stopPropagation();
+
+    debateComp.articleService
+    .loadEditableDebate(debateComp.articleId, debateComp.debateId)
+    .then((content) {
+      //lazy create
+      if (form == null) {
+        form = new DebateEditForm.placeHolder(contentEditElem, contentElem,
+        debateComp.articleService)
+          ..articleId = debateComp.articleId
+          ..debateId = debateComp.debateId;
+      }
+      form
+        ..content = content
+        ..toggleShow();
+    }).catchError((e) {
+      new Toast.error('$e', seconds:5).render();
+    });
+  }
+
 }
 
 class DebateReplier {

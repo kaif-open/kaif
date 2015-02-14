@@ -69,4 +69,11 @@ head=headContent
     <button type="submit" class="pure-button pure-button-primary">留言</button>
     <button class="pure-button" kmark-preview>預覽</button>
 </form>
+
+<form class="pure-form hidden" comp-template="edit-debate-form">
+    <div kmark-previewer hidden></div>
+    <textarea name="contentInput" maxlength="4096" rows="3"></textarea>
+    <button type="submit" class="pure-button pure-button-primary">修改</button>
+    <button class="pure-button" kmark-preview>預覽</button>
+</form>
 </@template.page>
