@@ -4,6 +4,7 @@ import 'dart:html';
 import 'package:kaif_web/util.dart';
 import 'package:kaif_web/model.dart';
 import '../vote/votable.dart';
+import '../article/article-list.dart';
 import 'debate_form.dart';
 import 'dart:async';
 
@@ -16,10 +17,13 @@ class DebateTree {
 
   DebateTree(this.elem, this.articleService, this.voteService, this.accountSession) {
 
-    //TODO use article component and populate it's voter
     var zone = (elem.querySelector('[name=zoneInput]') as HiddenInputElement).value;
-    var articleId = (elem.querySelector('[name=articleIdInput]') as HiddenInputElement).value;
+    var articleElem = elem.querySelector('[article]');
+    ArticleComp articleComp = new ArticleComp(articleElem, voteService, accountSession, zone);
 
+    _initArticleVote(articleComp);
+
+    var articleId = articleComp.articleId;
     elem.querySelectorAll('[debate-form]').forEach((el) {
       new DebateForm.placeHolder(el, articleService);
     });
@@ -29,6 +33,18 @@ class DebateTree {
     }).toList();
 
     _initDebateVoters(debateComps, articleId);
+  }
+
+  void _initArticleVote(ArticleComp articleComp) {
+    Future<List<ArticleVoter>> future;
+    if (accountSession.isSignIn) {
+      future = voteService.listArticleVotersInRange(articleComp.articleId, articleComp.articleId);
+    } else {
+      future = new Future.value([]);
+    }
+    future.then((voters) {
+      articleComp.voteBox.applyVoters(voters);
+    });
   }
 
   void _initDebateVoters(List<DebateComp> debateComps, String articleId) {

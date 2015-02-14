@@ -16,10 +16,14 @@ class ArticleList {
 
   ArticleList(this.elem, this.articleService, this.voteService, this.accountSession) {
     zone = (elem.querySelector('[name=zoneInput]') as HiddenInputElement).value;
-    var voteBoxes = elem.querySelectorAll('[article-vote-box]').map((Element el) {
-      return new ArticleVoteBox(el, voteService, accountSession, zone);
+    List<ArticleComp> articleComps = elem.querySelectorAll('[article]').map((Element el) {
+      return new ArticleComp(el, voteService, accountSession, zone);
     }).toList();
 
+    _initArticleVoters(articleComps);
+  }
+
+  _initArticleVoters(List<ArticleComp> articleComps) {
     Future<List<ArticleVoter>> future;
     if (accountSession.isSignIn) {
       var oldestArticleId = (elem.querySelector('[name=oldestArticleIdInput]') as HiddenInputElement).value;
@@ -30,21 +34,33 @@ class ArticleList {
     }
 
     future.then((articleVoters) {
-      voteBoxes.forEach((box) => box.applyVoters(articleVoters));
+      articleComps.map((articleComp) => articleComp.voteBox).forEach((
+          box) => box.applyVoters(articleVoters));
     });
+  }
+}
+
+class ArticleComp {
+  final Element elem;
+  final VoteService voteService;
+  final AccountSession accountSession;
+  final String zone;
+  String articleId;
+  ArticleVoteBox voteBox;
+
+  ArticleComp(this.elem, this.voteService, this.accountSession, this.zone) {
+    articleId = elem.dataset['article-id'];
+    var voteBoxElem = elem.querySelector('[article-vote-box]');
+    voteBox = new ArticleVoteBox(voteBoxElem, this);
   }
 }
 
 class ArticleVoteBox extends Votable {
 
-  final VoteService voteService;
-  final AccountSession accountSession;
-  final String zone;
-  String articleId;
+  final ArticleComp articleComp;
 
-  ArticleVoteBox(Element elem, this.voteService, this.accountSession, this.zone)
+  ArticleVoteBox(Element elem, this.articleComp)
   : super(elem) {
-    articleId = elem.dataset['article-id'];
 
     var upVoteElem = elem.querySelector('[article-up-vote]');
     var voteCountElem = elem.querySelector('[article-vote-count]');
@@ -57,13 +73,13 @@ class ArticleVoteBox extends Votable {
   }
 
   void applyVoters(List<ArticleVoter> voters) {
-    if (!accountSession.isSignIn) {
+    if (!articleComp.accountSession.isSignIn) {
       applyNotSignIn();
       return;
     }
 
     var voter = voters
-    .firstWhere((voter) => voter.articleId == articleId, orElse:() => null);
+    .firstWhere((voter) => voter.articleId == articleComp.articleId, orElse:() => null);
 
     if (voter == null) {
       applyNoVoter();
@@ -74,7 +90,7 @@ class ArticleVoteBox extends Votable {
   }
 
   Future onVote(VoteState newState, VoteState previousState, int previousCount) {
-    return voteService.voteArticle(
-        newState, zone, articleId, previousState, previousCount);
+    return articleComp.voteService.voteArticle(
+        newState, articleComp.zone, articleComp.articleId, previousState, previousCount);
   }
 }

@@ -35,7 +35,6 @@ head=headContent
             <@comp.article data=article />
 
             <input type="hidden" name="zoneInput" value="${zoneInfo.name}">
-            <input type="hidden" name="articleIdInput" value="${article.articleId}">
 
             <div class="debate-form-container convex-row">
 
