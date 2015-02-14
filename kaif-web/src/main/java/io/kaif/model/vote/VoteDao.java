@@ -1,7 +1,10 @@
 package io.kaif.model.vote;
 
+import static java.util.stream.Collectors.*;
+
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -161,5 +164,20 @@ public class VoteDao implements DaoOperations {
         .build();
 
     namedJdbc().update(upsert, params);
+  }
+
+  public List<ArticleVoter> listArticleVoters(UUID voterId, List<FlakeId> articleIds) {
+    if (articleIds.isEmpty()) {
+      return Collections.emptyList();
+    }
+    Map<String, Object> params = ImmutableMap.of("voterId",
+        voterId,
+        "articleIds",
+        articleIds.stream().map(FlakeId::value).collect(toList()));
+    return namedJdbc().query(""
+        + " SELECT * "
+        + "   FROM ArticleVoter "
+        + "  WHERE voterId = :voterId "
+        + "    AND articleId IN (:articleIds) ", params, articleVoterMapper);
   }
 }

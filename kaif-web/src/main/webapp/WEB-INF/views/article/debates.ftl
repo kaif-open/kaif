@@ -34,8 +34,6 @@ head=headContent
 
             <@comp.article data=article />
 
-            <input type="hidden" name="zoneInput" value="${zoneInfo.name}">
-
             <div class="debate-form-container convex-row">
 
             <#-- place holder debate-form will replace by comp-template

@@ -12,12 +12,10 @@ class ArticleList {
   final ArticleService articleService;
   final VoteService voteService;
   final AccountSession accountSession;
-  String zone;
 
   ArticleList(this.elem, this.articleService, this.voteService, this.accountSession) {
-    zone = (elem.querySelector('[name=zoneInput]') as HiddenInputElement).value;
     List<ArticleComp> articleComps = elem.querySelectorAll('[article]').map((Element el) {
-      return new ArticleComp(el, voteService, accountSession, zone);
+      return new ArticleComp(el, voteService, accountSession);
     }).toList();
 
     _initArticleVoters(articleComps);
@@ -26,9 +24,8 @@ class ArticleList {
   _initArticleVoters(List<ArticleComp> articleComps) {
     Future<List<ArticleVoter>> future;
     if (accountSession.isSignIn) {
-      var oldestArticleId = (elem.querySelector('[name=oldestArticleIdInput]') as HiddenInputElement).value;
-      var newestArticleId = (elem.querySelector('[name=newestArticleIdInput]') as HiddenInputElement).value;
-      future = voteService.listArticleVotersInRange(oldestArticleId, newestArticleId);
+      var articleIds = articleComps.map((comp) => comp.articleId).toList();
+      future = voteService.listArticleVoters(articleIds);
     } else {
       future = new Future.value([]);
     }
@@ -44,14 +41,21 @@ class ArticleComp {
   final Element elem;
   final VoteService voteService;
   final AccountSession accountSession;
-  final String zone;
-  String articleId;
-  ArticleVoteBox voteBox;
+  String _zone;
+  String _articleId;
+  ArticleVoteBox _voteBox;
 
-  ArticleComp(this.elem, this.voteService, this.accountSession, this.zone) {
-    articleId = elem.dataset['article-id'];
+  String get zone => _zone;
+
+  String get articleId => _articleId;
+
+  ArticleVoteBox get voteBox => _voteBox;
+
+  ArticleComp(this.elem, this.voteService, this.accountSession) {
+    _articleId = elem.dataset['article-id'];
+    _zone = elem.dataset['zone'];
     var voteBoxElem = elem.querySelector('[article-vote-box]');
-    voteBox = new ArticleVoteBox(voteBoxElem, this);
+    _voteBox = new ArticleVoteBox(voteBoxElem, this);
   }
 }
 

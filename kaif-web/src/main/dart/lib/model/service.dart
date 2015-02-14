@@ -69,7 +69,7 @@ abstract class _AbstractService {
     var parts = [];
     params.forEach((key, value) {
       if (value != null) {
-        String strValue = value.toString();
+        String strValue = (value is Iterable) ? (value as Iterable).join(',') : value.toString();
         parts.add('${Uri.encodeQueryComponent(key)}=' '${Uri.encodeQueryComponent(strValue)}');
       }
     });
@@ -265,10 +265,9 @@ class VoteService extends _AbstractService {
     .then((res) => null);
   }
 
-  Future<List<ArticleVoter>> listArticleVotersInRange(String oldestArticleId,
-                                                      String newestArticleId) {
+  Future<List<ArticleVoter>> listArticleVoters(List<String> articleIds) {
     var params = {
-        'oldestArticleId':oldestArticleId, 'newestArticleId':newestArticleId
+        'articleIds':articleIds
     };
     return _get(_getUrl('/article-voters'), params:params)
     .then((req) => JSON.decode(req.responseText))

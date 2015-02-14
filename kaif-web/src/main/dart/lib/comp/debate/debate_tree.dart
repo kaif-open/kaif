@@ -17,9 +17,9 @@ class DebateTree {
 
   DebateTree(this.elem, this.articleService, this.voteService, this.accountSession) {
 
-    var zone = (elem.querySelector('[name=zoneInput]') as HiddenInputElement).value;
     var articleElem = elem.querySelector('[article]');
-    ArticleComp articleComp = new ArticleComp(articleElem, voteService, accountSession, zone);
+    ArticleComp articleComp = new ArticleComp(articleElem, voteService, accountSession);
+    var zone = articleComp.zone;
 
     _initArticleVote(articleComp);
 
@@ -38,7 +38,7 @@ class DebateTree {
   void _initArticleVote(ArticleComp articleComp) {
     Future<List<ArticleVoter>> future;
     if (accountSession.isSignIn) {
-      future = voteService.listArticleVotersInRange(articleComp.articleId, articleComp.articleId);
+      future = voteService.listArticleVoters([articleComp.articleId]);
     } else {
       future = new Future.value([]);
     }

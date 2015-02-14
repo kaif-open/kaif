@@ -25,9 +25,6 @@ head=headContent
 
     <div class="zone-body">
         <div class="article-list" article-list>
-            <input type="hidden" name="zoneInput" value="${zoneInfo.name}">
-            <input type="hidden" name="oldestArticleIdInput" value="${articlePage.oldestArticleId}">
-            <input type="hidden" name="newestArticleIdInput" value="${articlePage.newestArticleId}">
             <#list articlePage.articles as article>
                 <@comp.article data=article />
             </#list>

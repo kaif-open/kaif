@@ -18,10 +18,6 @@ public interface VoteService {
       VoteState previousState,
       long previousCount);
 
-  List<ArticleVoter> listArticleVotersInRage(Authorization authorization,
-      FlakeId oldestArticleId,
-      FlakeId newestArticleId);
-
   List<DebateVoter> listDebateVoters(Authorization voter, FlakeId articleId);
 
   void voteDebate(VoteState newState,
@@ -32,4 +28,5 @@ public interface VoteService {
       VoteState previousState,
       long previousCount);
 
+  List<ArticleVoter> listArticleVoters(Authorization voter, List<FlakeId> articleIds);
 }

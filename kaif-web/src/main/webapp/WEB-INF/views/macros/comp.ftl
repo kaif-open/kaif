@@ -5,7 +5,7 @@
 
     <#local article=data />
 
-<div class="article" article data-article-id="${article.articleId}">
+<div class="article" article data-article-id="${article.articleId}" data-zone="${article.zone}">
     <div class="article-vote-box votable" article-vote-box
          data-article-vote-count="${article.upVote}">
         <span article-vote-count>${article.upVote}</span>
