@@ -83,13 +83,14 @@ public class ArticleDao implements DaoOperations {
     return jdbc().query(sql, articleMapper, zone.value(), articleId.value()).stream().findAny();
   }
 
-  public List<Article> listArticlesDesc(Zone zone, @Nullable FlakeId startFlakeId, int limit) {
+  public List<Article> listZoneArticlesDesc(Zone zone, @Nullable FlakeId startFlakeId, int limit) {
     FlakeId start = Optional.ofNullable(startFlakeId).orElse(FlakeId.MAX);
     final String sql = ""
         + " SELECT * "
         + "   FROM Article "
         + "  WHERE zone = ? "
         + "    AND articleId < ? "
+        + "    AND deleted = FALSE "
         + "  ORDER BY articleId DESC "
         + "  LIMIT ? ";
     return jdbc().query(sql, articleMapper, zone.value(), start.value(), limit);
@@ -141,8 +142,7 @@ public class ArticleDao implements DaoOperations {
         Timestamp.from(createTime));
   }
 
-  //TODO cache
-  public List<Article> listHotArticles(Zone zone, @Nullable FlakeId startArticleId, int limit) {
+  public List<Article> listZoneHotArticles(Zone zone, @Nullable FlakeId startArticleId, int limit) {
     //TODO this is naive implementation, should improve performance later
     //possible improving is use startArticleId's max score as createTime hint
     if (startArticleId == null) {
@@ -150,6 +150,7 @@ public class ArticleDao implements DaoOperations {
           + " SELECT * "
           + "   FROM Article "
           + "  WHERE zone = ? "
+          + "    AND deleted = FALSE "
           + "  ORDER BY hotRanking(upVote, downVote, createTime) DESC "
           + "  LIMIT ? ";
       return jdbc().query(sql, articleMapper, zone.value(), limit);
@@ -164,8 +165,16 @@ public class ArticleDao implements DaoOperations {
         + " SELECT * "
         + "   FROM RankArticle "
         + "  WHERE hot < ( SELECT hot FROM RankArticle WHERE articleId = ? ) "
+        + "    AND deleted = FALSE "
         + "  ORDER BY hot DESC "
         + "  LIMIT ? ";
     return jdbc().query(sql, articleMapper, zone.value(), startArticleId.value(), limit);
+  }
+
+  //TODO evict any related cache
+  public void markAsDeleted(Article article) {
+    jdbc().update(" UPDATE Article SET deleted = TRUE WHERE zone = ? AND articleId = ? ",
+        article.getZone().value(),
+        article.getArticleId().value());
   }
 }

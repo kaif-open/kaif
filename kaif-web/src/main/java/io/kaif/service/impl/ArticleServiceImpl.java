@@ -71,7 +71,7 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public List<Article> listLatestArticles(Zone zone, @Nullable FlakeId startArticleId) {
-    return articleDao.listArticlesDesc(zone, startArticleId, PAGE_SIZE);
+    return articleDao.listZoneArticlesDesc(zone, startArticleId, PAGE_SIZE);
   }
 
   @Override
@@ -119,6 +119,7 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public List<Article> listHotArticles(Zone zone, FlakeId startArticleId) {
-    return articleDao.listHotArticles(zone, startArticleId, PAGE_SIZE);
+    //TODO cache
+    return articleDao.listZoneHotArticles(zone, startArticleId, PAGE_SIZE);
   }
 }

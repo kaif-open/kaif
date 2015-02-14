@@ -246,6 +246,10 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
     assertEquals(asList(a3, a2, a1), service.listLatestArticles(fooZone.getZone(), null));
     assertEquals(asList(a1), service.listLatestArticles(fooZone.getZone(), a2.getArticleId()));
+    articleDao.markAsDeleted(a1);
+    assertEquals("listLatest should exclude deleted",
+        asList(a3, a2),
+        service.listLatestArticles(fooZone.getZone(), null));
   }
 
   @Test
@@ -266,6 +270,12 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     List<Article> secondPage = articles.stream().skip(25).limit(25).collect(toList());
     assertEquals(secondPage,
         service.listHotArticles(fooZone.getZone(), firstPage.get(24).getArticleId()));
+
+    articleDao.markAsDeleted(articles.get(0));
+    articleDao.markAsDeleted(articles.get(1));
+
+    List<Article> firstPageWithoutDeleted = articles.stream().skip(2).limit(25).collect(toList());
+    assertEquals(firstPageWithoutDeleted, service.listHotArticles(fooZone.getZone(), null));
   }
 
   @Test
