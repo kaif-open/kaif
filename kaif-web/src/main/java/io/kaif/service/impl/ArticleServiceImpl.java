@@ -14,7 +14,6 @@ import org.springframework.web.util.HtmlUtils;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
-import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountDao;
 import io.kaif.model.account.Authorization;
 import io.kaif.model.article.Article;
