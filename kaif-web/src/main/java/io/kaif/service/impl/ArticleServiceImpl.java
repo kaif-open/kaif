@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,8 @@ import io.kaif.web.support.AccessDeniedException;
 @Service
 @Transactional
 public class ArticleServiceImpl implements ArticleService {
+
+  private static final Logger log = LoggerFactory.getLogger(ArticleServiceImpl.class);
 
   private static final int PAGE_SIZE = 25;
 
@@ -98,13 +102,17 @@ public class ArticleServiceImpl implements ArticleService {
       Authorization editorAuth,
       String content) {
 
-    Debate debate = debateDao.loadDebate(articleId, debateId);
+    Debate found = debateDao.loadDebate(articleId, debateId);
     accountDao.strongVerifyAccount(editorAuth)
-        .filter(debate::canEdit)
+        .filter(found::canEdit)
         .orElseThrow(() -> new AccessDeniedException("no permission to edit debate:" + debateId));
-
     debateDao.changeContent(articleId, debateId, content);
 
+    log.info("user(id:{}) update debate's(id:{}) content:{}",
+        editorAuth.authenticatedId(),
+        debateId.value(),
+        found.getContent());
+    
     return debateDao.loadDebate(articleId, debateId).getRenderContent();
   }
 
