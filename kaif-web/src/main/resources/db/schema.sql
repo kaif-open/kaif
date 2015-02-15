@@ -31,8 +31,8 @@ CREATE TABLE ZoneInfo (
 );
 
 CREATE TABLE Article (
-  zone        VARCHAR(4096)  NOT NULL,
   articleId   BIGINT         NOT NULL,
+  zone        VARCHAR(4096)  NOT NULL,
   title       VARCHAR(4096)  NOT NULL,
   urlName     VARCHAR(4096)  NULL,
   linkType    VARCHAR(4096)  NOT NULL,
@@ -45,10 +45,11 @@ CREATE TABLE Article (
   upVote      BIGINT         NOT NULL DEFAULT 0,
   downVote    BIGINT         NOT NULL DEFAULT 0,
   debateCount BIGINT         NOT NULL DEFAULT 0,
-  PRIMARY KEY (zone, articleId)
+  PRIMARY KEY (articleId)
 );
 
 CREATE INDEX ArticleAuthorIndex ON Article (authorId);
+CREATE INDEX ArticleZoneIndex ON Article (zone);
 
 CREATE TABLE Debate (
   articleId      BIGINT         NOT NULL,

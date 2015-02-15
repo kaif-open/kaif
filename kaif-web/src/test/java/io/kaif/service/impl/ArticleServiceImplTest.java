@@ -78,8 +78,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertNotNull(debate.getCreateTime());
     assertNotNull(debate.getLastUpdateTime());
 
-    assertEquals(1,
-        service.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getDebateCount());
+    assertEquals(1, service.findArticle(article.getArticleId()).get().getDebateCount());
 
     assertEquals(1, accountService.loadAccountStats(debater.getUsername()).getDebateCount());
   }
@@ -204,8 +203,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertTrue(l2.isParent(l1));
     assertFalse(l1.isParent(l2));
 
-    assertEquals(2,
-        service.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getDebateCount());
+    assertEquals(2, service.findArticle(article.getArticleId()).get().getDebateCount());
     Debate l3 = service.debate(zoneInfo.getZone(),
         article.getArticleId(),
         l2.getDebateId(),
@@ -217,8 +215,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertTrue(l3.isParent(l2));
     assertFalse(l2.isParent(l3));
 
-    assertEquals(3,
-        service.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getDebateCount());
+    assertEquals(3, service.findArticle(article.getArticleId()).get().getDebateCount());
   }
 
   @Test
@@ -273,7 +270,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     ZoneInfo fooZone = savedZoneDefault("foo");
     List<Article> articles = IntStream.rangeClosed(1, 100).mapToObj(i -> {
       Article a = savedArticle(fooZone, author, "title-" + i);
-      articleDao.changeTotalVote(fooZone.getZone(), a.getArticleId(), i * 10, 0);
+      articleDao.changeTotalVote(a.getArticleId(), i * 10, 0);
       return a;
     }).collect(toList());
 
@@ -299,7 +296,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     ZoneInfo defaultZone = savedZoneDefault("foo");
     List<Article> articles = IntStream.rangeClosed(1, 30).mapToObj(i -> {
       Article a = savedArticle(defaultZone, author, "title-" + i);
-      articleDao.changeTotalVote(defaultZone.getZone(), a.getArticleId(), i * 10, 0);
+      articleDao.changeTotalVote(a.getArticleId(), i * 10, 0);
       return a;
     }).collect(toList());
 
@@ -328,7 +325,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         zoneInfo.getZone(),
         "title1<script>alert('123');</script>",
         "http://foo.com<script>alert('123');</script>");
-    Article article = service.findArticle(created.getZone(), created.getArticleId()).get();
+    Article article = service.findArticle(created.getArticleId()).get();
     assertEquals("title1&lt;script&gt;alert(&#39;123&#39;);&lt;/script&gt;", article.getTitle());
     assertEquals("http://foo.com&lt;script&gt;alert(&#39;123&#39;);&lt;/script&gt;",
         article.getContent());
@@ -340,7 +337,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         zoneInfo.getZone(),
         "title1",
         "http://foo.com");
-    Article article = service.findArticle(created.getZone(), created.getArticleId()).get();
+    Article article = service.findArticle(created.getArticleId()).get();
     assertEquals(zoneInfo.getZone(), article.getZone());
     assertEquals("title1", article.getTitle());
     assertNull(article.getUrlName());

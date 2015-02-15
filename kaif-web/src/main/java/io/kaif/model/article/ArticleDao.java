@@ -79,9 +79,9 @@ public class ArticleDao implements DaoOperations {
     return article;
   }
 
-  public Optional<Article> findArticle(Zone zone, FlakeId articleId) {
-    final String sql = " SELECT * FROM Article WHERE zone = ? AND articleId = ? LIMIT 1 ";
-    return jdbc().query(sql, articleMapper, zone.value(), articleId.value()).stream().findAny();
+  public Optional<Article> findArticle(FlakeId articleId) {
+    final String sql = " SELECT * FROM Article WHERE AND articleId = ? LIMIT 1 ";
+    return jdbc().query(sql, articleMapper, articleId.value()).stream().findAny();
   }
 
   public List<Article> listZoneArticlesDesc(Zone zone,
@@ -91,12 +91,12 @@ public class ArticleDao implements DaoOperations {
     final String sql = ""
         + " SELECT * "
         + "   FROM Article "
-        + "  WHERE zone = ? "
-        + "    AND articleId < ? "
+        + "  WHERE articleid < ? "
+        + "    AND zone = ? "
         + "    AND deleted = FALSE "
         + "  ORDER BY articleId DESC "
         + "  LIMIT ? ";
-    return jdbc().query(sql, articleMapper, zone.value(), start.value(), limit);
+    return jdbc().query(sql, articleMapper, start.value(), zone.value(), limit);
   }
 
   /**
@@ -127,19 +127,17 @@ public class ArticleDao implements DaoOperations {
    * @throws EmptyResultDataAccessException
    *     if not found
    */
-  public Article loadArticle(Zone zone, FlakeId articleId) throws EmptyResultDataAccessException {
-    final String sql = " SELECT * FROM Article WHERE zone = ? AND articleId = ? ";
-    return jdbc().queryForObject(sql, articleMapper, zone.value(), articleId.value());
+  public Article loadArticle(FlakeId articleId) throws EmptyResultDataAccessException {
+    final String sql = " SELECT * FROM Article WHERE articleId = ? ";
+    return jdbc().queryForObject(sql, articleMapper, articleId.value());
   }
 
   public void increaseDebateCount(Article article) {
-    jdbc().update(
-        " UPDATE Article SET debateCount = debateCount + 1 WHERE ZONE = ? AND articleId = ? ",
-        article.getZone().value(),
+    jdbc().update(" UPDATE Article SET debateCount = debateCount + 1 WHERE articleId = ? ",
         article.getArticleId().value());
   }
 
-  public void changeTotalVote(Zone zone, FlakeId articleId, long upVoteDelta, int downVoteDelta) {
+  public void changeTotalVote(FlakeId articleId, long upVoteDelta, int downVoteDelta) {
     if (upVoteDelta == 0 && downVoteDelta == 0) {
       return;
     }
@@ -147,8 +145,7 @@ public class ArticleDao implements DaoOperations {
         + " UPDATE Article "
         + "    SET upVote = upVote + (?) "
         + "      , downVote = downVote + (?) "
-        + "  WHERE zone = ? "
-        + "    AND articleId = ? ", upVoteDelta, downVoteDelta, zone.value(), articleId.value());
+        + "  WHERE articleId = ? ", upVoteDelta, downVoteDelta, articleId.value());
   }
 
   @VisibleForTesting
@@ -233,8 +230,7 @@ public class ArticleDao implements DaoOperations {
 
   //TODO evict any related cache
   public void markAsDeleted(Article article) {
-    jdbc().update(" UPDATE Article SET deleted = TRUE WHERE zone = ? AND articleId = ? ",
-        article.getZone().value(),
+    jdbc().update(" UPDATE Article SET deleted = TRUE WHERE articleId = ? ",
         article.getArticleId().value());
   }
 

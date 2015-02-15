@@ -65,8 +65,8 @@ public class ArticleServiceImpl implements ArticleService {
     return article;
   }
 
-  public Optional<Article> findArticle(Zone zone, FlakeId articleId) {
-    return articleDao.findArticle(zone, articleId);
+  public Optional<Article> findArticle(FlakeId articleId) {
+    return articleDao.findArticle(articleId);
   }
 
   @Override
@@ -75,8 +75,8 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public Article loadArticle(Zone zone, FlakeId articleId) throws EmptyResultDataAccessException {
-    return articleDao.loadArticle(zone, articleId);
+  public Article loadArticle(FlakeId articleId) throws EmptyResultDataAccessException {
+    return articleDao.loadArticle(articleId);
   }
 
   @Override
@@ -116,7 +116,7 @@ public class ArticleServiceImpl implements ArticleService {
       String content) {
     //creating debate should not use cache
     ZoneInfo zoneInfo = zoneDao.loadZoneWithoutCache(zone);
-    Article article = articleDao.loadArticle(zoneInfo.getZone(), articleId);
+    Article article = articleDao.loadArticle(articleId);
 
     Account debater = accountDao.strongVerifyAccount(debaterAuth)
         .filter(zoneInfo::canDebate)

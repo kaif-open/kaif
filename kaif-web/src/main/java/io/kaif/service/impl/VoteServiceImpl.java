@@ -78,7 +78,7 @@ public class VoteServiceImpl implements VoteService {
 
     int upVoteDelta = newState.upVoteDeltaFrom(previousState);
     int downVoteDelta = newState.downVoteDeltaFrom(previousState);
-    articleDao.changeTotalVote(zone, articleId, upVoteDelta, downVoteDelta);
+    articleDao.changeTotalVote(articleId, upVoteDelta, downVoteDelta);
   }
 
   @Override
