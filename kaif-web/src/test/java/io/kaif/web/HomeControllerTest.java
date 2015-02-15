@@ -6,7 +6,11 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
+import java.util.List;
+
 import org.junit.Test;
+
+import com.google.common.collect.ImmutableMap;
 
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.test.MvcIntegrationTests;
@@ -25,6 +29,19 @@ public class HomeControllerTest extends MvcIntegrationTests {
         .andExpect(content().string(containsString("joke1")))
         .andExpect(content().string(containsString("/snapshot/css/kaif.css")))
         .andExpect(content().string(containsString("/snapshot/web/main.dart.js")));
+  }
+
+  @Test
+  public void zones() throws Exception {
+    ImmutableMap<String, List<ZoneInfo>> zones = ImmutableMap.of("F",
+        asList(funZone, zoneDefault("fortran")),
+        "T",
+        asList(toyZone, zoneDefault("tcl")));
+    when(zoneService.listZoneAtoZ()).thenReturn(zones);
+
+    mockMvc.perform(get("/zones"))
+        .andExpect(content().string(containsString("fortran")))
+        .andExpect(content().string(containsString("tcl")));
   }
 
   @Test

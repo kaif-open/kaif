@@ -276,5 +276,10 @@ public class ZoneInfo {
   public String getName() {
     return zone.value();
   }
+
+  @Override
+  public String toString() {
+    return "/z/" + zone;
+  }
 }
 

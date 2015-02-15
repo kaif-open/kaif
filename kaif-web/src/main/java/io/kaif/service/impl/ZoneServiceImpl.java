@@ -1,6 +1,9 @@
 package io.kaif.service.impl;
 
 import java.time.Instant;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,5 +39,10 @@ public class ZoneServiceImpl implements ZoneService {
   @Override
   public void updateTheme(Zone zone, String theme) {
     zoneDao.updateTheme(zone, theme);
+  }
+
+  @Override
+  public Map<String, List<ZoneInfo>> listZoneAtoZ() {
+    return Collections.emptyMap();
   }
 }
