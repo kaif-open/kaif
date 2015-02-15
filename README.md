@@ -46,6 +46,7 @@
 ### Intellij IDEA configuration
 
  * import code style in tools/idea_settings.jar (scheme select `lambda_idea`)
+ * in run configurations, change `Defaults` `JUnit` working directory to $MODULE_DIR$
 
 ### Development tips
 

@@ -7,9 +7,8 @@ server:
 spring.freemarker:
     # cache settings same as production while test
     cache: true
-    # note that /views_link is symbolic link to WEB-INF/views, because MvcIntegraitonTests could
-    # not detect template via file system, only classpath
-    templateLoaderPath: classpath:/views_link,classpath:/mail
+    # while MvcIntegrationTests it dosen't know it is in web app, hence use module relative dir
+    templateLoaderPath: file:src/main/webapp/WEB-INF/views,classpath:/mail
     settings:
         show_error_tips: true
 
