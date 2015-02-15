@@ -52,8 +52,8 @@ CREATE INDEX ArticleAuthorIndex ON Article (authorId);
 CREATE INDEX ArticleZoneIndex ON Article (zone);
 
 CREATE TABLE Debate (
-  articleId      BIGINT         NOT NULL,
   debateId       BIGINT         NOT NULL,
+  articleId      BIGINT         NOT NULL,
   parentDebateId BIGINT         NOT NULL,
   level          INT            NOT NULL,
   content        VARCHAR(16384) NOT NULL,
@@ -64,18 +64,11 @@ CREATE TABLE Debate (
   downVote       BIGINT         NOT NULL DEFAULT 0,
   createTime     TIMESTAMPTZ    NOT NULL,
   lastUpdateTime TIMESTAMPTZ    NOT NULL,
-  PRIMARY KEY (articleId, debateId)
+  PRIMARY KEY (debateId)
 );
 
 CREATE INDEX DebaterIndex ON Debate (debaterId);
-
-CREATE TABLE DebateHistory (
-  debateId   BIGINT         NOT NULL,
-  revision   INT            NOT NULL,
-  content    VARCHAR(16384) NOT NULL,
-  createTime TIMESTAMPTZ    NOT NULL,
-  PRIMARY KEY (debateId, revision)
-);
+CREATE INDEX DebateArticleIndex ON Debate (articleId);
 
 -- foreign key is intended exclude
 CREATE TABLE ArticleVoter (

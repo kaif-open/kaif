@@ -80,10 +80,8 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public String loadEditableDebateContent(FlakeId articleId,
-      FlakeId debateId,
-      Authorization editor) {
-    Debate debate = debateDao.loadDebate(articleId, debateId);
+  public String loadEditableDebateContent(FlakeId debateId, Authorization editor) {
+    Debate debate = debateDao.loadDebate(debateId);
     accountDao.strongVerifyAccount(editor)
         .filter(debate::canEdit)
         .orElseThrow(() -> new AccessDeniedException("no permission to edit debate:"
@@ -93,19 +91,16 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public String updateDebateContent(FlakeId articleId,
-      FlakeId debateId,
-      Authorization editorAuth,
-      String content) {
+  public String updateDebateContent(FlakeId debateId, Authorization editorAuth, String content) {
 
-    Debate debate = debateDao.loadDebate(articleId, debateId);
+    Debate debate = debateDao.loadDebate(debateId);
     accountDao.strongVerifyAccount(editorAuth)
         .filter(debate::canEdit)
         .orElseThrow(() -> new AccessDeniedException("no permission to edit debate:" + debateId));
 
-    debateDao.changeContent(articleId, debateId, content);
+    debateDao.changeContent(debateId, content);
 
-    return debateDao.loadDebate(articleId, debateId).getRenderContent();
+    return debateDao.loadDebate(debateId).getRenderContent();
   }
 
   @Override
@@ -123,9 +118,7 @@ public class ArticleServiceImpl implements ArticleService {
         .orElseThrow(() -> new AccessDeniedException("no write to debate at zone:"
             + article.getZone()));
 
-    Debate parent = Optional.ofNullable(parentDebateId)
-        .flatMap(pId -> debateDao.findDebate(article.getArticleId(), pId))
-        .orElse(null);
+    Debate parent = Optional.ofNullable(parentDebateId).flatMap(debateDao::findDebate).orElse(null);
     Debate debate = debateDao.create(article, parent, content, debater, Instant.now());
 
     //may improve later to make it async, but async has transaction problem

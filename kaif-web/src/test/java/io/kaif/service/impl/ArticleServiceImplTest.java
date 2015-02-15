@@ -64,7 +64,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         debater,
         "pixel art is *better*");
 
-    Debate debate = debateDao.findDebate(article.getArticleId(), created.getDebateId()).get();
+    Debate debate = debateDao.findDebate(created.getDebateId()).get();
     assertEquals(DebateContentType.MARK_DOWN, debate.getContentType());
     assertEquals("debater1", debate.getDebaterName());
     assertEquals(debater.getAccountId(), debate.getDebaterId());
@@ -92,7 +92,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         debater,
         "pixel art is better<evil>hi</evil>");
 
-    Debate debate = debateDao.findDebate(article.getArticleId(), created.getDebateId()).get();
+    Debate debate = debateDao.findDebate(created.getDebateId()).get();
     assertEquals(DebateContentType.MARK_DOWN, debate.getContentType());
     assertEquals("pixel art is better<evil>hi</evil>", debate.getContent());
     assertEquals("<p>pixel art is better&lt;evil&gt;hi&lt;/evil&gt;</p>\n",
@@ -370,8 +370,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   @Test
   public void updateDebateContent() throws Exception {
     Debate d1 = savedDebate(null);
-    String result = service.updateDebateContent(d1.getArticleId(),
-        d1.getDebateId(),
+    String result = service.updateDebateContent(d1.getDebateId(),
         citizen,
         "pixel art is better<evil>hi</evil>*hi*");
     assertEquals("<p>pixel art is better&lt;evil&gt;hi&lt;/evil&gt;<em>hi</em></p>\n", result);
@@ -384,8 +383,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         Debate.NO_PARENT,
         citizen,
         "> a quote");
-    String content = service.loadEditableDebateContent(d1.getArticleId(),
-        d1.getDebateId(),
+    String content = service.loadEditableDebateContent(d1.getDebateId(),
         citizen);
     assertEquals("&gt; a quote", content);
   }
@@ -394,8 +392,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   public void loadEditableDebate_not_editor() throws Exception {
     Debate d1 = savedDebate(null);
     try {
-      service.loadEditableDebateContent(d1.getArticleId(),
-          d1.getDebateId(),
+      service.loadEditableDebateContent(d1.getDebateId(),
           savedAccountCitizen("not-editor"));
       fail("AccessDeniedException expected");
     } catch (AccessDeniedException expected) {

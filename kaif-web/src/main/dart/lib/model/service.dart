@@ -238,18 +238,17 @@ class ArticleService extends _AbstractService {
     .then((req) => req.responseText);
   }
 
-  Future<String> loadEditableDebate(String articleId, String debateId) {
+  Future<String> loadEditableDebate(String debateId) {
     var params = {
-        'articleId':articleId,
         'debateId':debateId
     };
     return _get(_getUrl('/debate/content'), params:params)
     .then((req) => req.responseText);
   }
 
-  Future<String> updateDebateContent(String articleId, String debateId, String content) {
+  Future<String> updateDebateContent(String debateId, String content) {
     var json = {
-        'articleId':articleId, 'debateId':debateId, 'content':content
+        'debateId':debateId, 'content':content
     };
     return _postJson(_getUrl('/debate/content'), json)
     .then((req) => req.responseText);

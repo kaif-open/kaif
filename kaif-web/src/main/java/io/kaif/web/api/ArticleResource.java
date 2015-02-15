@@ -56,9 +56,6 @@ public class ArticleResource {
 
   static class UpdateDebate {
     @NotNull
-    public FlakeId articleId;
-
-    @NotNull
     public FlakeId debateId;
 
     @Size(min = Debate.CONTENT_MIN, max = Debate.CONTENT_MAX)
@@ -98,10 +95,7 @@ public class ArticleResource {
       MediaType.APPLICATION_JSON_VALUE })
   public String editDebateContent(AccountAccessToken token,
       @Valid @RequestBody UpdateDebate request) {
-    return articleService.updateDebateContent(request.articleId,
-        request.debateId,
-        token,
-        request.content.trim());
+    return articleService.updateDebateContent(request.debateId, token, request.content.trim());
   }
 
   @RequestMapping(value = "/debate/content/preview", method = RequestMethod.PUT, consumes = {
@@ -112,12 +106,8 @@ public class ArticleResource {
   }
 
   @RequestMapping(value = "/debate/content", method = RequestMethod.GET)
-  public String loadEditableDebate(AccountAccessToken token,
-      @RequestParam String articleId,
-      @RequestParam String debateId) {
-    return articleService.loadEditableDebateContent(FlakeId.fromString(articleId),
-        FlakeId.fromString(debateId),
-        token);
+  public String loadEditableDebate(AccountAccessToken token, @RequestParam String debateId) {
+    return articleService.loadEditableDebateContent(FlakeId.fromString(debateId), token);
   }
 
 }

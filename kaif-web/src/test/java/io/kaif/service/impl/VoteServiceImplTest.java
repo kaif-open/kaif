@@ -297,7 +297,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   }
 
   private void assertDebateTotalVote(long upVote, long downVote) {
-    Debate changedDebate = debateDao.findDebate(articleId, debateId).get();
+    Debate changedDebate = debateDao.findDebate(debateId).get();
     assertEquals(downVote, changedDebate.getDownVote());
     assertEquals(upVote, changedDebate.getUpVote());
 

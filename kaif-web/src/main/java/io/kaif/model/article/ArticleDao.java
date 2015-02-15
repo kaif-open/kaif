@@ -80,7 +80,7 @@ public class ArticleDao implements DaoOperations {
   }
 
   public Optional<Article> findArticle(FlakeId articleId) {
-    final String sql = " SELECT * FROM Article WHERE AND articleId = ? LIMIT 1 ";
+    final String sql = " SELECT * FROM Article WHERE articleId = ? LIMIT 1 ";
     return jdbc().query(sql, articleMapper, articleId.value()).stream().findAny();
   }
 

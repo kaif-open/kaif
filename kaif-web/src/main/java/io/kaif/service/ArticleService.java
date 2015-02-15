@@ -32,10 +32,7 @@ public interface ArticleService {
 
   List<Article> listTopArticles(@Nullable FlakeId startArticleId);
 
-  String loadEditableDebateContent(FlakeId articleId, FlakeId debateId, Authorization editor);
+  String loadEditableDebateContent(FlakeId debateId, Authorization editor);
 
-  String updateDebateContent(FlakeId articleId,
-      FlakeId debateId,
-      Authorization editor,
-      String content);
+  String updateDebateContent(FlakeId debateId, Authorization editor, String content);
 }
