@@ -63,8 +63,9 @@
     <div class="debate-vote-box votable grid-convex" debate-vote-box
          data-debate-vote-count="${debate.totalVote}">
         <a href="#" debate-up-vote>
-            <div class="up-vote"></div>
-        </a>
+            <div class="up-vote"></div><#--
+         This freemarker comment is required, for remove small spacing between triangle
+        --></a><br>
         <a href="#" debate-down-vote>
             <div class="down-vote"></div>
         </a>
