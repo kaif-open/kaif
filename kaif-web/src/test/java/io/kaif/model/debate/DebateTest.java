@@ -33,4 +33,16 @@ public class DebateTest implements ModelFixture {
             + "</p>",
         debate.getRenderContent());
   }
+
+  @Test
+  public void preview() throws Exception {
+    String content = "pixel art is better at [9gaga][1]\n\n[1]: http://www.google.com";
+    assertEquals(
+        "<p>pixel art is better at <a href=\"#-1\" class=\"reference-link\">9gaga</a></p>\n"
+            + "<p class=\"reference-appendix-block\"><span class=\"reference-appendix-index\">1</span>"
+            + "<a id=\"-1\"></a><a href=\"http://www.google.com\" rel=\"nofollow\">"
+            + "http://www.google.com</a><br>\n"
+            + "</p>",
+        Debate.renderContentPreview(content));
+  }
 }

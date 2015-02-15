@@ -229,12 +229,12 @@ class ArticleService extends _AbstractService {
     return _putJson(_getUrl('/external-link'), json)
     .then((res) => null);
   }
-  
-  Future<String> previewKmark(String content){
+
+  Future<String> previewKmark(String content) {
     var json = {
         'content':content
     };
-    return _putJson(_getUrl('/preview-kmark'), json)
+    return _putJson(_getUrl('/debate/content/preview'), json)
     .then((req) => req.responseText);
   }
 
@@ -243,7 +243,7 @@ class ArticleService extends _AbstractService {
         'articleId':articleId,
         'debateId':debateId
     };
-    return _get(_getUrl('/debate-content'), params:params)
+    return _get(_getUrl('/debate/content'), params:params)
     .then((req) => req.responseText);
   }
 
@@ -251,7 +251,7 @@ class ArticleService extends _AbstractService {
     var json = {
         'articleId':articleId, 'debateId':debateId, 'content':content
     };
-    return _putJson(_getUrl('/debate/content'), json)
+    return _postJson(_getUrl('/debate/content'), json)
     .then((req) => req.responseText);
   }
 

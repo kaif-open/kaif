@@ -13,7 +13,6 @@ import io.kaif.kmark.KmarkProcessor;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.Authorization;
 import io.kaif.model.article.Article;
-import io.kaif.model.zone.ZoneInfo;
 
 public class Debate {
 
@@ -43,6 +42,10 @@ public class Debate {
         0,
         now,
         now);
+  }
+
+  public static String renderContentPreview(String rawContent) {
+    return KmarkProcessor.process(rawContent, "");
   }
 
   private final FlakeId articleId;

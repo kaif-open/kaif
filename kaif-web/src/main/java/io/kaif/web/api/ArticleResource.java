@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.kaif.flake.FlakeId;
-import io.kaif.kmark.KmarkProcessor;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.article.Article;
 import io.kaif.model.debate.Debate;
@@ -67,7 +66,7 @@ public class ArticleResource {
     public String content;
   }
 
-  static class PreviewKmark {
+  static class PreviewDebate {
     @NotNull
     public String content;
   }
@@ -95,7 +94,7 @@ public class ArticleResource {
         request.content.trim());
   }
 
-  @RequestMapping(value = "/debate/content", method = RequestMethod.PUT, consumes = {
+  @RequestMapping(value = "/debate/content", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
   public String editDebateContent(AccountAccessToken token,
       @Valid @RequestBody UpdateDebate request) {
@@ -105,13 +104,14 @@ public class ArticleResource {
         request.content.trim());
   }
 
-  @RequestMapping(value = "/preview-kmark", method = RequestMethod.PUT, consumes = {
+  @RequestMapping(value = "/debate/content/preview", method = RequestMethod.PUT, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
-  public String previewKmark(AccountAccessToken token, @Valid @RequestBody PreviewKmark request) {
-    return KmarkProcessor.process(request.content, "");
+  public String previewDebateContent(AccountAccessToken token,
+      @Valid @RequestBody PreviewDebate request) {
+    return Debate.renderContentPreview(request.content);
   }
 
-  @RequestMapping(value = "/debate-content", method = RequestMethod.GET)
+  @RequestMapping(value = "/debate/content", method = RequestMethod.GET)
   public String loadEditableDebate(AccountAccessToken token,
       @RequestParam String articleId,
       @RequestParam String debateId) {
