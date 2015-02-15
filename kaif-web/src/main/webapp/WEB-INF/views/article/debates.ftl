@@ -28,29 +28,30 @@ head=headContent
 
     <@template.zone data=zoneInfo menus=debateMenus>
 
-    <div class="debate-container">
+    <div class="grid">
 
-        <div class="debate-tree" debate-tree>
+        <div class="grid-body">
+            <div class="debate-tree" debate-tree>
 
-            <@comp.article data=article />
+                <@comp.article data=article />
 
-            <div class="debate-form-container convex-row">
-
-            <#-- place holder debate-form will replace by comp-template
-             keep place holder looks the same as comp-template
-            -->
-                <div class="pure-form" debate-form>
-                    <textarea rows="3"></textarea>
-                    <button type="submit" class="pure-button pure-button-primary">留言</button>
+                <div class="grid-center-row debate-form-container">
+                <#-- place holder debate-form will replace by comp-template
+                     keep place holder looks the same as comp-template
+                     -->
+                    <div class="pure-form" debate-form>
+                        <textarea rows="3"></textarea>
+                        <button type="submit" class="pure-button pure-button-primary">留言
+                        </button>
+                    </div>
                 </div>
 
+                <#list debates as debate>
+                    <@comp.debate data=debate article=article/>
+                </#list>
             </div>
-
-            <#list debates as debate>
-                <@comp.debate data=debate article=article/>
-            </#list>
         </div>
-        <aside class="debate-aside">
+        <aside class="grid-aside">
             Side bar
         </aside>
     </div>

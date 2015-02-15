@@ -23,11 +23,12 @@ head=headContent
 >
     <@template.zone data=zoneInfo>
 
-    <div class="zone-body">
+    <div class="grid">
+        <div class="grid-body">
+            <@comp.articleList data=articlePage></@comp.articleList>
+        </div>
 
-        <@comp.articleList data=articlePage></@comp.articleList>
-
-        <aside class="zone-aside">
+        <aside class="grid-aside">
         <#-- TODO enable when ajax permission load -->
             <a href="/z/${zoneInfo.name}/article/create"
                class="pure-button pure-button-primary create-article"

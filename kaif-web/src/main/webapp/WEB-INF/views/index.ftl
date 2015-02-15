@@ -18,9 +18,11 @@ head=headContent
 >
 
     <@template.home>
-    <div class="home-body">
-        <@comp.articleList data=articlePage></@comp.articleList>
-        <aside class="home-aside">
+    <div class="grid">
+        <div class="grid-body">
+            <@comp.articleList data=articlePage></@comp.articleList>
+        </div>
+        <aside class="grid-aside">
             side bar
         </aside>
     </div>

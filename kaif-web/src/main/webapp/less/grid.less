@@ -1,0 +1,71 @@
+//
+// grid (default)
+//
+//
+// |                                                              |
+// |-- .grid                                                    --|
+// |                                                              |
+// |                                                              |
+// ||-- .grid-body                            --||- .grid-aside -||
+// |                                             |                |
+// |                                             |                |
+// |||- .grid-row                             -|||                |
+// ||||- .grid-convex -|- .grid-center       -||||                |
+// |                                             |                |
+// |                                             |                |
+// |||- ............... - .grid-center-row    -|||                |
+// |                                             |                |
+//
+// .grid-row is repeatable, and can be use standalone
+//
+// .grid-center-row is simplified .grid-row, with center only (left
+// side is just blank margin
+//
+
+.grid {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+
+  @media (min-width: @screen-md-min) {
+    //TODO this is wrong
+    flex-flow: row;
+  }
+
+  .grid-body {
+    width: 100%;
+  }
+
+  .grid-aside {
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: @aside-width-sm;
+    padding-left: @convex-row-width;
+    @media (min-width: @screen-lg-min) {
+      flex-basis: @aside-width;
+    }
+    @media (min-width: @screen-md-min) {
+      padding-left: 0;
+    }
+  }
+}
+
+.grid-row {
+  display: flex;
+  flex-flow: row;
+
+  .grid-convex {
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: @convex-row-width;
+  }
+
+  .grid-center {
+    width: 100%;
+  }
+}
+
+.grid-center-row {
+  margin-left: @convex-row-width;
+  width: 100%;
+}

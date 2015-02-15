@@ -5,15 +5,16 @@
 
     <#local article=data />
 
-<div class="article" article data-article-id="${article.articleId}" data-zone="${article.zone}">
-    <div class="article-vote-box votable" article-vote-box
+<div class="article grid-row" article data-article-id="${article.articleId}"
+     data-zone="${article.zone}">
+    <div class="article-vote-box votable grid-convex" article-vote-box
          data-article-vote-count="${article.upVote}">
         <span article-vote-count>${article.upVote}</span>
         <a href="#" article-up-vote>
             <div class="up-vote"></div>
         </a>
     </div>
-    <div class="article-body">
+    <div class="grid-center">
         <div class="article-title">
             <a href="${article.content}" target="_blank">${article.title}</a>
             <span class="article-link-hint">(${article.linkHint})</span>
@@ -34,15 +35,32 @@
 
 </#macro>
 
+<#macro articleList data>
+    <#local articlePage=data />
+<div class="article-list" article-list>
+    <#list articlePage.articles as article>
+        <@comp.article data=article />
+    </#list>
+    <div class="article-list-pager grid-center-row">
+        <#if articlePage.articles?size == 0 >
+            沒有文章
+        </#if>
+        <#if articlePage.hasNext()>
+            <a href="<@url.current start=articlePage.lastArticleId />"
+               class="pure-button"><i class="fa fa-caret-right"></i> 下一頁</a>
+        </#if>
+    </div>
+</div>
+</#macro>
+
 <#macro debate data article>
     <#local debate=data />
 <#-- TODO adjust margin-left -->
-<div class="debate" style="margin-left: ${(debate.level-1) * 30}px;"
+<div class="debate grid-row" style="margin-left: ${(debate.level-1) * 30}px;"
      debate
      data-debate-id="${debate.debateId}"
      data-debater-name="${debate.debaterName}">
-    <div class="debate-vote-box votable" debate-vote-box
-
+    <div class="debate-vote-box votable grid-convex" debate-vote-box
          data-debate-vote-count="${debate.totalVote}">
         <a href="#" debate-up-vote>
             <div class="up-vote"></div>
@@ -51,7 +69,7 @@
             <div class="down-vote"></div>
         </a>
     </div>
-    <div class="debate-body">
+    <div class="grid-center">
         <div class="debate-title">
             <a class="debate-author"
                href="/u/${article.authorName}">${debate.debaterName}</a>
@@ -76,24 +94,6 @@
             </#if>
             <span>${relativeTime(debate.createTime)}</span>
         </div>
-    </div>
-</div>
-</#macro>
-
-<#macro articleList data>
-    <#local articlePage=data />
-<div class="article-list" article-list>
-    <#list articlePage.articles as article>
-        <@comp.article data=article />
-    </#list>
-    <div class="article-list-pager convex-row">
-        <#if articlePage.articles?size == 0 >
-            沒有文章
-        </#if>
-        <#if articlePage.hasNext()>
-            <a href="<@url.current start=articlePage.lastArticleId />"
-               class="pure-button"><i class="fa fa-caret-right"></i> 下一頁</a>
-        </#if>
     </div>
 </div>
 </#macro>
