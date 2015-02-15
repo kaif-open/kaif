@@ -87,9 +87,9 @@
             <#if !debate.maxLevel>
                 <a href="#" debate-replier
                    data-debate-id="${debate.debateId}">回應</a>
-                <a href="#" debate-editor
-                   data-debate-id="${debate.debateId}" class="hidden">編輯</a>
             </#if>
+            <a href="#" debate-editor
+               data-debate-id="${debate.debateId}" class="hidden">編輯</a>
             <#if debate.hasParent()>
                 <a>parent</a>
             </#if>

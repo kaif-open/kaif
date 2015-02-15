@@ -86,7 +86,10 @@ class DebateComp {
     voteBox = new DebateVoteBox(voteElem, this, voteCountElem);
 
     var replierElem = elem.querySelector('[debate-replier]');
-    new DebateReplier(replierElem, articleService, debateId);
+    if (replierElem != null) {
+      // null means could not reply (exceed reply limit)
+      new DebateReplier(replierElem, articleService, debateId);
+    }
 
     if (accountSession.isSelf(debaterName)) {
       Element contentElem = elem.querySelector('[debate-content]');
