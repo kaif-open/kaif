@@ -20,7 +20,6 @@ class DebateEditForm {
   Element _previewer;
   Element _contentEditElem;
   Alert _alert;
-  String articleId;
   String debateId;
   bool _opened = false;
   bool _previewVisible = false;
@@ -93,7 +92,6 @@ class DebateEditForm {
     var loading = new Loading.small()
       ..renderAfter(submit);
     _articleService.updateDebateContent(
-        articleId,
         debateId,
         _contentInput.value)
     .then((content) {

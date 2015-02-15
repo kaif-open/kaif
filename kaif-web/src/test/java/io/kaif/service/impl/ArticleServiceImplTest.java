@@ -64,7 +64,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         debater,
         "pixel art is *better*");
 
-    Debate debate = debateDao.findDebate(article.getArticleId(), created.getDebateId()).get();
+    Debate debate = debateDao.findDebate(created.getDebateId()).get();
     assertEquals(DebateContentType.MARK_DOWN, debate.getContentType());
     assertEquals("debater1", debate.getDebaterName());
     assertEquals(debater.getAccountId(), debate.getDebaterId());
@@ -78,8 +78,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertNotNull(debate.getCreateTime());
     assertNotNull(debate.getLastUpdateTime());
 
-    assertEquals(1,
-        service.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getDebateCount());
+    assertEquals(1, service.findArticle(article.getArticleId()).get().getDebateCount());
 
     assertEquals(1, accountService.loadAccountStats(debater.getUsername()).getDebateCount());
   }
@@ -93,7 +92,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         debater,
         "pixel art is better<evil>hi</evil>");
 
-    Debate debate = debateDao.findDebate(article.getArticleId(), created.getDebateId()).get();
+    Debate debate = debateDao.findDebate(created.getDebateId()).get();
     assertEquals(DebateContentType.MARK_DOWN, debate.getContentType());
     assertEquals("pixel art is better<evil>hi</evil>", debate.getContent());
     assertEquals("<p>pixel art is better&lt;evil&gt;hi&lt;/evil&gt;</p>\n",
@@ -204,8 +203,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertTrue(l2.isParent(l1));
     assertFalse(l1.isParent(l2));
 
-    assertEquals(2,
-        service.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getDebateCount());
+    assertEquals(2, service.findArticle(article.getArticleId()).get().getDebateCount());
     Debate l3 = service.debate(zoneInfo.getZone(),
         article.getArticleId(),
         l2.getDebateId(),
@@ -217,8 +215,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertTrue(l3.isParent(l2));
     assertFalse(l2.isParent(l3));
 
-    assertEquals(3,
-        service.findArticle(zoneInfo.getZone(), article.getArticleId()).get().getDebateCount());
+    assertEquals(3, service.findArticle(article.getArticleId()).get().getDebateCount());
   }
 
   @Test
@@ -273,7 +270,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     ZoneInfo fooZone = savedZoneDefault("foo");
     List<Article> articles = IntStream.rangeClosed(1, 100).mapToObj(i -> {
       Article a = savedArticle(fooZone, author, "title-" + i);
-      articleDao.changeTotalVote(fooZone.getZone(), a.getArticleId(), i * 10, 0);
+      articleDao.changeTotalVote(a.getArticleId(), i * 10, 0);
       return a;
     }).collect(toList());
 
@@ -299,7 +296,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     ZoneInfo defaultZone = savedZoneDefault("foo");
     List<Article> articles = IntStream.rangeClosed(1, 30).mapToObj(i -> {
       Article a = savedArticle(defaultZone, author, "title-" + i);
-      articleDao.changeTotalVote(defaultZone.getZone(), a.getArticleId(), i * 10, 0);
+      articleDao.changeTotalVote(a.getArticleId(), i * 10, 0);
       return a;
     }).collect(toList());
 
@@ -328,7 +325,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         zoneInfo.getZone(),
         "title1<script>alert('123');</script>",
         "http://foo.com<script>alert('123');</script>");
-    Article article = service.findArticle(created.getZone(), created.getArticleId()).get();
+    Article article = service.findArticle(created.getArticleId()).get();
     assertEquals("title1&lt;script&gt;alert(&#39;123&#39;);&lt;/script&gt;", article.getTitle());
     assertEquals("http://foo.com&lt;script&gt;alert(&#39;123&#39;);&lt;/script&gt;",
         article.getContent());
@@ -340,7 +337,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         zoneInfo.getZone(),
         "title1",
         "http://foo.com");
-    Article article = service.findArticle(created.getZone(), created.getArticleId()).get();
+    Article article = service.findArticle(created.getArticleId()).get();
     assertEquals(zoneInfo.getZone(), article.getZone());
     assertEquals("title1", article.getTitle());
     assertNull(article.getUrlName());
@@ -373,8 +370,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   @Test
   public void updateDebateContent() throws Exception {
     Debate d1 = savedDebate(null);
-    String result = service.updateDebateContent(d1.getArticleId(),
-        d1.getDebateId(),
+    String result = service.updateDebateContent(d1.getDebateId(),
         citizen,
         "pixel art is better<evil>hi</evil>*hi*");
     assertEquals("<p>pixel art is better&lt;evil&gt;hi&lt;/evil&gt;<em>hi</em></p>\n", result);
@@ -387,8 +383,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         Debate.NO_PARENT,
         citizen,
         "> a quote");
-    String content = service.loadEditableDebateContent(d1.getArticleId(),
-        d1.getDebateId(),
+    String content = service.loadEditableDebateContent(d1.getDebateId(),
         citizen);
     assertEquals("&gt; a quote", content);
   }
@@ -397,8 +392,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   public void loadEditableDebate_not_editor() throws Exception {
     Debate d1 = savedDebate(null);
     try {
-      service.loadEditableDebateContent(d1.getArticleId(),
-          d1.getDebateId(),
+      service.loadEditableDebateContent(d1.getDebateId(),
           savedAccountCitizen("not-editor"));
       fail("AccessDeniedException expected");
     } catch (AccessDeniedException expected) {

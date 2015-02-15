@@ -121,7 +121,7 @@ public class ZoneController {
       FlakeId articleFlakeId = FlakeId.fromString(articleId);
       return new ModelAndView("article/debates")//
           .addObject("zoneInfo", zoneInfo)
-          .addObject("article", articleService.loadArticle(zoneInfo.getZone(), articleFlakeId))
+          .addObject("article", articleService.loadArticle(articleFlakeId))
           .addObject("debates",
               articleService.listHotDebates(zoneInfo.getZone(), articleFlakeId, 0));
     });

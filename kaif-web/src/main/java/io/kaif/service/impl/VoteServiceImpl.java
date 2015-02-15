@@ -78,7 +78,7 @@ public class VoteServiceImpl implements VoteService {
 
     int upVoteDelta = newState.upVoteDeltaFrom(previousState);
     int downVoteDelta = newState.downVoteDeltaFrom(previousState);
-    articleDao.changeTotalVote(zone, articleId, upVoteDelta, downVoteDelta);
+    articleDao.changeTotalVote(articleId, upVoteDelta, downVoteDelta);
   }
 
   @Override
@@ -103,7 +103,7 @@ public class VoteServiceImpl implements VoteService {
     int upVoteDelta = newState.upVoteDeltaFrom(previousState);
     int downVoteDelta = newState.downVoteDeltaFrom(previousState);
 
-    debateDao.changeTotalVote(articleId, debateId, upVoteDelta, downVoteDelta);
+    debateDao.changeTotalVote(debateId, upVoteDelta, downVoteDelta);
 
     UUID debaterId = debateDao.loadDebaterId(debateId);
     // exclude vote to self's debate. so if user playing up/down in test zone,

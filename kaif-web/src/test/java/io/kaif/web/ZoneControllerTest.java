@@ -84,7 +84,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
         debate(article, "JAVA is better", null));
 
     when(zoneService.loadZone(z)).thenReturn(zoneInfo);
-    when(articleService.loadArticle(z, articleId)).thenReturn(article);
+    when(articleService.loadArticle(articleId)).thenReturn(article);
     when(articleService.listHotDebates(z, articleId, 0)).thenReturn(debates);
 
     mockMvc.perform(get("/z/programming/debates/aaa"))

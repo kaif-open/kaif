@@ -69,8 +69,8 @@ public class ArticleServiceImpl implements ArticleService {
     return article;
   }
 
-  public Optional<Article> findArticle(Zone zone, FlakeId articleId) {
-    return articleDao.findArticle(zone, articleId);
+  public Optional<Article> findArticle(FlakeId articleId) {
+    return articleDao.findArticle(articleId);
   }
 
   @Override
@@ -79,15 +79,13 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public Article loadArticle(Zone zone, FlakeId articleId) throws EmptyResultDataAccessException {
-    return articleDao.loadArticle(zone, articleId);
+  public Article loadArticle(FlakeId articleId) throws EmptyResultDataAccessException {
+    return articleDao.loadArticle(articleId);
   }
 
   @Override
-  public String loadEditableDebateContent(FlakeId articleId,
-      FlakeId debateId,
-      Authorization editor) {
-    Debate debate = debateDao.loadDebate(articleId, debateId);
+  public String loadEditableDebateContent(FlakeId debateId, Authorization editor) {
+    Debate debate = debateDao.loadDebate(debateId);
     accountDao.strongVerifyAccount(editor)
         .filter(debate::canEdit)
         .orElseThrow(() -> new AccessDeniedException("no permission to edit debate:"
@@ -97,23 +95,21 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public String updateDebateContent(FlakeId articleId,
-      FlakeId debateId,
-      Authorization editorAuth,
-      String content) {
+  public String updateDebateContent(FlakeId debateId, Authorization editorAuth, String content) {
 
-    Debate found = debateDao.loadDebate(articleId, debateId);
+    Debate debate = debateDao.loadDebate(debateId);
     accountDao.strongVerifyAccount(editorAuth)
-        .filter(found::canEdit)
+        .filter(debate::canEdit)
         .orElseThrow(() -> new AccessDeniedException("no permission to edit debate:" + debateId));
-    debateDao.changeContent(articleId, debateId, content);
+
+    debateDao.changeContent(debateId, content);
 
     log.info("user(id:{}) update debate's(id:{}) content:{}",
         editorAuth.authenticatedId(),
         debateId.value(),
-        found.getContent());
-    
-    return debateDao.loadDebate(articleId, debateId).getRenderContent();
+        debate.getContent());
+
+    return debateDao.loadDebate(debateId).getRenderContent();
   }
 
   @Override
@@ -124,16 +120,14 @@ public class ArticleServiceImpl implements ArticleService {
       String content) {
     //creating debate should not use cache
     ZoneInfo zoneInfo = zoneDao.loadZoneWithoutCache(zone);
-    Article article = articleDao.loadArticle(zoneInfo.getZone(), articleId);
+    Article article = articleDao.loadArticle(articleId);
 
     Account debater = accountDao.strongVerifyAccount(debaterAuth)
         .filter(zoneInfo::canDebate)
         .orElseThrow(() -> new AccessDeniedException("no write to debate at zone:"
             + article.getZone()));
 
-    Debate parent = Optional.ofNullable(parentDebateId)
-        .flatMap(pId -> debateDao.findDebate(article.getArticleId(), pId))
-        .orElse(null);
+    Debate parent = Optional.ofNullable(parentDebateId).flatMap(debateDao::findDebate).orElse(null);
     Debate debate = debateDao.create(article, parent, content, debater, Instant.now());
 
     //may improve later to make it async, but async has transaction problem

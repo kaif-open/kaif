@@ -16,7 +16,7 @@ public interface ArticleService {
 
   List<Article> listLatestZoneArticles(Zone zone, @Nullable FlakeId startArticleId);
 
-  Article loadArticle(Zone zone, FlakeId articleId);
+  Article loadArticle(FlakeId articleId);
 
   Debate debate(Zone zone,
       FlakeId articleId,
@@ -32,10 +32,7 @@ public interface ArticleService {
 
   List<Article> listTopArticles(@Nullable FlakeId startArticleId);
 
-  String loadEditableDebateContent(FlakeId articleId, FlakeId debateId, Authorization editor);
+  String loadEditableDebateContent(FlakeId debateId, Authorization editor);
 
-  String updateDebateContent(FlakeId articleId,
-      FlakeId debateId,
-      Authorization editor,
-      String content);
+  String updateDebateContent(FlakeId debateId, Authorization editor, String content);
 }

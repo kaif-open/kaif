@@ -76,12 +76,12 @@ public class DebateDao implements DaoOperations {
     return debate;
   }
 
-  public Optional<Debate> findDebate(FlakeId articleId, FlakeId debateId) {
+  public Optional<Debate> findDebate(FlakeId debateId) {
     if (Debate.NO_PARENT.equals(debateId)) {
       return Optional.empty();
     }
-    final String sql = " SELECT * FROM Debate WHERE articleId = ? AND debateId = ? LIMIT 1 ";
-    return jdbc().query(sql, debateMapper, articleId.value(), debateId.value()).stream().findAny();
+    final String sql = " SELECT * FROM Debate WHERE debateId = ? LIMIT 1 ";
+    return jdbc().query(sql, debateMapper, debateId.value()).stream().findAny();
   }
 
   public Debate create(Article article,
@@ -120,23 +120,15 @@ public class DebateDao implements DaoOperations {
     return namedJdbc().query(sql, params, debateMapper);
   }
 
-  public void changeTotalVote(FlakeId articleId,
-      FlakeId debateId,
-      long upVoteDelta,
-      long downVoteDelta) {
+  public void changeTotalVote(FlakeId debateId, long upVoteDelta, long downVoteDelta) {
     if (upVoteDelta == 0 && downVoteDelta == 0) {
       return;
     }
     jdbc().update(""
-            + " UPDATE Debate "
-            + "    SET upVote = upVote + (?) "
-            + "      , downVote = downVote + (?) "
-            + "  WHERE debateId = ? "
-            + "    AND articleId = ? ",
-        upVoteDelta,
-        downVoteDelta,
-        debateId.value(),
-        articleId.value());
+        + " UPDATE Debate "
+        + "    SET upVote = upVote + (?) "
+        + "      , downVote = downVote + (?) "
+        + "  WHERE debateId = ? ", upVoteDelta, downVoteDelta, debateId.value());
   }
 
   /**
@@ -149,18 +141,13 @@ public class DebateDao implements DaoOperations {
         debateId.value()));
   }
 
-  public Debate loadDebate(FlakeId articleId, FlakeId debateId) {
-    return jdbc().queryForObject(" SELECT * FROM Debate WHERE debateId = ? AND articleId = ? ",
+  public Debate loadDebate(FlakeId debateId) {
+    return jdbc().queryForObject(" SELECT * FROM Debate WHERE debateId = ? ",
         debateMapper,
-        debateId.value(),
-        articleId.value());
+        debateId.value());
   }
 
-  public void changeContent(FlakeId articleId, FlakeId debateId, String content) {
-    jdbc().update(" UPDATE Debate SET content = ? WHERE debateId = ? AND articleId = ? ",
-        content,
-        debateId.value(),
-        articleId.value());
-
+  public void changeContent(FlakeId debateId, String content) {
+    jdbc().update(" UPDATE Debate SET content = ? WHERE debateId = ? ", content, debateId.value());
   }
 }

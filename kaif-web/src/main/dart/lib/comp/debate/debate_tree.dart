@@ -114,14 +114,12 @@ class DebateEditor {
       ..preventDefault()
       ..stopPropagation();
 
-    debateComp.articleService
-    .loadEditableDebate(debateComp.articleId, debateComp.debateId)
+    debateComp.articleService.loadEditableDebate(debateComp.debateId)
     .then((content) {
       //lazy create
       if (form == null) {
         form = new DebateEditForm.placeHolder(contentEditElem, contentElem,
         debateComp.articleService)
-          ..articleId = debateComp.articleId
           ..debateId = debateComp.debateId;
       }
       form

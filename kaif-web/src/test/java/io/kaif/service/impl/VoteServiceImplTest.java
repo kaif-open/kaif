@@ -175,7 +175,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
     service.voteArticle(EMPTY, zone, articleId, voter, UP, 100);
     service.voteArticle(EMPTY, zone, articleId, voter, EMPTY, 100);
-    assertEquals(0, articleDao.findArticle(zone, articleId).get().getUpVote());
+    assertEquals(0, articleDao.findArticle(articleId).get().getUpVote());
   }
 
   @Test
@@ -297,7 +297,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   }
 
   private void assertDebateTotalVote(long upVote, long downVote) {
-    Debate changedDebate = debateDao.findDebate(articleId, debateId).get();
+    Debate changedDebate = debateDao.findDebate(debateId).get();
     assertEquals(downVote, changedDebate.getDownVote());
     assertEquals(upVote, changedDebate.getUpVote());
 
@@ -307,7 +307,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   }
 
   private void assertArticleTotalVote(long upVote) {
-    Article changed = articleDao.findArticle(zone, articleId).get();
+    Article changed = articleDao.findArticle(articleId).get();
     assertEquals(upVote, changed.getUpVote());
   }
 }
