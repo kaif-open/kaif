@@ -2,6 +2,11 @@ package io.kaif.service.impl;
 
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -75,6 +80,26 @@ public class ZoneServiceImplTest extends DbIntegrationTests {
 
     ZoneInfo cached = service.loadZone(Zone.valueOf("def"));
     assertSame(cached, service.loadZone(Zone.valueOf("def")));
+  }
+
+  @Test
+  public void listZoneAtoZ() throws Exception {
+    ZoneInfo about = service.createDefault("about", "about-alias");
+    ZoneInfo abc = service.createDefault("abc", "abc-alias");
+    ZoneInfo java = service.createDefault("java", "java-alias");
+    ZoneInfo groovy = service.createDefault("groovy", "groovy-alias");
+    Map<String, List<ZoneInfo>> aToZ = service.listZoneAtoZ();
+
+    //key iteration must ordered
+    Iterator<String> cat = aToZ.keySet().iterator();
+    assertEquals("A", cat.next());
+    assertEquals(Arrays.asList(abc, about), aToZ.get("A"));
+
+    assertEquals("G", cat.next());
+    assertEquals(Arrays.asList(groovy), aToZ.get("G"));
+
+    assertEquals("J", cat.next());
+    assertEquals(Arrays.asList(java), aToZ.get("J"));
   }
 
   @Test

@@ -78,7 +78,7 @@ class DebateEditForm {
     previewBtn.disabled = true;
     var loading = new Loading.small()
       ..renderAfter(previewBtn);
-    _articleService.previewKmark(_contentInput.value.trim())
+    _articleService.previewDebateContent(_contentInput.value.trim())
     .then((preview) {
       _contentInput.hidden = true;
       previewer
@@ -111,7 +111,7 @@ class DebateEditForm {
 
     var loading = new Loading.small()
       ..renderAfter(submit);
-    _articleService.editDebateContent(
+    _articleService.updateDebateContent(
         articleId,
         debateId,
         _contentInput.value)

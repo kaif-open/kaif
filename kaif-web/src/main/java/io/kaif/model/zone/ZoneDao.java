@@ -83,4 +83,9 @@ public class ZoneDao implements DaoOperations {
   public void updateTheme(Zone zone, String theme) {
     jdbc().update("UPDATE ZoneInfo SET theme = ? WHERE zone = ? ", theme, zone.value());
   }
+
+  public List<ZoneInfo> listOrderByName() {
+    //do we need cache ? the data size is small enough, db should do well
+    return jdbc().query(" SELECT * FROM ZoneInfo ORDER BY zone ", zoneInfoMapper);
+  }
 }

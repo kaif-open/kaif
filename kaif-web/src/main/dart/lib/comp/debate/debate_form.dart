@@ -54,7 +54,7 @@ class DebateForm {
     previewBtn.disabled = true;
     var loading = new Loading.small()
       ..renderAfter(previewBtn);
-    _articleService.previewKmark(contentInput.value.trim())
+    _articleService.previewDebateContent(contentInput.value.trim())
     .then((preview) {
       contentInput.hidden = true;
       previewer

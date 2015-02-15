@@ -36,8 +36,8 @@ public class HomeController {
         new ArticlePage(articleService.listLatestArticles(startArticleId)));
   }
 
-  @RequestMapping("/zones")
+  @RequestMapping("/zone/a-z")
   public ModelAndView zoneAtoZ() {
-    return new ModelAndView("zones").addObject("zoneAtoZ", zoneService.listZoneAtoZ());
+    return new ModelAndView("zone/zone-a-z").addObject("zoneAtoZ", zoneService.listZoneAtoZ());
   }
 }

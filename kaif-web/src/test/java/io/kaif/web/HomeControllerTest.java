@@ -39,7 +39,7 @@ public class HomeControllerTest extends MvcIntegrationTests {
         asList(toyZone, zoneDefault("tcl")));
     when(zoneService.listZoneAtoZ()).thenReturn(zones);
 
-    mockMvc.perform(get("/zones"))
+    mockMvc.perform(get("/zone/a-z"))
         .andExpect(content().string(containsString("fortran")))
         .andExpect(content().string(containsString("tcl")));
   }

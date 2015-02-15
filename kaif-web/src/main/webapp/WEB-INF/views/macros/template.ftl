@@ -194,7 +194,7 @@ sample configs:
     <nav class="home-menu pure-menu pure-menu-open pure-menu-horizontal">
         <@template.menuLink '/' '綜合熱門'/>
         <@template.menuLink '/new' '綜合最新'/>
-        <@template.menuLink '/zones' '所有討論區'/>
+        <@template.menuLink '/zone/a-z' '所有討論區'/>
     </nav>
     <#nested/>
 </div>

@@ -1,9 +1,11 @@
 package io.kaif.service.impl;
 
 import java.time.Instant;
-import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +45,14 @@ public class ZoneServiceImpl implements ZoneService {
 
   @Override
   public Map<String, List<ZoneInfo>> listZoneAtoZ() {
-    return Collections.emptyMap();
+    Function<ZoneInfo, String> capitalizeFirstChar = zoneInfo -> zoneInfo.getZone()
+        .value()
+        .substring(0, 1)
+        .toUpperCase();
+    return zoneDao.listOrderByName()
+        .stream()
+        .collect(Collectors.groupingBy(capitalizeFirstChar,
+            LinkedHashMap::new,
+            Collectors.toList()));
   }
 }

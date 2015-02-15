@@ -230,7 +230,7 @@ class ArticleService extends _AbstractService {
     .then((res) => null);
   }
 
-  Future<String> previewKmark(String content) {
+  Future<String> previewDebateContent(String content) {
     var json = {
         'content':content
     };
@@ -247,7 +247,7 @@ class ArticleService extends _AbstractService {
     .then((req) => req.responseText);
   }
 
-  Future<String> editDebateContent(String articleId, String debateId, String content) {
+  Future<String> updateDebateContent(String articleId, String debateId, String content) {
     var json = {
         'articleId':articleId, 'debateId':debateId, 'content':content
     };
