@@ -36,7 +36,10 @@ class DebateEditForm {
         ..hidden = true;
       _contentElement.hidden = false;
     } else {
-      _contentEditElem.append(elem);
+      _contentInput
+        ..style.width = _contentElement.clientWidth.toString() + 'px'
+        ..style.height = _contentElement.clientHeight.toString() + 'px';
+      _contentEditElem.append(_elem);
       _contentEditElem
         ..hidden = false;
       _contentElement.hidden = true;
@@ -44,36 +47,11 @@ class DebateEditForm {
     _opened = !_opened;
   }
 
-  DebateEditForm.placeHolder
-      (
+  DebateEditForm.placeHolder (Element contentEditElem, Element contentElement,
+                              ArticleService _articleService) :
+  this._(contentEditElem, contentElement, _articleService);
 
-      Element contentEditElem, Element
-  contentElement
-      ,
-
-      ArticleService _articleService
-      )
-  :
-  this
-  .
-
-  _(contentEditElem, contentElement, _articleService);
-
-  DebateEditForm._
-      (
-      this
-      .
-      _contentEditElem
-      ,
-      this
-      .
-      _contentElement
-      ,
-      this
-      .
-      _articleService
-      )
-  {
+  DebateEditForm._ (this._contentEditElem, this._contentElement, this._articleService) {
     _elem = _editDebateFormTemplate.createElement();
     _elem.querySelector('[kmark-preview]').onClick.listen(_onPreview);
     _contentInput = _elem.querySelector('textarea[name=contentInput]');
