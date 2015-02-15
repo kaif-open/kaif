@@ -64,7 +64,7 @@ class DebateEditForm {
     _articleService.previewDebateContent(_contentInput.value.trim())
     .then((preview) {
       _updatePreviewVisibility(true);
-      _previewer.setInnerHtml(preview);
+      unSafeInnerHtml(_previewer, preview);
     }).catchError((e) {
       _alert.renderError('${e}');
     }).whenComplete(() {
@@ -98,7 +98,7 @@ class DebateEditForm {
         _contentInput.value)
     .then((content) {
       toggleShow();
-      _contentElement.setInnerHtml(content);
+      unSafeInnerHtml(_contentElement, content);
       _contentInput.setInnerHtml('');
       new Toast.success(i18n('debate.edits-success'), seconds:2).render();
     }).catchError((e) {

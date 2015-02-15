@@ -64,7 +64,7 @@ class DebateForm {
     _articleService.previewDebateContent(_contentInput.value.trim())
     .then((preview) {
       _updatePreviewVisibility(true);
-      _previewer.setInnerHtml(preview);
+      unSafeInnerHtml(_previewer, preview);
     }).catchError((e) {
       _alert.renderError('${e}');
     }).whenComplete(() {
