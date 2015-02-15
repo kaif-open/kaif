@@ -84,9 +84,11 @@ public class ArticleServiceImpl implements ArticleService {
       FlakeId debateId,
       Authorization editor) {
     Debate debate = debateDao.loadDebate(articleId, debateId);
-    if (!debate.canEdit(editor)) {
-      throw new AccessDeniedException("no permission to edit debate:" + debate.getDebateId());
-    }
+    accountDao.strongVerifyAccount(editor)
+        .filter(debate::canEdit)
+        .orElseThrow(() -> new AccessDeniedException("no permission to edit debate:"
+            + debate.getDebateId()));
+
     return HtmlUtils.htmlEscape(debate.getContent());
   }
 
@@ -96,13 +98,11 @@ public class ArticleServiceImpl implements ArticleService {
       Authorization editorAuth,
       String content) {
 
-    Account editor = accountDao.strongVerifyAccount(editorAuth)
+    Debate debate = debateDao.loadDebate(articleId, debateId);
+    accountDao.strongVerifyAccount(editorAuth)
+        .filter(debate::canEdit)
         .orElseThrow(() -> new AccessDeniedException("no permission to edit debate:" + debateId));
 
-    Debate debate = debateDao.loadDebate(articleId, debateId);
-    if (!debate.canEdit(editor)) {
-      throw new AccessDeniedException("no permission to edit debate:" + debate.getDebateId());
-    }
     debateDao.changeContent(articleId, debateId, content);
 
     return debateDao.loadDebate(articleId, debateId).getRenderContent();
