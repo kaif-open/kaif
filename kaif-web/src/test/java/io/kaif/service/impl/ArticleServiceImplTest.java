@@ -13,7 +13,6 @@ import java.util.stream.IntStream;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.util.HtmlUtils;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
@@ -383,11 +382,15 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void loadEditableDebate() throws Exception {
-    Debate d1 = savedDebate(null);
+    Debate d1 = service.debate(zoneInfo.getZone(),
+        article.getArticleId(),
+        Debate.NO_PARENT,
+        citizen,
+        "> a quote");
     String content = service.loadEditableDebateContent(d1.getArticleId(),
         d1.getDebateId(),
         citizen);
-    assertEquals(HtmlUtils.htmlEscape(d1.getContent()), content);
+    assertEquals("&gt; a quote", content);
   }
 
   @Test
