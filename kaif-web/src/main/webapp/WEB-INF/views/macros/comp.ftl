@@ -62,14 +62,14 @@
             <div class="kmark" debate-content>
             ${debate.renderContent}
             </div>
-            <div debate-content-edit hidden></div>
+            <div debate-content-edit class="hidden"></div>
         </div>
         <div class="debate-info">
             <#if !debate.maxLevel>
                 <a href="#" debate-replier
                    data-debate-id="${debate.debateId}">回應</a>
                 <a href="#" debate-editor
-                   data-debate-id="${debate.debateId}" hidden>編輯</a>
+                   data-debate-id="${debate.debateId}" class="hidden">編輯</a>
             </#if>
             <#if debate.hasParent()>
                 <a>parent</a>

@@ -16,11 +16,14 @@ class DebateForm {
   final ArticleService _articleService;
 
   Element _elem;
+  Element _previewer;
+  TextInputElement _contentInput;
   Alert _alert;
 
   Element get elem => _elem;
 
   String parentDebateId;
+  bool _previewVisible = false;
 
   DebateForm.placeHolder(Element placeHolderElem,
                          ArticleService _articleService) :
@@ -33,6 +36,14 @@ class DebateForm {
 
     _alert = new Alert.append(_elem);
     _elem.onSubmit.listen(_onSubmit);
+    _previewer = elem.querySelector('[kmark-previewer]');
+    _contentInput = elem.querySelector('textarea[name=contentInput]');
+  }
+
+  void _updatePreviewVisibility(bool previewVisible) {
+    _previewVisible = previewVisible;
+    _contentInput.classes.toggle('hidden', _previewVisible);
+    _previewer.classes.toggle('hidden', !_previewVisible);
   }
 
   void _onPreview(Event e) {
@@ -40,13 +51,9 @@ class DebateForm {
       ..preventDefault()
       ..stopPropagation();
 
-    Element previewer = elem.querySelector('[kmark-previewer]');
-    TextInputElement contentInput = elem.querySelector('textarea[name=contentInput]');
-    if (!previewer.hidden) {
-      previewer
-        ..setInnerHtml('')
-        ..hidden = true;
-      contentInput.hidden = false;
+    if (_previewVisible) {
+      _updatePreviewVisibility(false);
+      _previewer.setInnerHtml('');
       return;
     }
 
@@ -54,12 +61,10 @@ class DebateForm {
     previewBtn.disabled = true;
     var loading = new Loading.small()
       ..renderAfter(previewBtn);
-    _articleService.previewDebateContent(contentInput.value.trim())
+    _articleService.previewDebateContent(_contentInput.value.trim())
     .then((preview) {
-      contentInput.hidden = true;
-      previewer
-        ..setInnerHtml(preview)
-        ..hidden = false;
+      _updatePreviewVisibility(true);
+      _previewer.setInnerHtml(preview);
     }).catchError((e) {
       _alert.renderError('${e}');
     }).whenComplete(() {
@@ -76,13 +81,12 @@ class DebateForm {
     //TODO prompt login/registration if not login
 
     _alert.hide();
-    TextInputElement contentInput = elem.querySelector('textarea[name=contentInput]');
     HiddenInputElement articleInput = elem.querySelector('input[name=articleInput]');
     HiddenInputElement zoneInput = elem.querySelector('input[name=zoneInput]');
-    contentInput.value = contentInput.value.trim();
+    _contentInput.value = _contentInput.value.trim();
 
     //check Debate.CONTENT_MIN in java
-    if (contentInput.value.length < 10) {
+    if (_contentInput.value.length < 10) {
       _alert.renderError(i18n('debate.min-content', [10]));
       return;
     }
@@ -95,9 +99,9 @@ class DebateForm {
     _articleService.debate(zoneInput.value,
     articleInput.value,
     parentDebateId,
-    contentInput.value)
+    _contentInput.value)
     .then((_) {
-      contentInput.value = '';
+      _contentInput.value = '';
       elem.remove();
       new Toast.success(i18n('debate.create-success'), seconds:2).render().then((_) {
         route.reload();

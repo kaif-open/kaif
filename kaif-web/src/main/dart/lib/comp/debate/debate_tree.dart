@@ -105,7 +105,7 @@ class DebateEditor {
   DebateEditForm form;
 
   DebateEditor(this.contentElem, this.contentEditElem, this.elem, this.debateComp) {
-    this.elem.hidden = false;
+    this.elem.classes.toggle('hidden', false);
     elem.onClick.listen(_onClick);
   }
 
