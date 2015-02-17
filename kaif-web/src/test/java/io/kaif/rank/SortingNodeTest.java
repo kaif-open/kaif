@@ -13,6 +13,8 @@ public class SortingNodeTest {
 
     SortingNode<String> root = new SortingNode.Builder<String>().build();
     assertFalse(root.hasChild());
+    assertTrue(root.isRoot());
+    assertFalse(root.hasParent());
 
     SortingNode<Integer> tree = new SortingNode.Builder<Integer>()//
         .add(100)
@@ -29,6 +31,10 @@ public class SortingNodeTest {
         .node(431)
         .build();
 
+    assertFalse(tree.hasParent());
+    assertTrue(tree.isRoot());
+    assertFalse(tree.hasParent());
+
     String expected = ""
         + "*\n"
         + "  100\n"
@@ -42,6 +48,11 @@ public class SortingNodeTest {
         + "    430\n"
         + "      431";
     assertEquals(expected, tree.prettyPrint());
+
+    SortingNode<Integer> n410 = tree.getChildren().get(3).getChildren().get(0);
+    assertFalse(n410.hasChild());
+    assertTrue(n410.hasParent());
+    assertFalse(n410.isRoot());
   }
 
   @Test
