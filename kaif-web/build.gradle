@@ -176,6 +176,7 @@ dependencies {
   compile 'com.amazonaws:aws-java-sdk-ses:1.9.16'
 
   compile 'org.ocpsoft.prettytime:prettytime:3.2.7.Final'
+  compile 'org.apache.commons:commons-math3:3.4.1'
 
 }
 
