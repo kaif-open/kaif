@@ -114,13 +114,13 @@ public class AccountDao implements DaoOperations {
   }
 
   public Optional<Account> findByUsername(String username) {
-    return jdbc().query(" SELECT * FROM Account WHERE username = lower(?) LIMIT 1 ",
+    return jdbc().query(" SELECT * FROM Account WHERE lower(username) = lower(?) LIMIT 1 ",
         accountMapper,
         username).stream().findAny();
   }
 
   public Account loadByUsername(String username) {
-    return jdbc().queryForObject(" SELECT * FROM Account WHERE username = lower(?) ",
+    return jdbc().queryForObject(" SELECT * FROM Account WHERE lower(username) = lower(?) ",
         accountMapper,
         username);
   }

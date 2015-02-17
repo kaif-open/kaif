@@ -216,4 +216,9 @@ public class AccountServiceImpl implements AccountService {
   public AccountStats loadAccountStats(String username) {
     return accountDao.loadStats(username);
   }
+
+  @Override
+  public Account loadAccount(String username) {
+    return accountDao.loadByUsername(username);
+  }
 }

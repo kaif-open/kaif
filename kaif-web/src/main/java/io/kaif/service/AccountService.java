@@ -49,4 +49,6 @@ public interface AccountService {
   Optional<AccountAccessToken> tryDecodeAccessToken(String rawAccountAccessToken);
 
   AccountStats loadAccountStats(String username);
+
+  Account loadAccount(String caseInsensitiveUsername);
 }

@@ -191,6 +191,16 @@ public class AccountServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
+  public void authenticate_case_insensitive() {
+    Instant now = Instant.now();
+    service.setClock(Clock.fixed(now, ZoneOffset.UTC));
+
+    service.createViaEmail("myName", "foo@gmail.com", "pwd123", lc);
+    AccountAuth auth = service.authenticate("myname", "pwd123").get();
+    assertEquals("myName", auth.getUsername());
+  }
+  
+  @Test
   public void authenticate() {
     Instant now = Instant.now();
     service.setClock(Clock.fixed(now, ZoneOffset.UTC));
@@ -271,4 +281,21 @@ public class AccountServiceImplTest extends DbIntegrationTests {
     assertFalse(extend.equals(accountAuth));
     assertTrue(service.strongVerifyAccessToken(extend.getAccessToken()).isPresent());
   }
+
+  @Test
+  public void loadAccount() {
+    Account account = service.createViaEmail("BBbb99", "bar@gmail.com", "pppwww", lc);
+    Account loaded = service.loadAccount("BBbb99");
+    assertEquals(account, loaded);
+    assertEquals("bar@gmail.com", loaded.getEmail());
+    assertFalse(loaded.isActivated());
+    assertEquals(EnumSet.of(Authority.TOURIST), loaded.getAuthorities());
+
+    loaded = service.loadAccount("Bbbb99");
+    assertEquals(account, loaded);
+
+    loaded = service.loadAccount("BbbB99");
+    assertEquals(account, loaded);
+  }
+
 }

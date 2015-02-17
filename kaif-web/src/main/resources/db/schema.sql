@@ -8,7 +8,7 @@ CREATE TABLE Account (
 );
 
 CREATE UNIQUE INDEX AccountUsernameIndex ON Account (LOWER(username));
-CREATE UNIQUE INDEX AccountEmailIndex ON Account (LOWER(email));
+CREATE UNIQUE INDEX AccountEmailIndex ON Account (email);
 
 CREATE TABLE AccountOnceToken (
   token      VARCHAR(4096) NOT NULL PRIMARY KEY,
