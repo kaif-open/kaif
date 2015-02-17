@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.MessageSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -43,8 +44,9 @@ public abstract class MvcIntegrationTests implements ModelFixture {
   @Profile(SpringProfile.TEST)
   @EnableWebMvc
   @ComponentScan(basePackages = "io.kaif.web")
-  @Import(value = { UtilConfiguration.class, MockTestConfig.class, WebConfiguration.class,
-      FreeMarkerAutoConfiguration.class, AppProperties.class })
+  @Import(value = { UtilConfiguration.class, MessageSourceAutoConfiguration.class,
+      MockTestConfig.class, WebConfiguration.class, FreeMarkerAutoConfiguration.class,
+      AppProperties.class })
   public static class WebTestApplication {
   }
 

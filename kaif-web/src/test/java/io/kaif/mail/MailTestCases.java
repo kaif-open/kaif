@@ -15,8 +15,11 @@ public abstract class MailTestCases {
     configuration = new Configuration(Configuration.VERSION_2_3_21);
     configuration.setDefaultEncoding("UTF-8");
     configuration.setTemplateLoader(new ClassTemplateLoader(MailComposer.class, "/mail"));
+
+    //keep config same as application.yml and WebConfiguration.java
     messageSource = new ResourceBundleMessageSource();
     messageSource.setBasename("i18n/messages");
     messageSource.setDefaultEncoding("UTF-8");
+    messageSource.setFallbackToSystemLocale(false);
   }
 }

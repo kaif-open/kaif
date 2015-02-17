@@ -35,9 +35,20 @@ class ConvertSpringI18n extends Transformer {
 
       var assetId = transform.primaryInput.id;
       var messages_locale = path.basenameWithoutExtension(assetId.path);
-      var locale = messages_locale.replaceAll('messages_', '');
-      String newPath = assetId.changeExtension('.dart')
-      .path.replaceAll('i18n_link', 'intl');
+
+      /**
+       * conversion rule:
+       *
+       * messages_foo.properties => locale: foo  => messages_foo.dart
+       * messages.properties     => locale: en   => messages_en.dart
+       */
+      var locale = messages_locale.replaceAll(new RegExp('messages_?'), '');
+      locale = locale.isEmpty ? 'en' : locale;
+
+      String newPath = assetId.changeExtension('.dart').path
+      .replaceAll('i18n_link', 'intl')
+      .replaceAll('messages.dart', 'messages_en.dart');
+
       var newId = new AssetId(assetId.package, newPath);
       String newContent = resolveTemplate(locale, convertPropertiesToDart(content));
       transform.addOutput(new Asset.fromString(newId, newContent));

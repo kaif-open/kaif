@@ -9,6 +9,6 @@ dev_dependencies:
   unittest: any
 transformers:
   - kaif_web:
-     $include: ["lib/intl/messages_*.dart", "lib/i18n_link/messages_*.properties"]
+     $include: ["lib/intl/messages*.dart", "lib/i18n_link/messages*.properties"]
   - $dart2js:
      commandLineOptions: [--show-package-warnings]

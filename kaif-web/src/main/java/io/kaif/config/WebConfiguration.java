@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -35,12 +36,18 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
 
   @Autowired
   private AccountService accountService;
+
   @Autowired
   private freemarker.template.Configuration freeMarkerConfiguration;
+
   @Autowired
   private Environment environment;
+
   @Autowired
   private AppProperties appProperties;
+
+  @Autowired
+  private ResourceBundleMessageSource messageSource;
 
   /**
    * add module Java 8 Time and AfterBurner in class path
@@ -93,6 +100,11 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
   @PostConstruct
   public void init() throws TemplateModelException {
     configureFreeMarker();
+
+    // default is true, which fallback to system locale, so if
+    // system locale is jp. fallback bundle file will be messages_jp.properties, not
+    // messages.properties. This behavior is not what we want. so disable it.
+    messageSource.setFallbackToSystemLocale(false);
   }
 
   private void configureFreeMarker() throws TemplateModelException {
