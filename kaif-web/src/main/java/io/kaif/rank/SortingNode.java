@@ -9,29 +9,38 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.NotThreadSafe;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import io.kaif.util.MoreCollectors;
 
+/**
+ * immutable node tree structure that support sort children. the value dose not allow null unless
+ * it is a root node. the root node always with null value and no parent.
+ */
 @Immutable
 public class SortingNode<T> {
-
+  /**
+   * the builder is not thread-safe, but the product is.
+   */
+  @NotThreadSafe
   public static class Builder<T> {
 
     private final T value;
-    private final List<Builder<T>> childBuilders;
+
     private final Builder<T> parentBuilder;
 
+    private List<Builder<T>> childBuilders;
+
     public Builder() {
-      this(null, null, new LinkedList<>());
+      this(null, null);
     }
 
-    private Builder(T value, Builder<T> parentBuilder, List<Builder<T>> childBuilders) {
+    private Builder(T value, Builder<T> parentBuilder) {
       this.value = value;
       this.parentBuilder = parentBuilder;
-      this.childBuilders = childBuilders;
     }
 
     /**
@@ -39,7 +48,10 @@ public class SortingNode<T> {
      */
     public Builder<T> node(T childValue) {
       Preconditions.checkNotNull(childValue, "value must not null");
-      Builder<T> child = new Builder<>(childValue, this, new LinkedList<>());
+      Builder<T> child = new Builder<>(childValue, this);
+      if (childBuilders == null) {
+        childBuilders = new LinkedList<>();
+      }
       childBuilders.add(child);
       return child;
     }
@@ -57,16 +69,21 @@ public class SortingNode<T> {
       return value == null ? "*" : value.toString();
     }
 
+    /**
+     * build whole node tree, return root node.
+     * <p>
+     * you can invoke #build() everywhere while building, no matter how deep builder is.
+     */
     public SortingNode<T> build() {
       Builder<T> rootBuilder = this;
-      while (rootBuilder.parent() != null) {
-        rootBuilder = rootBuilder.parent();
+      while (rootBuilder.parentBuilder != null) {
+        rootBuilder = rootBuilder.parentBuilder;
       }
       return rootBuilder.deepBuild(null);
     }
 
     private SortingNode<T> deepBuild(SortingNode<T> parentNode) {
-      if (childBuilders.isEmpty()) {
+      if (childBuilders == null || childBuilders.isEmpty()) {
         return new SortingNode<>(value, parentNode, Stream.empty());
       }
       return new SortingNode<>(value,
@@ -79,19 +96,28 @@ public class SortingNode<T> {
     }
   }
 
+  private static final SortingNode<?> EMPTY_ROOT = new SortingNode<>(null,
+      null,
+      ImmutableList.of());
+
+  @SuppressWarnings("unchecked")
+  public static <T> SortingNode<T> emptyRoot() {
+    return (SortingNode<T>) EMPTY_ROOT;
+  }
+
   @Nullable
   private final T value;
-
   @Nullable
   private final SortingNode<T> parent;
-
   private final List<SortingNode<T>> children;
 
   /**
    * childrenFactory accept `this` node as a argument (its parent), and produce a child node
+   * <p>
+   * childrenFactory should not return self or any parent node, since we do not support cyclic tree
    */
-  private SortingNode(T value,
-      SortingNode<T> parent,
+  private SortingNode(@Nullable T value,
+      @Nullable SortingNode<T> parent,
       Stream<UnaryOperator<SortingNode<T>>> childrenFactory) {
     this.value = value;
     this.parent = parent;
@@ -99,10 +125,23 @@ public class SortingNode<T> {
         .collect(MoreCollectors.toImmutableList());
   }
 
-  private SortingNode(T value, SortingNode<T> parent, ImmutableList<SortingNode<T>> children) {
+  private SortingNode(@Nullable T value,
+      @Nullable SortingNode<T> parent,
+      ImmutableList<SortingNode<T>> children) {
     this.value = value;
     this.parent = parent;
     this.children = children;
+  }
+
+  @Override
+  public String toString() {
+    /*
+     * do not include parent, it will infinite loop
+     */
+    return "SortingNode{" +
+        "value=" + value +
+        ", children=" + children +
+        '}';
   }
 
   @Nullable
@@ -150,7 +189,7 @@ public class SortingNode<T> {
 
   private void prettyPrintInto(int level, StringBuilder stringBuilder) {
     IntStream.range(0, level).forEach(i -> stringBuilder.append("  "));
-    stringBuilder.append(value == null ? "*" : value);
+    stringBuilder.append(isRoot() ? "*" : value);
     children.forEach(c -> {
       stringBuilder.append("\n");
       c.prettyPrintInto(level + 1, stringBuilder);
@@ -158,9 +197,8 @@ public class SortingNode<T> {
   }
 
   /**
-   * traverse self and each children, depth first.
-   * <p>
-   * note that if self is root node, it is skipped (value of root node is always null)
+   * traverse self and each children, depth first. the root node is skipped
+   * (value of root node is always null)
    */
   public Stream<T> depthFirst() {
     Stream<T> childStream = children.stream().flatMap(SortingNode::depthFirst);
@@ -172,9 +210,8 @@ public class SortingNode<T> {
   }
 
   /**
-   * traverse self and each children, breath first.
-   * <p>
-   * note that if self is root node, it is skipped (value of root node is always null)
+   * traverse self and each children, breath first. the root node is skipped
+   * (value of root node is always null)
    * <p>
    * {@link #depthFirst} is faster. prefer it unless you need breathFirst traversal.
    */

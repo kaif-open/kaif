@@ -4,9 +4,26 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.*;
 import static org.junit.Assert.*;
 
+import java.util.Collections;
+
 import org.junit.Test;
 
 public class SortingNodeTest {
+
+  @Test
+  public void emptyRoot() throws Exception {
+    SortingNode<Long> emptyRoot = SortingNode.emptyRoot();
+    assertFalse(emptyRoot.hasChild());
+    assertTrue(emptyRoot.isRoot());
+    assertFalse(emptyRoot.hasParent());
+  }
+
+  @Test
+  public void toStringShouldNotIncludeParent() throws Exception {
+    SortingNode<Integer> tree = new SortingNode.Builder<Integer>()//
+        .add(100).node(200).add(210).build();
+    assertNotNull("include parent in toString will go infinite loop", tree.toString());
+  }
 
   @Test
   public void buildNodeTree() throws Exception {
@@ -53,10 +70,16 @@ public class SortingNodeTest {
     assertFalse(n410.hasChild());
     assertTrue(n410.hasParent());
     assertFalse(n410.isRoot());
+
+    assertEquals("410", n410.prettyPrint());
   }
 
   @Test
   public void depthFirst() throws Exception {
+
+    assertEquals(Collections.<Integer>emptyList(),
+        SortingNode.<Integer>emptyRoot().depthFirst().collect(toList()));
+
     SortingNode<Integer> tree = new SortingNode.Builder<Integer>()//
         .add(100)
         .node(200)
@@ -81,6 +104,10 @@ public class SortingNodeTest {
 
   @Test
   public void breathFirst() throws Exception {
+
+    assertEquals(Collections.<Integer>emptyList(),
+        SortingNode.<Integer>emptyRoot().breathFirst().collect(toList()));
+
     SortingNode<Integer> tree = new SortingNode.Builder<Integer>()//
         .add(100)
         .node(200)
