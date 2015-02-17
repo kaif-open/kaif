@@ -19,6 +19,7 @@ import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.article.Article;
 import io.kaif.model.debate.Debate;
+import io.kaif.model.debate.DebateTree;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.test.MvcIntegrationTests;
@@ -85,7 +86,8 @@ public class ZoneControllerTest extends MvcIntegrationTests {
 
     when(zoneService.loadZone(z)).thenReturn(zoneInfo);
     when(articleService.loadArticle(articleId)).thenReturn(article);
-    when(articleService.listHotDebates(z, articleId, 0)).thenReturn(debates);
+    when(articleService.listBestDebates(z, articleId, 0)).thenReturn(DebateTree.fromDepthFirst(
+        debates));
 
     mockMvc.perform(get("/z/programming/debates/aaa"))
         .andExpect(view().name("article/debates"))

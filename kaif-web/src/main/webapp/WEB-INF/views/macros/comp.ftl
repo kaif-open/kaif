@@ -1,6 +1,26 @@
 <#import "/spring.ftl" as spring />
 <#import "url.ftl" as url />
 
+<#-- Article components -->
+
+<#macro articleList data>
+    <#local articlePage=data />
+<div class="article-list" article-list>
+    <#list articlePage.articles as article>
+        <@comp.article data=article />
+    </#list>
+    <div class="article-list-pager grid-center-row">
+        <#if articlePage.articles?size == 0 >
+            沒有文章
+        </#if>
+        <#if articlePage.hasNext()>
+            <a href="<@url.current start=articlePage.lastArticleId />"
+               class="pure-button"><i class="fa fa-caret-right"></i> 下一頁</a>
+        </#if>
+    </div>
+</div>
+</#macro>
+
 <#macro article data>
 
     <#local article=data />
@@ -35,32 +55,26 @@
 
 </#macro>
 
-<#macro articleList data>
-    <#local articlePage=data />
-<div class="article-list" article-list>
-    <#list articlePage.articles as article>
-        <@comp.article data=article />
-    </#list>
-    <div class="article-list-pager grid-center-row">
-        <#if articlePage.articles?size == 0 >
-            沒有文章
-        </#if>
-        <#if articlePage.hasNext()>
-            <a href="<@url.current start=articlePage.lastArticleId />"
-               class="pure-button"><i class="fa fa-caret-right"></i> 下一頁</a>
-        </#if>
-    </div>
-</div>
+<#-- Debate components -->
+
+<#macro debateNode data smallConvex=false >
+    <#local theDebateNode=data />
+    <@debate data=theDebateNode.value smallConvex=smallConvex>
+        <#list theDebateNode.children as child>
+        <#-- recursive macro -->
+            <@comp.debateNode data=child smallConvex=true />
+        </#list>
+    </@debate>
 </#macro>
 
-<#macro debate data article>
+<#macro debate data smallConvex>
     <#local debate=data />
-<#-- TODO adjust margin-left -->
-<div class="debate grid-row" style="margin-left: ${(debate.level-1) * 30}px;"
+    <#local gridConvex=smallConvex?string("grid-sm-convex", "grid-convex") />
+<div class="debate grid-row"
      debate
      data-debate-id="${debate.debateId}"
      data-debater-name="${debate.debaterName}">
-    <div class="debate-vote-box votable grid-convex" debate-vote-box
+    <div class="debate-vote-box votable ${gridConvex}" debate-vote-box
          data-debate-vote-count="${debate.totalVote}">
         <a href="#" debate-up-vote>
             <div class="up-vote"></div><#--
@@ -73,7 +87,7 @@
     <div class="grid-center">
         <div class="debate-title">
             <a class="debate-author"
-               href="/u/${article.authorName}">${debate.debaterName}</a>
+               href="/u/${debate.debaterName}">${debate.debaterName}</a>
             積分
             ( <span debate-vote-count>${debate.totalVote}</span> )
         </div>
@@ -94,6 +108,10 @@
                 <a>parent</a>
             </#if>
             <span>${relativeTime(debate.createTime)}</span>
+        </div>
+        <div class="debate-child">
+        <#-- child debate here -->
+            <#nested/>
         </div>
     </div>
 </div>

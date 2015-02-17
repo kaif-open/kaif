@@ -22,6 +22,7 @@ import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleDao;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateDao;
+import io.kaif.model.debate.DebateTree;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
@@ -136,16 +137,11 @@ public class ArticleServiceImpl implements ArticleService {
     return debate;
   }
 
-  /**
-   * tree structure, but flatten to list, with order by vote score
-   */
   @Override
-  public List<Debate> listHotDebates(Zone zone, FlakeId articleId, int offset) {
+  public DebateTree listBestDebates(Zone zone, FlakeId articleId, int offset) {
     //TODO cache
     //TODO paging
-    //TODO order by rank
-    //TODO do not use offset, use start item instead
-    return debateDao.listTreeByArticle(articleId);
+    return debateDao.listDebateTree(articleId);
   }
 
   @Override

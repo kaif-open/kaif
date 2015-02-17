@@ -8,6 +8,7 @@ import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Authorization;
 import io.kaif.model.article.Article;
 import io.kaif.model.debate.Debate;
+import io.kaif.model.debate.DebateTree;
 import io.kaif.model.zone.Zone;
 
 public interface ArticleService {
@@ -24,7 +25,7 @@ public interface ArticleService {
       Authorization debater,
       String content);
 
-  List<Debate> listHotDebates(Zone zone, FlakeId articleId, int offset);
+  DebateTree listBestDebates(Zone zone, FlakeId articleId, int offset);
 
   List<Article> listHotZoneArticles(Zone zone, FlakeId startArticleId);
 

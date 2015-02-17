@@ -128,7 +128,7 @@ a.create-article {
 }
 
 .debate {
-  padding-top: @padding-lg-vertical;
+  margin-top: @padding-lg-vertical;
 }
 
 .debate-vote-box {
@@ -137,6 +137,13 @@ a.create-article {
   text-align: right;
   font-size: @font-size-lg;
   white-space: nowrap;
+
+  //move to center if small sized
+  //TODO better structure, not rely on grid-sm-convex
+  &.grid-sm-convex {
+    text-align: center;
+    padding-right: 0;
+  }
 }
 
 .debate-vote-box a {
@@ -155,6 +162,12 @@ a.create-article {
     &:hover {
       color: @link-hover-color;
     }
+  }
+}
+
+.debate-child {
+  .debate {
+    border-left: 1px solid @gray-lightest;
   }
 }
 

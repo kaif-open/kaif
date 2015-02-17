@@ -10,10 +10,11 @@
 // |                                             |                |
 // |                                             |                |
 // |||- .grid-row                             -|||                |
-// ||||- .grid-convex -|- .grid-center       -||||                |
+// ||||- .grid-convex    -|- .grid-center    -||||                |
+// ||||- .grid-sm-convex -|- .grid-center    -||||                |
 // |                                             |                |
 // |                                             |                |
-// |||- ............... - .grid-center-row    -|||                |
+// |||- .................. - .grid-center-row -|||                |
 // |                                             |                |
 //
 // .grid-row is repeatable, and can be use standalone
@@ -58,6 +59,12 @@
     flex-grow: 0;
     flex-shrink: 0;
     flex-basis: @convex-row-width;
+  }
+
+  .grid-sm-convex {
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: @convex-row-width-sm;
   }
 
   .grid-center {

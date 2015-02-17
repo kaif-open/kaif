@@ -116,10 +116,10 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
-  public void listHotDebates_one_level() throws Exception {
+  public void listBestDebatess_one_level() throws Exception {
     Zone zone = zoneInfo.getZone();
     FlakeId articleId = article.getArticleId();
-    assertEquals(0, service.listHotDebates(zone, articleId, 0).size());
+    assertEquals(0, service.listBestDebates(zone, articleId, 0).depthFirst().count());
 
     List<Debate> debates = IntStream.rangeClosed(1, 3)
         .mapToObj(i -> service.debate(zone,
@@ -129,11 +129,12 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
             "debate-content-" + i))
         .collect(toList());
 
-    assertEquals(debates, service.listHotDebates(zone, articleId, 0));
+    assertEquals(debates,
+        service.listBestDebates(zone, articleId, 0).depthFirst().collect(toList()));
   }
 
   @Test
-  public void listHotDebates_tree() throws Exception {
+  public void listBestDebates_tree() throws Exception {
     Debate d1 = savedDebate(null);
     Debate d1_1 = savedDebate(d1);
     Debate d1_1_1 = savedDebate(d1_1);
@@ -148,12 +149,19 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     Debate d3_1 = savedDebate(d3);
     Debate d1_2 = savedDebate(d1);
 
-    List<Debate> expect = asList(//
-        d1, d1_1, d1_1_1, d1_1_2, d1_2, //
-        d2, d2_1, d2_1_1, d2_2, //
-        d3, d3_1);
+    //make d3_1 best
+    debateDao.changeTotalVote(d3_1.getDebateId(), 100, 0);
 
-    assertEquals(expect, service.listHotDebates(zoneInfo.getZone(), article.getArticleId(), 0));
+    List<Debate> expect = asList(//
+        d3, d3_1,//
+        d1, d1_1, d1_1_1, d1_1_2, d1_2, //
+        d2, d2_1, d2_1_1, d2_2 //
+    );
+
+    assertEquals(expect,
+        service.listBestDebates(zoneInfo.getZone(), article.getArticleId(), 0)
+            .depthFirst()
+            .collect(toList()));
   }
 
   private Debate savedDebate(Debate parent) {
@@ -383,8 +391,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         Debate.NO_PARENT,
         citizen,
         "> a quote");
-    String content = service.loadEditableDebateContent(d1.getDebateId(),
-        citizen);
+    String content = service.loadEditableDebateContent(d1.getDebateId(), citizen);
     assertEquals("&gt; a quote", content);
   }
 
@@ -392,8 +399,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   public void loadEditableDebate_not_editor() throws Exception {
     Debate d1 = savedDebate(null);
     try {
-      service.loadEditableDebateContent(d1.getDebateId(),
-          savedAccountCitizen("not-editor"));
+      service.loadEditableDebateContent(d1.getDebateId(), savedAccountCitizen("not-editor"));
       fail("AccessDeniedException expected");
     } catch (AccessDeniedException expected) {
 

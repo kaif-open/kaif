@@ -46,8 +46,8 @@ head=headContent
                     </div>
                 </div>
 
-                <#list debates as debate>
-                    <@comp.debate data=debate article=article/>
+                <#list debateTree.children as debateNode>
+                    <@comp.debateNode data=debateNode />
                 </#list>
             </div>
         </div>

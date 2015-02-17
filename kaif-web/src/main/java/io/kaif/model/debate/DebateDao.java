@@ -93,8 +93,14 @@ public class DebateDao implements DaoOperations {
     return insertDebate(Debate.create(article, debateId, parent, content, debater, now));
   }
 
-  public List<Debate> listTreeByArticle(FlakeId articleId) {
-    // TODO LIMIT in query
+  public DebateTree listDebateTree(FlakeId articleId) {
+    //TODO cache
+    List<Debate> flatten = listDepthFirstDebatesByArticle(articleId);
+    return DebateTree.fromDepthFirst(flatten).sortByBestScore();
+  }
+
+  List<Debate> listDepthFirstDebatesByArticle(FlakeId articleId) {
+    // TODO LIMIT in query, compute score in SQL
     // http://stackoverflow.com/a/25486998
     final String sql = ""
         + " WITH RECURSIVE DebateTree "

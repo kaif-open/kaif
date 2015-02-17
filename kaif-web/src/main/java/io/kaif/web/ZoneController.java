@@ -122,8 +122,8 @@ public class ZoneController {
       return new ModelAndView("article/debates")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("article", articleService.loadArticle(articleFlakeId))
-          .addObject("debates",
-              articleService.listHotDebates(zoneInfo.getZone(), articleFlakeId, 0));
+          .addObject("debateTree",
+              articleService.listBestDebates(zoneInfo.getZone(), articleFlakeId, 0));
     });
   }
 }
