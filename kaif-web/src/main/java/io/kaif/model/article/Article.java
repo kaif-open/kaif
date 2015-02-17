@@ -155,18 +155,13 @@ public class Article {
     if (!articleId.equals(article.articleId)) {
       return false;
     }
-    if (!zone.equals(article.zone)) {
-      return false;
-    }
 
     return true;
   }
 
   @Override
   public int hashCode() {
-    int result = zone.hashCode();
-    result = 31 * result + articleId.hashCode();
-    return result;
+    return articleId.hashCode();
   }
 
   @Override

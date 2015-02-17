@@ -156,10 +156,7 @@ public class Debate {
 
     Debate debate = (Debate) o;
 
-    if (articleId != null ? !articleId.equals(debate.articleId) : debate.articleId != null) {
-      return false;
-    }
-    if (debateId != null ? !debateId.equals(debate.debateId) : debate.debateId != null) {
+    if (!debateId.equals(debate.debateId)) {
       return false;
     }
 
@@ -168,9 +165,7 @@ public class Debate {
 
   @Override
   public int hashCode() {
-    int result = articleId != null ? articleId.hashCode() : 0;
-    result = 31 * result + (debateId != null ? debateId.hashCode() : 0);
-    return result;
+    return debateId.hashCode();
   }
 
   @Override
@@ -205,5 +200,20 @@ public class Debate {
 
   public boolean canEdit(Authorization auth) {
     return auth.belongToAccount(debaterId);
+  }
+
+  public Debate withVote(long newUpVote, long newDownVote) {
+    return new Debate(articleId,
+        debateId,
+        parentDebateId,
+        level,
+        content,
+        contentType,
+        debaterId,
+        debaterName,
+        newUpVote,
+        newDownVote,
+        createTime,
+        lastUpdateTime);
   }
 }

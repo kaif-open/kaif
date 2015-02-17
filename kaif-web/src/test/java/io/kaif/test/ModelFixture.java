@@ -9,7 +9,9 @@ import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.Authority;
 import io.kaif.model.article.Article;
+import io.kaif.model.article.ArticleFlakeIdGenerator;
 import io.kaif.model.debate.Debate;
+import io.kaif.model.debate.DebateFlakeIdGenerator;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 
@@ -47,7 +49,7 @@ public interface ModelFixture extends TimeFixture {
     Instant now = Instant.now();
     Account debater = accountTourist("debater-" + new Random().nextInt(100));
     return Debate.create(article,
-        FlakeId.startOf(now.toEpochMilli()),
+        new DebateFlakeIdGenerator(99).next(),
         parent,
         content,
         debater,
@@ -58,7 +60,7 @@ public interface ModelFixture extends TimeFixture {
     Instant now = Instant.now();
     Account author = accountTourist("user" + new Random().nextInt(100));
     return Article.createExternalLink(zone,
-        FlakeId.startOf(now.toEpochMilli()),
+        new ArticleFlakeIdGenerator(99).next(),
         author,
         title,
         "http://example.com/" + title,

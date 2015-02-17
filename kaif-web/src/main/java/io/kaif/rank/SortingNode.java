@@ -21,9 +21,9 @@ import io.kaif.util.MoreCollectors;
  * it is a root node. the root node always with null value and no parent.
  */
 @Immutable
-public class SortingNode<T> {
+public final class SortingNode<T> {
   /**
-   * the builder is not thread-safe, but the product is.
+   * the builder is not thread-safe, but built node is thread-safe.
    */
   @NotThreadSafe
   public static class Builder<T> {
@@ -46,7 +46,7 @@ public class SortingNode<T> {
     /**
      * add child node, return child node builder
      */
-    public Builder<T> node(T childValue) {
+    public Builder<T> childNode(T childValue) {
       Preconditions.checkNotNull(childValue, "value must not null");
       Builder<T> child = new Builder<>(childValue, this);
       if (childBuilders == null) {
@@ -54,14 +54,6 @@ public class SortingNode<T> {
       }
       childBuilders.add(child);
       return child;
-    }
-
-    /**
-     * add child node, return current node builder
-     */
-    public Builder<T> add(T childValue) {
-      node(childValue);
-      return this;
     }
 
     @Override
@@ -84,7 +76,7 @@ public class SortingNode<T> {
 
     private SortingNode<T> deepBuild(SortingNode<T> parentNode) {
       if (childBuilders == null || childBuilders.isEmpty()) {
-        return new SortingNode<>(value, parentNode, Stream.empty());
+        return new SortingNode<>(value, parentNode, ImmutableList.of());
       }
       return new SortingNode<>(value,
           parentNode,
@@ -93,6 +85,15 @@ public class SortingNode<T> {
 
     public Builder<T> parent() {
       return parentBuilder;
+    }
+
+    /**
+     * append a sibling node, return created sibling builder
+     * <p>
+     * this method are not allowed on root builder
+     */
+    public Builder<T> siblingNode(T value) {
+      return parentBuilder.childNode(value);
     }
   }
 
@@ -170,6 +171,11 @@ public class SortingNode<T> {
     return !children.isEmpty();
   }
 
+  /**
+   * sort each breath level based on comparator
+   *
+   * @return sorted new node.
+   */
   public SortingNode<T> deepSort(Comparator<SortingNode<T>> comparator) {
     if (!hasChild()) {
       return this;

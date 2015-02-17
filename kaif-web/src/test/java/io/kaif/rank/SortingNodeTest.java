@@ -21,7 +21,7 @@ public class SortingNodeTest {
   @Test
   public void toStringShouldNotIncludeParent() throws Exception {
     SortingNode<Integer> tree = new SortingNode.Builder<Integer>()//
-        .add(100).node(200).add(210).build();
+        .childNode(200).siblingNode(210).siblingNode(220).build();
     assertNotNull("include parent in toString will go infinite loop", tree.toString());
   }
 
@@ -34,18 +34,17 @@ public class SortingNodeTest {
     assertFalse(root.hasParent());
 
     SortingNode<Integer> tree = new SortingNode.Builder<Integer>()//
-        .add(100)
-        .node(200)
-        .add(210)
-        .add(220)
+        .childNode(100)
+        .siblingNode(200)
+        .childNode(210)
+        .siblingNode(220)
         .parent()
-        .add(300)
-        .node(400)
-        .node(410)
-        .parent()
-        .add(420)
-        .node(430)
-        .node(431)
+        .siblingNode(300)
+        .siblingNode(400)
+        .childNode(410)
+        .siblingNode(420)
+        .siblingNode(430)
+        .childNode(431)
         .build();
 
     assertFalse(tree.hasParent());
@@ -81,18 +80,17 @@ public class SortingNodeTest {
         SortingNode.<Integer>emptyRoot().depthFirst().collect(toList()));
 
     SortingNode<Integer> tree = new SortingNode.Builder<Integer>()//
-        .add(100)
-        .node(200)
-        .add(210)
-        .add(220)
+        .childNode(100)
+        .siblingNode(200)
+        .childNode(210)
+        .siblingNode(220)
         .parent()
-        .add(300)
-        .node(400)
-        .node(410)
-        .parent()
-        .add(420)
-        .node(430)
-        .node(431)
+        .siblingNode(300)
+        .siblingNode(400)
+        .childNode(410)
+        .siblingNode(420)
+        .siblingNode(430)
+        .childNode(431)
         .build();
 
     assertEquals(asList(100, 200, 210, 220, 300, 400, 410, 420, 430, 431),
@@ -109,18 +107,17 @@ public class SortingNodeTest {
         SortingNode.<Integer>emptyRoot().breathFirst().collect(toList()));
 
     SortingNode<Integer> tree = new SortingNode.Builder<Integer>()//
-        .add(100)
-        .node(200)
-        .add(210)
-        .add(220)
+        .childNode(100)
+        .siblingNode(200)
+        .childNode(210)
+        .siblingNode(220)
         .parent()
-        .add(300)
-        .node(400)
-        .node(410)
-        .parent()
-        .add(420)
-        .node(430)
-        .node(431)
+        .siblingNode(300)
+        .siblingNode(400)
+        .childNode(410)
+        .siblingNode(420)
+        .siblingNode(430)
+        .childNode(431)
         .build();
 
     assertEquals(asList(100, 200, 300, 400, 210, 220, 410, 420, 430, 431),
@@ -134,18 +131,19 @@ public class SortingNodeTest {
   public void deepSort() throws Exception {
 
     SortingNode<Integer> tree = new SortingNode.Builder<Integer>()//
-        .add(200)
-        .node(100)
-        .add(110)
-        .add(120)
+        .childNode(200)
+        .siblingNode(100)
+        .childNode(110)
+        .siblingNode(120)
         .parent()
-        .add(300)
-        .node(400)
-        .node(420)
+        .siblingNode(400)
+        .childNode(410)
+        .siblingNode(430)
+        .childNode(431)
         .parent()
-        .add(410)
-        .node(430)
-        .node(431)
+        .siblingNode(420)
+        .parent()
+        .siblingNode(300)
         .build();
 
     tree = tree.deepSort((a, b) -> b.getValue() - a.getValue());
