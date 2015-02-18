@@ -24,13 +24,13 @@
 //
 
 .grid {
-  display: flex;
-  flex-flow: column;
-  justify-content: space-between;
+  .flex-display();
+  .flex-flow(column);
+  .justify-content(space-between);
 
   @media (min-width: @screen-md-min) {
     //TODO this is wrong
-    flex-flow: row;
+    .flex-flow(row);
   }
 
   .grid-body {
@@ -38,12 +38,12 @@
   }
 
   .grid-aside {
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: @aside-width-sm;
+    .flex-grow(0);
+    .flex-shrink(0);
+    .flex-basis(@aside-width-sm);
     padding-left: @convex-row-width;
     @media (min-width: @screen-lg-min) {
-      flex-basis: @aside-width;
+      .flex-basis(@aside-width);
     }
     @media (min-width: @screen-md-min) {
       padding-left: 0;
@@ -52,19 +52,19 @@
 }
 
 .grid-row {
-  display: flex;
-  flex-flow: row;
+  .flex-display();
+  .flex-flow(row);
 
   .grid-convex {
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: @convex-row-width;
+    .flex-grow(0);
+    .flex-shrink(0);
+    .flex-basis(@convex-row-width);
   }
 
   .grid-sm-convex {
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: @convex-row-width-sm;
+    .flex-grow(0);
+    .flex-shrink(0);
+    .flex-basis(@convex-row-width-sm);
   }
 
   .grid-center {
