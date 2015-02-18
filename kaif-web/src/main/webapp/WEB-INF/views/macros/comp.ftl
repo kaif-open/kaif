@@ -21,11 +21,12 @@
 </div>
 </#macro>
 
-<#macro article data>
+<#macro article data hidden=false>
 
     <#local article=data />
+    <#local hiddenCls=hidden?string("hidden", "") />
 
-<div class="article grid-row" article data-article-id="${article.articleId}"
+<div class="article grid-row ${hiddenCls}" article data-article-id="${article.articleId}"
      data-zone="${article.zone}">
     <div class="article-vote-box votable grid-convex" article-vote-box
          data-article-vote-count="${article.upVote}">
@@ -102,11 +103,12 @@
                 <a href="#" debate-replier
                    data-debate-id="${debate.debateId}">回應</a>
             </#if>
-            <a href="#" debate-editor
-               data-debate-id="${debate.debateId}" class="hidden">編輯</a>
             <#if debate.hasParent()>
                 <a>parent</a>
             </#if>
+            <a href="/z/${debate.zone}/debates/${debate.articleId}/${debate.debateId}">永遠連結</a>
+            <a href="#" debate-editor
+               data-debate-id="${debate.debateId}" class="hidden">編輯</a>
             <span>${relativeTime(debate.createTime)}</span>
         </div>
         <div class="debate-child">

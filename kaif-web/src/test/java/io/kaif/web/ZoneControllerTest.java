@@ -86,7 +86,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
 
     when(zoneService.loadZone(z)).thenReturn(zoneInfo);
     when(articleService.loadArticle(articleId)).thenReturn(article);
-    when(articleService.listBestDebates(z, articleId, 0)).thenReturn(DebateTree.fromDepthFirst(
+    when(articleService.listBestDebates(articleId, null)).thenReturn(DebateTree.fromDepthFirst(
         debates));
 
     mockMvc.perform(get("/z/programming/debates/aaa"))
@@ -94,6 +94,32 @@ public class ZoneControllerTest extends MvcIntegrationTests {
         .andExpect(content().string(containsString("/snapshot/css/z-theme-default.css")))
         .andExpect(content().string(containsString("programming-alias")))
         .andExpect(content().string(containsString("erlang")))
+        .andExpect(content().string(containsString("ERLANG is bad")))
+        .andExpect(content().string(containsString("JAVA is better")));
+  }
+
+  @Test
+  public void childDebates() throws Exception {
+    Zone z = zoneInfo.getZone();
+    FlakeId articleId = FlakeId.fromString("aaa");
+    Article article = article(z, "erlang");
+
+    Debate parentDebate = debate(article, "use the right tool", null);
+
+    List<Debate> debates = asList(//
+        debate(article, "ERLANG is bad", null), //
+        debate(article, "JAVA is better", null));
+
+    when(zoneService.loadZone(z)).thenReturn(zoneInfo);
+    when(articleService.loadArticle(articleId)).thenReturn(article);
+    when(articleService.loadDebate(parentDebate.getDebateId())).thenReturn(parentDebate);
+    when(articleService.listBestDebates(articleId, parentDebate.getDebateId())).thenReturn(
+        DebateTree.fromDepthFirst(debates));
+
+    mockMvc.perform(get("/z/programming/debates/aaa/" + parentDebate.getDebateId()))
+        .andExpect(view().name("article/debates"))
+        .andExpect(content().string(containsString("回上層")))
+        .andExpect(content().string(containsString("use the right tool")))
         .andExpect(content().string(containsString("ERLANG is bad")))
         .andExpect(content().string(containsString("JAVA is better")));
   }

@@ -27,9 +27,12 @@ public final class DebateTree {
    * if input debate list is not depth first, exception thrown.
    */
   public static DebateTree fromDepthFirst(List<Debate> flatten) {
+    if (flatten.isEmpty()) {
+      return new DebateTree(SortingNode.emptyRoot());
+    }
     SortingNode.Builder<Debate> builder = new SortingNode.Builder<>();
 
-    int currentLevel = 0; //root level is 0, debate start level is 1
+    int currentLevel = flatten.get(0).getLevel() - 1;
     for (Debate debate : flatten) {
       if (debate.getLevel() == currentLevel) {
         builder = builder.siblingNode(debate);

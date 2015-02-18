@@ -54,6 +54,7 @@ CREATE INDEX ArticleZoneIndex ON Article (zone);
 CREATE TABLE Debate (
   debateId       BIGINT         NOT NULL,
   articleId      BIGINT         NOT NULL,
+  zone           VARCHAR(4096)  NOT NULL,
   parentDebateId BIGINT         NOT NULL,
   level          INT            NOT NULL,
   content        VARCHAR(16384) NOT NULL,

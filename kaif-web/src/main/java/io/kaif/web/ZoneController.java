@@ -122,8 +122,23 @@ public class ZoneController {
       return new ModelAndView("article/debates")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("article", articleService.loadArticle(articleFlakeId))
-          .addObject("debateTree",
-              articleService.listBestDebates(zoneInfo.getZone(), articleFlakeId, 0));
+          .addObject("debateTree", articleService.listBestDebates(articleFlakeId, null));
+    });
+  }
+
+  @RequestMapping("/{zone}/debates/{articleId}/{parentDebateId}")
+  public Object childDebates(@PathVariable("zone") String rawZone,
+      @PathVariable("articleId") String articleId,
+      @PathVariable("parentDebateId") String parentDebateId,
+      HttpServletRequest request) throws IOException {
+    return resolveZone(request, rawZone, zoneInfo -> {
+      FlakeId articleFlakeId = FlakeId.fromString(articleId);
+      FlakeId debateFlakeId = FlakeId.fromString(parentDebateId);
+      return new ModelAndView("article/debates")//
+          .addObject("zoneInfo", zoneInfo)
+          .addObject("article", articleService.loadArticle(articleFlakeId))
+          .addObject("parentDebate", articleService.loadDebate(debateFlakeId))
+          .addObject("debateTree", articleService.listBestDebates(articleFlakeId, debateFlakeId));
     });
   }
 }

@@ -25,7 +25,7 @@ public interface ArticleService {
       Authorization debater,
       String content);
 
-  DebateTree listBestDebates(Zone zone, FlakeId articleId, int offset);
+  DebateTree listBestDebates(FlakeId articleId, @Nullable FlakeId parentDebateId);
 
   List<Article> listHotZoneArticles(Zone zone, FlakeId startArticleId);
 
@@ -36,4 +36,6 @@ public interface ArticleService {
   String loadEditableDebateContent(FlakeId debateId, Authorization editor);
 
   String updateDebateContent(FlakeId debateId, Authorization editor, String content);
+
+  Debate loadDebate(FlakeId debateId);
 }

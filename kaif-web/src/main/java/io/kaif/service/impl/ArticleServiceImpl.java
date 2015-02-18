@@ -138,10 +138,10 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public DebateTree listBestDebates(Zone zone, FlakeId articleId, int offset) {
+  public DebateTree listBestDebates(FlakeId articleId, @Nullable FlakeId parentDebateId) {
     //TODO cache
     //TODO paging
-    return debateDao.listDebateTree(articleId);
+    return debateDao.listDebateTreeByArticle(articleId, parentDebateId);
   }
 
   @Override
@@ -159,5 +159,10 @@ public class ArticleServiceImpl implements ArticleService {
   public List<Article> listTopArticles(@Nullable FlakeId startArticleId) {
     //TODO cache
     return articleDao.listHotArticlesExcludeHidden(startArticleId, PAGE_SIZE);
+  }
+
+  @Override
+  public Debate loadDebate(FlakeId debateId) {
+    return debateDao.loadDebate(debateId);
   }
 }

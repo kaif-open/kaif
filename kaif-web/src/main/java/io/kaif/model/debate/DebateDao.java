@@ -22,6 +22,7 @@ import io.kaif.database.DaoOperations;
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
 import io.kaif.model.article.Article;
+import io.kaif.model.zone.Zone;
 
 @Repository
 public class DebateDao implements DaoOperations {
@@ -36,6 +37,7 @@ public class DebateDao implements DaoOperations {
 
     return new Debate(FlakeId.valueOf(rs.getLong("articleId")),
         FlakeId.valueOf(rs.getLong("debateId")),
+        Zone.valueOf(rs.getString("zone")),
         FlakeId.valueOf(rs.getLong("parentDebateId")),
         rs.getInt("level"),
         rs.getString("content"),
@@ -57,12 +59,13 @@ public class DebateDao implements DaoOperations {
     jdbc().update(""
             + " INSERT "
             + "   INTO Debate "
-            + "        (articleid, debateid, parentdebateid, level, content, contenttype, "
+            + "        (articleid, debateid, zone, parentdebateid, level, content, contenttype, "
             + "         debaterid, debatername, upvote, downvote, createtime, lastupdatetime)"
             + " VALUES "
-            + questions(12),
+            + questions(13),
         debate.getArticleId().value(),
         debate.getDebateId().value(),
+        debate.getZone().value(),
         debate.getParentDebateId().value(),
         debate.getLevel(),
         debate.getContent(),
@@ -84,6 +87,7 @@ public class DebateDao implements DaoOperations {
     return jdbc().query(sql, debateMapper, debateId.value()).stream().findAny();
   }
 
+  //TODO evict cache
   public Debate create(Article article,
       @Nullable Debate parent,
       String content,
@@ -93,13 +97,13 @@ public class DebateDao implements DaoOperations {
     return insertDebate(Debate.create(article, debateId, parent, content, debater, now));
   }
 
-  public DebateTree listDebateTree(FlakeId articleId) {
+  public DebateTree listDebateTreeByArticle(FlakeId articleId, @Nullable FlakeId parentDebateId) {
     //TODO cache
-    List<Debate> flatten = listDepthFirstDebatesByArticle(articleId);
+    List<Debate> flatten = listDepthFirstDebatesByArticle(articleId, parentDebateId);
     return DebateTree.fromDepthFirst(flatten).sortByBestScore();
   }
 
-  List<Debate> listDepthFirstDebatesByArticle(FlakeId articleId) {
+  List<Debate> listDepthFirstDebatesByArticle(FlakeId articleId, @Nullable FlakeId parentDebateId) {
     // TODO LIMIT in query, compute score in SQL
     // http://stackoverflow.com/a/25486998
     final String sql = ""
@@ -110,7 +114,7 @@ public class DebateDao implements DaoOperations {
         + "           ARRAY[debateId] AS path "
         + "      FROM Debate "
         + "     WHERE articleId = :articleId "
-        + "       AND parentDebateId = :noParent "
+        + "       AND parentDebateId = :parentDebateId "
         + "     UNION "
         + "    SELECT d.*,"
         + "           DebateTree.path || d.debateId AS path "
@@ -120,8 +124,9 @@ public class DebateDao implements DaoOperations {
         + " ) "
         + " SELECT * FROM DebateTree ORDER BY path ";
 
+    FlakeId parent = Optional.ofNullable(parentDebateId).orElse(Debate.NO_PARENT);
     Map<String, Object> params = ImmutableMap.of(//
-        "articleId", articleId.value(), "noParent", Debate.NO_PARENT.value());
+        "articleId", articleId.value(), "parentDebateId", parent.value());
 
     return namedJdbc().query(sql, params, debateMapper);
   }
@@ -153,7 +158,9 @@ public class DebateDao implements DaoOperations {
         debateId.value());
   }
 
+  //TODO evict cache
   public void changeContent(FlakeId debateId, String content) {
     jdbc().update(" UPDATE Debate SET content = ? WHERE debateId = ? ", content, debateId.value());
   }
+
 }

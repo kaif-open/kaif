@@ -13,6 +13,7 @@ import io.kaif.kmark.KmarkProcessor;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.Authorization;
 import io.kaif.model.article.Article;
+import io.kaif.model.zone.Zone;
 
 public class Debate {
 
@@ -32,6 +33,7 @@ public class Debate {
     int parentLevel = optParent.map(Debate::getLevel).orElse(0);
     return new Debate(article.getArticleId(),
         debateId,
+        article.getZone(),
         parentId,
         parentLevel + 1,
         content,
@@ -50,6 +52,7 @@ public class Debate {
 
   private final FlakeId articleId;
   private final FlakeId debateId;
+  private final Zone zone;
   private final FlakeId parentDebateId;
   private final int level;
   private final String content;
@@ -63,6 +66,7 @@ public class Debate {
 
   Debate(FlakeId articleId,
       FlakeId debateId,
+      Zone zone,
       FlakeId parentDebateId,
       int level,
       String content,
@@ -75,6 +79,7 @@ public class Debate {
       Instant lastUpdateTime) {
     Preconditions.checkArgument(level <= MAX_LEVEL);
     Preconditions.checkArgument(!NO_PARENT.equals(debateId));
+    this.zone = zone;
     this.articleId = articleId;
     this.debateId = debateId;
     this.parentDebateId = parentDebateId;
@@ -173,6 +178,7 @@ public class Debate {
     return "Debate{" +
         "articleId=" + articleId +
         ", debateId=" + debateId +
+        ", zone=" + zone +
         ", parentDebateId=" + parentDebateId +
         ", level=" + level +
         ", content='" + content + '\'' +
@@ -205,6 +211,7 @@ public class Debate {
   public Debate withVote(long newUpVote, long newDownVote) {
     return new Debate(articleId,
         debateId,
+        zone,
         parentDebateId,
         level,
         content,
@@ -215,5 +222,9 @@ public class Debate {
         newDownVote,
         createTime,
         lastUpdateTime);
+  }
+
+  public Zone getZone() {
+    return zone;
   }
 }

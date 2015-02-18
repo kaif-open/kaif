@@ -64,7 +64,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         debater,
         "pixel art is *better*");
 
-    Debate debate = debateDao.findDebate(created.getDebateId()).get();
+    Debate debate = service.loadDebate(created.getDebateId());
     assertEquals(DebateContentType.MARK_DOWN, debate.getContentType());
     assertEquals("debater1", debate.getDebaterName());
     assertEquals(debater.getAccountId(), debate.getDebaterId());
@@ -116,10 +116,10 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
-  public void listBestDebatess_one_level() throws Exception {
+  public void listBestDebates_one_level() throws Exception {
     Zone zone = zoneInfo.getZone();
     FlakeId articleId = article.getArticleId();
-    assertEquals(0, service.listBestDebates(zone, articleId, 0).depthFirst().count());
+    assertEquals(0, service.listBestDebates(articleId, null).depthFirst().count());
 
     List<Debate> debates = IntStream.rangeClosed(1, 3)
         .mapToObj(i -> service.debate(zone,
@@ -129,8 +129,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
             "debate-content-" + i))
         .collect(toList());
 
-    assertEquals(debates,
-        service.listBestDebates(zone, articleId, 0).depthFirst().collect(toList()));
+    assertEquals(debates, service.listBestDebates(articleId, null).depthFirst().collect(toList()));
   }
 
   @Test
@@ -159,7 +158,21 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     );
 
     assertEquals(expect,
-        service.listBestDebates(zoneInfo.getZone(), article.getArticleId(), 0)
+        service.listBestDebates(article.getArticleId(), null).depthFirst().collect(toList()));
+  }
+
+  @Test
+  public void listChildDebates() throws Exception {
+    Debate d1 = savedDebate(null);
+    Debate d1_1 = savedDebate(d1);
+    Debate d1_1_1 = savedDebate(d1_1);
+    // begin out or order
+    Debate d1_1_2 = savedDebate(d1_1);
+
+    List<Debate> expect = asList(d1_1_1, d1_1_2);
+
+    assertEquals(expect,
+        service.listBestDebates(article.getArticleId(), d1_1.getDebateId())
             .depthFirst()
             .collect(toList()));
   }
