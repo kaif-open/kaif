@@ -102,7 +102,7 @@ public class Debate {
     return debateId;
   }
 
-  FlakeId getParentDebateId() {
+  public FlakeId getParentDebateId() {
     return parentDebateId;
   }
 

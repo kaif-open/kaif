@@ -68,10 +68,15 @@
     </@debate>
 </#macro>
 
-<#macro debate data smallConvex>
+<#-- if parentMode set to true, it means this debate is top of the page
+     it will handle `parent` link differently. (also show hint)
+  -->
+<#macro debate data smallConvex=false parentMode=false>
+
     <#local debate=data />
     <#local gridConvex=smallConvex?string("grid-sm-convex", "grid-convex") />
-<div class="debate grid-row"
+
+<div id="debate-${debate.debateId}" class="debate grid-row"
      debate
      data-debate-id="${debate.debateId}"
      data-debater-name="${debate.debaterName}">
@@ -103,13 +108,17 @@
                 <a href="#" debate-replier
                    data-debate-id="${debate.debateId}">回應</a>
             </#if>
-            <#if debate.hasParent()>
-                <a>parent</a>
+            <#if debate.hasParent() && !parentMode >
+                <a href="#debate-${debate.parentDebateId}">上層</a>
             </#if>
-            <a href="/z/${debate.zone}/debates/${debate.articleId}/${debate.debateId}">永遠連結</a>
-            <a href="#" debate-editor
-               data-debate-id="${debate.debateId}" class="hidden">編輯</a>
-            <span>${relativeTime(debate.createTime)}</span>
+        <#--
+          permenant link is sub debate tree only, we don't want google index it.
+          so rel="nofollow"
+          -->
+            <a href="/z/${debate.zone}/debates/${debate.articleId}/${debate.debateId}"
+               rel="nofollow">${relativeTime(debate.createTime)}</a>
+
+            <a href="#" debate-editor data-debate-id="${debate.debateId}" class="hidden">編輯</a>
         </div>
         <div class="debate-child">
         <#-- child debate here -->
@@ -117,4 +126,15 @@
         </div>
     </div>
 </div>
+
+    <#if parentMode>
+    <div class="grid-center-row child-debate-hint">
+        <div class="alert alert-info">
+            這是文章的子討論串，你可以回到上層查看所有討論和文章
+            <div>
+                <a href="/z/${debate.zone}/debates/${debate.articleId}">回上層</a>
+            </div>
+        </div>
+    </div>
+    </#if>
 </#macro>

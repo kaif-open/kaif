@@ -34,22 +34,13 @@ head=headContent
             <div class="debate-tree" debate-tree>
                 <#if parentDebate??>
 
-                <#-- parent is Debate, we still create article component for dart,
+                <#-- tree parent is Debate, we still create article component for dart,
                      but it is invisible to user -->
                     <@comp.article data=article hidden=true />
-                    <@comp.debate data=parentDebate smallConvex=false/>
-
-                    <div class="grid-center-row child-debate-hint">
-                        <div class="alert alert-info">
-                            這是文章的子討論串，你可以回到上層查看所有討論和文章
-                            <div>
-                                <a href="/z/${zoneInfo.zone}/debates/${article.articleId}">回上層</a>
-                            </div>
-                        </div>
-                    </div>
+                    <@comp.debate data=parentDebate parentMode=true/>
                 <#else>
 
-                <#-- parent is Article -->
+                <#-- tree parent is Article -->
                     <@comp.article data=article />
                     <div class="grid-center-row debate-form-container">
                     <#-- place holder debate-form will replace by comp-template
