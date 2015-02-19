@@ -77,6 +77,7 @@
 
     <#local debate=data />
     <#local gridConvex=smallConvex?string("grid-sm-convex", "grid-convex") />
+    <#local gridCenter=smallConvex?string("grid-sm-center", "grid-center") />
 
 <div id="debate-${debate.debateId}" class="debate grid-row"
      debate
@@ -92,7 +93,7 @@
             <div class="down-vote"></div>
         </a>
     </div>
-    <div class="grid-center">
+    <div class="${gridCenter}">
         <div class="debate-title">
             <a class="debate-author"
                href="<@url.account data=debate/>">${debate.debaterName}</a>
