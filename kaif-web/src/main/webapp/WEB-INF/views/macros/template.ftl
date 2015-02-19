@@ -174,7 +174,7 @@ sample configs:
 <div class="zone ${zoneInfo.theme}">
     <div class="zone-header">
         <div class="zone-title">${zoneInfo.aliasName} -
-            /z/${zoneInfo.name}</div>
+            <@url.zone data=zoneInfo/></div>
     </div>
     <nav class="zone-menu pure-menu pure-menu-open pure-menu-horizontal">
         <@template.menuLink '/z/${zoneInfo.name}' '熱門'/>

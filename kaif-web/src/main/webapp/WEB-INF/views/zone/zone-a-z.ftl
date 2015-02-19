@@ -29,7 +29,7 @@ head=headContent>
                         <#list zoneAtoZ[cat] as zoneInfo>
                             <tr>
                                 <td class="zone-name">
-                                    <a href="/z/${zoneInfo.zone}">/z/${zoneInfo.zone}</a>
+                                    <a href="<@url.zone data=zoneInfo/>">/z/${zoneInfo.zone}</a>
                                 </td>
                                 <td>
                                 ${zoneInfo.aliasName}

@@ -37,17 +37,18 @@
     </div>
     <div class="grid-center">
         <div class="article-title">
+            <#-- TODO, not to use article content as url directly -->
             <a href="${article.content}" target="_blank">${article.title}</a>
             <span class="article-link-hint">(${article.linkHint})</span>
         </div>
         <div class="article-info">
             <span>
-                <a href="/z/${article.zone}/debates/${article.articleId}">
+                <a href="<@url.article data=article/>">
                 ${article.debateCount} 則討論</a>
             </span>
             <span>
                 <a class="article-author"
-                   href="/u/${article.authorName}">${article.authorName}</a>
+                   href="<@url.account data=article/>">${article.authorName}</a>
                 張貼於 ${relativeTime(article.createTime)}
             </span>
         </div>
@@ -93,9 +94,14 @@
     <div class="grid-center">
         <div class="debate-title">
             <a class="debate-author"
-               href="/u/${debate.debaterName}">${debate.debaterName}</a>
+               href="<@url.account data=debate/>">${debate.debaterName}</a>
             積分
-            ( <span debate-vote-count>${debate.totalVote}</span> )
+            <span debate-vote-count>${debate.totalVote}</span>
+            <#if debate.edited>
+                <span>編輯於
+
+                </span>
+            </#if>
         </div>
         <div class="debate-content">
             <div class="kmark" debate-content>
@@ -115,7 +121,7 @@
           permenant link is sub debate tree only, we don't want google index it.
           so rel="nofollow"
           -->
-            <a href="/z/${debate.zone}/debates/${debate.articleId}/${debate.debateId}"
+            <a href="<@url.debate data=debate/>"
                rel="nofollow">${relativeTime(debate.createTime)}</a>
 
             <a href="#" debate-editor data-debate-id="${debate.debateId}" class="hidden">編輯</a>
@@ -132,7 +138,8 @@
         <div class="alert alert-info">
             這是文章的子討論串，你可以回到上層查看所有討論和文章
             <div>
-                <a href="/z/${debate.zone}/debates/${debate.articleId}">回上層</a>
+                <a href="<@url.article data=debate/>"
+                   class="pure-button button-sm button-info" ><i class="fa fa-caret-up"></i> 回上層</a>
             </div>
         </div>
     </div>

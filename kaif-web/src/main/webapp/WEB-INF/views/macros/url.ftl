@@ -45,3 +45,29 @@
     ${currentUrl}
     </#if>
 </#compress></#macro>
+
+<#-- zone url,
+     data can be ZoneInfo, Article, or Debate -->
+<#macro zone data>/z/${data.zone}</#macro>
+
+<#-- article's debate url,
+     data can be Article or Debate -->
+<#macro article data>/z/${data.zone}/debates/${data.articleId}</#macro>
+
+<#-- debate's permanent url,
+     data is Debate -->
+<#macro debate data>/z/${data.zone}/debates/${data.articleId}/${data.debateId}</#macro>
+
+<#-- account's public url, data can be
+     Account, Debate (debaterName), Article (article author name) -->
+<#macro account data>
+    <#compress>
+        <#if (data.debaterName)??>
+        /u/${data.debaterName}
+        <#elseif (data.authorName)??>
+        /u/${data.authorName}
+        <#else>
+        /u/${data.username}
+        </#if>
+    </#compress>
+</#macro>
