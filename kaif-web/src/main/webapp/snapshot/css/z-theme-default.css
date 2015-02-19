@@ -1,15 +1,18 @@
+/*
+ material design - Blue Grey
+ */
 .z-theme-default {
-    color: darkblue;
 }
 
-.z-theme-default .zone-menu .pure-menu-heading {
-    color: darkblue;
+.z-theme-default .zone-title {
+    color: #263238;
 }
 
 .z-theme-default .zone-menu .pure-menu-selected {
-    background-color: #eee;
+    background-color: #ECEFF1;
 }
 
 .z-theme-default .zone-menu li a:hover {
-    background-color: #eee;
+    background-color: #CFD8DC;
+    color: #263238;
 }

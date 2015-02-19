@@ -80,11 +80,11 @@ a.create-article {
   a {
     text-decoration: none;
   }
-  a:hover {
-    color: @link-hover-color;
-  }
   a:visited {
     color: @gray-lighter;
+  }
+  a:hover {
+    color: @link-hover-color;
   }
   // note <a> 's outline is preserved
   // it used as a hint for user just visited that link
@@ -96,16 +96,18 @@ a.create-article {
 }
 
 .article-info {
+  color: @gray-light;
+
   & > * {
     padding-right: @padding-horizontal;
   }
 
   span {
-
   }
 
   a {
     color: @gray-light;
+    text-decoration: none;
     &:hover {
       color: @link-hover-color;
     }
@@ -133,6 +135,14 @@ a.create-article {
 
 .debate {
   margin-top: @padding-lg-vertical;
+
+  .vote-count {
+    //    font-size: @font-size;
+    //    color: @gray-dark;
+    padding: @padding-xs-vertical @padding-xs-horizontal;
+    border-radius: 2px;
+    border: 1px solid lighten(@gray-base, 80%);
+  }
 }
 
 .debate-vote-box {
@@ -150,16 +160,12 @@ a.create-article {
   }
 }
 
-.debate-vote-box a {
-}
-
 .debate-info, .debate-title {
   font-size: @font-size-sm;
-  & > * {
-    padding-right: @padding-horizontal;
-  }
+  color: @gray-light;
 
-  span {
+  & > * {
+    padding-right: @padding-xs-horizontal;
   }
 
   a {
@@ -170,11 +176,23 @@ a.create-article {
       text-decoration: underline;
     }
   }
+  .debate-edited {
+    color: @gray-dark;
+  }
+}
+
+.debate-action {
+  a {
+    .weak-button();
+    .button-sm();
+  }
 }
 
 .debate-child {
   .debate {
-    border-left: 1px solid @gray-lightest;
+    // solid left or shadow left border, which one ?
+    // border-left: 1px solid @gray-lightest;
+    box-shadow: -7px 0px 5px -6px @gray-lightest;
   }
 }
 

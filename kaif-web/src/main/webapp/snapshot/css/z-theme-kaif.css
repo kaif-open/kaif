@@ -1,15 +1,18 @@
+/*
+ material design - Red
+ */
 .z-theme-kaif {
-    color: darkred;
 }
 
-.z-theme-kaif .zone-menu .pure-menu-heading {
-    color: darkred;
+.z-theme-kaif .zone-title {
+    color: #B71C1C;
 }
 
 .z-theme-kaif .zone-menu .pure-menu-selected {
-    background-color: #f2dede;
+    background-color: #FFEBEE;
 }
 
 .z-theme-kaif .zone-menu li a:hover {
-    background-color: #f2dede;
+    background-color: #FFCDD2;
+    color: #B71C1C;
 }

@@ -44,8 +44,8 @@
         </div>
         <div class="article-info">
             <span>
-                <a href="<@url.article data=article/>">
-                ${article.debateCount} 則討論</a>
+                <a href="<@url.article data=article/>"><i
+                        class="fa fa-caret-right"></i> ${article.debateCount} 則討論</a>
             </span>
             <span>
                 <a class="article-author"
@@ -100,7 +100,7 @@
                 積分 <span class="vote-count" debate-vote-count>${debate.totalVote}</span>
             </span>
             <#if debate.edited>
-                <span>編輯於 <@util.time instant=debate.lastUpdateTime /></span>
+                <span class="debate-edited">編輯於 <@util.time instant=debate.lastUpdateTime /></span>
             </#if>
         </div>
         <div class="debate-content">
@@ -109,22 +109,24 @@
             </div>
             <div debate-content-edit class="hidden"></div>
         </div>
-        <div class="debate-info">
-            <#if !debate.maxLevel>
-                <a href="#" debate-replier
-                   data-debate-id="${debate.debateId}">回應</a>
-            </#if>
-            <#if debate.hasParent() && !parentMode >
-                <a href="#debate-${debate.parentDebateId}">上層</a>
-            </#if>
-        <#--
-          permenant link is sub debate tree only, we don't want google index it.
-          so rel="nofollow"
-          -->
-            <a href="<@url.debate data=debate/>"
-               rel="nofollow"><@util.time instant=debate.createTime /></a>
+        <div class="debate-action">
+            <#compress>
+                <#if !debate.maxLevel>
+                    <a href="#" debate-replier
+                       data-debate-id="${debate.debateId}">回應</a>
+                </#if>
+                <#if debate.hasParent() && !parentMode >
+                    <a href="#debate-${debate.parentDebateId}">上層</a>
+                </#if>
+            <#--
+              permenant link is sub debate tree only, we don't want google index it.
+              so rel="nofollow"
+              -->
+                <a href="<@url.debate data=debate/>"
+                   rel="nofollow"><@util.time instant=debate.createTime /></a>
 
-            <a href="#" debate-editor data-debate-id="${debate.debateId}" class="hidden">編輯</a>
+                <a href="#" debate-editor data-debate-id="${debate.debateId}" class="hidden">編輯</a>
+            </#compress>
         </div>
         <div class="debate-child">
         <#-- child debate here -->
