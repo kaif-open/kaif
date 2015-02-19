@@ -1,12 +1,13 @@
 <#import "/spring.ftl" as spring />
 <#import "../macros/template.ftl" as template>
+<#import "../macros/util.ftl" as util>
 <div class="zone">
 
     <div class="pure-g">
         <div class="pure-u-1">
             <ul class="zone-menu pure-menu pure-menu-open pure-menu-horizontal">
-            <@template.menuLink '/z/${zoneInfo.name}/article/create' '分享好連結'/>
-            <@template.menuLink '/z/${zoneInfo.name}/article/create-self' '寫文章'/>
+            <@util.menuLink '/z/${zoneInfo.name}/article/create' '分享好連結'/>
+            <@util.menuLink '/z/${zoneInfo.name}/article/create-self' '寫文章'/>
             </ul>
         </div>
         <div class="pure-u-1 pure-u-md-3-4">

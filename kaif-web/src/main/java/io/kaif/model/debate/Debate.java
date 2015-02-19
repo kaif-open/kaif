@@ -227,4 +227,8 @@ public class Debate {
   public Zone getZone() {
     return zone;
   }
+
+  public boolean isEdited() {
+    return lastUpdateTime.isAfter(createTime);
+  }
 }

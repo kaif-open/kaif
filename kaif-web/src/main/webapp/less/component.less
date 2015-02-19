@@ -153,7 +153,8 @@ a.create-article {
 .debate-vote-box a {
 }
 
-.debate-info {
+.debate-info, .debate-title {
+  font-size: @font-size-sm;
   & > * {
     padding-right: @padding-horizontal;
   }
@@ -162,9 +163,11 @@ a.create-article {
   }
 
   a {
+    text-decoration: none;
     color: @gray-light;
     &:hover {
       color: @link-hover-color;
+      text-decoration: underline;
     }
   }
 }

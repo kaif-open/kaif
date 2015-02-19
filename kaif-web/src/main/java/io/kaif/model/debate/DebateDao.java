@@ -159,8 +159,12 @@ public class DebateDao implements DaoOperations {
   }
 
   //TODO evict cache
-  public void changeContent(FlakeId debateId, String content) {
-    jdbc().update(" UPDATE Debate SET content = ? WHERE debateId = ? ", content, debateId.value());
+  public void updateContent(FlakeId debateId, String content, Instant now) {
+    jdbc().update(""
+        + " UPDATE Debate "
+        + "    SET content = ?"
+        + "      , lastUpdateTime = ? "
+        + "  WHERE debateId = ? ", content, Timestamp.from(now), debateId.value());
   }
 
 }

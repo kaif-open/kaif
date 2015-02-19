@@ -2,6 +2,7 @@
 <#import "../macros/template.ftl" as template>
 <#import "../macros/url.ftl" as url>
 <#import "../macros/comp.ftl" as comp>
+<#import "../macros/util.ftl" as util>
 
 <#assign headContent>
 
@@ -23,7 +24,7 @@ config={
 head=headContent
 >
     <#assign debateMenus>
-        <@template.menuLink '/z/${zoneInfo.name}/debates/${article.articleId}' '討論'/>
+        <@util.menuLink '/z/${zoneInfo.name}/debates/${article.articleId}' '討論'/>
     </#assign>
 
     <@template.zone data=zoneInfo menus=debateMenus>

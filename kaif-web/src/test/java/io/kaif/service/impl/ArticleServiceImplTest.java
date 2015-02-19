@@ -391,10 +391,14 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   @Test
   public void updateDebateContent() throws Exception {
     Debate d1 = savedDebate(null);
+    Thread.sleep(200);
     String result = service.updateDebateContent(d1.getDebateId(),
         citizen,
         "pixel art is better<evil>hi</evil>*hi*");
     assertEquals("<p>pixel art is better&lt;evil&gt;hi&lt;/evil&gt;<em>hi</em></p>\n", result);
+    Debate updated = service.loadDebate(d1.getDebateId());
+    assertTrue(updated.isEdited());
+    assertTrue(updated.getLastUpdateTime().isAfter(d1.getLastUpdateTime()));
   }
 
   @Test

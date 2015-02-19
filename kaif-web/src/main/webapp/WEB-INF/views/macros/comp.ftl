@@ -1,5 +1,6 @@
 <#import "/spring.ftl" as spring />
 <#import "url.ftl" as url />
+<#import "util.ftl" as util/>
 
 <#-- Article components -->
 
@@ -30,14 +31,14 @@
      data-zone="${article.zone}">
     <div class="article-vote-box votable grid-convex" article-vote-box
          data-article-vote-count="${article.upVote}">
-        <span article-vote-count>${article.upVote}</span>
+        <span class="vote-count" article-vote-count>${article.upVote}</span>
         <a href="#" article-up-vote>
             <div class="up-vote"></div>
         </a>
     </div>
     <div class="grid-center">
         <div class="article-title">
-            <#-- TODO, not to use article content as url directly -->
+        <#-- TODO, not to use article content as url directly -->
             <a href="${article.content}" target="_blank">${article.title}</a>
             <span class="article-link-hint">(${article.linkHint})</span>
         </div>
@@ -49,7 +50,7 @@
             <span>
                 <a class="article-author"
                    href="<@url.account data=article/>">${article.authorName}</a>
-                張貼於 ${relativeTime(article.createTime)}
+                張貼於 <@util.time instant=article.createTime />
             </span>
         </div>
     </div>
@@ -95,12 +96,11 @@
         <div class="debate-title">
             <a class="debate-author"
                href="<@url.account data=debate/>">${debate.debaterName}</a>
-            積分
-            <span debate-vote-count>${debate.totalVote}</span>
+            <span>
+                積分 <span class="vote-count" debate-vote-count>${debate.totalVote}</span>
+            </span>
             <#if debate.edited>
-                <span>編輯於
-
-                </span>
+                <span>編輯於 <@util.time instant=debate.lastUpdateTime /></span>
             </#if>
         </div>
         <div class="debate-content">
@@ -122,7 +122,7 @@
           so rel="nofollow"
           -->
             <a href="<@url.debate data=debate/>"
-               rel="nofollow">${relativeTime(debate.createTime)}</a>
+               rel="nofollow"><@util.time instant=debate.createTime /></a>
 
             <a href="#" debate-editor data-debate-id="${debate.debateId}" class="hidden">編輯</a>
         </div>
@@ -139,7 +139,7 @@
             這是文章的子討論串，你可以回到上層查看所有討論和文章
             <div>
                 <a href="<@url.article data=debate/>"
-                   class="pure-button button-sm button-info" ><i class="fa fa-caret-up"></i> 回上層</a>
+                   class="pure-button button-sm button-info"><i class="fa fa-caret-up"></i> 回上層</a>
             </div>
         </div>
     </div>

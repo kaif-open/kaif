@@ -103,7 +103,7 @@ public class ArticleServiceImpl implements ArticleService {
         .filter(debate::canEdit)
         .orElseThrow(() -> new AccessDeniedException("no permission to edit debate:" + debateId));
 
-    debateDao.changeContent(debateId, content);
+    debateDao.updateContent(debateId, content, Instant.now());
 
     log.info("user(id:{}) update debate's(id:{}) content:{}",
         editorAuth.authenticatedId(),
