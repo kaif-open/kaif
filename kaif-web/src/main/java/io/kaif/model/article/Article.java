@@ -5,30 +5,44 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.UUID;
 
+import javax.validation.UnexpectedTypeException;
+
+import org.springframework.web.util.HtmlUtils;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+
 import io.kaif.flake.FlakeId;
+import io.kaif.kmark.KmarkProcessor;
 import io.kaif.model.account.Account;
 import io.kaif.model.zone.Zone;
 
 public class Article {
 
+  // note that checking string length should use unescaped one
+  // database are allow more room for escaped string
   public static final int TITLE_MIN = 3;
   public static final int TITLE_MAX = 128;
   public static final int URL_MAX = 512;
+  public static final int CONTENT_MIN = 10;
+  public static final int CONTENT_MAX = 16384;
 
-  public static Article createExternalLink(Zone zone,
+  public static Article createSpeak(Zone zone,
       FlakeId articleId,
       Account author,
       String title,
-      String url,
+      String content,
       Instant now) {
+    Preconditions.checkArgument(isValidTitle(title));
+    Preconditions.checkArgument(isValidContent(content));
+    String safeTitle = HtmlUtils.htmlEscape(title);
     return new Article(zone,
         articleId,
-        title,
+        safeTitle,
         null,
-        ArticleLinkType.EXTERNAL,
+        content,
+        ArticleContentType.MARK_DOWN,
         now,
-        url,
-        ArticleContentType.URL,
         author.getAccountId(),
         author.getUsername(),
         false,
@@ -37,32 +51,78 @@ public class Article {
         0);
   }
 
+  private static boolean isValidContent(String content) {
+    return content != null && content.length() <= CONTENT_MAX && content.length() >= CONTENT_MIN;
+  }
+
+  public static Article createExternalLink(Zone zone,
+      FlakeId articleId,
+      Account author,
+      String title,
+      String link,
+      Instant now) {
+    Preconditions.checkArgument(isValidTitle(title));
+    Preconditions.checkArgument(isValidLink(link));
+    String safeTitle = HtmlUtils.htmlEscape(title);
+    String safeLink = HtmlUtils.htmlEscape(link);
+    return new Article(zone,
+        articleId,
+        safeTitle,
+        safeLink,
+        null,
+        ArticleContentType.NONE,
+        now,
+        author.getAccountId(),
+        author.getUsername(),
+        false,
+        0,
+        0,
+        0);
+  }
+
+  private static boolean isValidLink(String link) {
+    return link != null && link.length() <= URL_MAX && validateUrl(link);
+  }
+
+  private static boolean validateUrl(String url) {
+    try {
+      new URL(url);
+      return true;
+    } catch (MalformedURLException e) {
+      return false;
+    }
+  }
+
+  private static boolean isValidTitle(String title) {
+    return title != null && title.length() <= TITLE_MAX && title.length() >= TITLE_MIN;
+  }
+
+  public static String renderSpeakPreview(String content) {
+    return KmarkProcessor.process(content, "");
+  }
+
   private final Zone zone;
   private final FlakeId articleId;
   private final String title;
-  private final String urlName;
-  private final ArticleLinkType linkType;
   private final Instant createTime;
+  private final String link;
   private final String content;
   private final ArticleContentType contentType;
   private final UUID authorId;
   private final String authorName;
   private final boolean deleted;
   private final long upVote;
-
   //article downVote count is preserved, not used
   private final long downVote;
-
   private final long debateCount;
 
   Article(Zone zone,
       FlakeId articleId,
       String title,
-      String urlName,
-      ArticleLinkType linkType,
-      Instant createTime,
+      String link,
       String content,
       ArticleContentType contentType,
+      Instant createTime,
       UUID authorId,
       String authorName,
       boolean deleted,
@@ -72,11 +132,10 @@ public class Article {
     this.zone = zone;
     this.articleId = articleId;
     this.title = title;
-    this.urlName = urlName;
-    this.linkType = linkType;
-    this.createTime = createTime;
+    this.link = link;
     this.content = content;
     this.contentType = contentType;
+    this.createTime = createTime;
     this.authorId = authorId;
     this.authorName = authorName;
     this.deleted = deleted;
@@ -95,14 +154,6 @@ public class Article {
 
   public String getTitle() {
     return title;
-  }
-
-  public String getUrlName() {
-    return urlName;
-  }
-
-  public ArticleLinkType getLinkType() {
-    return linkType;
   }
 
   public Instant getCreateTime() {
@@ -141,6 +192,10 @@ public class Article {
     return debateCount;
   }
 
+  public String getLink() {
+    return link;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -173,15 +228,33 @@ public class Article {
   }
 
   public String getLinkHint() {
-    if (linkType == ArticleLinkType.EXTERNAL) {
+    if (isExternalLink()) {
       try {
-        return new URL(content).getHost();
+        return new URL(link).getHost();
       } catch (MalformedURLException e) {
-        return "--bad--";
+        //this should never happened because constructor protected with design contract.
+        throw new UnexpectedTypeException("malformed url");
       }
     } else {
-      //TODO for other type
-      return linkType.name().toLowerCase();
+      return "/z/" + zone;
     }
+  }
+
+  /**
+   * the method only allowed for article with content
+   */
+  public String getRenderContent() {
+    switch (contentType) {
+      case NONE:
+        return "";
+      case MARK_DOWN:
+        return KmarkProcessor.process(content, articleId.toString());
+      case MATOME:
+    }
+    throw new UnsupportedOperationException("could not render with type:" + contentType);
+  }
+
+  public boolean isExternalLink() {
+    return !Strings.isNullOrEmpty(link);
   }
 }

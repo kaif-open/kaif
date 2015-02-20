@@ -4,6 +4,8 @@ import 'dart:html';
 import 'package:kaif_web/util.dart';
 import 'package:kaif_web/model.dart';
 
+//TODO auto save draft if speak mode
+//TODO kmark preview, for article
 class ArticleForm {
 
   final Element elem;

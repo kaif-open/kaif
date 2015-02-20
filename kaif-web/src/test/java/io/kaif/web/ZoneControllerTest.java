@@ -32,8 +32,8 @@ public class ZoneControllerTest extends MvcIntegrationTests {
     Zone z = zoneInfo.getZone();
     when(zoneService.loadZone(z)).thenReturn(zoneInfo);
 
-    Article article1 = article(z, "javascript");
-    Article article2 = article(z, FlakeId.fromString("phpone"), "php-lang");
+    Article article1 = article(z, "javascript discussion");
+    Article article2 = article(z, FlakeId.fromString("phpone"), "php-lang discussion");
 
     when(articleService.listHotZoneArticles(z, FlakeId.fromString("123456"))).thenReturn(//
         asList(article1, article2));
@@ -50,7 +50,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
     Zone z = zoneInfo.getZone();
     when(zoneService.loadZone(z)).thenReturn(zoneInfo);
     when(articleService.listLatestZoneArticles(z, null)).thenReturn(//
-        asList(article(z, "java"), article(z, "ruby"), article(z, "golang")));
+        asList(article(z, "java 123"), article(z, "ruby 999"), article(z, "golang 456")));
     mockMvc.perform(get("/z/programming/new"))
         .andExpect(content().string(containsString("programming-alias")))
         .andExpect(content().string(containsString("java")))
@@ -64,8 +64,8 @@ public class ZoneControllerTest extends MvcIntegrationTests {
     Zone z = zoneInfo.getZone();
     when(zoneService.loadZone(z)).thenReturn(zoneInfo);
 
-    Article article1 = article(z, "erlang");
-    Article article2 = article(z, FlakeId.fromString("csharp"), "C#");
+    Article article1 = article(z, "erlang discussion");
+    Article article2 = article(z, FlakeId.fromString("csharp"), "C# too many features");
     when(articleService.listLatestZoneArticles(z, FlakeId.fromString("bcdefg"))).thenReturn(//
         asList(article1, article2));
 
@@ -77,7 +77,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
   public void articleDebates() throws Exception {
     Zone z = zoneInfo.getZone();
     FlakeId articleId = FlakeId.fromString("aaa");
-    Article article = article(z, "erlang");
+    Article article = article(z, "erlang discussion");
     List<Debate> debates = asList(//
         debate(article, "ERLANG is bad", null), //
         debate(article, "JAVA is better", null));
@@ -91,7 +91,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
         .andExpect(view().name("article/debates"))
         .andExpect(content().string(containsString("/snapshot/css/z-theme-default.css")))
         .andExpect(content().string(containsString("programming-alias")))
-        .andExpect(content().string(containsString("erlang")))
+        .andExpect(content().string(containsString("erlang discussion")))
         .andExpect(content().string(containsString("ERLANG is bad")))
         .andExpect(content().string(containsString("JAVA is better")));
   }
@@ -100,7 +100,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
   public void childDebates() throws Exception {
     Zone z = zoneInfo.getZone();
     FlakeId articleId = FlakeId.fromString("aaa");
-    Article article = article(z, "erlang");
+    Article article = article(z, "erlang discussion");
 
     Debate parentDebate = debate(article, "use the right tool", null);
 

@@ -36,11 +36,10 @@ public class ArticleDao implements DaoOperations {
         Zone.valueOf(rs.getString("zone")),
         FlakeId.valueOf(rs.getLong("articleId")),
         rs.getString("title"),
-        rs.getString("urlName"),
-        ArticleLinkType.valueOf(rs.getString("linkType")),
-        rs.getTimestamp("createTime").toInstant(),
+        rs.getString("link"),
         rs.getString("content"),
         ArticleContentType.valueOf(rs.getString("contentType")),
+        rs.getTimestamp("createTime").toInstant(),
         UUID.fromString(rs.getString("authorId")),
         rs.getString("authorName"),
         rs.getBoolean("deleted"),
@@ -58,18 +57,17 @@ public class ArticleDao implements DaoOperations {
     jdbc().update(""
             + " INSERT "
             + "   INTO Article "
-            + "        (zone, articleid, title, urlname, linktype, createtime, content, "
-            + "         contenttype, authorid, authorname, deleted, upvote, downvote, debatecount)"
+            + "        (zone, articleid, title, link, content, contentType, "
+            + "         createTime, authorid, authorname, deleted, upvote, downvote, debatecount)"
             + " VALUES "
-            + questions(14),
+            + questions(13),
         article.getZone().value(),
         article.getArticleId().value(),
         article.getTitle(),
-        article.getUrlName(),
-        article.getLinkType().name(),
-        Timestamp.from(article.getCreateTime()),
+        article.getLink(),
         article.getContent(),
         article.getContentType().name(),
+        Timestamp.from(article.getCreateTime()),
         article.getAuthorId(),
         article.getAuthorName(),
         article.isDeleted(),
@@ -234,4 +232,12 @@ public class ArticleDao implements DaoOperations {
         article.getArticleId().value());
   }
 
+  public Article createSpeak(Zone zone, Account author, String title, String content, Instant now) {
+    return insertArticle(Article.createSpeak(zone,
+        articleFlakeIdGenerator.next(),
+        author,
+        title,
+        content,
+        now));
+  }
 }

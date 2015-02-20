@@ -39,7 +39,11 @@
     <div class="grid-center">
         <div class="article-title">
         <#-- TODO, not to use article content as url directly -->
-            <a href="${article.content}" target="_blank">${article.title}</a>
+            <#if article.externalLink>
+                <a href="${article.link}" target="_blank">${article.title}</a>
+            <#else>
+                <a href="<@url.article data=article />">${article.title}</a>
+            </#if>
             <span class="article-link-hint">(${article.linkHint})</span>
         </div>
         <div class="article-info">
@@ -123,7 +127,7 @@
               permenant link is sub debate tree only, we don't want google index it.
               so rel="nofollow"
               -->
-                <a href="<@url.debate data=debate/>"
+                <a href="<@url.debate data=debate/>" title="永久連結"
                    rel="nofollow"><@util.time instant=debate.createTime /></a>
 
                 <a href="#" debate-editor data-debate-id="${debate.debateId}" class="hidden">編輯</a>

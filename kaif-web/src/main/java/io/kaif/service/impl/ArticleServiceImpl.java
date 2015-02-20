@@ -3,6 +3,7 @@ package io.kaif.service.impl;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import javax.annotation.Nullable;
 
@@ -53,7 +54,15 @@ public class ArticleServiceImpl implements ArticleService {
   public Article createExternalLink(Authorization authorization,
       Zone zone,
       String title,
-      String url) {
+      String link) {
+    return createArticle(authorization,
+        zone,
+        author -> articleDao.createExternalLink(zone, author, title, link, Instant.now()));
+  }
+
+  private Article createArticle(Authorization authorization,
+      Zone zone,
+      Function<Account, Article> articleCreator) {
     //creating article should not use cache
     ZoneInfo zoneInfo = zoneDao.loadZoneWithoutCache(zone);
 
@@ -61,11 +70,7 @@ public class ArticleServiceImpl implements ArticleService {
         .filter(zoneInfo::canWriteArticle)
         .orElseThrow(() -> new AccessDeniedException("no write to create article at zone:" + zone));
 
-    Article article = articleDao.createExternalLink(zone,
-        author,
-        HtmlUtils.htmlEscape(title),
-        HtmlUtils.htmlEscape(url),
-        Instant.now());
+    Article article = articleCreator.apply(author);
     accountDao.increaseArticleCount(author);
     return article;
   }
@@ -170,5 +175,11 @@ public class ArticleServiceImpl implements ArticleService {
   public boolean canCreateArticle(Zone zone, Authorization auth) {
     ZoneInfo zoneInfo = zoneDao.loadZone(zone);
     return accountDao.strongVerifyAccount(auth).filter(zoneInfo::canWriteArticle).isPresent();
+  }
+
+  public Article createSpeak(Authorization authorization, Zone zone, String title, String content) {
+    return createArticle(authorization,
+        zone,
+        author -> articleDao.createSpeak(zone, author, title, content, Instant.now()));
   }
 }

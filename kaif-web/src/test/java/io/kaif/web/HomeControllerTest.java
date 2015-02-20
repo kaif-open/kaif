@@ -23,10 +23,10 @@ public class HomeControllerTest extends MvcIntegrationTests {
   @Test
   public void index() throws Exception {
     when(articleService.listTopArticles(null)).thenReturn(//
-        asList(article(funZone.getZone(), "joke1")));
+        asList(article(funZone.getZone(), "joke xyz 1")));
     mockMvc.perform(get("/"))
         .andExpect(content().encoding("UTF-8"))
-        .andExpect(content().string(containsString("joke1")))
+        .andExpect(content().string(containsString("joke xyz 1")))
         .andExpect(content().string(containsString("/snapshot/css/kaif.css")))
         .andExpect(content().string(containsString("/snapshot/web/main.dart.js")));
   }
@@ -47,9 +47,9 @@ public class HomeControllerTest extends MvcIntegrationTests {
   @Test
   public void listLatestArticles() throws Exception {
     when(articleService.listLatestArticles(null)).thenReturn(//
-        asList(article(funZone.getZone(), "joke1"), article(toyZone.getZone(), "gundam")));
+        asList(article(funZone.getZone(), "double 00"), article(toyZone.getZone(), "gundam")));
     mockMvc.perform(get("/new"))
-        .andExpect(content().string(containsString("joke1")))
+        .andExpect(content().string(containsString("double 00")))
         .andExpect(content().string(containsString("gundam")));
   }
 }

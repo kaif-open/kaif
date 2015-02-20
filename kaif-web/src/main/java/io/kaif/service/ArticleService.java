@@ -13,7 +13,7 @@ import io.kaif.model.zone.Zone;
 
 public interface ArticleService {
 
-  Article createExternalLink(Authorization author, Zone zone, String title, String url);
+  Article createExternalLink(Authorization author, Zone zone, String title, String link);
 
   List<Article> listLatestZoneArticles(Zone zone, @Nullable FlakeId startArticleId);
 
@@ -39,5 +39,5 @@ public interface ArticleService {
 
   Debate loadDebate(FlakeId debateId);
 
-  boolean canCreateArticle(Zone zone, Authorization auth);
+  boolean canCreateArticle(Zone zone, Authorization author);
 }

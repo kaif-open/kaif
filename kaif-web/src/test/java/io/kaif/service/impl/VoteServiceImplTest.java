@@ -100,7 +100,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     assertEquals(0, service.listArticleVoters(voter, Collections.emptyList()).size());
 
     service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
-    Article a2 = savedArticle(zoneInfo, savedAccountCitizen("author2"), "t");
+    Article a2 = savedArticle(zoneInfo, savedAccountCitizen("author2"), "title vote");
     service.voteArticle(UP, zone, a2.getArticleId(), voter, EMPTY, 200);
 
     Set<FlakeId> actual = service.listArticleVoters(voter, asList(articleId, a2.getArticleId()))

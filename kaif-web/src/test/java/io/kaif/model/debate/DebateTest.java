@@ -14,8 +14,27 @@ import io.kaif.test.ModelFixture;
 public class DebateTest implements ModelFixture {
 
   @Test
+  public void debate_escape_content() throws Exception {
+
+    Article article = article(Zone.valueOf("foo"), "long t1");
+
+    String content = "pixel art is better<evil>hi</evil>";
+    Debate debate = Debate.create(article,
+        FlakeId.fromString("aabbccdd"),
+        null,
+        content,
+        accountCitizen("debater1"),
+        Instant.now());
+
+    assertEquals(DebateContentType.MARK_DOWN, debate.getContentType());
+    assertEquals("pixel art is better<evil>hi</evil>", debate.getContent());
+    assertEquals("<p>pixel art is better&lt;evil&gt;hi&lt;/evil&gt;</p>\n",
+        debate.getRenderContent());
+  }
+
+  @Test
   public void debateWithLink() throws Exception {
-    Article article = article(Zone.valueOf("foo"), "t1");
+    Article article = article(Zone.valueOf("foo"), "title xyz");
 
     String content = "pixel art is better at [9gaga][1]\n\n[1]: http://www.google.com";
     Debate debate = Debate.create(article,

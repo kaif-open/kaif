@@ -20,7 +20,6 @@ import io.kaif.model.account.AccountStats;
 import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleContentType;
 import io.kaif.model.article.ArticleDao;
-import io.kaif.model.article.ArticleLinkType;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateContentType;
 import io.kaif.model.debate.DebateDao;
@@ -72,31 +71,13 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertFalse(debate.isMaxLevel());
     assertEquals(1, debate.getLevel());
     assertEquals("pixel art is *better*", debate.getContent());
-    assertEquals("<p>pixel art is <em>better</em></p>\n", debate.getRenderContent());
     assertEquals(0L, debate.getDownVote());
     assertEquals(0L, debate.getUpVote());
     assertNotNull(debate.getCreateTime());
     assertNotNull(debate.getLastUpdateTime());
 
     assertEquals(1, service.findArticle(article.getArticleId()).get().getDebateCount());
-
     assertEquals(1, accountService.loadAccountStats(debater.getUsername()).getDebateCount());
-  }
-
-  @Test
-  public void debate_escape_content() throws Exception {
-    Account debater = savedAccountCitizen("debater1");
-    Debate created = service.debate(zoneInfo.getZone(),
-        article.getArticleId(),
-        Debate.NO_PARENT,
-        debater,
-        "pixel art is better<evil>hi</evil>");
-
-    Debate debate = debateDao.findDebate(created.getDebateId()).get();
-    assertEquals(DebateContentType.MARK_DOWN, debate.getContentType());
-    assertEquals("pixel art is better<evil>hi</evil>", debate.getContent());
-    assertEquals("<p>pixel art is better&lt;evil&gt;hi&lt;/evil&gt;</p>\n",
-        debate.getRenderContent());
   }
 
   @Test
@@ -341,18 +322,6 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
-  public void createExternalLink_escape_content() throws Exception {
-    Article created = service.createExternalLink(citizen,
-        zoneInfo.getZone(),
-        "title1<script>alert('123');</script>",
-        "http://foo.com<script>alert('123');</script>");
-    Article article = service.findArticle(created.getArticleId()).get();
-    assertEquals("title1&lt;script&gt;alert(&#39;123&#39;);&lt;/script&gt;", article.getTitle());
-    assertEquals("http://foo.com&lt;script&gt;alert(&#39;123&#39;);&lt;/script&gt;",
-        article.getContent());
-  }
-
-  @Test
   public void createExternalLink() throws Exception {
     Article created = service.createExternalLink(citizen,
         zoneInfo.getZone(),
@@ -361,11 +330,10 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     Article article = service.findArticle(created.getArticleId()).get();
     assertEquals(zoneInfo.getZone(), article.getZone());
     assertEquals("title1", article.getTitle());
-    assertNull(article.getUrlName());
     assertNotNull(article.getCreateTime());
-    assertEquals("http://foo.com", article.getContent());
-    assertEquals(ArticleContentType.URL, article.getContentType());
-    assertEquals(ArticleLinkType.EXTERNAL, article.getLinkType());
+    assertEquals("http://foo.com", article.getLink());
+    assertNull(article.getContent());
+    assertEquals(ArticleContentType.NONE, article.getContentType());
     assertEquals(citizen.getUsername(), article.getAuthorName());
     assertEquals(citizen.getAccountId(), article.getAuthorId());
     assertFalse(article.isDeleted());
@@ -373,16 +341,44 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertEquals(0, article.getDownVote());
     assertEquals(0, article.getDebateCount());
 
+    assertTrue(article.isExternalLink());
     AccountStats stats = accountService.loadAccountStats(citizen.getUsername());
     assertEquals(1, stats.getArticleCount());
   }
 
   @Test
-  public void createExternalLink_not_enough_authority() throws Exception {
+  public void createSpeak() throws Exception {
+    Article created = service.createSpeak(citizen, zoneInfo.getZone(), "title1", "laugh out loud");
+    Article article = service.findArticle(created.getArticleId()).get();
+    assertEquals(zoneInfo.getZone(), article.getZone());
+    assertEquals("title1", article.getTitle());
+    assertNotNull(article.getCreateTime());
+    assertEquals("laugh out loud", article.getContent());
+    assertNull(article.getLink());
+    assertEquals(ArticleContentType.MARK_DOWN, article.getContentType());
+    assertEquals(citizen.getUsername(), article.getAuthorName());
+    assertEquals(citizen.getAccountId(), article.getAuthorId());
+    assertFalse(article.isDeleted());
+    assertEquals(0, article.getUpVote());
+    assertEquals(0, article.getDownVote());
+    assertEquals(0, article.getDebateCount());
+    assertFalse(article.isExternalLink());
+    AccountStats stats = accountService.loadAccountStats(citizen.getUsername());
+    assertEquals(1, stats.getArticleCount());
+  }
+
+  @Test
+  public void createArticle_not_enough_authority() throws Exception {
     ZoneInfo zoneRequireCitizen = savedZoneDefault("fun");
     Account tourist = savedAccountTourist("notActivated");
     try {
       service.createExternalLink(tourist, zoneRequireCitizen.getZone(), "title1", "http://foo.com");
+      fail("AccessDeniedException expected");
+    } catch (AccessDeniedException expected) {
+    }
+
+    try {
+      service.createSpeak(tourist, zoneRequireCitizen.getZone(), "title1", "my content 12345");
       fail("AccessDeniedException expected");
     } catch (AccessDeniedException expected) {
     }

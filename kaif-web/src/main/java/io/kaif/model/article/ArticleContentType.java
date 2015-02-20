@@ -1,8 +1,8 @@
 package io.kaif.model.article;
 
 public enum ArticleContentType {
-  // content is a url
-  URL,
+  // no content
+  NONE,
 
   // content is a mark down article
   MARK_DOWN,
