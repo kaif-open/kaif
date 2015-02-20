@@ -10,9 +10,21 @@ import org.springframework.core.io.ClassPathResource;
 
 public class KmarkProcessorTest {
 
-
   @Before
   public void setup() {
+  }
+
+  /**
+   * ~~aaa~~
+   * ///////////////////////////
+   * <del>aaa</del>
+   *
+   * @throws Exception
+   */
+  @Test
+  public void process_strike_through() throws Exception {
+    assertEquals(readTestFile("kmark/out12.out"),
+        KmarkProcessor.process(readTestFile("kmark/in12.md"), ""));
   }
 
   /**
@@ -30,7 +42,7 @@ public class KmarkProcessorTest {
 
   /**
    * a(_space_)(_space_)
-   * b 
+   * b
    * ///////////////////////////
    * a<br>
    * b

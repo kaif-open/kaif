@@ -410,6 +410,9 @@ class Emitter {
         }
         return c0 != ' ' || c1 != ' ' ? MarkToken.EM_UNDERSCORE : MarkToken.NONE;
       case '~':
+        if (c1 == '~') {
+          return MarkToken.STRIKE;
+        }
         return MarkToken.NONE;
       case '[':
         return MarkToken.LINK;
@@ -522,9 +525,7 @@ class Emitter {
       if (linkRef.title != null && linkRef.title.isEmpty()) {
         out.appendHtml(" title=\"").append(linkRef.title).appendHtml("\"");
       }
-      out.appendHtml(" rel=\"nofollow\">")
-          .append(linkRef.link)
-          .appendHtml("</a><br>\n");
+      out.appendHtml(" rel=\"nofollow\">").append(linkRef.link).appendHtml("</a><br>\n");
     });
     out.appendHtml("</p>");
   }
