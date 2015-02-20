@@ -60,6 +60,7 @@ public class ArticleTest implements ModelFixture {
         "title 123",
         content,
         Instant.now());
+    assertTrue(speakArticle.hasMarkDownContent());
     assertEquals("<p>pixel <code>art</code> is better</p>\n", speakArticle.getRenderContent());
 
     Article linkArticle = Article.createExternalLink(zone,
@@ -68,6 +69,8 @@ public class ArticleTest implements ModelFixture {
         "title 123",
         "http://foo.com",
         Instant.now());
+    assertFalse(linkArticle.hasMarkDownContent());
+    assertEquals("<p>pixel <code>art</code> is better</p>\n", speakArticle.getRenderContent());
     assertEquals("", linkArticle.getRenderContent());
   }
 

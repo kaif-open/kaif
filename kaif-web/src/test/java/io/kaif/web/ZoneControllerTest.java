@@ -97,6 +97,25 @@ public class ZoneControllerTest extends MvcIntegrationTests {
   }
 
   @Test
+  public void articleDebates_speakArticle() throws Exception {
+    Zone z = zoneInfo.getZone();
+    FlakeId articleId = FlakeId.fromString("aaa");
+    Article article = articleSpeak(z, articleId, "erlang");
+    List<Debate> debates = asList(//
+        debate(article, "ERLANG is bad", null));
+
+    when(zoneService.loadZone(z)).thenReturn(zoneInfo);
+    when(articleService.loadArticle(articleId)).thenReturn(article);
+    when(articleService.listBestDebates(articleId, null)).thenReturn(DebateTree.fromDepthFirst(
+        debates));
+
+    mockMvc.perform(get("/z/programming/debates/aaa"))
+        .andExpect(view().name("article/debates"))
+        .andExpect(content().string(containsString("erlang-content")))
+        .andExpect(content().string(containsString("ERLANG is bad")));
+  }
+
+  @Test
   public void childDebates() throws Exception {
     Zone z = zoneInfo.getZone();
     FlakeId articleId = FlakeId.fromString("aaa");

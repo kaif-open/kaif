@@ -22,7 +22,7 @@
 </div>
 </#macro>
 
-<#macro article data hidden=false>
+<#macro article data hidden=false parentMode=false>
 
     <#local article=data />
     <#local hiddenCls=hidden?string("hidden", "") />
@@ -46,10 +46,21 @@
             </#if>
             <span class="article-link-hint">(${article.linkHint})</span>
         </div>
+        <#if parentMode && article.hasMarkDownContent() >
+            <div class="article-content">
+                <article class="kmark">
+                ${article.renderContent}
+                </article>
+            </div>
+        </#if>
         <div class="article-info">
             <span>
-                <a href="<@url.article data=article/>"><i
-                        class="fa fa-caret-right"></i> ${article.debateCount} 則討論</a>
+                <#if parentMode>
+                ${article.debateCount} 則討論
+                <#else>
+                    <a href="<@url.article data=article/>"><i
+                            class="fa fa-caret-right"></i> ${article.debateCount} 則討論</a>
+                </#if>
             </span>
             <span>
                 <a class="article-author"

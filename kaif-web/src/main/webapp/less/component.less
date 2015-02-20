@@ -81,7 +81,6 @@ a.create-article {
 .article-title {
 
   font-size: @font-size-lg;
-  padding-bottom: @padding-lg-vertical;
 
   a {
     text-decoration: none;
@@ -101,8 +100,18 @@ a.create-article {
   font-size: @font-size-sm;
 }
 
+.article-content {
+  margin-top: @padding-vertical;
+  margin-left: @padding-xs-horizontal;
+  margin-right: @padding-xs-horizontal;
+  padding: @padding-vertical @padding-horizontal;
+  border-radius: 2px;
+  box-shadow: 0 0 6px -1px @gray-lighter;
+}
+
 .article-info {
   color: @gray-light;
+  padding-top: @padding-vertical;
 
   & > * {
     padding-right: @padding-horizontal;
@@ -118,6 +127,15 @@ a.create-article {
       color: @link-hover-color;
     }
   }
+}
+
+//
+// article-form
+//
+
+.article-form {
+  margin-top: @padding-vertical;
+  max-width: @screen-sm-min;
 }
 
 //

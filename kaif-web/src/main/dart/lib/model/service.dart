@@ -234,6 +234,14 @@ class ArticleService extends _AbstractService {
     .then((res) => null);
   }
 
+  Future createSpeak(String zone, String content, String title) {
+    var json = {
+        'zone':zone, 'content':content, 'title':title
+    };
+    return _putJson(_getUrl('/speak'), json)
+    .then((res) => null);
+  }
+
   Future<String> previewDebateContent(String content) {
     var json = {
         'content':content

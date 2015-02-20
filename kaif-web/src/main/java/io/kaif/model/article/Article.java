@@ -25,7 +25,7 @@ public class Article {
   public static final int TITLE_MAX = 128;
   public static final int URL_MAX = 512;
   public static final int CONTENT_MIN = 10;
-  public static final int CONTENT_MAX = 16384;
+  public static final int CONTENT_MAX = 4096;
 
   public static Article createSpeak(Zone zone,
       FlakeId articleId,
@@ -256,5 +256,9 @@ public class Article {
 
   public boolean isExternalLink() {
     return !Strings.isNullOrEmpty(link);
+  }
+
+  public boolean hasMarkDownContent() {
+    return contentType == ArticleContentType.MARK_DOWN;
   }
 }

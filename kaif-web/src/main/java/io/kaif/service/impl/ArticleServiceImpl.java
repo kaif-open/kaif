@@ -75,6 +75,19 @@ public class ArticleServiceImpl implements ArticleService {
     return article;
   }
 
+  @Override
+  public boolean canCreateArticle(Zone zone, Authorization auth) {
+    ZoneInfo zoneInfo = zoneDao.loadZone(zone);
+    return accountDao.strongVerifyAccount(auth).filter(zoneInfo::canWriteArticle).isPresent();
+  }
+
+  @Override
+  public Article createSpeak(Authorization authorization, Zone zone, String title, String content) {
+    return createArticle(authorization,
+        zone,
+        author -> articleDao.createSpeak(zone, author, title, content, Instant.now()));
+  }
+
   public Optional<Article> findArticle(FlakeId articleId) {
     return articleDao.findArticle(articleId);
   }
@@ -171,15 +184,4 @@ public class ArticleServiceImpl implements ArticleService {
     return debateDao.loadDebate(debateId);
   }
 
-  @Override
-  public boolean canCreateArticle(Zone zone, Authorization auth) {
-    ZoneInfo zoneInfo = zoneDao.loadZone(zone);
-    return accountDao.strongVerifyAccount(auth).filter(zoneInfo::canWriteArticle).isPresent();
-  }
-
-  public Article createSpeak(Authorization authorization, Zone zone, String title, String content) {
-    return createArticle(authorization,
-        zone,
-        author -> articleDao.createSpeak(zone, author, title, content, Instant.now()));
-  }
 }

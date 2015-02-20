@@ -3,6 +3,10 @@ library article_form;
 import 'dart:html';
 import 'package:kaif_web/util.dart';
 import 'package:kaif_web/model.dart';
+import 'dart:async';
+
+
+typedef Future _articleCreator();
 
 //TODO auto save draft if speak mode
 //TODO kmark preview, for article
@@ -43,25 +47,46 @@ class ArticleForm {
 
     alert.hide();
     TextInputElement titleInput = elem.querySelector('#titleInput');
-    TextInputElement urlInput = elem.querySelector('#urlInput');
     titleInput.value = titleInput.value.trim();
-    urlInput.value = urlInput.value.trim();
 
     //check Article.TITLE_MIN in java
-    if (titleInput.value.length < 3) {
-      alert.renderError(i18n('article.min-title', [3]));
+    var articleTitleMin = 3;
+    if (titleInput.value.length < articleTitleMin) {
+      alert.renderError(i18n('article.min-title', [articleTitleMin]));
       return;
     }
 
-    SubmitButtonInputElement submit = elem.querySelector('[type=submit]');
-    submit.disabled = true;
+    TextInputElement urlInput = elem.querySelector('#urlInput');
+    TextAreaElement contentInput = elem.querySelector('#contentInput');
+
+    if (urlInput != null) {
+      urlInput.value = urlInput.value.trim();
+
+      _runCreate(() {
+        return articleService.createExternalLink(zone, urlInput.value, titleInput.value);
+      });
+
+    } else if (contentInput != null) {
+      contentInput.value = contentInput.value.trim();
+      //check Article.CONTENT_MIN in java
+      var articleContentMin = 10;
+      if (contentInput.value.length < articleContentMin) {
+        alert.renderError(i18n('article.min-content', [articleContentMin]));
+        return;
+      }
+      _runCreate(() {
+        return articleService.createSpeak(zone, contentInput.value, titleInput.value);
+      });
+    }
+  }
+
+  void _runCreate(_articleCreator articleCreator) {
+    submitElem.disabled = true;
 
     var loading = new Loading.small()
-      ..renderAfter(submit);
-    articleService.createExternalLink(zone, urlInput.value, titleInput.value)
+      ..renderAfter(submitElem);
+    articleCreator()
     .then((_) {
-      titleInput.value = '';
-      urlInput.value = '';
       elem.remove();
       new Toast.success(i18n('article.create-success'), seconds:2).render().then((_) {
         route.gotoNewArticlesOfZone(zone);
@@ -69,9 +94,8 @@ class ArticleForm {
     }).catchError((e) {
       alert.renderError('${e}');
     }).whenComplete(() {
-      submit.disabled = false;
+      submitElem.disabled = false;
       loading.remove();
     });
   }
-
 }

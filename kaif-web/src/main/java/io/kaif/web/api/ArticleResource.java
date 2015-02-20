@@ -41,6 +41,21 @@ public class ArticleResource {
 
   }
 
+  static class CreateSpeak {
+
+    @Size(max = Article.CONTENT_MAX, min = Article.CONTENT_MIN)
+    @NotNull
+    public String content;
+
+    @Size(min = Article.TITLE_MIN, max = Article.TITLE_MAX)
+    @NotNull
+    public String title;
+
+    @NotNull
+    public Zone zone;
+
+  }
+
   static class CreateDebate {
     @NotNull
     public Zone zone;
@@ -80,6 +95,12 @@ public class ArticleResource {
         request.zone,
         request.title.trim(),
         request.url.trim());
+  }
+
+  @RequestMapping(value = "/speak", method = RequestMethod.PUT, consumes = {
+      MediaType.APPLICATION_JSON_VALUE })
+  public void createSpeak(AccountAccessToken token, @Valid @RequestBody CreateSpeak request) {
+    articleService.createSpeak(token, request.zone, request.title.trim(), request.content.trim());
   }
 
   @RequestMapping(value = "/debate", method = RequestMethod.PUT, consumes = {

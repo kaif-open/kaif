@@ -40,4 +40,6 @@ public interface ArticleService {
   Debate loadDebate(FlakeId debateId);
 
   boolean canCreateArticle(Zone zone, Authorization author);
+
+  Article createSpeak(Authorization authorization, Zone zone, String title, String content);
 }

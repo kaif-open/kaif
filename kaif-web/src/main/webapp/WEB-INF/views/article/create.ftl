@@ -36,7 +36,7 @@ head=headContent
 </@template.page>
 
 <#macro articleForm>
-<form class="pure-form pure-form-stacked" article-form>
+<form class="pure-form pure-form-stacked article-form" article-form>
 
     <input type="hidden" value="${zoneInfo.name}" name="zoneInput">
 
@@ -45,7 +45,7 @@ head=headContent
         <textarea id="titleInput"
                   class="pure-input-1"
                   rows="2"
-                  placeholder="吸引人的標題..."
+                  placeholder="清楚、達意的標題..."
                   maxlength="128"
                   required
                   title="標題必填"
@@ -71,7 +71,7 @@ head=headContent
                       class="pure-input-1"
                       rows="5"
                       placeholder="您的想法或問題..."
-                      maxlength="16384"
+                      maxlength="4096"
                       required
                       title="內文必填"
                     ></textarea>

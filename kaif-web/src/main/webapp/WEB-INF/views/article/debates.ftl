@@ -39,7 +39,7 @@ applyZoneTheme=true
                 <#else>
 
                 <#-- tree parent is Article -->
-                    <@comp.article data=article />
+                    <@comp.article data=article parentMode=true />
                     <div class="grid-center-row debate-form-container">
                     <#-- place holder debate-form will replace by comp-template
                          keep place holder looks the same as comp-template
