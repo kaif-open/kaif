@@ -22,12 +22,12 @@ public class Zone {
   /**
    * - must start with az09, end with az09, no dash
    * - must use dash to separate
-   * - 3~30 chars.
+   * - 3~20 chars.
    * - not allow concat multiple dash (use code to validate, not regex)
    * <p>
    * change pattern should review route.dart and ZoneController.java
    */
-  private static final Pattern ZONE_PATTERN = Pattern.compile("^[a-z0-9][a-z0-9\\-]{1,28}[a-z0-9]$");
+  private static final Pattern ZONE_PATTERN = Pattern.compile("^[a-z0-9][a-z0-9\\-]{1,18}[a-z0-9]$");
 
   private static String valueFallback(String rawValue) {
     if (Strings.isNullOrEmpty(rawValue)) {

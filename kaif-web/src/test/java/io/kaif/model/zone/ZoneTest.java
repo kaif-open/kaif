@@ -53,7 +53,7 @@ public class ZoneTest {
     assertInvalidZone("   ");
     assertInvalidZone("a");
     assertInvalidZone("ab");
-    assertInvalidZone("1234567890123456789012345678901");
+    assertInvalidZone("123456789012345678901");
     assertInvalidZone("a__b");
     assertInvalidZone("+++ab");
     assertInvalidZone("-ab");
