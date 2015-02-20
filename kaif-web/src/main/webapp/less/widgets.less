@@ -30,9 +30,13 @@
   position: fixed;
   z-index: 10000;
   top: 1em;
-  width: 50%;
-  left: 25%;
   right: 0;
+  width: 80%;
+  left: 10%;
+  @media (min-width: @screen-md-min) {
+    width: 50%;
+    left: 25%;
+  }
 }
 
 .snack-bar {

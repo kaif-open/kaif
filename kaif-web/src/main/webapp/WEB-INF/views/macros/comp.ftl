@@ -75,12 +75,12 @@
 
 <#-- Debate components -->
 
-<#macro debateNode data smallConvex=false >
+<#macro debateNode data >
     <#local theDebateNode=data />
-    <@debate data=theDebateNode.value smallConvex=smallConvex>
+    <@debate data=theDebateNode.value >
         <#list theDebateNode.children as child>
         <#-- recursive macro -->
-            <@comp.debateNode data=child smallConvex=true />
+            <@comp.debateNode data=child />
         </#list>
     </@debate>
 </#macro>
@@ -88,17 +88,15 @@
 <#-- if parentMode set to true, it means this debate is top of the page
      it will handle `parent` link differently. (also show hint)
   -->
-<#macro debate data smallConvex=false parentMode=false>
+<#macro debate data parentMode=false>
 
     <#local debate=data />
-    <#local gridConvex=smallConvex?string("grid-sm-convex", "grid-convex") />
-    <#local gridCenter=smallConvex?string("grid-sm-center", "grid-center") />
 
 <div id="debate-${debate.debateId}" class="debate grid-row"
      debate
      data-debate-id="${debate.debateId}"
      data-debater-name="${debate.debaterName}">
-    <div class="debate-vote-box votable ${gridConvex}" debate-vote-box
+    <div class="debate-vote-box votable grid-convex" debate-vote-box
          data-debate-vote-count="${debate.totalVote}">
         <a href="#" debate-up-vote>
             <div class="up-vote"></div><#--
@@ -108,7 +106,7 @@
             <div class="down-vote"></div>
         </a>
     </div>
-    <div class="${gridCenter}">
+    <div class="grid-center">
         <div class="debate-title">
             <a class="debate-author"
                href="<@url.account data=debate/>">${debate.debaterName}</a>

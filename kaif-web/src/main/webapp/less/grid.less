@@ -11,7 +11,6 @@
 // |                                             |                |
 // |||- .grid-row                             -|||                |
 // ||||- .grid-convex    -|- .grid-center    -||||                |
-// ||||- .grid-sm-convex -|- .grid-sm-center -||||                |
 // |                                             |                |
 // |                                             |                |
 // |||- .................. - .grid-center-row -|||                |
@@ -35,19 +34,14 @@
 
   .grid-body {
     width: 100%;
-    overflow-x: hidden;
   }
 
   .grid-aside {
     .flex-grow(0);
     .flex-shrink(0);
     .flex-basis(@aside-width-sm);
-    padding-left: @convex-row-width;
     @media (min-width: @screen-lg-min) {
       .flex-basis(@aside-width);
-    }
-    @media (min-width: @screen-md-min) {
-      padding-left: 0;
     }
   }
 }
@@ -60,26 +54,31 @@
 
   .grid-convex {
     float: left;
-    width: @convex-row-width;
-  }
-
-  .grid-center {
-    margin-left: @convex-row-width;
-    overflow-x: hidden;
-  }
-
-  .grid-sm-convex {
-    float: left;
     width: @convex-row-width-sm;
   }
 
-  .grid-sm-center {
+  .grid-center {
     margin-left: @convex-row-width-sm;
-    overflow-x: hidden;
+  }
+
+  @media (min-width: @screen-md-min) {
+    .grid-convex {
+      width: @convex-row-width;
+    }
+
+    .grid-center {
+      margin-left: @convex-row-width;
+    }
   }
 }
 
 .grid-center-row {
-  margin-left: @convex-row-width;
-  overflow-x: hidden;
+  margin-left: 0;
+
+  @media (min-width: @screen-md-min) {
+    & {
+      margin-left: @convex-row-width;
+    }
+  }
 }
+

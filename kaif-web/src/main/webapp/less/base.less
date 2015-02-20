@@ -15,9 +15,7 @@ body {
   font-size: @font-size-sm;
   font-family: @font-family-base;
   @media (min-width: @screen-md-min) {
-    & {
-      font-size: @font-size;
-    }
+    font-size: @font-size;
   }
 }
 
@@ -76,7 +74,7 @@ main {
 
 // default padding for main content
 main {
-  padding: 0 @padding-horizontal;
+  padding: 0 @padding-sm-horizontal;
   @media (min-width: @screen-md-min) {
     & {
       padding: 0 @padding-lg-horizontal;
@@ -101,13 +99,16 @@ main {
   text-align: center;
 }
 
-ul.footer-item {
+.footer-item {
   margin: 0;
 }
 
-ul.footer-item li {
-  display: inline-block;
-  padding: 0 @padding-horizontal;
+.footer-item {
+
+  & > * {
+    display: inline-block;
+    padding: 0 @padding-sm-horizontal;
+  }
 
   a, a:visited {
     text-decoration: none;
@@ -124,7 +125,7 @@ ul.footer-item li {
 //
 
 @convex-row-width: 96px;
-@convex-row-width-sm: 36px;
+@convex-row-width-sm: 56px;
 
 @aside-width: 320px;
 @aside-width-sm: @aside-width * 0.7;

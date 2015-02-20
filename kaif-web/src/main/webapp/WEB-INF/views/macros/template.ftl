@@ -114,14 +114,12 @@ sample configs:
 
 <footer class="footer l-box">
     <div class="container">
-        <ul class="footer-item">
-            <li>
+        <div class="footer-item">
+            <span>
                 &#169; 2015 All Rights Reserved
-            </li>
-            <li>
-                <a href="/z/kaif-faq">常見問題</a>
-            </li>
-        </ul>
+            </span>
+            <a href="/z/kaif-faq">常見問題</a>
+        </div>
     </div>
 </footer>
 <#-- Error page will not enable js, for security reason -->

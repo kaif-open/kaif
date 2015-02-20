@@ -6,7 +6,9 @@
 // home
 //
 .home-menu {
-  padding-left: @convex-row-width;
+  @media (min-width: @screen-md-min) {
+    padding-left: @convex-row-width;
+  }
 }
 
 .home-menu .pure-menu-selected {
@@ -22,7 +24,6 @@
 
 .zone-header {
   border-bottom: solid 1px @gray-lightest;
-  padding-left: @convex-row-width;
   padding-top: @padding-lg-vertical;
   padding-bottom: @padding-lg-vertical;
   a {
@@ -31,10 +32,15 @@
       color: @link-hover-color;
     }
   }
+  @media (min-width: @screen-md-min) {
+    padding-left: @convex-row-width;
+  }
 }
 
 .zone-menu {
-  padding-left: @convex-row-width;
+  @media (min-width: @screen-md-min) {
+    padding-left: @convex-row-width;
+  }
 }
 
 .zone-menu .pure-menu-heading {
@@ -58,8 +64,10 @@ a.create-article {
 //
 
 .article-list {
-  padding-right: @padding-lg-horizontal;
   margin-bottom: @padding-lg-vertical;
+  @media (min-width: @screen-md-min) {
+    padding-right: @padding-lg-horizontal;
+  }
 }
 
 .article-list-pager {
@@ -71,16 +79,25 @@ a.create-article {
 }
 
 .article-vote-box {
-  padding-right: @padding-lg-horizontal;
-  padding-bottom: @padding-lg-vertical;
+  font-size: @font-size;
   text-align: right;
-  font-size: @font-size-lg;
-  white-space: nowrap;
+  padding-right: @padding-sm-horizontal;
+  @media (min-width: @screen-md-min) {
+    padding-right: @padding-lg-horizontal;
+    font-size: @font-size-lg;
+
+    white-space: nowrap;
+    & > * {
+      display: inline-block;
+    }
+  }
 }
 
 .article-title {
-
-  font-size: @font-size-lg;
+  overflow-x: hidden;
+  @media (min-width: @screen-md-min) {
+    font-size: @font-size-lg;
+  }
 
   a {
     text-decoration: none;
@@ -101,6 +118,7 @@ a.create-article {
 }
 
 .article-content {
+  overflow-x: hidden;
   margin-top: @padding-vertical;
   margin-left: @padding-xs-horizontal;
   margin-right: @padding-xs-horizontal;
@@ -112,6 +130,11 @@ a.create-article {
 .article-info {
   color: @gray-light;
   padding-top: @padding-vertical;
+
+  font-size: @font-size-sm;
+  @media (min-width: @screen-md-min) {
+    font-size: @font-size;
+  }
 
   & > * {
     padding-right: @padding-horizontal;
@@ -143,8 +166,10 @@ a.create-article {
 //
 
 .debate-tree {
-  padding-right: @padding-lg-horizontal;
   margin-bottom: @padding-lg-vertical;
+  @media (min-width: @screen-md-min) {
+    padding-right: @padding-lg-horizontal;
+  }
 }
 
 .debate-form-container {
@@ -170,17 +195,14 @@ a.create-article {
 }
 
 .debate-vote-box {
-  padding-right: @padding-lg-horizontal;
   padding-bottom: @padding-lg-vertical;
-  text-align: right;
-  font-size: @font-size-lg;
   white-space: nowrap;
+  text-align: center;
 
-  //move to center if small sized
-  //TODO better structure, not rely on grid-sm-convex
-  &.grid-sm-convex {
-    text-align: center;
-    padding-right: 0;
+  @media (min-width: @screen-md-min) {
+    padding-right: @padding-lg-horizontal;
+    font-size: @font-size;
+    text-align: right;
   }
 }
 
@@ -204,8 +226,13 @@ a.create-article {
   }
 }
 
+.debate-content {
+  overflow-x: hidden;
+}
+
 .debate-action {
   a {
+    white-space: nowrap;
     .weak-button();
     .button-sm();
   }
@@ -220,6 +247,31 @@ a.create-article {
     border-left: 1px solid @gray-lightest;
     // better look by box-shadow, but firefox feel slower
     // box-shadow: -7px 0px 5px -6px @gray-lightest;
+  }
+}
+
+// TODO hack grid for debate tree, search better way
+.debate {
+  .debate-child {
+    .grid-convex {
+      width: 36px;
+    }
+    .grid-center {
+      margin-left: 36px;
+    }
+    .debate-vote-box.grid-convex {
+      text-align: center;
+      padding-right: 0;
+    }
+  }
+  @media (max-width: @screen-sm-max) {
+    .grid-center, .debate-child .grid-center {
+      margin-left: 6px;
+    }
+
+    .grid-convex, .debate-child .grid-convex {
+      width: 26px;
+    }
   }
 }
 

@@ -13,17 +13,27 @@
   width: 0;
   height: 0;
   border-style: solid;
-  border-width: 0 @width @width * 2 @width;
   border-color: transparent transparent @color transparent;
   display: inline-block;
+
+  @width-sm: (@width - 2px);
+  border-width: 0 @width-sm (@width-sm * 2) @width-sm;
+  @media (min-width: @screen-md-min) {
+    border-width: 0 @width @width * 2 @width;
+  }
 }
 
 .mixin-down-triangle(@color; @width;) {
   width: 0;
   height: 0;
   border-style: solid;
-  border-width: @width * 2 @width 0 @width;
   border-color: @color transparent transparent transparent;
   display: inline-block;
+
+  @width-sm: (@width - 2px);
+  border-width: @width-sm * 2 @width-sm 0 @width-sm;
+  @media (min-width: @screen-md-min) {
+    border-width: @width * 2 @width 0 @width;
+  }
 }
 
