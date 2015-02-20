@@ -29,6 +29,7 @@ import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import freemarker.template.TemplateModelException;
 import io.kaif.service.AccountService;
 import io.kaif.web.AccountAccessTokenArgumentResolver;
+import io.kaif.web.support.AbsoluteTime;
 import io.kaif.web.support.RelativeTime;
 
 @Configuration
@@ -114,5 +115,6 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
         Arrays.stream(environment.getActiveProfiles()).collect(Collectors.joining(",")));
     freeMarkerConfiguration.setSharedVariable("kaif", variables);
     freeMarkerConfiguration.setSharedVariable("relativeTime", new RelativeTime());
+    freeMarkerConfiguration.setSharedVariable("absoluteTime", new AbsoluteTime());
   }
 }
