@@ -13,10 +13,14 @@ final ComponentTemplate _debateFormTemplate = new ComponentTemplate.take('debate
 
 class DebateForm {
 
+
   final ArticleService _articleService;
 
+  bool _opened = false;
   Element _elem;
+  Element _placeHolder;
   Element _previewer;
+  Element _previewCancel;
   TextInputElement _contentInput;
   Alert _alert;
 
@@ -25,18 +29,23 @@ class DebateForm {
   String parentDebateId;
   bool _previewVisible = false;
 
-  DebateForm.placeHolder(Element placeHolderElem,
-                         ArticleService _articleService) :
-  this._(placeHolderElem, _articleService);
+  canCloseDebate(bool value) {
+    elem.querySelector('[kmark-debate-cancel]').classes.toggle('hidden', !value);
+  }
 
-  DebateForm._(Element placeHolderElem, this._articleService) {
+  DebateForm.placeHolder(Element placeHolder,
+                         ArticleService _articleService) :
+  this._(placeHolder, _articleService);
+
+  DebateForm._(this._placeHolder, this._articleService) {
     _elem = _debateFormTemplate.createElement();
     _elem.querySelector('[kmark-preview]').onClick.listen(_onPreview);
-    placeHolderElem.replaceWith(_elem);
 
     _alert = new Alert.append(_elem);
     _elem.onSubmit.listen(_onSubmit);
     _previewer = elem.querySelector('[kmark-previewer]');
+    elem.querySelector('[kmark-debate-cancel]').onClick.listen(_onCancel);
+    _previewCancel = elem.querySelector('[kmark-preview-cancel]');
     _contentInput = elem.querySelector('textarea[name=contentInput]');
   }
 
@@ -46,18 +55,27 @@ class DebateForm {
     _previewer.classes.toggle('hidden', !_previewVisible);
   }
 
+  void _onCancel(Event e) {
+    e
+      ..preventDefault()
+      ..stopPropagation();
+    toggleShow(false);
+  }
+
   void _onPreview(Event e) {
     e
       ..preventDefault()
       ..stopPropagation();
 
+    ButtonElement previewBtn = elem.querySelector('[kmark-preview]');
+
     if (_previewVisible) {
       _updatePreviewVisibility(false);
       _previewer.setInnerHtml('');
+      previewBtn.text = i18n('debate.preview');
       return;
     }
 
-    ButtonElement previewBtn = elem.querySelector('[kmark-preview]');
     previewBtn.disabled = true;
     var loading = new Loading.small()
       ..renderAfter(previewBtn);
@@ -65,10 +83,13 @@ class DebateForm {
     .then((preview) {
       _updatePreviewVisibility(true);
       unSafeInnerHtml(_previewer, preview);
+      _previewer.style.minHeight = '1em';
     }).catchError((e) {
       _alert.renderError('${e}');
     }).whenComplete(() {
-      previewBtn.disabled = false;
+      previewBtn
+        ..text = i18n('debate.finish-preview')
+        ..disabled = false;
       loading.remove();
     });
   }
@@ -112,6 +133,18 @@ class DebateForm {
       submit.disabled = false;
       loading.remove();
     });
+  }
+
+  toggleShow(bool open) {
+    if (open == _opened) {
+      return;
+    }
+    if (_opened) {
+      _elem.replaceWith(_placeHolder);
+    } else {
+      _placeHolder.replaceWith(_elem);
+    }
+    _opened = !_opened;
   }
 
 }

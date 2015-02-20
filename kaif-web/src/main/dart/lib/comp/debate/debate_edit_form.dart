@@ -39,9 +39,16 @@ class DebateEditForm {
     _elem.querySelector('[kmark-preview]').onClick.listen(_onPreview);
     _contentInput = _elem.querySelector('textarea[name=contentInput]');
     _previewer = elem.querySelector('[kmark-previewer]');
-
+    elem.querySelector('[kmark-debate-cancel]').onClick.listen(_onCancel);
     _alert = new Alert.append(_elem);
     _elem.onSubmit.listen(_onSubmit);
+  }
+
+  void _onCancel(Event e) {
+    e
+      ..preventDefault()
+      ..stopPropagation();
+    toggleShow(false);
   }
 
   void _onPreview(Event e) {
@@ -49,14 +56,15 @@ class DebateEditForm {
       ..preventDefault()
       ..stopPropagation();
 
+    ButtonElement previewBtn = elem.querySelector('[kmark-preview]');
 
     if (_previewVisible) {
       _updatePreviewVisibility(false);
       _previewer.setInnerHtml('');
+      previewBtn.text = i18n('debate.preview');
       return;
     }
 
-    ButtonElement previewBtn = elem.querySelector('[kmark-preview]');
     previewBtn.disabled = true;
     var loading = new Loading.small()
       ..renderAfter(previewBtn);
@@ -64,10 +72,13 @@ class DebateEditForm {
     .then((preview) {
       _updatePreviewVisibility(true);
       unSafeInnerHtml(_previewer, preview);
+      _previewer.style.minHeight = '1em';
     }).catchError((e) {
       _alert.renderError('${e}');
     }).whenComplete(() {
-      previewBtn.disabled = false;
+      previewBtn
+        ..disabled = false
+        ..text = i18n('debate.finish-preview');
       loading.remove();
     });
   }
@@ -95,7 +106,7 @@ class DebateEditForm {
         debateId,
         _contentInput.value)
     .then((content) {
-      toggleShow();
+      toggleShow(false);
       unSafeInnerHtml(_contentElement, content);
       _contentInput.setInnerHtml('');
       new Toast.success(i18n('debate.edits-success'), seconds:2).render();
@@ -107,15 +118,26 @@ class DebateEditForm {
     });
   }
 
-  void toggleShow() {
+  void toggleShow(bool open) {
+    if (open == _opened) {
+      return;
+    }
     if (_opened) {
       _elem.remove();
     } else {
-      _contentInput
-        ..style.width = _contentElement.clientWidth.toString() + 'px'
-        ..style.height = _contentElement.clientHeight.toString() + 'px';
+      //<ORDER>
       _contentEditElem.append(_elem);
-      _updatePreviewVisibility(false);
+      CssStyleDeclaration cssStyleDeclaration = _contentInput.getComputedStyle();
+
+      _contentInput
+        ..style.width = (
+          _contentElement.clientWidth).toString() + 'px'
+        ..style.minHeight = '8em'
+        ..style.height = (
+          new Dimension.css(cssStyleDeclaration.paddingTop).value
+          + new Dimension.css(cssStyleDeclaration.paddingBottom).value
+          + _contentElement.clientHeight).toString() + 'px';
+      //</ORDER>
     }
     _contentEditElem.classes.toggle('hidden', _opened);
     _contentElement.classes.toggle('hidden', !_opened);

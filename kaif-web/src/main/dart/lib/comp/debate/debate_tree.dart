@@ -26,7 +26,9 @@ class DebateTree {
 
     var articleId = articleComp.articleId;
     elem.querySelectorAll('[debate-form]').forEach((el) {
-      new DebateForm.placeHolder(el, articleService);
+      new DebateForm.placeHolder(el, articleService)
+        ..canCloseDebate(false)
+        ..toggleShow(true);
     });
 
     List<DebateComp> debateComps = elem.querySelectorAll('[debate]').map((el) {
@@ -127,7 +129,7 @@ class DebateEditor {
       }
       form
         ..content = content
-        ..toggleShow();
+        ..toggleShow(true);
     }).catchError((e) {
       new Toast.error('$e', seconds:5).render();
     });
@@ -141,16 +143,6 @@ class DebateReplier {
   final String debateId;
 
   DebateForm form;
-  bool _opened = false;
-
-  toggleShow() {
-    if (_opened) {
-      form.elem.remove();
-    } else {
-      elem.parent.append(form.elem);
-    }
-    _opened = !_opened;
-  }
 
   DebateReplier(this.elem, this.articleService, this.debateId) {
     elem.onClick.listen(_onClick);
@@ -164,13 +156,11 @@ class DebateReplier {
     //lazy create
     if (form == null) {
       Element placeHolderElem = new DivElement();
-      elem.append(placeHolderElem);
-
+      elem.parent.append(placeHolderElem);
       form = new DebateForm.placeHolder(placeHolderElem, articleService)
         ..parentDebateId = debateId;
     }
-
-    toggleShow();
+    form.toggleShow(true);
   }
 }
 
