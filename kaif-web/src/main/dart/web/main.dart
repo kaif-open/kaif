@@ -6,7 +6,7 @@ import 'package:kaif_web/comp/account/forget_password_form.dart';
 import 'package:kaif_web/comp/account/reset_password_form.dart';
 import 'package:kaif_web/comp/account/account_menu.dart';
 import 'package:kaif_web/comp/account/account_settings.dart';
-import 'package:kaif_web/comp/article/external_link_article_form.dart';
+import 'package:kaif_web/comp/article/article_form.dart';
 import 'package:kaif_web/comp/article/article-list.dart';
 import 'package:kaif_web/comp/debate/debate_tree.dart';
 import 'package:kaif_web/comp/server_part_loader.dart';
@@ -66,8 +66,8 @@ class AppModule {
     parent.querySelectorAll('[reset-password-form]').forEach((el) {
       new ResetPasswordForm(el, accountService, accountSession);
     });
-    parent.querySelectorAll('[external-link-article-form]').forEach((el) {
-      new ExternalLinkArticleForm(el, articleService);
+    parent.querySelectorAll('[article-form]').forEach((el) {
+      new ArticleForm(el, articleService, accountSession);
     });
     parent.querySelectorAll('[debate-tree]').forEach((el) {
       new DebateTree(el, articleService, voteService, accountSession);

@@ -39,9 +39,15 @@ class RestErrorResponse extends Error {
   }
 }
 
+abstract class _ModelMapper {
+  dynamic _mapToSingleWrapper(HttpRequest request) {
+    return JSON.decode(request.responseText)['data'];
+  }
+}
+
 typedef String accessTokenProvider();
 
-abstract class _AbstractService {
+abstract class _AbstractService extends Object with _ModelMapper {
   _populateAccessToken(Map<String, String> headers) {
     String token = _accessTokenProvider();
     if (token != null) {
@@ -162,8 +168,7 @@ class AccountService extends _AbstractService {
         'username':username
     };
     return _get(_getUrl('/name-available'), params:params)
-    .then((req) => JSON.decode(req.responseText))
-    .then((raw) => raw['data']);
+    .then(_mapToSingleWrapper);
   }
 
   Future<bool> isEmailAvailable(String email) {
@@ -171,8 +176,7 @@ class AccountService extends _AbstractService {
         'email':email
     };
     return _get(_getUrl('/email-available'), params:params)
-    .then((req) => JSON.decode(req.responseText))
-    .then((raw) => raw['data']);
+    .then(_mapToSingleWrapper);
   }
 
   Future<AccountAuth> authenticate(String username, String password) {
@@ -261,6 +265,14 @@ class ArticleService extends _AbstractService {
     };
     return _putJson(_getUrl('/debate'), json)
     .then((res) => null);
+  }
+
+  Future<bool> canCreateArticle(String zone) {
+    var params = {
+        'zone':zone
+    };
+    return _get(_getUrl('/can-create'), params:params)
+    .then(_mapToSingleWrapper);
   }
 }
 

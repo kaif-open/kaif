@@ -18,14 +18,14 @@
   for example:
 
     given current page at /z/programming?abc=def
-    the result of <@url current> is:
+    the result of <@url.current> is:
 
        /z/programming
 
   if you add arguments, it will append to current path (exist query string ignored)
 
     given current page at /z/programming?abc=def
-    the result of <@url current start=123 end=456> is:
+    the result of <@url.current start=123 end=456> is:
 
        /z/programming?start=123&end=456
 
@@ -45,6 +45,15 @@
     ${currentUrl}
     </#if>
 </#compress></#macro>
+
+<#-- check if current url match input
+
+     includePart=true will treat current path `/foo/bar.part` same as target path `/foo/bar`
+  -->
+<#function isCurrentPath targetPath includePart=false>
+    <#local currentPath = springMacroRequestContext.getRequestUri() />
+    <#return currentPath == targetPath || (includePart && currentPath + '.part' == targetPath) />
+</#function>
 
 <#-- zone url,
      data can be ZoneInfo, Article, or Debate -->

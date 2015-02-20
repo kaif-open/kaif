@@ -11,13 +11,12 @@
 
 <meta name="description" content="${zoneInfo.aliasName} ${zoneInfo.name} | kaif.io">
 
-<link rel="stylesheet" href="<@url.dynamicRes/>/css/${zoneInfo.theme}.css">
-
 </#assign>
 
 <@template.page
 layout='full'
 head=headContent
+applyZoneTheme=true
 >
     <@template.zone data=zoneInfo>
 
@@ -27,7 +26,6 @@ head=headContent
         </div>
 
         <aside class="grid-aside">
-        <#-- TODO enable when ajax permission load -->
             <a href="/z/${zoneInfo.name}/article/create-link"
                class="pure-button pure-button-primary create-article">
                 <i class="fa fa-caret-right"></i> 分享新文章</a>

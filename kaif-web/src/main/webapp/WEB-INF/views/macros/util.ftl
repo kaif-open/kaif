@@ -1,3 +1,5 @@
+<#import "url.ftl" as url />
+
 <#--
  menuLink
 -->
@@ -11,8 +13,7 @@
 
      TODO menuLink in part template should use dart to render and highlight
   -->
-    <#local uri = springMacroRequestContext.getRequestUri()/>
-    <#local selected = (uri == href || uri == (href + '.part')) />
+    <#local selected = url.isCurrentPath(href, true) />
 <li class="${selected?string('pure-menu-selected','')}"><a href="${href}">${name}</a></li>
 </#macro>
 

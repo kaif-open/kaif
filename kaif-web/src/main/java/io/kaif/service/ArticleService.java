@@ -38,4 +38,6 @@ public interface ArticleService {
   String updateDebateContent(FlakeId debateId, Authorization editor, String content);
 
   Debate loadDebate(FlakeId debateId);
+
+  boolean canCreateArticle(Zone zone, Authorization auth);
 }

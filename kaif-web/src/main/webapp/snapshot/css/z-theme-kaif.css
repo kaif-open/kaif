@@ -8,6 +8,14 @@
     color: #B71C1C;
 }
 
+.z-theme-kaif .zone-header a {
+    color: #B71C1C;
+}
+
+.z-theme-kaif .zone-header a:hover {
+    color: #EF5350;
+}
+
 .z-theme-kaif .zone-menu .pure-menu-selected {
     background-color: #FFEBEE;
 }

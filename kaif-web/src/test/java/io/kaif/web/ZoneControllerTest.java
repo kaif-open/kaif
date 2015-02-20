@@ -153,13 +153,15 @@ public class ZoneControllerTest extends MvcIntegrationTests {
   public void createLink() throws Exception {
     when(zoneService.loadZone(Zone.valueOf("programming"))).thenReturn(zoneInfo);
     mockMvc.perform(get("/z/programming/article/create-link"))
-        .andExpect(view().name("article/create"));
+        .andExpect(view().name("article/create"))
+        .andExpect(content().string(containsString("id=\"urlInput\"")));
   }
 
   @Test
   public void createSpeak() throws Exception {
     when(zoneService.loadZone(Zone.valueOf("programming"))).thenReturn(zoneInfo);
     mockMvc.perform(get("/z/programming/article/create-speak"))
-        .andExpect(view().name("article/create"));
+        .andExpect(view().name("article/create"))
+        .andExpect(content().string(containsString("id=\"contentInput\"")));
   }
 }

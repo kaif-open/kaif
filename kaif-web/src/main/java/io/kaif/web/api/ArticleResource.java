@@ -19,6 +19,7 @@ import io.kaif.model.article.Article;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.zone.Zone;
 import io.kaif.service.ArticleService;
+import io.kaif.web.support.SingleWrapper;
 
 @RestController
 @RequestMapping("/api/article")
@@ -106,8 +107,15 @@ public class ArticleResource {
   }
 
   @RequestMapping(value = "/debate/content", method = RequestMethod.GET)
-  public String loadEditableDebate(AccountAccessToken token, @RequestParam String debateId) {
+  public String loadEditableDebate(AccountAccessToken token,
+      @RequestParam("debateId") String debateId) {
     return articleService.loadEditableDebateContent(FlakeId.fromString(debateId), token);
+  }
+
+  @RequestMapping(value = "/can-create", method = RequestMethod.GET)
+  public SingleWrapper<Boolean> canCreateArticle(AccountAccessToken token,
+      @RequestParam("zone") String rawZone) {
+    return SingleWrapper.of(articleService.canCreateArticle(Zone.valueOf(rawZone), token));
   }
 
 }

@@ -21,9 +21,10 @@ sample configs:
 
 3) for error page
 
-<@template.page errorPage:true >
+<@template.page layout='full' errorPage=true >
+
 -->
-<#macro page layout head="" errorPage=false>
+<#macro page layout head="" applyZoneTheme=false errorPage=false>
 
 <!doctype html>
 <html lang="zh-tw">
@@ -63,7 +64,9 @@ sample configs:
     <#else>
         <link rel="stylesheet" href="<@url.dynamicRes/>/css/kaif.css">
     </#if>
-
+    <#if applyZoneTheme>
+        <link rel="stylesheet" href="<@url.dynamicRes/>/css/${zoneInfo.theme}.css">
+    </#if>
     <#if head?length == 0>
         <title>kaif.io</title>
     <#else>
@@ -147,16 +150,24 @@ sample configs:
     <#local zoneInfo=data />
 
 <div class="zone ${zoneInfo.theme}">
-    <div class="zone-header">
-        <div class="zone-title">${zoneInfo.aliasName} -
-            <@url.zone data=zoneInfo/></div>
-    </div>
+    <@zoneHeader/>
     <nav class="zone-menu pure-menu pure-menu-open pure-menu-horizontal">
         <@util.menuLink '/z/${zoneInfo.name}' '熱門'/>
         <@util.menuLink '/z/${zoneInfo.name}/new' '最新'/>
         ${menus}
     </nav>
     <#nested/>
+</div>
+</#macro>
+
+<#--
+  zoneHeader under zone
+  -->
+<#macro zoneHeader subTitle="">
+<div class="zone-header">
+    <div class="zone-title"><a href="<@url.zone data=zoneInfo/>">
+        <i class="fa fa-caret-right"></i> ${zoneInfo.aliasName} <@url.zone data=zoneInfo/>
+    </a> ${subTitle}</div>
 </div>
 </#macro>
 

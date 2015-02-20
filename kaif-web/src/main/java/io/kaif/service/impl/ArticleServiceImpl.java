@@ -165,4 +165,10 @@ public class ArticleServiceImpl implements ArticleService {
   public Debate loadDebate(FlakeId debateId) {
     return debateDao.loadDebate(debateId);
   }
+
+  @Override
+  public boolean canCreateArticle(Zone zone, Authorization auth) {
+    ZoneInfo zoneInfo = zoneDao.loadZone(zone);
+    return accountDao.strongVerifyAccount(auth).filter(zoneInfo::canWriteArticle).isPresent();
+  }
 }

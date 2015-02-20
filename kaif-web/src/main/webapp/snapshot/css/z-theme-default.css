@@ -8,6 +8,14 @@
     color: #263238;
 }
 
+.z-theme-default .zone-header a {
+    color: #263238;
+}
+
+.z-theme-default .zone-header a:hover {
+    color: #78909C;
+}
+
 .z-theme-default .zone-menu .pure-menu-selected {
     background-color: #ECEFF1;
 }

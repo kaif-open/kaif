@@ -389,6 +389,14 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
+  public void canCreateArticle() throws Exception {
+    ZoneInfo zoneRequireCitizen = savedZoneDefault("fun");
+    Account tourist = savedAccountTourist("notActivated");
+    assertFalse(service.canCreateArticle(zoneRequireCitizen.getZone(), tourist));
+    assertTrue(service.canCreateArticle(zoneRequireCitizen.getZone(), citizen));
+  }
+
+  @Test
   public void updateDebateContent() throws Exception {
     Debate d1 = savedDebate(null);
     Thread.sleep(200);
@@ -419,7 +427,6 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
       service.loadEditableDebateContent(d1.getDebateId(), savedAccountCitizen("not-editor"));
       fail("AccessDeniedException expected");
     } catch (AccessDeniedException expected) {
-
     }
   }
 }

@@ -13,13 +13,12 @@
 <meta name="description"
       content="${article.title} | ${zoneInfo.aliasName} ${zoneInfo.name} | kaif.io">
 
-<link rel="stylesheet" href="<@url.dynamicRes/>/css/${zoneInfo.theme}.css">
-
 </#assign>
 
 <@template.page
 layout='full'
 head=headContent
+applyZoneTheme=true
 >
     <#assign debateMenus>
         <@util.menuLink '/z/${zoneInfo.name}/debates/${article.articleId}' '討論'/>
