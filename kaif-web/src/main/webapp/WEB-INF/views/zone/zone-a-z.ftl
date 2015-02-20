@@ -11,9 +11,7 @@
 </#assign>
 
 <@template.page
-config={
-'layout':'full'
-}
+layout='full'
 head=headContent>
 
     <@template.home>

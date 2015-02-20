@@ -1,9 +1,7 @@
 <#import "/spring.ftl" as spring />
 <#import "../macros/template.ftl" as template>
 
-<@template.page {
-'layout':'small'
-}>
+<@template.page layout='small'>
 
 <form class="pure-form pure-form-aligned" forget-password-form>
     <fieldset>

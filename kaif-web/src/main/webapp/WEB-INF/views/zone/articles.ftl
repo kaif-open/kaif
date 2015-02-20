@@ -16,9 +16,7 @@
 </#assign>
 
 <@template.page
-config={
-'layout':'full'
-}
+layout='full'
 head=headContent
 >
     <@template.zone data=zoneInfo>
@@ -30,9 +28,12 @@ head=headContent
 
         <aside class="grid-aside">
         <#-- TODO enable when ajax permission load -->
-            <a href="/z/${zoneInfo.name}/article/create"
-               class="pure-button pure-button-primary create-article"
-               create-article><i class="fa fa-caret-right"></i> 建立文章</a>
+            <a href="/z/${zoneInfo.name}/article/create-link"
+               class="pure-button pure-button-primary create-article">
+                <i class="fa fa-caret-right"></i> 分享新文章</a>
+            <a href="/z/${zoneInfo.name}/article/create-speak"
+               class="pure-button pure-button-primary create-article">
+                <i class="fa fa-caret-right"></i> 我有話要說</a>
         </aside>
     </div>
 

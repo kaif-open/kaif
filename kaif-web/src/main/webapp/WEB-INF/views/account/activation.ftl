@@ -1,9 +1,7 @@
 <#import "/spring.ftl" as spring />
 <#import "../macros/template.ftl" as template>
 
-<@template.page {
-'layout':'small'
-}>
+<@template.page layout='small'>
 
     <#if success >
     <p class="alert alert-info">

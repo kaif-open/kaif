@@ -1,9 +1,7 @@
 <#import "/spring.ftl" as spring />
 <#import "../macros/template.ftl" as template>
 
-<@template.page {
-'layout':'small'
-}>
+<@template.page layout='small'>
 
 <#-- check sign_up_form.dart for string `sign-up-success` -->
     <#if springMacroRequestContext.getQueryString()!?contains('sign-up-success') >

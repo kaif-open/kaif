@@ -15,8 +15,6 @@ import org.junit.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import io.kaif.flake.FlakeId;
-import io.kaif.model.account.Account;
-import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.article.Article;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateTree;
@@ -152,13 +150,16 @@ public class ZoneControllerTest extends MvcIntegrationTests {
   }
 
   @Test
-  public void notAllowCreateArticle() throws Exception {
-    Account account = accountTourist("foo");
-    String token = prepareAccessToken(account);
+  public void createLink() throws Exception {
     when(zoneService.loadZone(Zone.valueOf("programming"))).thenReturn(zoneInfo);
-    mockMvc.perform(//
-        get("/z/programming/article/create.part").header(AccountAccessToken.HEADER_KEY, token))
-        .andExpect(status().isUnauthorized())
-        .andExpect(view().name("access-denied"));
+    mockMvc.perform(get("/z/programming/article/create-link"))
+        .andExpect(view().name("article/create"));
+  }
+
+  @Test
+  public void createSpeak() throws Exception {
+    when(zoneService.loadZone(Zone.valueOf("programming"))).thenReturn(zoneInfo);
+    mockMvc.perform(get("/z/programming/article/create-speak"))
+        .andExpect(view().name("article/create"));
   }
 }

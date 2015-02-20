@@ -5,11 +5,7 @@
 <title>Error | kaif.io</title>
 </#assign>
 
-<@template.page
-config={
-'layout':'small',
-'errorpage': true
-} head=headContent>
+<@template.page layout='small' head=headContent errorPage=true >
 
 <h1>
 <#-- TODO show stacktrace in dev mode

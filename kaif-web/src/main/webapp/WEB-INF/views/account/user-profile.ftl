@@ -1,10 +1,8 @@
 <#import "/spring.ftl" as spring />
 <#import "../macros/template.ftl" as template>
 
-<@template.page {
-'layout':'small'
-}>
+<@template.page layout='small'>
 
-    ${account.username}
+${account.username}
 
 </@template.page>

@@ -1,13 +1,12 @@
 <#import "/spring.ftl" as spring />
 <#import "url.ftl" as url />
+<#import "util.ftl" as util/>
 <#--
 sample configs:
 
 1)
 
-<@template.page {
-  'layout':'small'
-}>
+<@template.page layout='small'>
 
 2)
 
@@ -17,20 +16,14 @@ sample configs:
     <meta name="description" content="foo zone is best">
 </#assign>
 <@template.page
-    config={
-      'layout':'full'
-    }
-    head=headContent
->
+    layout='full'
+    head=headContent>
 
 3) for error page
 
-<@template.page {
-  'layout':'small',
-  'errorPage': true
-}>
+<@template.page errorPage:true >
 -->
-<#macro page config head="">
+<#macro page layout head="" errorPage=false>
 
 <!doctype html>
 <html lang="zh-tw">
@@ -98,7 +91,7 @@ sample configs:
 
 <main>
     <div class="container">
-        <#if (config.layout)! == 'small'>
+        <#if layout == 'small'>
             <div class="pure-g">
                 <div class="pure-u pure-u-md-1-5"></div>
                 <div class="pure-u-1 pure-u-md-3-5 l-box">
@@ -106,7 +99,7 @@ sample configs:
                 </div>
                 <div class="pure-u pure-u-md-1-5"></div>
             </div>
-        <#elseif (config.layout)! == 'full'>
+        <#elseif layout == 'full'>
         <#-- full layout let nested take full control -->
             <#nested>
         <#else>
@@ -129,7 +122,7 @@ sample configs:
     </div>
 </footer>
 <#-- Error page will not enable js, for security reason -->
-    <#if !((config.errorPage)!false) >
+    <#if !errorPage >
         <#if kaif.profilesActive?contains('dev')>
         <#-- require dart pub serve, please run `./gradlew pubServe` -->
         <div id="waitingPubServe"
@@ -147,24 +140,6 @@ sample configs:
 </#macro>
 
 <#--
- menuLink
--->
-<#macro menuLink href name>
-<#-- here we have a tricky hack
-     the landing page is `/z/programm/article/create`
-     but part template is `/z/programm/article/create.part`
-     if `create.part` use menuLink, it won't work because the url is not same as
-     landing page
-     thus we compare both url
-
-     TODO menuLink in part template should use dart to render and highlight
-  -->
-    <#local uri = springMacroRequestContext.getRequestUri()/>
-    <#local selected = (uri == href || uri == (href + '.part')) />
-<li class="${selected?string('pure-menu-selected','')}"><a href="${href}">${name}</a></li>
-</#macro>
-
-<#--
  zone layout
 -->
 <#macro zone data menus="">
@@ -177,8 +152,8 @@ sample configs:
             <@url.zone data=zoneInfo/></div>
     </div>
     <nav class="zone-menu pure-menu pure-menu-open pure-menu-horizontal">
-        <@template.menuLink '/z/${zoneInfo.name}' '熱門'/>
-        <@template.menuLink '/z/${zoneInfo.name}/new' '最新'/>
+        <@util.menuLink '/z/${zoneInfo.name}' '熱門'/>
+        <@util.menuLink '/z/${zoneInfo.name}/new' '最新'/>
         ${menus}
     </nav>
     <#nested/>
@@ -192,9 +167,9 @@ sample configs:
 
 <div class="home">
     <nav class="home-menu pure-menu pure-menu-open pure-menu-horizontal">
-        <@template.menuLink '/' '綜合熱門'/>
-        <@template.menuLink '/new' '綜合最新'/>
-        <@template.menuLink '/zone/a-z' '所有討論區'/>
+        <@util.menuLink '/' '綜合熱門'/>
+        <@util.menuLink '/new' '綜合最新'/>
+        <@util.menuLink '/zone/a-z' '所有討論區'/>
     </nav>
     <#nested/>
 </div>

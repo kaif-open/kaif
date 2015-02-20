@@ -1,9 +1,7 @@
 <#import "/spring.ftl" as spring />
 <#import "macros/template.ftl" as template>
 
-<@template.page {
-'layout': 'small'
-}>
+<@template.page layout='small'>
 
 <div class="alert alert-danger">
     <@spring.messageText "part-loader.permission-error" "permission error" />
