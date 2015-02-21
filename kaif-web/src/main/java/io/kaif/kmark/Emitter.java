@@ -509,12 +509,13 @@ class Emitter {
     if (linkRefs.isEmpty()) {
       return;
     }
-    out.appendHtml("<p class=\"reference-appendix-block\">");
+    out.appendHtml("<div class=\"reference-appendix-block\">");
     linkRefs.forEach((s, linkRef) -> {
-      out.appendHtml("<span class=\"reference-appendix-index\">")
+      out
+          .appendHtml("<div class=\"reference-appendix-index\">")
           .append(linkRef.seqNumber)
-          .appendHtml("</span>")
-          .appendHtml("<a id=\"")
+          .appendHtml("</div>")
+          .appendHtml("<div  class=\"reference-appendix-wrap\"><a id=\"")
           .append(config.linkAnchorPrefix)
           .append("-")
           .append(linkRef.seqNumber)
@@ -525,8 +526,8 @@ class Emitter {
       if (linkRef.title != null && linkRef.title.isEmpty()) {
         out.appendHtml(" title=\"").append(linkRef.title).appendHtml("\"");
       }
-      out.appendHtml(" rel=\"nofollow\">").append(linkRef.link).appendHtml("</a><br>\n");
+      out.appendHtml(" rel=\"nofollow\">").append(linkRef.link).appendHtml("</a></div>\n");
     });
-    out.appendHtml("</p>");
+    out.appendHtml("</div>");
   }
 }

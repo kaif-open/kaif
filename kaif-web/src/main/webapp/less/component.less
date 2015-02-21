@@ -276,6 +276,22 @@ a.create-article {
   }
 }
 
+.reference-appendix-index {
+  &:before {
+    content: '['
+  }
+  &:after {
+    content: ']'
+  }
+  float: left;
+}
+
+.reference-appendix-wrap {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: @padding-xs-horizontal;
+}
+
 //
 // votable
 //
