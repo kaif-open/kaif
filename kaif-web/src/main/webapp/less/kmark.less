@@ -7,7 +7,7 @@
 .kmark {
   line-height: 1.5em; //body is 1.7em;
   color: @kmark-color;
-  p,ol,ul{
+  p, ol, ul {
     margin: @padding-sm-vertical 0;
   }
   blockquote {
@@ -16,7 +16,7 @@
     border-left: 2px solid lighten(@kmark-color, 40%);
     color: lighten(@kmark-color, 30%);
   }
-  code,pre {
+  code, pre {
     background-color: lighten(@gray-base, 97%);
     padding-left: @padding-xs-horizontal;
     padding-right: @padding-xs-horizontal;
@@ -28,5 +28,21 @@
     margin-bottom: @padding-vertical;
     padding-top: @padding-sm-vertical;
     padding-bottom: @padding-sm-vertical;
+  }
+
+  .reference-appendix-index {
+    &:before {
+      content: '['
+    }
+    &:after {
+      content: ']'
+    }
+    float: left;
+  }
+
+  .reference-appendix-wrap {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: @padding-xs-horizontal;
   }
 }

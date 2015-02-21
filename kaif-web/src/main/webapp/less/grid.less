@@ -40,8 +40,13 @@
     .flex-grow(0);
     .flex-shrink(0);
     .flex-basis(@aside-width-sm);
+
     @media (min-width: @screen-lg-min) {
       .flex-basis(@aside-width);
+      margin-left: @padding-lg-horizontal;
+    }
+    @media (min-width: @screen-md-min) {
+      margin-left: @padding-horizontal;
     }
   }
 }
@@ -76,9 +81,7 @@
   margin-left: 0;
 
   @media (min-width: @screen-md-min) {
-    & {
-      margin-left: @convex-row-width;
-    }
+    margin-left: @convex-row-width;
   }
 }
 
