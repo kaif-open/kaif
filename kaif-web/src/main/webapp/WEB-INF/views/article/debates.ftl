@@ -44,10 +44,14 @@ applyZoneTheme=true
                     <#-- place holder debate-form will replace by comp-template
                          keep place holder looks the same as comp-template
                          -->
-                        <div class="pure-form" debate-form>
-                            <textarea rows="3"></textarea>
-                            <button type="submit" class="pure-button pure-button-primary">留言
-                            </button>
+                        <div class="pure-form pure-g" debate-form>
+                            <div class="pure-u-1">
+                                <textarea rows="3" class="pure-input-1-2"></textarea>
+                            </div>
+                            <div class="pure-u-1">
+                                <button type="submit" class="pure-button pure-button-primary">留言
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </#if>
@@ -63,22 +67,32 @@ applyZoneTheme=true
     </@template.zone>
 
 <#-- component templates -->
-<form class="pure-form hidden" comp-template="debate-form">
+<form class="pure-form pure-g hidden" comp-template="debate-form">
     <input type="hidden" name="zoneInput" value="${article.zone}">
     <input type="hidden" name="articleInput" value="${article.articleId}">
 
-    <div kmark-previewer class="hidden kmark debate-preview"></div>
-    <textarea name="contentInput" maxlength="4096" rows="3"></textarea>
-    <button type="submit" class="pure-button pure-button-primary">留言</button>
-    <button class="pure-button" kmark-debate-cancel>取消</button>
-    <button class="pure-button" kmark-preview><@spring.messageText "debate.preview" "Preview" /></button>
+    <div class="pure-u-1">
+        <div kmark-previewer class="hidden kmark debate-preview"></div>
+        <textarea name="contentInput" class="pure-input-1-2" maxlength="4096" rows="3"></textarea>
+    </div>
+    <div class="pure-u-1">
+        <button type="submit" class="pure-button pure-button-primary">留言</button>
+        <button class="pure-button" kmark-debate-cancel>取消</button>
+        <button class="pure-button"
+                kmark-preview><@spring.messageText "debate.preview" "Preview" /></button>
+    </div>
 </form>
 
-<form class="pure-form hidden" comp-template="edit-debate-form">
-    <div kmark-previewer class="hidden kmark debate-preview"></div>
-    <textarea name="contentInput" maxlength="4096" rows="3"></textarea>
-    <button type="submit" class="pure-button pure-button-primary">修改</button>
-    <button class="pure-button" kmark-debate-cancel>取消</button>
-    <button class="pure-button" kmark-preview><@spring.messageText "debate.preview" "Preview" /></button>
+<form class="pure-form pure-g hidden" comp-template="edit-debate-form">
+    <div class="pure-u-1">
+        <div kmark-previewer class="hidden kmark debate-preview"></div>
+        <textarea name="contentInput" class="pure-input-1" maxlength="4096" rows="3"></textarea>
+    </div>
+    <div class="pure-u-1">
+        <button type="submit" class="pure-button pure-button-primary">修改</button>
+        <button class="pure-button" kmark-debate-cancel>取消</button>
+        <button class="pure-button"
+                kmark-preview><@spring.messageText "debate.preview" "Preview" /></button>
+    </div>
 </form>
 </@template.page>
