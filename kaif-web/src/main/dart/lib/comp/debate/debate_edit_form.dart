@@ -16,15 +16,13 @@ class DebateEditForm {
   final ArticleService _articleService;
   TextInputElement _contentInput;
   Element _elem;
-  Element _contentElement;
-  Element _previewer;
+  Element _contentElem;
+  Element _previewerElem;
   Element _contentEditElem;
   Alert _alert;
   String debateId;
   bool _opened = false;
   bool _previewVisible = false;
-
-  Element get elem => _elem;
 
   set content(String content) {
     _contentInput.setInnerHtml(content);
@@ -34,12 +32,12 @@ class DebateEditForm {
                               ArticleService _articleService) :
   this._(contentEditElem, contentElement, _articleService);
 
-  DebateEditForm._ (this._contentEditElem, this._contentElement, this._articleService) {
+  DebateEditForm._ (this._contentEditElem, this._contentElem, this._articleService) {
     _elem = _editDebateFormTemplate.createElement();
     _elem.querySelector('[kmark-preview]').onClick.listen(_onPreview);
     _contentInput = _elem.querySelector('textarea[name=contentInput]');
-    _previewer = elem.querySelector('[kmark-previewer]');
-    elem.querySelector('[kmark-debate-cancel]').onClick.listen(_onCancel);
+    _previewerElem = _elem.querySelector('[kmark-previewer]');
+    _elem.querySelector('[kmark-debate-cancel]').onClick.listen(_onCancel);
     _alert = new Alert.append(_elem);
     _elem.onSubmit.listen(_onSubmit);
   }
@@ -48,7 +46,7 @@ class DebateEditForm {
     e
       ..preventDefault()
       ..stopPropagation();
-    toggleShow(false);
+    hide();
   }
 
   void _onPreview(Event e) {
@@ -56,11 +54,11 @@ class DebateEditForm {
       ..preventDefault()
       ..stopPropagation();
 
-    ButtonElement previewBtn = elem.querySelector('[kmark-preview]');
+    ButtonElement previewBtn = _elem.querySelector('[kmark-preview]');
 
     if (_previewVisible) {
       _updatePreviewVisibility(false);
-      _previewer.setInnerHtml('');
+      _previewerElem.setInnerHtml('');
       previewBtn.text = i18n('debate.preview');
       return;
     }
@@ -71,8 +69,8 @@ class DebateEditForm {
     _articleService.previewDebateContent(_contentInput.value.trim())
     .then((preview) {
       _updatePreviewVisibility(true);
-      unSafeInnerHtml(_previewer, preview);
-      _previewer.style.minHeight = '1em';
+      unSafeInnerHtml(_previewerElem, preview);
+      _previewerElem.style.minHeight = '1em';
     }).catchError((e) {
       _alert.renderError('${e}');
     }).whenComplete(() {
@@ -97,7 +95,7 @@ class DebateEditForm {
       return;
     }
 
-    SubmitButtonInputElement submit = elem.querySelector('[type=submit]');
+    SubmitButtonInputElement submit = _elem.querySelector('[type=submit]');
     submit.disabled = true;
 
     var loading = new Loading.small()
@@ -106,8 +104,8 @@ class DebateEditForm {
         debateId,
         _contentInput.value)
     .then((content) {
-      toggleShow(false);
-      unSafeInnerHtml(_contentElement, content);
+      hide();
+      unSafeInnerHtml(_contentElem, content);
       _contentInput.setInnerHtml('');
       new Toast.success(i18n('debate.edits-success'), seconds:2).render();
     }).catchError((e) {
@@ -118,36 +116,40 @@ class DebateEditForm {
     });
   }
 
-  void toggleShow(bool open) {
-    if (open == _opened) {
+  void show() {
+    if (_opened) {
       return;
     }
-    if (_opened) {
-      _elem.remove();
-    } else {
-      //<ORDER>
-      _contentEditElem.append(_elem);
-      CssStyleDeclaration cssStyleDeclaration = _contentInput.getComputedStyle();
+    //<ORDER>
+    _contentEditElem.append(_elem);
+    CssStyleDeclaration cssStyleDeclaration = _contentInput.getComputedStyle();
 
-      _contentInput
-        ..style.width = (
-          _contentElement.clientWidth).toString() + 'px'
-        ..style.minHeight = '8em'
-        ..style.height = (
-          new Dimension.css(cssStyleDeclaration.paddingTop).value
-          + new Dimension.css(cssStyleDeclaration.paddingBottom).value
-          + _contentElement.clientHeight).toString() + 'px';
-      //</ORDER>
-    }
-    _contentEditElem.classes.toggle('hidden', _opened);
-    _contentElement.classes.toggle('hidden', !_opened);
-    _opened = !_opened;
+    _contentInput
+      ..style.minHeight = '8em'
+      ..style.height = (
+        new Dimension.css(cssStyleDeclaration.paddingTop).value
+        + new Dimension.css(cssStyleDeclaration.paddingBottom).value
+        + _contentElem.clientHeight).toString() + 'px';
+    //</ORDER>
+    _contentEditElem.classes.toggle('hidden', false);
+    _contentElem.classes.toggle('hidden', true);
+    _opened = true;
   }
 
+  void hide() {
+    if (!_opened) {
+      return;
+    }
+    _elem.remove();
+    _contentEditElem.classes.toggle('hidden', true);
+    _contentElem.classes.toggle('hidden', false);
+    _opened = false;
+
+  }
 
   void _updatePreviewVisibility(bool previewVisible) {
     _previewVisible = previewVisible;
     _contentInput.classes.toggle('hidden', _previewVisible);
-    _previewer.classes.toggle('hidden', !_previewVisible);
+    _previewerElem.classes.toggle('hidden', !_previewVisible);
   }
 }

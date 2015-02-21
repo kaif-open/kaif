@@ -28,7 +28,7 @@ class DebateTree {
     elem.querySelectorAll('[debate-form]').forEach((el) {
       new DebateForm.placeHolder(el, articleService)
         ..canCloseDebate(false)
-        ..toggleShow(true);
+        ..show();
     });
 
     List<DebateComp> debateComps = elem.querySelectorAll('[debate]').map((el) {
@@ -144,7 +144,7 @@ class DebateEditor {
       }
       form
         ..content = content
-        ..toggleShow(true);
+        ..show();
     }).catchError((e) {
       new Toast.error('$e', seconds:5).render();
     });
@@ -175,7 +175,7 @@ class DebateReplier {
       form = new DebateForm.placeHolder(placeHolderElem, articleService)
         ..parentDebateId = debateId;
     }
-    form.toggleShow(true);
+    form.show();
   }
 }
 
