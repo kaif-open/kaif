@@ -2,6 +2,7 @@
 <#import "../macros/template.ftl" as template>
 <#import "../macros/url.ftl" as url>
 <#import "../macros/comp.ftl" as comp>
+<#import "../macros/aside.ftl" as aside>
 
 <#assign headContent>
 
@@ -26,12 +27,7 @@ applyZoneTheme=true
         </div>
 
         <aside class="grid-aside">
-            <a href="/z/${zoneInfo.name}/article/create-link"
-               class="pure-button pure-button-primary create-article">
-                <i class="fa fa-caret-right"></i> 分享新文章</a>
-            <a href="/z/${zoneInfo.name}/article/create-speak"
-               class="pure-button pure-button-primary create-article">
-                <i class="fa fa-caret-right"></i> 我有話要說</a>
+            <@aside.createArticle zoneInfo=zoneInfo />
         </aside>
     </div>
 

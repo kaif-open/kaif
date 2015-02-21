@@ -19,7 +19,7 @@ head=headContent
 <div class="zone ${zoneInfo.theme}">
     <@template.zoneHeader subTitle=" - 新文章發表"/>
     <nav class="zone-menu pure-menu pure-menu-open pure-menu-horizontal">
-        <@util.menuLink createLinkPath '分享好連結'/>
+        <@util.menuLink createLinkPath '分享新連結'/>
         <@util.menuLink createSpeakPath '我有話要說'/>
     </nav>
     <div class="grid">
