@@ -24,11 +24,3 @@
 <time datetime="${instant}">${relativeTime(instant)}</time>
 </#compress>
 </#macro>
-
-<#--
- show absolute time of Instant. the output is wrapped by html5 time tag
- -->
-<#macro absTime instant><#compress>
-<time datetime="${instant}">${absoluteTime(instant)}</time>
-</#compress>
-</#macro>

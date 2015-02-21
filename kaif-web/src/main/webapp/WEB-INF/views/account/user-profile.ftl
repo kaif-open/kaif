@@ -14,14 +14,14 @@ layout='small'
 head=headContent>
 
 <div>
-${account.username} member for <@util.absTime instant=account.createTime />
+${account.username}
 </div>
-
 <div>
     <ul>
+        <li>註冊日：${account.createTime?datetime.iso?string.medium}</li>
         <li>留言：${accountStats.debateCount}</li>
         <li>發文：${accountStats.articleCount}</li>
-        <li>Score：${accountStats.debateUpVoted - accountStats.debateDownVoted}</li>
+        <li>積分：${accountStats.debateUpVoted - accountStats.debateDownVoted}</li>
 
     </ul>
 
