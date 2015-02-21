@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
+import org.springframework.web.util.HtmlUtils;
+
 public class KmarkProcessor {
 
   private KmarkProcessor() {
@@ -32,6 +34,10 @@ public class KmarkProcessor {
       //never happen, it's string reader
       return null;
     }
+  }
+
+  public static String escapeHtml(String input) {
+    return HtmlUtils.htmlEscape(input);
   }
 
   private String process(final Reader reader, final String linkAnchorPrefix) throws IOException {
@@ -319,5 +325,4 @@ public class KmarkProcessor {
       }
     }
   }
-
 }

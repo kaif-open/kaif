@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.HtmlUtils;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
@@ -110,7 +109,7 @@ public class ArticleServiceImpl implements ArticleService {
         .orElseThrow(() -> new AccessDeniedException("no permission to edit debate:"
             + debate.getDebateId()));
 
-    return HtmlUtils.htmlEscape(debate.getContent());
+    return debate.getEscapeContent();
   }
 
   @Override

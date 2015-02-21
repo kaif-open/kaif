@@ -150,6 +150,10 @@ public class Debate {
     return KmarkProcessor.process(content, debateId.toString());
   }
 
+  public String getEscapeContent() {
+    return KmarkProcessor.escapeHtml(content);
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -231,4 +235,5 @@ public class Debate {
   public boolean isEdited() {
     return lastUpdateTime.isAfter(createTime);
   }
+
 }
