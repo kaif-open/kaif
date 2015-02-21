@@ -21,6 +21,7 @@ class DebateForm {
   Element _placeHolderElem;
   Element _previewerElem;
   Element _previewCancelElem;
+  ButtonElement _previewBtn;
   TextInputElement _contentInput;
   Alert _alert;
   String parentDebateId;
@@ -41,15 +42,18 @@ class DebateForm {
     _alert = new Alert.append(_elem);
     _elem.onSubmit.listen(_onSubmit);
     _previewerElem = _elem.querySelector('[kmark-previewer]');
+    _previewBtn = _elem.querySelector('[kmark-preview]');
     _elem.querySelector('[kmark-debate-cancel]').onClick.listen(_onCancel);
     _previewCancelElem = _elem.querySelector('[kmark-preview-cancel]');
     _contentInput = _elem.querySelector('textarea[name=contentInput]');
   }
 
-  void _updatePreviewVisibility(bool previewVisible) {
+  void _updatePreviewVisibility({bool previewVisible}) {
     _previewVisible = previewVisible;
     _contentInput.classes.toggle('hidden', _previewVisible);
     _previewerElem.classes.toggle('hidden', !_previewVisible);
+    _previewBtn.text = _previewVisible ? i18n('debate.finish-preview')
+                       : i18n('debate.preview');
   }
 
   void _onCancel(Event e) {
@@ -67,7 +71,7 @@ class DebateForm {
     ButtonElement previewBtn = _elem.querySelector('[kmark-preview]');
 
     if (_previewVisible) {
-      _updatePreviewVisibility(false);
+      _updatePreviewVisibility(previewVisible:false);
       _previewerElem.setInnerHtml('');
       previewBtn.text = i18n('debate.preview');
       return;
@@ -78,15 +82,13 @@ class DebateForm {
       ..renderAfter(previewBtn);
     _articleService.previewDebateContent(_contentInput.value.trim())
     .then((preview) {
-      _updatePreviewVisibility(true);
+      _updatePreviewVisibility(previewVisible:true);
       unSafeInnerHtml(_previewerElem, preview);
       _previewerElem.style.minHeight = '1em';
     }).catchError((e) {
       _alert.renderError('${e}');
     }).whenComplete(() {
-      previewBtn
-        ..text = i18n('debate.finish-preview')
-        ..disabled = false;
+      previewBtn.disabled = false;
       loading.remove();
     });
   }
@@ -138,6 +140,7 @@ class DebateForm {
     }
     _placeHolderElem.replaceWith(_elem);
     _opened = true;
+    _updatePreviewVisibility(previewVisible:false);
   }
 
   hide() {

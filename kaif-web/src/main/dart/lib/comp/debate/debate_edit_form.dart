@@ -19,6 +19,7 @@ class DebateEditForm {
   Element _contentElem;
   Element _previewerElem;
   Element _contentEditElem;
+  ButtonElement _previewBtn;
   Alert _alert;
   String debateId;
   bool _opened = false;
@@ -35,6 +36,7 @@ class DebateEditForm {
   DebateEditForm._ (this._contentEditElem, this._contentElem, this._articleService) {
     _elem = _editDebateFormTemplate.createElement();
     _elem.querySelector('[kmark-preview]').onClick.listen(_onPreview);
+    _previewBtn = _elem.querySelector('[kmark-preview]');
     _contentInput = _elem.querySelector('textarea[name=contentInput]');
     _previewerElem = _elem.querySelector('[kmark-previewer]');
     _elem.querySelector('[kmark-debate-cancel]').onClick.listen(_onCancel);
@@ -54,29 +56,25 @@ class DebateEditForm {
       ..preventDefault()
       ..stopPropagation();
 
-    ButtonElement previewBtn = _elem.querySelector('[kmark-preview]');
 
     if (_previewVisible) {
-      _updatePreviewVisibility(false);
+      _updatePreviewVisibility(previewVisible:false);
       _previewerElem.setInnerHtml('');
-      previewBtn.text = i18n('debate.preview');
       return;
     }
 
-    previewBtn.disabled = true;
+    _previewBtn.disabled = true;
     var loading = new Loading.small()
-      ..renderAfter(previewBtn);
+      ..renderAfter(_previewBtn);
     _articleService.previewDebateContent(_contentInput.value.trim())
     .then((preview) {
-      _updatePreviewVisibility(true);
+      _updatePreviewVisibility(previewVisible:true);
       unSafeInnerHtml(_previewerElem, preview);
       _previewerElem.style.minHeight = '1em';
     }).catchError((e) {
       _alert.renderError('${e}');
     }).whenComplete(() {
-      previewBtn
-        ..disabled = false
-        ..text = i18n('debate.finish-preview');
+      _previewBtn .disabled = false;
       loading.remove();
     });
   }
@@ -107,6 +105,7 @@ class DebateEditForm {
       hide();
       unSafeInnerHtml(_contentElem, content);
       _contentInput.setInnerHtml('');
+      _previewerElem.setInnerHtml('');
       new Toast.success(i18n('debate.edits-success'), seconds:2).render();
     }).catchError((e) {
       _alert.renderError('${e}');
@@ -134,6 +133,7 @@ class DebateEditForm {
     _contentEditElem.classes.toggle('hidden', false);
     _contentElem.classes.toggle('hidden', true);
     _opened = true;
+    _updatePreviewVisibility(previewVisible:false);
   }
 
   void hide() {
@@ -147,9 +147,11 @@ class DebateEditForm {
 
   }
 
-  void _updatePreviewVisibility(bool previewVisible) {
+  void _updatePreviewVisibility({bool previewVisible}) {
     _previewVisible = previewVisible;
     _contentInput.classes.toggle('hidden', _previewVisible);
     _previewerElem.classes.toggle('hidden', !_previewVisible);
+    _previewBtn.text = _previewVisible ? i18n('debate.finish-preview')
+                       : i18n('debate.preview');
   }
 }
