@@ -79,6 +79,25 @@ public class ZoneInfo {
         now);
   }
 
+  /**
+   * zone allow tourist to vote/debate/write ...etc, this should be test zone
+   */
+  public static ZoneInfo createTourist(String zoneValue, String aliasName, Instant now) {
+    boolean hideFromTopRanking = true;
+    Authority voteAuth = Authority.TOURIST;
+    Authority debateAuth = Authority.TOURIST;
+    Authority writeAuth = Authority.TOURIST;
+    return new ZoneInfo(Zone.valueOf(zoneValue),
+        aliasName,
+        THEME_DEFAULT,
+        voteAuth,
+        debateAuth,
+        writeAuth,
+        Collections.emptyList(),
+        hideFromTopRanking,
+        now);
+  }
+
   public static ZoneInfo createKaif(String zoneValue, String aliasName, Instant now) {
     boolean hideFromTopRanking = true;
     Authority voteAuth = Authority.CITIZEN;

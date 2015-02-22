@@ -12,6 +12,7 @@ import com.google.common.base.Preconditions;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.AccountDao;
+import io.kaif.model.account.Authority;
 import io.kaif.model.account.Authorization;
 import io.kaif.model.article.ArticleDao;
 import io.kaif.model.debate.DebateDao;
@@ -21,6 +22,7 @@ import io.kaif.model.vote.VoteDao;
 import io.kaif.model.vote.VoteState;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneDao;
+import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.VoteService;
 import io.kaif.web.support.AccessDeniedException;
 
@@ -43,12 +45,14 @@ public class VoteServiceImpl implements VoteService {
   @Autowired
   private AccountDao accountDao;
 
-  private void checkVoteAuthority(Zone zone, Authorization authorization) {
+  private ZoneInfo checkVoteAuthority(Zone zone, Authorization authorization) {
     // relax verification when voting, no check zone and account in Database because voting
     // is not critical
-    if (!zoneDao.loadZone(zone).canUpVote(authorization)) {
+    ZoneInfo zoneInfo = zoneDao.loadZone(zone);
+    if (!zoneInfo.canUpVote(authorization)) {
       throw new AccessDeniedException("not allow vote in zone: " + zone + " auth:" + authorization);
     }
+    return zoneInfo;
   }
 
   @Override
@@ -90,7 +94,7 @@ public class VoteServiceImpl implements VoteService {
       VoteState previousState,
       long previousCount) {
 
-    checkVoteAuthority(zone, voter);
+    ZoneInfo zoneInfo = checkVoteAuthority(zone, voter);
 
     voteDao.voteDebate(newState,
         articleId,
@@ -106,9 +110,9 @@ public class VoteServiceImpl implements VoteService {
     debateDao.changeTotalVote(debateId, upVoteDelta, downVoteDelta);
 
     UUID debaterId = debateDao.loadDebaterId(debateId);
-    // exclude vote to self's debate. so if user playing up/down in test zone,
-    // the stats are not affected
-    if (!voter.authenticatedId().equals(debaterId)) {
+    // total debate vote score only count citizen zone. (tourist zone like /z/test
+    // or kVoting will not count)
+    if (zoneInfo.getVoteAuthority() == Authority.CITIZEN) {
       accountDao.changeTotalVotedDebate(debaterId, upVoteDelta, downVoteDelta);
     }
   }

@@ -347,6 +347,21 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
+  public void accountStatsOnlyForCitizenZone() throws Exception {
+    ZoneInfo touristZone = savedZoneTourist("test");
+    Account tourist = savedAccountTourist("guestB");
+    Article article = service.createExternalLink(tourist,
+        touristZone.getZone(),
+        "title1",
+        "http://foo.com");
+
+    service.debate(touristZone.getZone(), article.getArticleId(), null, tourist, "test article");
+    AccountStats stats = accountService.loadAccountStats(tourist.getUsername());
+    assertEquals(0, stats.getArticleCount());
+    assertEquals(0, stats.getDebateCount());
+  }
+
+  @Test
   public void createSpeak() throws Exception {
     Article created = service.createSpeak(citizen, zoneInfo.getZone(), "title1", "laugh out loud");
     Article article = service.findArticle(created.getArticleId()).get();

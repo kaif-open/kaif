@@ -119,6 +119,7 @@ sample configs:
                 &#169; 2015 All Rights Reserved
             </span>
             <a href="/z/kaif-faq">常見問題</a>
+            <a href="/z/kaif-terms">服務條款</a>
         </div>
     </div>
 </footer>

@@ -6,7 +6,6 @@ import static io.kaif.model.vote.VoteState.UP;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 
-import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -158,6 +157,30 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
+  public void touristVoteDoNotCountInTotalVote() throws Exception {
+    ZoneInfo zoneTourist = savedZoneTourist("test");
+    Zone z = zoneTourist.getZone();
+    Account tourist = savedAccountTourist("guest-a");
+    Article testArticle = savedArticle(zoneTourist, tourist, "test article");
+    Debate testDebate = savedDebate(testArticle, "foo", null);
+    service.voteDebate(UP,
+        z,
+        testArticle.getArticleId(),
+        testDebate.getDebateId(),
+        tourist,
+        EMPTY,
+        100);
+
+    Debate changedDebate = debateDao.findDebate(testDebate.getDebateId()).get();
+    assertEquals(0, changedDebate.getDownVote());
+    assertEquals(1, changedDebate.getUpVote());
+
+    AccountStats stats = accountDao.loadStats(debater.getUsername());
+    assertEquals(0, stats.getDebateDownVoted());
+    assertEquals(0, stats.getDebateUpVoted());
+  }
+
+  @Test
   public void cancelVoteArticle() throws Exception {
     service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
     service.voteArticle(EMPTY, zone, articleId, voter, UP, 0);
@@ -260,16 +283,6 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     DebateVoter debateVoter = debateVoters.get(0);
     assertEquals(DOWN, debateVoter.getVoteState());
     assertEquals(49, debateVoter.getPreviousCount());
-  }
-
-  @Test
-  public void debate_exclude_debater_stats_if_voter_is_self() throws Exception {
-    Debate voterDebate = debateDao.create(article, null, "ff", voter, Instant.now());
-
-    service.voteDebate(UP, zone, articleId, voterDebate.getDebateId(), voter, EMPTY, 20);
-
-    AccountStats stats = accountDao.loadStats(voter.getUsername());
-    assertEquals(0, stats.getDebateUpVoted());
   }
 
   @Test

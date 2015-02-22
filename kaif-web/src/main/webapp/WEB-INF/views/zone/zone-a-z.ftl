@@ -23,21 +23,22 @@ head=headContent>
                         <h3 class="zone-category">
                         ${cat}
                         </h3>
-                    <table class="zone-table">
-                        <#list zoneAtoZ[cat] as zoneInfo>
-                            <tr>
-                                <td class="zone-name">
-                                    <a class="plain"
-                                       href="<@url.zone data=zoneInfo/>">/z/${zoneInfo.zone}</a>
-                                </td>
-                                <td>
-                                ${zoneInfo.aliasName}
-                                </td>
-                            </tr>
+                        <table class="zone-table">
+                            <#list zoneAtoZ[cat] as zoneInfo>
+                                <tr>
+                                    <td class="zone-name">
+                                        <a class="plain"
+                                           href="<@url.zone data=zoneInfo/>">/z/${zoneInfo.zone}</a>
+                                    </td>
+                                    <td>
+                                    ${zoneInfo.aliasName}
+                                    </td>
+                                </tr>
+                            </#list>
                         </table>
-                        </#list>
                     </section>
                 </#list>
+                <p></p>
             </div>
         </div>
         <aside class="grid-aside">

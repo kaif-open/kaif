@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountDao;
+import io.kaif.model.account.Authority;
 import io.kaif.model.account.Authorization;
 import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleDao;
@@ -70,7 +71,9 @@ public class ArticleServiceImpl implements ArticleService {
         .orElseThrow(() -> new AccessDeniedException("no write to create article at zone:" + zone));
 
     Article article = articleCreator.apply(author);
-    accountDao.increaseArticleCount(author);
+    if (zoneInfo.getWriteAuthority() == Authority.CITIZEN) {
+      accountDao.increaseArticleCount(author);
+    }
     return article;
   }
 
@@ -150,7 +153,10 @@ public class ArticleServiceImpl implements ArticleService {
 
     //may improve later to make it async, but async has transaction problem
     articleDao.increaseDebateCount(article);
-    accountDao.increaseDebateCount(debater);
+
+    if (zoneInfo.getDebateAuthority() == Authority.CITIZEN) {
+      accountDao.increaseDebateCount(debater);
+    }
     return debate;
   }
 
