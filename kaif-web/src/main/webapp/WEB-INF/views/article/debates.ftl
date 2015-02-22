@@ -69,7 +69,7 @@ applyZoneTheme=true
     </@template.zone>
 
 <#-- component templates -->
-<form class="pure-form idden debate-form" comp-template="debate-form">
+<form class="pure-form hidden debate-form" comp-template="debate-form">
     <input type="hidden" name="zoneInput" value="${article.zone}">
     <input type="hidden" name="articleInput" value="${article.articleId}">
 
