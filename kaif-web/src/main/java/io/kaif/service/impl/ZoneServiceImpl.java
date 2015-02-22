@@ -1,6 +1,10 @@
 package io.kaif.service.impl;
 
+import static java.util.stream.Collectors.*;
+
+import java.time.Duration;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.kaif.model.article.ArticleDao;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
@@ -22,6 +27,9 @@ public class ZoneServiceImpl implements ZoneService {
 
   @Autowired
   private ZoneDao zoneDao;
+
+  @Autowired
+  private ArticleDao articleDao;
 
   @Override
   public ZoneInfo loadZone(Zone zone) {
@@ -51,8 +59,23 @@ public class ZoneServiceImpl implements ZoneService {
         .toUpperCase();
     return zoneDao.listOrderByName()
         .stream()
-        .collect(Collectors.groupingBy(capitalizeFirstChar,
-            LinkedHashMap::new,
-            Collectors.toList()));
+        .collect(Collectors.groupingBy(capitalizeFirstChar, LinkedHashMap::new, toList()));
+  }
+
+  @Override
+  public List<ZoneInfo> listRecommendZones() {
+    int recommendSize = 10;
+    List<ZoneInfo> results = articleDao.listHotZones(recommendSize,
+        Instant.now().minus(Duration.ofHours(24)));
+    if (results.size() >= recommendSize) {
+      return results;
+    }
+    // not enough hot zone within 24 hours, fall back to all zones...
+    List<ZoneInfo> all = zoneDao.listOrderByName()
+        .stream()
+        .filter(zoneInfo -> !zoneInfo.isHideFromTop())
+        .collect(toList());
+    Collections.shuffle(all);
+    return all.stream().limit(recommendSize).collect(toList());
   }
 }

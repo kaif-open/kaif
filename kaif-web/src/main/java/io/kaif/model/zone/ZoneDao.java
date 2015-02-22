@@ -42,6 +42,10 @@ public class ZoneDao implements DaoOperations {
         rs.getTimestamp("createTime").toInstant());
   };
 
+  public RowMapper<ZoneInfo> getZoneInfoMapper() {
+    return zoneInfoMapper;
+  }
+
   @Override
   public NamedParameterJdbcTemplate namedJdbc() {
     return namedParameterJdbcTemplate;

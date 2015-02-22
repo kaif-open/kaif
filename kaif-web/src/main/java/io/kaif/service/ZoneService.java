@@ -17,4 +17,6 @@ public interface ZoneService {
   void updateTheme(Zone zone, String theme);
 
   Map<String, List<ZoneInfo>> listZoneAtoZ();
+
+  List<ZoneInfo> listRecommendZones();
 }

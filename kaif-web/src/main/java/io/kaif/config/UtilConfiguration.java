@@ -28,14 +28,16 @@ public class UtilConfiguration {
   @Bean
   @Primary
   public CacheManager compositeCacheManager() {
-    return new CompositeCacheManager(debaterIdCacheManager(), zoneInfoCacheManager());
+    return new CompositeCacheManager(debaterIdCacheManager(),
+        zoneInfoCacheManager(),
+        listHotZonesCacheManager());
   }
 
   @Bean
   public CacheManager debaterIdCacheManager() {
     CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
         .expireAfterWrite(1, TimeUnit.DAYS)
-        .maximumSize(2000);
+        .maximumSize(10000);
     GuavaCacheManager cacheManager = new GuavaCacheManager("DebaterId");
     cacheManager.setCacheBuilder(cacheBuilder);
     return cacheManager;
@@ -45,11 +47,25 @@ public class UtilConfiguration {
   public CacheManager zoneInfoCacheManager() {
     CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
         .expireAfterWrite(1, TimeUnit.MINUTES)
-        .maximumSize(Integer.MAX_VALUE);
+        .maximumSize(2000);
     GuavaCacheManager cacheManager = new GuavaCacheManager("ZoneInfo");
     cacheManager.setCacheBuilder(cacheBuilder);
     return cacheManager;
   }
 
+  /**
+   * hot zones cache, refresh every one hour. no need to distribute if we have multiple web servers
+   *
+   * @see {@link io.kaif.model.article.ArticleDao#listHotZones(int, java.time.Instant)}
+   */
+  @Bean
+  public CacheManager listHotZonesCacheManager() {
+    CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
+        .expireAfterWrite(1, TimeUnit.HOURS)
+        .maximumSize(100);
+    GuavaCacheManager cacheManager = new GuavaCacheManager("listHotZones");
+    cacheManager.setCacheBuilder(cacheBuilder);
+    return cacheManager;
+  }
 }
 

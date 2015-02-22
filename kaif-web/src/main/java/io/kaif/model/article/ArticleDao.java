@@ -10,17 +10,22 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableList;
 
 import io.kaif.database.DaoOperations;
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
 import io.kaif.model.zone.Zone;
+import io.kaif.model.zone.ZoneDao;
+import io.kaif.model.zone.ZoneInfo;
 
 @Repository
 public class ArticleDao implements DaoOperations {
@@ -47,13 +52,16 @@ public class ArticleDao implements DaoOperations {
         rs.getLong("downVote"),
         rs.getLong("debateCount"));
   };
+  @Autowired
+  private ZoneDao zoneDao;
 
   @Override
   public NamedParameterJdbcTemplate namedJdbc() {
     return namedParameterJdbcTemplate;
   }
 
-  private Article insertArticle(Article article) {
+  @VisibleForTesting
+  Article insertArticle(Article article) {
     jdbc().update(""
             + " INSERT "
             + "   INTO Article "
@@ -239,5 +247,31 @@ public class ArticleDao implements DaoOperations {
         title,
         content,
         now));
+  }
+
+  @VisibleForTesting
+  @CacheEvict(value = "listHotZones", allEntries = true)
+  void evictAllCaches() {
+  }
+
+  /**
+   * list hot zones based on article count, ignore zone that hideFromTop.
+   * <p>
+   * note that the result are cached for same size (argument Instant is not part of cache key)
+   */
+  @Cacheable(value = "listHotZones", key = "#a0")
+  public List<ZoneInfo> listHotZones(int size, Instant articleSince) {
+    FlakeId startArticleId = FlakeId.startOf(articleSince.toEpochMilli());
+    List<ZoneInfo> results = jdbc().query(""
+        + " SELECT z.*, count(z.zone) AS zoneHotness "
+        + "   FROM Article a "
+        + "   JOIN ZoneInfo z ON z.zone = a.zone "
+        + "  WHERE a.articleId >= ? "
+        + "    AND z.hideFromTop = FALSE "
+        + "  GROUP BY z.zone "
+        + "  ORDER BY zoneHotness DESC "
+        + "  LIMIT ? ", zoneDao.getZoneInfoMapper(), startArticleId.value(), size);
+    //immutable for cache
+    return ImmutableList.copyOf(results);
   }
 }
