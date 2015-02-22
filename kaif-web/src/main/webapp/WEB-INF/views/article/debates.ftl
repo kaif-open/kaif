@@ -69,15 +69,15 @@ applyZoneTheme=true
     </@template.zone>
 
 <#-- component templates -->
-<form class="pure-form pure-g hidden" comp-template="debate-form">
+<form class="pure-form idden debate-form" comp-template="debate-form">
     <input type="hidden" name="zoneInput" value="${article.zone}">
     <input type="hidden" name="articleInput" value="${article.articleId}">
 
-    <div class="pure-u-1">
+    <div>
         <div kmark-previewer class="hidden kmark debate-preview"></div>
         <textarea name="contentInput" class="pure-input-1-2" maxlength="4096" rows="3"></textarea>
     </div>
-    <div class="pure-u-1">
+    <div class="debate-form-action">
         <button type="submit" class="pure-button pure-button-primary">留言</button>
         <button class="pure-button" kmark-debate-cancel>取消</button>
         <button class="pure-button"
@@ -85,12 +85,12 @@ applyZoneTheme=true
     </div>
 </form>
 
-<form class="pure-form pure-g hidden" comp-template="edit-debate-form">
-    <div class="pure-u-1">
+<form class="pure-form hidden debate-form" comp-template="edit-debate-form">
+    <div>
         <div kmark-previewer class="hidden kmark debate-preview"></div>
         <textarea name="contentInput" class="pure-input-1" maxlength="4096" rows="3"></textarea>
     </div>
-    <div class="pure-u-1">
+    <div class="debate-form-action">
         <button type="submit" class="pure-button pure-button-primary">修改</button>
         <button class="pure-button" kmark-debate-cancel>取消</button>
         <button class="pure-button"
