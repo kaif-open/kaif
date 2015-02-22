@@ -79,7 +79,11 @@ sample configs:
 <header class="header">
     <div class="container">
         <div class="top-menu pure-menu pure-menu-open pure-menu-horizontal">
-            <a class="pure-menu-heading" href="/">Kaif.io</a>
+            <a class="pure-menu-heading" href="/">
+                <img class="logo"
+                     src="<@url.dynamicRes/>/img/kaif_white@2x.png"
+                     alt="KAIF"/>
+            </a>
             <ul account-menu>
             <#-- mock
             <li><a href="/account/sign-up">Sign Up</a></li>
