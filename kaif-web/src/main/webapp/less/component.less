@@ -72,6 +72,7 @@
   padding: @padding-vertical @padding-horizontal;
   border-radius: @border-radius-sm;
   box-shadow: 0 0 6px -1px @gray-lighter;
+  max-width: @text-content-max-width;
 }
 
 .article-info {
@@ -120,6 +121,7 @@
   padding-top: @padding-lg-vertical;
   margin-top: @padding-lg-vertical;
   border-top: 1px dashed @gray-lighter;
+  max-width: @text-content-max-width;
 }
 
 .child-debate-hint {
@@ -140,6 +142,7 @@
 
 .debate-vote-box {
   padding-bottom: @padding-lg-vertical;
+  padding-right: @padding-sm-horizontal;
   white-space: nowrap;
   text-align: center;
 
@@ -172,6 +175,7 @@
 
 .debate-content {
   overflow-x: hidden;
+  max-width: @text-content-max-width;
 }
 
 .debate-action {
@@ -199,17 +203,23 @@
 .debate {
   .debate-child {
     .grid-convex {
-      width: 36px;
+      width: 30px;
     }
     .grid-center {
-      margin-left: 36px;
+      margin-left: 30px;
     }
     .debate-vote-box.grid-convex {
       text-align: center;
       padding-right: 0;
     }
   }
-  @media (max-width: @screen-sm-max) {
+
+  // debate page is change to mobile mode when size < 1024
+  // this is faster than other grid (so it will look wired
+  // when screen width between 768~1024 in debate page.
+  // Of course this is ugly, but since debate tree is nested
+  // too many level, readability is more important
+  @media (max-width: @screen-md-max) {
     .grid-center, .debate-child .grid-center {
       margin-left: 6px;
     }
