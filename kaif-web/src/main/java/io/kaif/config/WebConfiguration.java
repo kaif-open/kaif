@@ -81,6 +81,8 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
     //          .addResourceLocations(RESOURCE_LOCATIONS)
     //          .setCachePeriod(cachePeriod);
 
+    // note that to override spring boot default favicon.ico, we must put it in classpath, not
+    // /webapp/ folder
   }
 
   @Override
