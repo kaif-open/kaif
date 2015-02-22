@@ -19,6 +19,9 @@ spring.freemarker:
 error.whitelabel.enabled: false
 
 
+## spring mvc resources
+
+
 ## actuator
 management.context-path: /actuate
 endpoints.info.enabled: true

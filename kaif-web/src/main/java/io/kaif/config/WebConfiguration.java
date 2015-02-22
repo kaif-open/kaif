@@ -60,10 +60,27 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
 
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    //spring-boot already include webjars, so if we remove spring-boot mvc auto configuration, we
-    //should turn this on
-    //    registry.addResourceHandler("/webjars/**")
-    //        .addResourceLocations("classpath:/META-INF/resources/webjars/");
+    //spring-boot already include `/webjars/**` and `/**` for all static resources
+    // and it also apply cache header if spring.resources.cache-period property exist.
+
+    // so in production, following resources are cached:
+    //
+    //   /favicon.ico
+    //   /robots.txt
+    //   /webjars/**
+    //   /build-2015..../**
+    //   ...etc
+    //
+
+    // below are source code of WebMvcAutoConfiguration:
+    //
+    //      registry.addResourceHandler("/webjars/**")
+    //          .addResourceLocations("classpath:/META-INF/resources/webjars/")
+    //          .setCachePeriod(cachePeriod);
+    //      registry.addResourceHandler("/**")
+    //          .addResourceLocations(RESOURCE_LOCATIONS)
+    //          .setCachePeriod(cachePeriod);
+
   }
 
   @Override

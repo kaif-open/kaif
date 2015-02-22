@@ -13,6 +13,9 @@ spring.freemarker:
         show_error_tips: true
 
 
+## spring mvc resources
+
+
 ## actuator
 endpoints.enabled: false
 

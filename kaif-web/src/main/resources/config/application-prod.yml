@@ -11,6 +11,11 @@ spring.freemarker:
         show_error_tips: false
 
 
+## spring mvc resources
+# cache one month for css, js, favicon.ico...etc
+spring.resources.cache-period: 2592000
+
+
 ## actuator
 endpoints.enabled: false
 
