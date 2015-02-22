@@ -36,6 +36,15 @@
     width: 100%;
   }
 
+  // firefox only hack
+  // when .grid-body contains long un-break text (ex. in debate content)
+  // firefox will extends .grid-body's width and this breaks grid layout
+  @media screen and (-moz-images-in-menus: 0) {
+    .grid-body {
+      overflow-x: hidden;
+    }
+  }
+
   .grid-aside {
     .flex-grow(0);
     .flex-shrink(0);
