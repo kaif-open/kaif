@@ -65,5 +65,14 @@ enum MarkToken {
    * Extended: ^
    */
   SUPER,              // ^
+  /**
+   * Extended: /u/NAME_PATTERN
+   */
+  USER,
+  /**
+   * Extended: /z/ZONE_PATTERN
+   */
+  ZONE,
+
   BR,
 }

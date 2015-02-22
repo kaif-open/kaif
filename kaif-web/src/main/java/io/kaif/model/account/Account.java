@@ -16,7 +16,7 @@ public class Account implements Authorization {
   public static final int NAME_MIN = 3;
   public static final int NAME_MAX = 15;
 
-  //changing pattern should review sign_up_form.dart
+  //changing pattern should review sign_up_form.dart, Emitter.java
   public static final String NAME_PATTERN = "^[a-zA-Z_0-9]{3,15}$";
 
   public static Account create(String username,

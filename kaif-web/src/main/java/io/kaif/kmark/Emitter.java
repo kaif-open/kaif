@@ -18,6 +18,8 @@ package io.kaif.kmark;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import io.kaif.model.account.Account;
+
 /**
  * Emitter class responsible for generating HTML output.
  *
@@ -196,15 +198,10 @@ class Emitter {
    *     Input String.
    * @param start
    *     Starting position.
-   * @param token
-   *     Either LINK or IMAGE.
    * @return The new position or -1 if there is no valid markdown link.
    */
-  private int checkLink(final HtmlEscapeStringBuilder out,
-      final String in,
-      int start,
-      MarkToken token) {
-    int pos = start + (token == MarkToken.LINK ? 1 : 2);
+  private int checkLink(final HtmlEscapeStringBuilder out, final String in, int start) {
+    int pos = start + 1;
     final StringBuilder temp = new StringBuilder();
 
     temp.setLength(0);
@@ -250,14 +247,13 @@ class Emitter {
       return -1;
     }
 
-    if (token == MarkToken.LINK) {
-      this.config.decorator.openLink(out);
-      out.appendHtml(" href=\"");
-      out.append(link);
-      out.appendHtml("\" class=\"reference-link\">");
-      this.recursiveEmitLine(out, name, 0, MarkToken.NONE);
-      out.appendHtml("</a>");
-    }
+    this.config.decorator.openLink(out);
+    out.appendHtml(" href=\"");
+    out.append(link);
+    out.appendHtml("\" class=\"reference-link\">");
+    this.recursiveEmitLine(out, name, 0, MarkToken.LINK);
+    out.appendHtml("</a>");
+
     return pos;
   }
 
@@ -293,7 +289,7 @@ class Emitter {
       switch (mt) {
         case LINK:
           temp.reset();
-          b = this.checkLink(temp, in, pos, mt);
+          b = this.checkLink(temp, in, pos);
           if (b > 0) {
             out.appendHtml(temp);
             pos = b;
@@ -372,6 +368,34 @@ class Emitter {
             out.appendHtml(in.charAt(pos));
           }
           break;
+        case USER:
+          if (token == MarkToken.LINK) {
+            out.appendHtml(in.charAt(pos));
+          } else {
+            temp.reset();
+            b = this.checkUserLink(temp, in, pos);
+            if (b > 0) {
+              out.appendHtml(temp);
+              pos = b;
+            } else {
+              out.appendHtml(in.charAt(pos));
+            }
+          }
+          break;
+        case ZONE:
+          if (token == MarkToken.LINK) {
+            out.appendHtml(in.charAt(pos));
+          } else {
+            temp.reset();
+            b = this.checkZoneLink(temp, in, pos);
+            if (b > 0) {
+              out.appendHtml(temp);
+              pos = b;
+            } else {
+              out.appendHtml(in.charAt(pos));
+            }
+          }
+          break;
         case ESCAPE:
           pos++;
           //$FALL-THROUGH$
@@ -382,6 +406,91 @@ class Emitter {
       pos++;
     }
     return -1;
+  }
+
+  /**
+   * change this should review Account.java
+   *
+   * @param out
+   * @param in
+   * @param start
+   * @return
+   */
+  private int checkUserLink(HtmlEscapeStringBuilder out, String in, int start) {
+    int pos = start + 3; // skip /u/
+    StringBuilder temp = new StringBuilder();
+    String targetString = in.substring(pos, Math.min(in.length(), pos + Account.NAME_MAX));
+    for (int i = 0; i < targetString.length(); i++) {
+      char c = targetString.charAt(i);
+      if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_') {
+        temp.append(c);
+      } else {
+        break;
+      }
+    }
+    String username = temp.toString();
+    if (username.length() < Account.NAME_MIN || username.equalsIgnoreCase("null")) {
+      return -1;
+    }
+
+    this.config.decorator.openLink(out);
+    out.appendHtml(" href=\"")
+        .append("/u/")
+        .append(username)
+        .appendHtml("\" class=\"user-link\">")
+        .append(username);
+    out.appendHtml("</a>");
+    return pos + username.length() - 1;
+  }
+
+  /**
+   * change this should review Zone.java
+   *
+   * @param out
+   * @param in
+   * @param start
+   * @return
+   */
+  private int checkZoneLink(HtmlEscapeStringBuilder out, String in, int start) {
+    int pos = start + 3; // skip /z/
+    StringBuilder temp = new StringBuilder();
+    String targetString = in.substring(pos, Math.min(in.length(), pos + 20));
+    boolean prevIsDash = false;
+    for (int i = 0; i < targetString.length(); i++) {
+      char c = targetString.charAt(i);
+      if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
+        temp.append(c);
+        prevIsDash = false;
+      } else if (c == '-') {
+        if (i == 0) {
+          return -1; //start with -
+        }
+        if (prevIsDash) {
+          temp.deleteCharAt(temp.length() - 1); //remove last dash
+          break;
+        }
+        temp.append(c);
+        prevIsDash = true;
+      } else {
+        if (prevIsDash) {
+          temp.deleteCharAt(temp.length() - 1); //remove last dash
+        }
+        break;
+      }
+    }
+    String zone = temp.toString();
+    if (zone.length() < 3 || zone.equalsIgnoreCase("null")) {
+      return -1;
+    }
+
+    this.config.decorator.openLink(out);
+    out.appendHtml(" href=\"")
+        .append("/z/")
+        .append(zone)
+        .appendHtml("\" class=\"zone-link\">")
+        .append(zone);
+    out.appendHtml("</a>");
+    return pos + zone.length() - 1;
   }
 
   /**
@@ -412,6 +521,14 @@ class Emitter {
       case '~':
         if (c1 == '~') {
           return MarkToken.STRIKE;
+        }
+        return MarkToken.NONE;
+      case '/':
+        if (c1 == 'u' && c2 == '/') {
+          return MarkToken.USER;
+        }
+        if (c1 == 'z' && c2 == '/') {
+          return MarkToken.ZONE;
         }
         return MarkToken.NONE;
       case '[':
@@ -511,8 +628,7 @@ class Emitter {
     }
     out.appendHtml("<div class=\"reference-appendix-block\">");
     linkRefs.forEach((s, linkRef) -> {
-      out
-          .appendHtml("<div class=\"reference-appendix-index\">")
+      out.appendHtml("<div class=\"reference-appendix-index\">")
           .append(linkRef.seqNumber)
           .appendHtml("</div>")
           .appendHtml("<div  class=\"reference-appendix-wrap\"><a id=\"")

@@ -41,6 +41,32 @@ public class KmarkProcessorTest {
   }
 
   /**
+   * /u/koji
+   * ///////////////////////////
+   * <a href="/u/koji">koji</a>
+   *
+   * @throws Exception
+   */
+  @Test
+  public void process_user_link() throws Exception {
+    assertEquals(readTestFile("kmark/out13.out"),
+        KmarkProcessor.process(readTestFile("kmark/in13.md"), ""));
+  }
+
+  /**
+   * /z/programming
+   * ///////////////////////////
+   * <a href="/z/programming">programming</a>
+   *
+   * @throws Exception
+   */
+  @Test
+  public void process_zone_link() throws Exception {
+    assertEquals(readTestFile("kmark/out14.out"),
+        KmarkProcessor.process(readTestFile("kmark/in14.md"), ""));
+  }
+
+  /**
    * a(_space_)(_space_)
    * b
    * ///////////////////////////

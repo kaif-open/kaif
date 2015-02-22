@@ -25,7 +25,7 @@ public class Zone {
    * - 3~20 chars.
    * - not allow concat multiple dash (use code to validate, not regex)
    * <p>
-   * change pattern should review route.dart and ZoneController.java
+   * change pattern should review route.dart and ZoneController.java and Emitter.java
    */
   private static final Pattern ZONE_PATTERN = Pattern.compile("^[a-z0-9][a-z0-9\\-]{1,18}[a-z0-9]$");
 

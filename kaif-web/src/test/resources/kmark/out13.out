@@ -1,0 +1,13 @@
+<p>Hi <a href="/u/koji" class="user-link">koji</a> !<br>
+concat two user <a href="/u/lala" class="user-link">lala</a><a href="/u/qoo" class="user-link">qoo</a><br>
+This is not user /u/ab<br>
+Long user name exceed max <a href="/u/abcdefghijklmno" class="user-link">abcdefghijklmno</a>pqrst
+/u/中文不會是
+<a href="/u/abc" class="user-link">abc</a>中文
+<s><a href="/u/abc" class="user-link">abc</a></s>
+no nested link:<a href="#-1" class="reference-link">qoo/u/abc</a>
+not work in code block <code>/u/koji</code></p>
+<pre><code>not work in code block /u/koji
+</code></pre>
+<div class="reference-appendix-block"><div class="reference-appendix-index">1</div><div  class="reference-appendix-wrap"><a id="-1"></a><a href="http://qoo.com" rel="nofollow">http://qoo.com</a></div>
+</div>
