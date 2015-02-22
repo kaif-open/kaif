@@ -1,7 +1,12 @@
 INSERT INTO ZoneInfo (zone, aliasname, theme, voteauthority, debateauthority, writeauthority,
                       adminaccountids, hidefromtop, createtime)
 VALUES
-  ('programming', '程設', 'z-theme-default', 'CITIZEN', 'CITIZEN', 'CITIZEN', '{}', FALSE, now());
+  ('programming', '程式設計', 'z-theme-default', 'CITIZEN', 'CITIZEN', 'CITIZEN', '{}', FALSE, now());
+
+INSERT INTO ZoneInfo (zone, aliasname, theme, voteauthority, debateauthority, writeauthority,
+                      adminaccountids, hidefromtop, createtime)
+VALUES
+  ('sysop', 'Kaif 站務', 'z-theme-default', 'CITIZEN', 'CITIZEN', 'CITIZEN', '{}', FALSE, now());
 
 INSERT INTO ZoneInfo (zone, aliasname, theme, voteauthority, debateauthority, writeauthority,
                       adminaccountids, hidefromtop, createtime)

@@ -40,6 +40,7 @@ public class ZoneController {
     return resolveZone(request, rawZone, zoneInfo -> {
       return new ModelAndView("zone/articles")//
           .addObject("zoneInfo", zoneInfo)
+          .addObject("recommendZones", zoneService.listRecommendZones())
           .addObject("articlePage",
               new ArticlePage(articleService.listHotZoneArticles(zoneInfo.getZone(),
                   startArticleId)));
@@ -83,6 +84,7 @@ public class ZoneController {
       FlakeId startArticleId = Optional.ofNullable(start).map(FlakeId::fromString).orElse(null);
       return new ModelAndView("zone/articles")//
           .addObject("zoneInfo", zoneInfo)
+          .addObject("recommendZones", zoneService.listRecommendZones())
           .addObject("articlePage",
               new ArticlePage(articleService.listLatestZoneArticles(zoneInfo.getZone(),
                   startArticleId)));
@@ -104,6 +106,7 @@ public class ZoneController {
       FlakeId articleFlakeId = FlakeId.fromString(articleId);
       return new ModelAndView("article/debates")//
           .addObject("zoneInfo", zoneInfo)
+          .addObject("recommendZones", zoneService.listRecommendZones())
           .addObject("article", articleService.loadArticle(articleFlakeId))
           .addObject("debateTree", articleService.listBestDebates(articleFlakeId, null));
     });
@@ -120,6 +123,7 @@ public class ZoneController {
       return new ModelAndView("article/debates")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("article", articleService.loadArticle(articleFlakeId))
+          .addObject("recommendZones", zoneService.listRecommendZones())
           .addObject("parentDebate", articleService.loadDebate(debateFlakeId))
           .addObject("debateTree", articleService.listBestDebates(articleFlakeId, debateFlakeId));
     });

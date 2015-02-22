@@ -27,7 +27,8 @@ head=headContent>
                         <#list zoneAtoZ[cat] as zoneInfo>
                             <tr>
                                 <td class="zone-name">
-                                    <a href="<@url.zone data=zoneInfo/>">/z/${zoneInfo.zone}</a>
+                                    <a class="plain"
+                                       href="<@url.zone data=zoneInfo/>">/z/${zoneInfo.zone}</a>
                                 </td>
                                 <td>
                                 ${zoneInfo.aliasName}
@@ -40,7 +41,6 @@ head=headContent>
             </div>
         </div>
         <aside class="grid-aside">
-            side bar
         </aside>
     </div>
 

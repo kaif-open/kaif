@@ -2,6 +2,7 @@
 <#import "macros/template.ftl" as template>
 <#import "macros/comp.ftl" as comp>
 <#import "macros/url.ftl" as url>
+<#import "macros/aside.ftl" as aside>
 
 <#assign headContent>
 
@@ -21,7 +22,7 @@ head=headContent
             <@comp.articleList data=articlePage></@comp.articleList>
         </div>
         <aside class="grid-aside">
-            side bar
+            <@aside.recommendZones zoneInfos=recommendZones />
         </aside>
     </div>
     </@template.home>

@@ -18,22 +18,26 @@ public class HomeController {
 
   @Autowired
   private ArticleService articleService;
+
   @Autowired
   private ZoneService zoneService;
 
   @RequestMapping("/")
   public ModelAndView index(@RequestParam(value = "start", required = false) String start) {
     FlakeId startArticleId = Optional.ofNullable(start).map(FlakeId::fromString).orElse(null);
-    return new ModelAndView("index").addObject("articlePage",
-        new ArticlePage(articleService.listTopArticles(startArticleId)));
+    return new ModelAndView("index")//
+        .addObject("recommendZones", zoneService.listRecommendZones())
+        .addObject("articlePage", new ArticlePage(articleService.listTopArticles(startArticleId)));
   }
 
   @RequestMapping("/new")
   public ModelAndView listLatestArticles(
       @RequestParam(value = "start", required = false) String start) {
     FlakeId startArticleId = Optional.ofNullable(start).map(FlakeId::fromString).orElse(null);
-    return new ModelAndView("index").addObject("articlePage",
-        new ArticlePage(articleService.listLatestArticles(startArticleId)));
+    return new ModelAndView("index") //
+        .addObject("recommendZones", zoneService.listRecommendZones())
+        .addObject("articlePage",
+            new ArticlePage(articleService.listLatestArticles(startArticleId)));
   }
 
   @RequestMapping("/zone/a-z")

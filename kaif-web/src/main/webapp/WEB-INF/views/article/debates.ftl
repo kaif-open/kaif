@@ -63,6 +63,7 @@ applyZoneTheme=true
         </div>
         <aside class="grid-aside">
             <@aside.createArticle zoneInfo=zoneInfo />
+            <@aside.recommendZones zoneInfos=recommendZones />
         </aside>
     </div>
     </@template.zone>
