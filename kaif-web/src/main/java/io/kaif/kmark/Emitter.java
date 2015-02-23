@@ -18,6 +18,8 @@ package io.kaif.kmark;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import com.google.common.base.Strings;
+
 import io.kaif.model.account.Account;
 
 /**
@@ -637,9 +639,10 @@ class Emitter {
           .append(linkRef.seqNumber)
           .appendHtml("\"></a>")
           .appendHtml("<a href=\"")
-          .append(linkRef.link)
+          .append(linkRef.getLinkWithHttpScheme())
           .appendHtml("\"");
-      if (linkRef.title != null && linkRef.title.isEmpty()) {
+
+      if (!Strings.isNullOrEmpty(linkRef.title)) {
         out.appendHtml(" title=\"").append(linkRef.title).appendHtml("\"");
       }
       out.appendHtml(" rel=\"nofollow\">").append(linkRef.link).appendHtml("</a></div>\n");

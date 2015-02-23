@@ -1,7 +1,11 @@
-<p>hello world <a href="#aAbBz-1" class="reference-link">yahoo</a>, <a href="#aAbBz-2" class="reference-link">google</a>, <a href="#aAbBz-3" class="reference-link">likName</a>, <a href="#aAbBz-5" class="reference-link">example</a>, <a href="#aAbBz-4" class="reference-link">bar</a></p>
+<p>hello world <a href="#aAbBz-1" class="reference-link">yahoo</a>, <a href="#aAbBz-2" class="reference-link">google</a>, <a href="#aAbBz-3" class="reference-link">likName</a>, <a href="#aAbBz-5" class="reference-link">example</a>, <a href="#aAbBz-4" class="reference-link">bar</a>
+<a href="#aAbBz-6" class="reference-link">yahoo</a>
+<a href="#aAbBz-7" class="reference-link">yahoo</a></p>
 <div class="reference-appendix-block"><div class="reference-appendix-index">1</div><div  class="reference-appendix-wrap"><a id="aAbBz-1"></a><a href="http://yahoo.com.tw" rel="nofollow">http://yahoo.com.tw</a></div>
-<div class="reference-appendix-index">2</div><div  class="reference-appendix-wrap"><a id="aAbBz-2"></a><a href="http://google.com" rel="nofollow">http://google.com</a></div>
+<div class="reference-appendix-index">2</div><div  class="reference-appendix-wrap"><a id="aAbBz-2"></a><a href="http://google.com" title="google" rel="nofollow">http://google.com</a></div>
 <div class="reference-appendix-index">3</div><div  class="reference-appendix-wrap"><a id="aAbBz-3"></a><a href="http://foo.com" rel="nofollow">http://foo.com</a></div>
-<div class="reference-appendix-index">4</div><div  class="reference-appendix-wrap"><a id="aAbBz-4"></a><a href="http://bar.com" rel="nofollow">http://bar.com</a></div>
+<div class="reference-appendix-index">4</div><div  class="reference-appendix-wrap"><a id="aAbBz-4"></a><a href="http://bar.com" title="site for bar" rel="nofollow">http://bar.com</a></div>
 <div class="reference-appendix-index">5</div><div  class="reference-appendix-wrap"><a id="aAbBz-5"></a><a href="https://example.com" rel="nofollow">https://example.com</a></div>
+<div class="reference-appendix-index">6</div><div  class="reference-appendix-wrap"><a id="aAbBz-6"></a><a href="http://yahoo.com.tw" rel="nofollow">yahoo.com.tw</a></div>
+<div class="reference-appendix-index">7</div><div  class="reference-appendix-wrap"><a id="aAbBz-7"></a><a href="http://httpyahoo.com.tw" rel="nofollow">httpyahoo.com.tw</a></div>
 </div>
