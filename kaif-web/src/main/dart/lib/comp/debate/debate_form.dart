@@ -84,7 +84,6 @@ class DebateForm {
     .then((preview) {
       _updatePreviewVisibility(previewVisible:true);
       unSafeInnerHtml(_previewerElem, preview);
-      _previewerElem.style.minHeight = '1em';
     }).catchError((e) {
       _alert.renderError('${e}');
     }).whenComplete(() {

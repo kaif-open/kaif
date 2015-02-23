@@ -94,7 +94,7 @@
 <form class="pure-form hidden" comp-template="edit-kmark-form">
     <div>
         <div kmark-previewer class="hidden kmark kmark-preview"></div>
-        <textarea name="contentInput" class="pure-input-1" maxlength="4096" rows="3"></textarea>
+        <textarea name="contentInput" class="pure-input-1 kmark-input" maxlength="4096" rows="3"></textarea>
     </div>
     <div>
         <button type="submit" class="pure-button pure-button-primary">修改</button>

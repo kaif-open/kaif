@@ -63,7 +63,6 @@ abstract class EditKmarkForm {
     .then((preview) {
       _updatePreviewVisibility(previewVisible:true);
       unSafeInnerHtml(_previewerElem, preview);
-      _previewerElem.style.minHeight = '1em';
     }).catchError((e) {
       _alert.renderError('${e}');
     }).whenComplete(() {
@@ -124,7 +123,6 @@ abstract class EditKmarkForm {
     CssStyleDeclaration cssStyleDeclaration = _contentInput.getComputedStyle();
 
     _contentInput
-      ..style.minHeight = '8em'
       ..style.height = (
         new Dimension.css(cssStyleDeclaration.paddingTop).value
         + new Dimension.css(cssStyleDeclaration.paddingBottom).value
@@ -144,7 +142,6 @@ abstract class EditKmarkForm {
     _contentEditElem.classes.toggle('hidden', true);
     _contentElem.classes.toggle('hidden', false);
     _opened = false;
-
   }
 
   void _updatePreviewVisibility({bool previewVisible}) {
