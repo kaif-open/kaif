@@ -217,6 +217,27 @@ class AccountService extends _AbstractService {
     return _postJson(_getUrl('/send-reset-password'), json)
     .then((req) => null);
   }
+
+  Future<String> updateDescription(String description) {
+    var json = {
+        'description':description
+    };
+    return _postJson(_getUrl('/description'), json)
+    .then((req) => req.responseText);
+  }
+
+  Future<String> loadEditableDescription() {
+    return _get(_getUrl('/description'))
+    .then((req) => req.responseText);
+  }
+
+  Future<String> previewDescription(String description) {
+    var json = {
+        'description':description
+    };
+    return _putJson(_getUrl('/description/preview'), json)
+    .then((req) => req.responseText);
+  }
 }
 
 class ArticleService extends _AbstractService {

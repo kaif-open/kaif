@@ -1,19 +1,14 @@
-library debate_edit_form;
+library edit_kamrk_form;
 
 import 'dart:html';
+import 'dart:async';
 import 'package:kaif_web/util.dart';
-import 'package:kaif_web/model.dart';
 import 'package:kaif_web/comp/comp_template.dart';
 
-/**
- * final field in library scope is lazy in dart. so the template only loaded when we
- * actually use [_debateFormTemplate]
- */
-final ComponentTemplate _editDebateFormTemplate = new ComponentTemplate.take('edit-debate-form');
+final ComponentTemplate _editKmarkFormTemplate = new ComponentTemplate.take('edit-kmark-form');
 
-class DebateEditForm {
+abstract class EditKmarkForm {
 
-  final ArticleService _articleService;
   TextInputElement _contentInput;
   Element _elem;
   Element _contentElem;
@@ -21,7 +16,6 @@ class DebateEditForm {
   Element _contentEditElem;
   ButtonElement _previewBtn;
   Alert _alert;
-  String debateId;
   bool _opened = false;
   bool _previewVisible = false;
 
@@ -29,17 +23,16 @@ class DebateEditForm {
     _contentInput.setInnerHtml(content);
   }
 
-  DebateEditForm.placeHolder (Element contentEditElem, Element contentElement,
-                              ArticleService _articleService) :
-  this._(contentEditElem, contentElement, _articleService);
+  EditKmarkForm.placeHolder (Element contentEditElem, Element contentElement) :
+  this._(contentEditElem, contentElement);
 
-  DebateEditForm._ (this._contentEditElem, this._contentElem, this._articleService) {
-    _elem = _editDebateFormTemplate.createElement();
+  EditKmarkForm._ (this._contentEditElem, this._contentElem) {
+    _elem = _editKmarkFormTemplate.createElement();
     _elem.querySelector('[kmark-preview]').onClick.listen(_onPreview);
     _previewBtn = _elem.querySelector('[kmark-preview]');
     _contentInput = _elem.querySelector('textarea[name=contentInput]');
     _previewerElem = _elem.querySelector('[kmark-previewer]');
-    _elem.querySelector('[kmark-debate-cancel]').onClick.listen(_onCancel);
+    _elem.querySelector('[kmark-cancel]').onClick.listen(_onCancel);
     _alert = new Alert.append(_elem);
     _elem.onSubmit.listen(_onSubmit);
   }
@@ -66,7 +59,7 @@ class DebateEditForm {
     _previewBtn.disabled = true;
     var loading = new Loading.small()
       ..renderAfter(_previewBtn);
-    _articleService.previewDebateContent(_contentInput.value.trim())
+    preview(_contentInput.value.trim())
     .then((preview) {
       _updatePreviewVisibility(previewVisible:true);
       unSafeInnerHtml(_previewerElem, preview);
@@ -79,6 +72,16 @@ class DebateEditForm {
     });
   }
 
+  Future<String> preview(String rawInput);
+
+  Future<String> submit(String rawInput);
+
+  int get minContentLength;
+
+  String get submitSuccessMessageKey;
+  
+  String get contentTooShortMessageKey;
+
   void _onSubmit(Event e) {
     e
       ..preventDefault()
@@ -87,30 +90,27 @@ class DebateEditForm {
     _alert.hide();
     _contentInput.value = _contentInput.value.trim();
 
-    //check Debate.CONTENT_MIN in java
-    if (_contentInput.value.length < 10) {
-      _alert.renderError(i18n('debate.min-content', [10]));
+    if (_contentInput.value.length < minContentLength) {
+      _alert.renderError(i18n(contentTooShortMessageKey, [minContentLength]));
       return;
     }
 
-    SubmitButtonInputElement submit = _elem.querySelector('[type=submit]');
-    submit.disabled = true;
+    SubmitButtonInputElement submitBtn = _elem.querySelector('[type=submit]');
+    submitBtn.disabled = true;
 
     var loading = new Loading.small()
-      ..renderAfter(submit);
-    _articleService.updateDebateContent(
-        debateId,
-        _contentInput.value)
+      ..renderAfter(submitBtn);
+    submit(_contentInput.value)
     .then((content) {
       hide();
       unSafeInnerHtml(_contentElem, content);
       _contentInput.setInnerHtml('');
       _previewerElem.setInnerHtml('');
-      new Toast.success(i18n('debate.edits-success'), seconds:2).render();
+      new Toast.success(i18n(submitSuccessMessageKey), seconds:2).render();
     }).catchError((e) {
       _alert.renderError('${e}');
     }).whenComplete(() {
-      submit.disabled = false;
+      submitBtn.disabled = false;
       loading.remove();
     });
   }
@@ -151,7 +151,7 @@ class DebateEditForm {
     _previewVisible = previewVisible;
     _contentInput.classes.toggle('hidden', _previewVisible);
     _previewerElem.classes.toggle('hidden', !_previewVisible);
-    _previewBtn.text = _previewVisible ? i18n('debate.finish-preview')
-                       : i18n('debate.preview');
+    _previewBtn.text = _previewVisible ? i18n('kmark.finish-preview')
+                       : i18n('kmark.preview');
   }
-}
+} 

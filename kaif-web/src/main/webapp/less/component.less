@@ -110,6 +110,29 @@
 }
 
 //
+// user-profile
+//
+
+.user-infos {
+  width: 100%;
+  th {
+    text-align: right;
+    color: @gray-light;
+    vertical-align: top;
+  }
+  td {
+    vertical-align: top;
+    padding-left: @padding-lg-vertical;
+  }
+}
+
+.about-me {
+  background-color: @gray-lightest;
+  padding: @padding-lg-vertical @padding-sm-horizontal;
+  min-height: 10em;
+}
+
+//
 // debate
 //
 
@@ -186,11 +209,6 @@
   }
 }
 
-.debate-preview {
-  border: 1px dotted @gray-light;
-  padding: @padding-sm-vertical @padding-sm-horizontal;
-}
-
 .debate-child {
   .debate {
     border-left: 1px solid @gray-lightest;
@@ -228,6 +246,15 @@
       width: 26px;
     }
   }
+}
+
+//
+// kmark editor
+//
+
+.kmark-preview {
+  border: 1px dotted @gray-light;
+  padding: @padding-sm-vertical @padding-sm-horizontal;
 }
 
 //

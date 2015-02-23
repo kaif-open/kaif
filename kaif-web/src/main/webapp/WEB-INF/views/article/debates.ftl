@@ -74,27 +74,27 @@ applyZoneTheme=true
     <input type="hidden" name="articleInput" value="${article.articleId}">
 
     <div>
-        <div kmark-previewer class="hidden kmark debate-preview"></div>
+        <div kmark-previewer class="hidden kmark kmark-preview"></div>
         <textarea name="contentInput" class="pure-input-1-2" maxlength="4096" rows="3"></textarea>
     </div>
     <div class="debate-form-action">
         <button type="submit" class="pure-button pure-button-primary">留言</button>
         <button class="pure-button" kmark-debate-cancel>取消</button>
         <button class="pure-button"
-                kmark-preview><@spring.messageText "debate.preview" "Preview" /></button>
+                kmark-preview><@spring.messageText "kmark.preview" "Preview" /></button>
     </div>
 </form>
 
-<form class="pure-form hidden debate-form" comp-template="edit-debate-form">
+<form class="pure-form hidden debate-form" comp-template="edit-kmark-form">
     <div>
-        <div kmark-previewer class="hidden kmark debate-preview"></div>
+        <div kmark-previewer class="hidden kmark kmark-preview"></div>
         <textarea name="contentInput" class="pure-input-1" maxlength="4096" rows="3"></textarea>
     </div>
     <div class="debate-form-action">
         <button type="submit" class="pure-button pure-button-primary">修改</button>
-        <button class="pure-button" kmark-debate-cancel>取消</button>
+        <button class="pure-button" kmark-cancel>取消</button>
         <button class="pure-button"
-                kmark-preview><@spring.messageText "debate.preview" "Preview" /></button>
+                kmark-preview><@spring.messageText "kmark.preview" "Preview" /></button>
     </div>
 </form>
 </@template.page>

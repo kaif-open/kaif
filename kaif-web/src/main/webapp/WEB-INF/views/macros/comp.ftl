@@ -139,7 +139,7 @@
                 <a href="<@url.debate data=debate/>" title="永久連結"
                    rel="nofollow"><@util.time instant=debate.createTime /></a>
 
-                <a href="#" debate-editor data-debate-id="${debate.debateId}" class="hidden">編輯</a>
+                <a href="#" debate-content-editor data-debate-id="${debate.debateId}" class="hidden">編輯</a>
             </#compress>
         </div>
         <div class="debate-child">

@@ -6,7 +6,7 @@ import 'package:kaif_web/model.dart';
 import '../vote/votable.dart';
 import '../article/article-list.dart';
 import 'debate_form.dart';
-import 'debate_edit_form.dart';
+import 'edit_debate_form.dart';
 import 'dart:async';
 
 class DebateTree {
@@ -111,7 +111,7 @@ class DebateComp {
     if (accountSession.isSelf(debaterName)) {
       Element contentElem = elem.querySelector('[debate-content]');
       Element contentEditElem = elem.querySelector('[debate-content-edit]');
-      var editorElem = elem.querySelector('[debate-editor]');
+      var editorElem = elem.querySelector('[debate-content-editor]');
       new DebateEditor(contentElem, contentEditElem, editorElem, this);
     }
   }
@@ -122,7 +122,7 @@ class DebateEditor {
   final Element contentElem;
   final Element contentEditElem;
   final Element elem;
-  DebateEditForm form;
+  EditDebateForm form;
 
   DebateEditor(this.contentElem, this.contentEditElem, this.elem, this.debateComp) {
     this.elem.classes.toggle('hidden', false);
@@ -138,9 +138,8 @@ class DebateEditor {
     .then((content) {
       //lazy create
       if (form == null) {
-        form = new DebateEditForm.placeHolder(contentEditElem, contentElem,
-        debateComp.articleService)
-          ..debateId = debateComp.debateId;
+        form = new EditDebateForm.placeHolder(contentEditElem, contentElem,
+        debateComp.articleService, debateComp.debateId);
       }
       form
         ..content = content

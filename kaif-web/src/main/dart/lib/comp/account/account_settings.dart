@@ -1,6 +1,7 @@
 library account_settings;
 
 import 'dart:html';
+import 'edit_description_form.dart';
 import 'package:kaif_web/model.dart';
 import 'package:kaif_web/util.dart';
 
@@ -17,6 +18,12 @@ class AccountSettings {
         elem.querySelector('[update-new-password-form]'),
         accountService,
         accountSession);
+
+    new _DescriptionEditor(
+        elem.querySelector('[description-content-edit]'),
+        elem.querySelector('[description-content]'),
+        elem.querySelector('[description-content-editor]'),
+        accountService);
   }
 
   void _createReactivateIfRequire() {
@@ -40,6 +47,37 @@ class AccountSettings {
   }
 }
 
+class _DescriptionEditor {
+  final Element contentElem;
+  final Element contentEditElem;
+  final Element actionElem;
+  final AccountService accountService;
+  EditDescriptionForm form;
+
+  _DescriptionEditor( this.contentEditElem, this.contentElem, this.actionElem, this.accountService) {
+    actionElem.onClick.listen(_onClick);
+  }
+
+  void _onClick(Event e) {
+    e
+      ..preventDefault()
+      ..stopPropagation();
+
+    accountService.loadEditableDescription()
+    .then((content) {
+      //lazy create
+      if (form == null) {
+        form = new EditDescriptionForm.placeHolder(contentEditElem, contentElem, actionElem, accountService);
+      }
+      form
+        ..content = content
+        ..show();
+    }).catchError((e) {
+      new Toast.error('$e', seconds:5).render();
+    });
+  }
+
+}
 
 class _UpdateNewPasswordForm {
   final Element elem;

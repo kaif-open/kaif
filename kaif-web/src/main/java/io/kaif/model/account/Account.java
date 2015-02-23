@@ -9,6 +9,8 @@ import javax.annotation.concurrent.Immutable;
 
 import com.google.common.base.Preconditions;
 
+import io.kaif.kmark.KmarkProcessor;
+
 @Immutable
 public class Account implements Authorization {
   public static final int PASSWORD_MIN = 6;
@@ -27,6 +29,7 @@ public class Account implements Authorization {
         username,
         email,
         passwordHash,
+        "",
         createTime,
         EnumSet.of(Authority.TOURIST));
   }
@@ -49,6 +52,7 @@ public class Account implements Authorization {
   private final UUID accountId;
   private final String email;
   private final String passwordHash;
+  private final String description;
   private final Instant createTime;
   private final Set<Authority> authorities;
 
@@ -56,10 +60,12 @@ public class Account implements Authorization {
       String username,
       String email,
       String passwordHash,
+      String description,
       Instant createTime,
       Set<Authority> authorities) {
     this.username = username;
     this.accountId = accountId;
+    this.description = description;
     this.email = email;
     this.passwordHash = passwordHash;
     this.createTime = createTime;
@@ -131,6 +137,7 @@ public class Account implements Authorization {
         "username='" + username + '\'' +
         ", accountId=" + accountId +
         ", email='" + email + '\'' +
+        ", description='" + description + '\'' +
         ", createTime=" + createTime +
         ", authorities=" + authorities +
         '}';
@@ -155,6 +162,29 @@ public class Account implements Authorization {
 
   public Account withAuthorities(Set<Authority> authorities) {
     Preconditions.checkArgument(!authorities.contains(Authority.FORBIDDEN));
-    return new Account(accountId, username, email, passwordHash, createTime, authorities);
+    return new Account(accountId,
+        username,
+        email,
+        passwordHash,
+        description,
+        createTime,
+        authorities);
+  }
+
+  public String getRenderDescription() {
+    //username as anchor prefix
+    return KmarkProcessor.process(description, username);
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public static String renderDescriptionPreview(String description) {
+    return KmarkProcessor.process(description, "");
+  }
+
+  public String getEscapedDescription() {
+    return KmarkProcessor.escapeHtml(description);
   }
 }

@@ -31,6 +31,7 @@ public class AccountDao implements DaoOperations {
         rs.getString("username"),
         rs.getString("email"),
         rs.getString("passwordHash"),
+        rs.getString("description"),
         rs.getTimestamp("createTime").toInstant(),
         authorities);
   };
@@ -70,15 +71,16 @@ public class AccountDao implements DaoOperations {
             + " INSERT "
             + "   INTO Account "
             + "        (accountId, email, passwordHash, username, "
-            + "         createTime, authorities) "
+            + "         createTime, authorities, description) "
             + " VALUES "
-            + questions(6),
+            + questions(7),
         account.getAccountId(),
         account.getEmail().toLowerCase(),
         account.getPasswordHash(),
         account.getUsername(),
         Timestamp.from(account.getCreateTime()),
-        authoritiesToVarcharArray(account.getAuthorities()));
+        authoritiesToVarcharArray(account.getAuthorities()),
+        account.getDescription());
 
     createStats(account);
     return account;
@@ -206,5 +208,11 @@ public class AccountDao implements DaoOperations {
         + "    SET debateUpVoted = debateUpVoted + (?) "
         + "      , debateDownVoted = debateDownVoted + (?) "
         + "  WHERE accountId = ? ", upVoteDelta, downVoteDelta, accountId);
+  }
+
+  public void updateDescription(UUID accountId, String description) {
+    jdbc().update(" UPDATE Account SET description = ? WHERE accountId = ? ",
+        description,
+        accountId);
   }
 }

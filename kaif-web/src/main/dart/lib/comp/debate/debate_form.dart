@@ -52,8 +52,8 @@ class DebateForm {
     _previewVisible = previewVisible;
     _contentInput.classes.toggle('hidden', _previewVisible);
     _previewerElem.classes.toggle('hidden', !_previewVisible);
-    _previewBtn.text = _previewVisible ? i18n('debate.finish-preview')
-                       : i18n('debate.preview');
+    _previewBtn.text = _previewVisible ? i18n('kmark.finish-preview')
+                       : i18n('kmark.preview');
   }
 
   void _onCancel(Event e) {
@@ -73,7 +73,7 @@ class DebateForm {
     if (_previewVisible) {
       _updatePreviewVisibility(previewVisible:false);
       _previewerElem.setInnerHtml('');
-      previewBtn.text = i18n('debate.preview');
+      previewBtn.text = i18n('kmark.preview');
       return;
     }
 

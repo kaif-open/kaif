@@ -51,4 +51,8 @@ public interface AccountService {
   AccountStats loadAccountStats(String username);
 
   Account loadAccount(String caseInsensitiveUsername);
+
+  String updateDescription(Authorization authorization, String description);
+
+  String loadEditableDescription(Authorization authorization);
 }

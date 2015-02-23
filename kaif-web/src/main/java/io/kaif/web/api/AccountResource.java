@@ -83,6 +83,14 @@ public class AccountResource {
 
   }
 
+  static class UpdateDescriptionRequest {
+    public String description;
+  }
+
+  static class PreviewDescription {
+    public String description;
+  }
+
   @Autowired
   private AccountService accountService;
 
@@ -151,4 +159,24 @@ public class AccountResource {
         request.newPassword,
         locale);
   }
+
+  @RequestMapping(value = "/description", method = RequestMethod.POST, consumes = {
+      MediaType.APPLICATION_JSON_VALUE })
+  public String updateDescription(AccountAccessToken accessToken,
+      @Valid @RequestBody UpdateDescriptionRequest request) {
+    return accountService.updateDescription(accessToken, request.description);
+  }
+
+  @RequestMapping(value = "/description/preview", method = RequestMethod.PUT, consumes = {
+      MediaType.APPLICATION_JSON_VALUE })
+  public String previewDescriptionContent(AccountAccessToken token,
+      @Valid @RequestBody PreviewDescription request) {
+    return Account.renderDescriptionPreview(request.description);
+  }
+
+  @RequestMapping(value = "/description", method = RequestMethod.GET)
+  public String loadEditableDescription(AccountAccessToken token) {
+    return accountService.loadEditableDescription(token);
+  }
+
 }

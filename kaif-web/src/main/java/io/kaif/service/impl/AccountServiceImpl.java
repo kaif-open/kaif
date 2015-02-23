@@ -221,4 +221,19 @@ public class AccountServiceImpl implements AccountService {
   public Account loadAccount(String username) {
     return accountDao.loadByUsername(username);
   }
+
+  @Override
+  public String updateDescription(Authorization authorization, String description) {
+    return accountDao.strongVerifyAccount(authorization).flatMap(account -> {
+      accountDao.updateDescription(account.getAccountId(), description);
+      return accountDao.findById(authorization.authenticatedId());
+    }).map(Account::getRenderDescription).orElse("");
+  }
+
+  @Override
+  public String loadEditableDescription(Authorization authorization) {
+    return accountDao.strongVerifyAccount(authorization)
+        .map(Account::getEscapedDescription)
+        .orElse("");
+  }
 }

@@ -199,7 +199,7 @@ public class AccountServiceImplTest extends DbIntegrationTests {
     AccountAuth auth = service.authenticate("myname", "pwd123").get();
     assertEquals("myName", auth.getUsername());
   }
-  
+
   @Test
   public void authenticate() {
     Instant now = Instant.now();
@@ -269,6 +269,22 @@ public class AccountServiceImplTest extends DbIntegrationTests {
   public void updateNewPassword_oldPasswordNotMatch() throws Exception {
     Account account = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc);
     service.updateNewPassword(account, "wrong old pw", "123456", lc);
+  }
+
+  @Test
+  public void updateDescription() throws Exception {
+    Account account = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc);
+    assertEquals("", account.getRenderDescription());
+    assertEquals("<p>Hi I am a <em>developer</em></p>\n",
+        service.updateDescription(account, "Hi I am a *developer*"));
+  }
+
+  @Test
+  public void loadEditableDescription() throws Exception {
+    Account account = service.createViaEmail("abc99", "bar@gmail.com", "pppwww", lc);
+    assertEquals("", service.loadEditableDescription(account));
+    service.updateDescription(account, "Hi I am a <*developer*>");
+    assertEquals("Hi I am a &lt;*developer*&gt;", service.loadEditableDescription(account));
   }
 
   @Test
