@@ -18,26 +18,24 @@
                        class="pure-input-1-2">
             </div>
 
+            <div class="pure-control-group">
+
+                <label for="">關於我</label>
+                <div class="pure-u-1-2">
+                    <div description-content-edit class="hidden"></div>
+                    <div class="kmark about-me" description-content>
+                    <#if account.renderDescription?has_content>
+                    ${account.renderDescription}
+                    <#else>
+                        <p>(尚無自介)</p>
+                    </#if>
+                    </div>
+                    <a href="#" description-content-editor>編輯</a>
+                </div>
+            </div>
+
         </fieldset>
     </div>
-    <div class="pure-form">
-        <fieldset class="pure-u-1">
-            <legend>關於我</legend>
-            <div class="pure-control-group">
-                <div description-content-edit class="hidden"></div>
-                <div class="kmark about-me" description-content>
-                <#if account.renderDescription?has_content>
-                ${account.renderDescription}
-                <#else>
-                    <p>(尚無自介)</p>
-                </#if>
-                </div>
-                <a href="#" description-content-editor>編輯</a>
-
-                <div>
-        </fieldset>
-    </
-    >
     <div class="pure-form pure-form-aligned">
         <fieldset>
 
@@ -94,7 +92,8 @@
 <form class="pure-form hidden" comp-template="edit-kmark-form">
     <div>
         <div kmark-previewer class="hidden kmark kmark-preview"></div>
-        <textarea name="contentInput" class="pure-input-1 kmark-input" maxlength="4096" rows="3"></textarea>
+        <textarea name="contentInput" class="pure-input-1 kmark-input" maxlength="4096"
+                  rows="3"></textarea>
     </div>
     <div>
         <button type="submit" class="pure-button pure-button-primary">修改</button>
