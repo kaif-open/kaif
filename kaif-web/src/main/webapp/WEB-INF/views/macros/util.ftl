@@ -20,7 +20,13 @@
 <#--
  show relative time of Instant. the output is wrapped by html5 time tag
  -->
-<#macro time instant><#compress>
-<time datetime="${instant}">${relativeTime(instant)}</time>
+<#macro time instant maxUnit=""><#compress>
+<time datetime="${instant}">
+    <#if maxUnit?has_content>
+        ${relativeTime(instant, maxUnit)}
+    <#else>
+    ${relativeTime(instant)}
+    </#if>
+</time>
 </#compress>
 </#macro>

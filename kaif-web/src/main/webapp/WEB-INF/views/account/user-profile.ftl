@@ -20,8 +20,8 @@ head=headContent>
             <td>${account.username}</td>
         </tr>
         <tr>
-            <th>註冊日</th>
-            <td>${account.createTime?datetime.iso?string.medium}</td>
+            <th>註冊於</th>
+            <td><@util.time instant=account.createTime  maxUnit="Day" /></td>
         </tr>
         <tr>
             <th>留言</th>
