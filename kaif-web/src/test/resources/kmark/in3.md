@@ -1,6 +1,7 @@
 hello world [yahoo][1], [google][2], [likName][], [example][], [bar][4]
 [yahoo][5]
 [yahoo][6]
+[missing yahoo][7]
 
 [1]:http://yahoo.com.tw 
 [2]:http://google.com "google"

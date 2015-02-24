@@ -45,7 +45,7 @@ public class DebateTest implements ModelFixture {
         Instant.now());
 
     assertEquals(
-        "<p>pixel art is better at 9gaga<span class=\"reference-link-index\">1</span></p>\n"
+        "<p>pixel art is better at <a href=\"http://www.google.com\" class=\"reference-link\">9gaga</a><span class=\"reference-link-index\">1</span></p>\n"
             + "<div class=\"reference-appendix-block\"><div class=\"reference-appendix-index\">1</div><div  class=\"reference-appendix-wrap\"><a href=\"http://www.google.com\" rel=\"nofollow\" target=\"_blank\">http://www.google.com</a></div>\n"
             + "</div>",
         debate.getRenderContent());
@@ -55,7 +55,7 @@ public class DebateTest implements ModelFixture {
   public void preview() throws Exception {
     String content = "pixel art is better at [9gaga][1]\n\n[1]: http://www.google.com";
     assertEquals(
-        "<p>pixel art is better at 9gaga<span class=\"reference-link-index\">1</span></p>\n"
+        "<p>pixel art is better at <a href=\"http://www.google.com\" class=\"reference-link\">9gaga</a><span class=\"reference-link-index\">1</span></p>\n"
             + "<div class=\"reference-appendix-block\"><div class=\"reference-appendix-index\">1</div><div  class=\"reference-appendix-wrap\"><a href=\"http://www.google.com\" rel=\"nofollow\" target=\"_blank\">http://www.google.com</a></div>\n"
             + "</div>",
         Debate.renderContentPreview(content));

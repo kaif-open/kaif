@@ -1,6 +1,7 @@
-<p>hello world yahoo<span class="reference-link-index">1</span>, google<span class="reference-link-index">2</span>, likName<span class="reference-link-index">3</span>, example<span class="reference-link-index">5</span>, bar<span class="reference-link-index">4</span>
-yahoo<span class="reference-link-index">6</span>
-yahoo<span class="reference-link-index">7</span></p>
+<p>hello world <a href="http://yahoo.com.tw" class="reference-link">yahoo</a><span class="reference-link-index">1</span>, <a href="http://google.com" class="reference-link">google</a><span class="reference-link-index">2</span>, <a href="http://foo.com" class="reference-link">likName</a><span class="reference-link-index">3</span>, <a href="https://example.com" class="reference-link">example</a><span class="reference-link-index">5</span>, <a href="http://bar.com" class="reference-link">bar</a><span class="reference-link-index">4</span>
+<span class="reference-broken-link">yahoo</span><span class="reference-link-index">6</span>
+<span class="reference-broken-link">yahoo</span><span class="reference-link-index">7</span>
+[missing yahoo][7]</p>
 <div class="reference-appendix-block"><div class="reference-appendix-index">1</div><div  class="reference-appendix-wrap"><a href="http://yahoo.com.tw" rel="nofollow" target="_blank">http://yahoo.com.tw</a></div>
 <div class="reference-appendix-index">2</div><div  class="reference-appendix-wrap"><a href="http://google.com" title="google" rel="nofollow" target="_blank">http://google.com</a></div>
 <div class="reference-appendix-index">3</div><div  class="reference-appendix-wrap"><a href="http://foo.com" rel="nofollow" target="_blank">http://foo.com</a></div>
