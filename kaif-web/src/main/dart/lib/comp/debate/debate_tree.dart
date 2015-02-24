@@ -155,7 +155,7 @@ class DebateReplier {
     //lazy create
     if (form == null) {
       Element placeHolderElem = new DivElement();
-      elem.parent.append(placeHolderElem);
+      elem.parent.insertAdjacentElement('afterEnd', placeHolderElem);
       form = new DebateForm.placeHolder(placeHolderElem, articleService)
         ..parentDebateId = debateId;
     }
