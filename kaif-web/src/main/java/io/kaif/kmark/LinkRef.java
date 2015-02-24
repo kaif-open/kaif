@@ -58,10 +58,7 @@ class LinkRef {
     return this.link + " \"" + this.title + "\"";
   }
 
-  public String getLinkWithHttpScheme() {
-    if (link.startsWith("http://") || link.startsWith("https://")) {
-      return link;
-    }
-    return "http://" + link;
+  public boolean hasHttpScheme() {
+    return link.startsWith("http://") || link.startsWith("https://");
   }
 }

@@ -9,5 +9,5 @@ no nested link:<a href="#-1" class="reference-link">qoo/u/abc</a>
 not work in code block <code>/u/koji</code></p>
 <pre><code>not work in code block /u/koji
 </code></pre>
-<div class="reference-appendix-block"><div class="reference-appendix-index">1</div><div  class="reference-appendix-wrap"><a id="-1"></a><a href="http://qoo.com" rel="nofollow">http://qoo.com</a></div>
+<div class="reference-appendix-block"><div class="reference-appendix-index">1</div><div  class="reference-appendix-wrap"><a href="http://qoo.com" rel="nofollow" target="_blank">http://qoo.com</a></div>
 </div>

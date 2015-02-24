@@ -46,9 +46,7 @@ public class DebateTest implements ModelFixture {
 
     assertEquals(
         "<p>pixel art is better at <a href=\"#bbccdd-1\" class=\"reference-link\">9gaga</a></p>\n"
-            + "<div class=\"reference-appendix-block\"><div class=\"reference-appendix-index\">1</div>" 
-            + "<div  class=\"reference-appendix-wrap\"><a id=\"bbccdd-1\"></a>" 
-            + "<a href=\"http://www.google.com\" rel=\"nofollow\">http://www.google.com</a></div>\n"
+            + "<div class=\"reference-appendix-block\"><div class=\"reference-appendix-index\">1</div><div  class=\"reference-appendix-wrap\"><a href=\"http://www.google.com\" rel=\"nofollow\" target=\"_blank\">http://www.google.com</a></div>\n"
             + "</div>",
         debate.getRenderContent());
   }
@@ -58,9 +56,7 @@ public class DebateTest implements ModelFixture {
     String content = "pixel art is better at [9gaga][1]\n\n[1]: http://www.google.com";
     assertEquals(
         "<p>pixel art is better at <a href=\"#-1\" class=\"reference-link\">9gaga</a></p>\n"
-            + "<div class=\"reference-appendix-block\"><div class=\"reference-appendix-index\">1</div>" 
-            + "<div  class=\"reference-appendix-wrap\"><a id=\"-1\"></a>" 
-            + "<a href=\"http://www.google.com\" rel=\"nofollow\">http://www.google.com</a></div>\n"
+            + "<div class=\"reference-appendix-block\"><div class=\"reference-appendix-index\">1</div><div  class=\"reference-appendix-wrap\"><a href=\"http://www.google.com\" rel=\"nofollow\" target=\"_blank\">http://www.google.com</a></div>\n"
             + "</div>",
         Debate.renderContentPreview(content));
   }

@@ -633,19 +633,21 @@ class Emitter {
       out.appendHtml("<div class=\"reference-appendix-index\">")
           .append(linkRef.seqNumber)
           .appendHtml("</div>")
-          .appendHtml("<div  class=\"reference-appendix-wrap\"><a id=\"")
-          .append(config.linkAnchorPrefix)
-          .append("-")
-          .append(linkRef.seqNumber)
-          .appendHtml("\"></a>")
-          .appendHtml("<a href=\"")
-          .append(linkRef.getLinkWithHttpScheme())
-          .appendHtml("\"");
+          .appendHtml("<div  class=\"reference-appendix-wrap\">");
 
-      if (!Strings.isNullOrEmpty(linkRef.title)) {
-        out.appendHtml(" title=\"").append(linkRef.title).appendHtml("\"");
+      if (linkRef.hasHttpScheme()) {
+        out.appendHtml("<a href=\"").append(linkRef.link).appendHtml("\"");
+        if (!Strings.isNullOrEmpty(linkRef.title)) {
+          out.appendHtml(" title=\"").append(linkRef.title).appendHtml("\"");
+        }
+        out.appendHtml(" rel=\"nofollow\" target=\"_blank\">")
+            .append(linkRef.link)
+            .appendHtml("</a>");
+      } else {
+        out.append(linkRef.link);
       }
-      out.appendHtml(" rel=\"nofollow\">").append(linkRef.link).appendHtml("</a></div>\n");
+      out.appendHtml("</div>\n");
+
     });
     out.appendHtml("</div>");
   }
