@@ -173,7 +173,7 @@ public class Account implements Authorization {
 
   public String getRenderDescription() {
     //username as anchor prefix
-    return KmarkProcessor.process(description, username);
+    return KmarkProcessor.process(description);
   }
 
   public String getDescription() {
@@ -181,7 +181,7 @@ public class Account implements Authorization {
   }
 
   public static String renderDescriptionPreview(String description) {
-    return KmarkProcessor.process(description, "");
+    return KmarkProcessor.process(description);
   }
 
   public String getEscapedDescription() {

@@ -27,9 +27,9 @@ public class KmarkProcessor {
 
   }
 
-  public static String process(final String input, final String linkAnchorPrefix) {
+  public static String process(final String input) {
     try {
-      return new KmarkProcessor().process(new StringReader(input), linkAnchorPrefix);
+      return new KmarkProcessor().process(new StringReader(input));
     } catch (IOException ignore) {
       //never happen, it's string reader
       return null;
@@ -40,9 +40,8 @@ public class KmarkProcessor {
     return HtmlUtils.htmlEscape(input);
   }
 
-  private String process(final Reader reader, final String linkAnchorPrefix) throws IOException {
-    Configuration configuration = new Configuration.Builder().setLinkAnchorPrefix(linkAnchorPrefix)
-        .build();
+  private String process(final Reader reader) throws IOException {
+    Configuration configuration = new Configuration.Builder().build();
     Emitter emitter = new Emitter(configuration);
     final HtmlEscapeStringBuilder out = new HtmlEscapeStringBuilder();
     final Block parent = this.readLines(reader, emitter);

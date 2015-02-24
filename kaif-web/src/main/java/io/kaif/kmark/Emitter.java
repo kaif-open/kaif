@@ -212,13 +212,14 @@ class Emitter {
       return -1;
     }
 
-    String name = temp.toString(), link = null;
+    String name = temp.toString();
+    int seqNumber = -1;
     final int oldPos = pos++;
     pos = Utils.skipSpaces(in, pos);
     if (pos < start) {
       final LinkRef lr = this.linkRefs.get(name.toLowerCase());
       if (lr != null) {
-        link = lr.link;
+        seqNumber = lr.seqNumber;
         pos = oldPos;
       } else {
         return -1;
@@ -233,28 +234,24 @@ class Emitter {
       final String id = temp.length() > 0 ? temp.toString() : name;
       final LinkRef lr = this.linkRefs.get(id.toLowerCase());
       if (lr != null) {
-        link = "#" + config.linkAnchorPrefix + "-" + lr.seqNumber;
+        seqNumber = lr.seqNumber;
       }
     } else {
       final LinkRef lr = this.linkRefs.get(name.toLowerCase());
       if (lr != null) {
-        link = "#" + config.linkAnchorPrefix + "-" + lr.seqNumber;
+        seqNumber = lr.seqNumber;
         pos = oldPos;
       } else {
         return -1;
       }
     }
 
-    if (link == null) {
-      return -1;
+    if (seqNumber != -1) {
+      this.recursiveEmitLine(out, name, 0, MarkToken.LINK);
+      out.appendHtml("<span class=\"reference-link-index\">")
+          .append(seqNumber)
+          .appendHtml("</span>");
     }
-
-    this.config.decorator.openLink(out);
-    out.appendHtml(" href=\"");
-    out.append(link);
-    out.appendHtml("\" class=\"reference-link\">");
-    this.recursiveEmitLine(out, name, 0, MarkToken.LINK);
-    out.appendHtml("</a>");
 
     return pos;
   }

@@ -36,21 +36,6 @@ class DebateTree {
     }).toList();
 
     _initDebateVoters(debateComps, articleId);
-    _initAnchorLinkScroll();
-  }
-
-
-  void _initAnchorLinkScroll() {
-    elem.querySelectorAll('.reference-link').forEach((el) {
-      el.onClick.listen(_onClickAnchor);
-    });
-  }
-
-  void _onClickAnchor(Event e) {
-    e
-      ..preventDefault()
-      ..stopPropagation();
-    scrollToAnchor(e.target);
   }
 
   void _initArticleVote(ArticleComp articleComp) {

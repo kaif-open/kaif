@@ -47,7 +47,7 @@ public class Debate {
   }
 
   public static String renderContentPreview(String rawContent) {
-    return KmarkProcessor.process(rawContent, "");
+    return KmarkProcessor.process(rawContent);
   }
 
   private final FlakeId articleId;
@@ -147,7 +147,7 @@ public class Debate {
   }
 
   public String getRenderContent() {
-    return KmarkProcessor.process(content, debateId.toString());
+    return KmarkProcessor.process(content);
   }
 
   public String getEscapeContent() {

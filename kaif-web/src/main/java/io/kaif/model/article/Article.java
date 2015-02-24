@@ -98,7 +98,7 @@ public class Article {
   }
 
   public static String renderSpeakPreview(String content) {
-    return KmarkProcessor.process(content, "");
+    return KmarkProcessor.process(content);
   }
 
   private final Zone zone;
@@ -248,7 +248,7 @@ public class Article {
       case NONE:
         return "";
       case MARK_DOWN:
-        return KmarkProcessor.process(content, articleId.toString());
+        return KmarkProcessor.process(content);
       case MATOME:
     }
     throw new UnsupportedOperationException("could not render with type:" + contentType);

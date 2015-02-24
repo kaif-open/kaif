@@ -7,7 +7,7 @@
 .kmark {
   line-height: 1.5em; //body is 1.7em;
   color: @kmark-color;
-  
+
   p, ol, ul {
     margin: @padding-sm-vertical 0;
   }
@@ -34,7 +34,7 @@
   .reference-appendix-block {
     margin-bottom: @padding-sm-vertical;
   }
-  
+
   .reference-appendix-index {
     &:before {
       content: '['
@@ -43,6 +43,16 @@
       content: ']'
     }
     float: left;
+  }
+  .reference-link-index {
+    &:before {
+      content: '['
+    }
+    &:after {
+      content: ']'
+    }
+    vertical-align: super;
+    font-size: @font-size-sm;
   }
 
   .reference-appendix-wrap {

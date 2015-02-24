@@ -14,6 +14,6 @@ Long user name exceed max <a href="/z/abcdefghijklmnopqrst" class="zone-link">ab
 <a href="/z/pro" class="zone-link">pro</a>--pro
 /z/-zzz-bbb
 <a href="/z/zzz" class="zone-link">zzz</a>-
-no nested link:<a href="#-1" class="reference-link">qoo/z/abc</a></p>
+no nested link:qoo/z/abc<span class="reference-link-index">1</span></p>
 <div class="reference-appendix-block"><div class="reference-appendix-index">1</div><div  class="reference-appendix-wrap"><a href="http://qoo.com" rel="nofollow" target="_blank">http://qoo.com</a></div>
 </div>

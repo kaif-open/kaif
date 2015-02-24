@@ -24,7 +24,7 @@ public class KmarkProcessorTest {
   @Test
   public void process_strike_through() throws Exception {
     assertEquals(readTestFile("kmark/out12.out"),
-        KmarkProcessor.process(readTestFile("kmark/in12.md"), ""));
+        KmarkProcessor.process(readTestFile("kmark/in12.md")));
   }
 
   /**
@@ -37,7 +37,7 @@ public class KmarkProcessorTest {
   @Test
   public void process_emphasis() throws Exception {
     assertEquals(readTestFile("kmark/out1.out"),
-        KmarkProcessor.process(readTestFile("kmark/in1.md"), ""));
+        KmarkProcessor.process(readTestFile("kmark/in1.md")));
   }
 
   /**
@@ -50,7 +50,7 @@ public class KmarkProcessorTest {
   @Test
   public void process_user_link() throws Exception {
     assertEquals(readTestFile("kmark/out13.out"),
-        KmarkProcessor.process(readTestFile("kmark/in13.md"), ""));
+        KmarkProcessor.process(readTestFile("kmark/in13.md")));
   }
 
   /**
@@ -63,7 +63,7 @@ public class KmarkProcessorTest {
   @Test
   public void process_zone_link() throws Exception {
     assertEquals(readTestFile("kmark/out14.out"),
-        KmarkProcessor.process(readTestFile("kmark/in14.md"), ""));
+        KmarkProcessor.process(readTestFile("kmark/in14.md")));
   }
 
   /**
@@ -78,7 +78,7 @@ public class KmarkProcessorTest {
   @Test
   public void process_2_space_for_new_line() throws Exception {
     assertEquals(readTestFile("kmark/out11.out"),
-        KmarkProcessor.process(readTestFile("kmark/in11.md"), ""));
+        KmarkProcessor.process(readTestFile("kmark/in11.md")));
   }
 
   /**
@@ -93,7 +93,7 @@ public class KmarkProcessorTest {
   @Test
   public void process_quote() throws Exception {
     assertEquals(readTestFile("kmark/out9.out"),
-        KmarkProcessor.process(readTestFile("kmark/in9.md"), ""));
+        KmarkProcessor.process(readTestFile("kmark/in9.md")));
   }
 
   /**
@@ -124,7 +124,7 @@ public class KmarkProcessorTest {
   @Test
   public void process_list() throws Exception {
     assertEquals(readTestFile("kmark/out5.out"),
-        KmarkProcessor.process(readTestFile("kmark/in5.md"), ""));
+        KmarkProcessor.process(readTestFile("kmark/in5.md")));
   }
 
   /**
@@ -139,7 +139,7 @@ public class KmarkProcessorTest {
   @Test
   public void process_fence_code() throws Exception {
     assertEquals(readTestFile("kmark/out2.out"),
-        KmarkProcessor.process(readTestFile("kmark/in2.md"), ""));
+        KmarkProcessor.process(readTestFile("kmark/in2.md")));
   }
 
   /**
@@ -157,7 +157,7 @@ public class KmarkProcessorTest {
   @Test
   public void process_ignore_new_lines() throws Exception {
     assertEquals(readTestFile("kmark/out8.out"),
-        KmarkProcessor.process(readTestFile("kmark/in8.md"), ""));
+        KmarkProcessor.process(readTestFile("kmark/in8.md")));
   }
 
   /**
@@ -170,7 +170,7 @@ public class KmarkProcessorTest {
   @Test
   public void process_ignore_legacy_code() throws Exception {
     assertEquals(readTestFile("kmark/out6.out"),
-        KmarkProcessor.process(readTestFile("kmark/in6.md"), ""));
+        KmarkProcessor.process(readTestFile("kmark/in6.md")));
   }
 
   /**
@@ -183,7 +183,7 @@ public class KmarkProcessorTest {
   @Test
   public void process_ignore_inline_link() throws Exception {
     assertEquals(readTestFile("kmark/out7.out"),
-        KmarkProcessor.process(readTestFile("kmark/in7.md"), ""));
+        KmarkProcessor.process(readTestFile("kmark/in7.md")));
   }
 
   /**
@@ -211,7 +211,7 @@ public class KmarkProcessorTest {
   @Test
   public void process_reference_link() throws Exception {
     assertEquals(readTestFile("kmark/out3.out"),
-        KmarkProcessor.process(readTestFile("kmark/in3.md"), "aAbBz"));
+        KmarkProcessor.process(readTestFile("kmark/in3.md")));
   }
 
   /**
@@ -224,13 +224,13 @@ public class KmarkProcessorTest {
   @Test
   public void process_escape_html() throws Exception {
     assertEquals(readTestFile("kmark/out4.out"),
-        KmarkProcessor.process(readTestFile("kmark/in4.md"), ""));
+        KmarkProcessor.process(readTestFile("kmark/in4.md")));
   }
 
   @Test
   public void process_with_surrogate_character() throws Exception {
     assertEquals(readTestFile("kmark/out10.out"),
-        KmarkProcessor.process(readTestFile("kmark/in10.md"), ""));
+        KmarkProcessor.process(readTestFile("kmark/in10.md")));
   }
 
   static String readTestFile(String fileName) throws IOException {

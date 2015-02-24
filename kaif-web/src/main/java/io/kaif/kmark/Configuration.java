@@ -34,7 +34,6 @@ public class Configuration {
     private String encoding = "UTF-8";
     private Decorator decorator = new DefaultDecorator();
     private BlockEmitter codeBlockEmitter = new CodeBlockEmitter();
-    private String linkAnchorPrefix = "";
 
     /**
      * Constructor.
@@ -75,28 +74,13 @@ public class Configuration {
     }
 
     /**
-     * will append to kmark's ref link
-     * eg. aaa will become #aaa-1, #aaa-2, #aaa-3
-     *
-     * @param linkAnchorPrefix
-     * @return
-     */
-    public Builder setLinkAnchorPrefix(String linkAnchorPrefix) {
-      this.linkAnchorPrefix = linkAnchorPrefix;
-      return this;
-    }
-
-    /**
      * Builds a configuration instance.
      *
      * @return a Configuration instance
      * @since 0.7
      */
     public Configuration build() {
-      return new Configuration(this.encoding,
-          this.decorator,
-          this.codeBlockEmitter,
-          this.linkAnchorPrefix);
+      return new Configuration(this.encoding, this.decorator, this.codeBlockEmitter);
     }
 
     public Decorator getDecorator() {
@@ -128,18 +112,14 @@ public class Configuration {
   public static Builder builder() {
     return new Builder();
   }
+
   final String encoding;
   final Decorator decorator;
   final BlockEmitter codeBlockEmitter;
-  final String linkAnchorPrefix;
 
-  Configuration(String encoding,
-      Decorator decorator,
-      BlockEmitter codeBlockEmitter,
-      String linkAnchorPrefix) {
+  Configuration(String encoding, Decorator decorator, BlockEmitter codeBlockEmitter) {
     this.encoding = encoding;
     this.decorator = decorator;
     this.codeBlockEmitter = codeBlockEmitter;
-    this.linkAnchorPrefix = linkAnchorPrefix;
   }
 }

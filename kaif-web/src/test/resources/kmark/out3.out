@@ -1,6 +1,6 @@
-<p>hello world <a href="#aAbBz-1" class="reference-link">yahoo</a>, <a href="#aAbBz-2" class="reference-link">google</a>, <a href="#aAbBz-3" class="reference-link">likName</a>, <a href="#aAbBz-5" class="reference-link">example</a>, <a href="#aAbBz-4" class="reference-link">bar</a>
-<a href="#aAbBz-6" class="reference-link">yahoo</a>
-<a href="#aAbBz-7" class="reference-link">yahoo</a></p>
+<p>hello world yahoo<span class="reference-link-index">1</span>, google<span class="reference-link-index">2</span>, likName<span class="reference-link-index">3</span>, example<span class="reference-link-index">5</span>, bar<span class="reference-link-index">4</span>
+yahoo<span class="reference-link-index">6</span>
+yahoo<span class="reference-link-index">7</span></p>
 <div class="reference-appendix-block"><div class="reference-appendix-index">1</div><div  class="reference-appendix-wrap"><a href="http://yahoo.com.tw" rel="nofollow" target="_blank">http://yahoo.com.tw</a></div>
 <div class="reference-appendix-index">2</div><div  class="reference-appendix-wrap"><a href="http://google.com" title="google" rel="nofollow" target="_blank">http://google.com</a></div>
 <div class="reference-appendix-index">3</div><div  class="reference-appendix-wrap"><a href="http://foo.com" rel="nofollow" target="_blank">http://foo.com</a></div>
