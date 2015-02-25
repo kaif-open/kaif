@@ -1,0 +1,40 @@
+##
+#  playbook use for vagrant
+#
+#  the IP is defined in Vagrantfile, changing IP
+#  also require update vagrant.ssh_config
+#
+kaif       ansible_ssh_host=TODO  ansible_ssh_user=TODO
+
+[web_masters]
+kaif
+
+[web_slaves]
+
+
+[webs:children]
+web_masters
+web_slaves
+
+[web_masters:vars]
+# all web servers should use diff node id
+inv_flake_node_id="1"
+
+[web_slaves:vars]
+# all web servers should use diff node id
+inv_flake_node_id="2"
+
+# webs:vars check group_vars/webs file
+# [webs:vars]
+
+[pgs]
+kaif
+
+[postfix]
+kaif
+
+[postfix:vars]
+## production should use 'loopback-only'
+inv_postfix_inet_interfaces="loopback-only"
+## production should use blank ''
+inv_postfix_additional_my_networks=""

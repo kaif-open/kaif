@@ -1,2 +1,4 @@
 .vagrant/
 tmp/
+secret.yml
+production/secret/
