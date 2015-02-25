@@ -1,6 +1,7 @@
 package io.kaif.service;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -55,4 +56,8 @@ public interface AccountService {
   String updateDescription(Authorization authorization, String description);
 
   String loadEditableDescription(Authorization authorization);
+
+  void complaintEmail(List<String> emails);
+
+  void muteEmail(List<String> emails);
 }

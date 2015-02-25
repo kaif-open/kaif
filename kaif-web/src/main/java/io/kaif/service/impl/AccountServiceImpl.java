@@ -4,6 +4,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
@@ -235,5 +236,15 @@ public class AccountServiceImpl implements AccountService {
     return accountDao.strongVerifyAccount(authorization)
         .map(Account::getEscapedDescription)
         .orElse("");
+  }
+
+  @Override
+  public void complaintEmail(List<String> emails) {
+    //TODO handle AWS email complaint
+  }
+
+  @Override
+  public void muteEmail(List<String> emails) {
+    //TODO handle AWS permanent Bounced Emails
   }
 }
