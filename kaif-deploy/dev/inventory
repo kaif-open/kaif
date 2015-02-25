@@ -25,7 +25,7 @@ inv_flake_node_id="1"
 inv_flake_node_id="20"
 
 [webs:vars]
-# this should change in production, by a secret file that not commit to git
+inv_postgresql_shared_buffers="32MB"
 
 [pgs]
 kaif

@@ -40,7 +40,7 @@
   sudo: yes
 
 - name: install PostgreSQL config file
-  template: src=postgresql-{{postgresql.version}}.conf
+  template: src=postgresql-{{postgresql.version}}.conf.j2
             dest=/etc/postgresql/{{ postgresql.version }}/main/postgresql.conf
             owner=postgres group=postgres
   notify:

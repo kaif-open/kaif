@@ -23,6 +23,7 @@ inv_flake_node_id="2"
 
 # webs:vars check group_vars/webs file
 [webs:vars]
+inv_postgresql_shared_buffers="128MB"
 
 [pgs]
 kaif

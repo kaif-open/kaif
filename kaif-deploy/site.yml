@@ -11,7 +11,11 @@
 
 - hosts: [pgs]
   roles:
-    - postgresql
+    - { role: postgresql,
+        postgresql: {
+           shared_buffers: "{{inv_postgresql_shared_buffers}}"
+        }
+      }
 
 - hosts: [postfix]
   roles: 

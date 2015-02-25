@@ -114,8 +114,8 @@ ssl_key_file = '/etc/ssl/private/ssl-cert-snakeoil.key'		# (change requires rest
 
 #kaif
 #production recommend 128MB
-#vagrant vm use 16MB
-shared_buffers = 32MB			# min 128kB
+#vagrant vm use 32MB
+shared_buffers = {{postgresql.shared_buffers}}			# min 128kB
 					# (change requires restart)
 #temp_buffers = 8MB			# min 800kB
 #max_prepared_transactions = 0		# zero disables the feature
