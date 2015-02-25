@@ -1,10 +1,7 @@
 ##
-#  playbook use for vagrant
+#  playbook use for production
 #
-#  the IP is defined in Vagrantfile, changing IP
-#  also require update vagrant.ssh_config
-#
-kaif       ansible_ssh_host=TODO  ansible_ssh_user=TODO
+kaif       ansible_ssh_host=104.155.193.153  ansible_ssh_user=ubuntu
 
 [web_masters]
 kaif
@@ -25,7 +22,7 @@ inv_flake_node_id="1"
 inv_flake_node_id="2"
 
 # webs:vars check group_vars/webs file
-# [webs:vars]
+[webs:vars]
 
 [pgs]
 kaif
@@ -34,7 +31,5 @@ kaif
 kaif
 
 [postfix:vars]
-## production should use 'loopback-only'
 inv_postfix_inet_interfaces="loopback-only"
-## production should use blank ''
 inv_postfix_additional_my_networks=""
