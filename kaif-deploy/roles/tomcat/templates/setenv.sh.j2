@@ -15,7 +15,7 @@ CATALINA_OPTS=" \
     -Dcom.sun.management.jmxremote.ssl=false \
     -Dcom.sun.management.jmxremote \
     -Dspring.profiles.active={{ tomcat.spring_profiles_active }} \
-    -Dflake.node-id={{ tomcat.flake_node_id }} \
+    -Denv.flake.node-id={{ tomcat.flake_node_id }} \
     {{tomcat.catalina_opts}} \
     "
 
