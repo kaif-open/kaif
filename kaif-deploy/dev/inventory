@@ -26,7 +26,6 @@ inv_flake_node_id="20"
 
 [webs:vars]
 # this should change in production, by a secret file that not commit to git
-inv_catalina_opts="-Ddbpassword=changeme -Daccount.mac=n7LOo9kKqSqM-fshf_T3xw -Daccount.key=dnXAz2u6mn4L_vZyiW0hHA"
 
 [pgs]
 kaif

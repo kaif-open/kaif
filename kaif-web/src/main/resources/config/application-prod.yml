@@ -26,7 +26,7 @@ spring.datasource:
     # TODO change `localhost` from ansible
     url: jdbc:postgresql://localhost:5432/kaif
     username: kaif
-    password: ${dbpassword}
+    password: ${env.dbpassword}
     schema:
     data:
 
@@ -39,15 +39,18 @@ spring.datasource:
 ## mail
 spring.mail.host: localhost
 
+mail.aws-sender-address: noreply@kaif.io
+mail.aws-secret-key: ${env.mail.aws-secret-key}
+mail.aws-access-key: ${env.mail.aws-access-key}
 
 ## model
 account:
-    mac: ${accountmac}
-    key: ${accountkey}
+    mac: ${env.account.mac}
+    key: ${env.account.key}
 
 
 ## flake node id, every web server should use it's own unique node id
-flake.node-id: ${flake.node-id}
+flake.node-id: ${env.flake.node-id}
 
 
 ## app, replace while gradle build (by ant syntax)

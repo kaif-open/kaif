@@ -45,10 +45,6 @@ spring.messages.basename: i18n/messages
 mail.sender-address: noreply@kaif.io
 mail.sender-name: Kaif.io
 
-mail.aws-sender-address:
-mail.aws-secret-key:
-mail.aws-access-key:
-
 
 ## model
 

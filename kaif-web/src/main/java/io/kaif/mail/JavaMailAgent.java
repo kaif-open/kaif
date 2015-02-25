@@ -21,6 +21,7 @@ import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
@@ -28,7 +29,12 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Charsets;
 
+/**
+ * the bean will enable if AwsSesMailAgent disabled. for dev mode with local tomcat and production
+ * mode with vagrant
+ */
 @Component
+@ConditionalOnMissingBean(AwsSesMailAgent.class)
 public class JavaMailAgent implements MailAgent {
 
   static final class EncodingMimeMessagePreparator implements MimeMessagePreparator {

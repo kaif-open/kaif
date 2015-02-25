@@ -17,7 +17,9 @@ import javax.mail.internet.InternetAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.mail.MailException;
+import org.springframework.stereotype.Component;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -32,8 +34,14 @@ import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.RateLimiter;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
-// temporary disable because we don't have aws ses yet
-// @Component
+/**
+ * the bean will be enabled if and only if mail.aws-secret-key present
+ * <p>
+ * this is for real production server only. In vagrant, although spring profile set to prod, but it
+ * set mail.aws-secret-key to <code>false</code> explicitly, spring will treat it is missing.
+ */
+@Component
+@ConditionalOnProperty(prefix = "mail", name = "aws-secret-key")
 public class AwsSesMailAgent implements MailAgent {
 
   private static final Logger logger = LoggerFactory.getLogger(AwsSesMailAgent.class);
