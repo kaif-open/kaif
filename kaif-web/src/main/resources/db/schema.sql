@@ -1,11 +1,11 @@
 CREATE TABLE Account (
-  accountId    UUID          NOT NULL PRIMARY KEY,
-  username     VARCHAR(4096) NOT NULL,
-  email        VARCHAR(4096) NOT NULL,
-  passwordHash VARCHAR(4096) NOT NULL,
+  accountId    UUID           NOT NULL PRIMARY KEY,
+  username     VARCHAR(4096)  NOT NULL,
+  email        VARCHAR(4096)  NOT NULL,
+  passwordHash VARCHAR(4096)  NOT NULL,
   description  VARCHAR(16384) NOT NULL,
-  authorities  TEXT []       NOT NULL,
-  createTime   TIMESTAMPTZ   NOT NULL
+  authorities  TEXT []        NOT NULL,
+  createTime   TIMESTAMPTZ    NOT NULL
 );
 
 CREATE UNIQUE INDEX AccountUsernameIndex ON Account (LOWER(username));
