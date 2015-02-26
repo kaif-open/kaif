@@ -59,6 +59,7 @@ public class KmarkProcessor {
   private Block readLines(final Reader reader, final Emitter emitter) throws IOException {
     final Block block = new Block();
     final StringBuilder sb = new StringBuilder(200);
+    boolean underCodeBlock = false;
     int c = reader.read();
     LinkRef lastLinkRef = null;
     while (c != -1) {
@@ -105,10 +106,19 @@ public class KmarkProcessor {
       line.value = sb.toString();
       line.init();
 
+      if (line.getLineType() == LineType.FENCED_CODE) {
+        underCodeBlock = !underCodeBlock;
+      }
+
+      if (underCodeBlock) {
+        block.appendLine(line);
+        continue;
+      }
+
       // Check for link definitions
       boolean isLinkRef = false;
       String id = null, link = null, comment = null;
-      if (!line.isEmpty && line.leading < 4 && line.value.charAt(line.leading) == '[') {
+      if (!line.isEmpty && line.value.charAt(line.leading) == '[') {
         line.pos = line.leading + 1;
         // Read ID up to ']'
         id = line.readUntil(']');
@@ -168,7 +178,6 @@ public class KmarkProcessor {
           if (comment != null) {
             lastLinkRef.title = comment;
           }
-
           lastLinkRef = null;
         }
 

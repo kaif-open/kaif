@@ -7,4 +7,8 @@ define foobar() {
     這是中文
 }
 <html>code</html>
+we should ignore link block
+[1]:http://www.yahoo.com
+
+
 ```

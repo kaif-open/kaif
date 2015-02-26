@@ -5,4 +5,6 @@ indenting the block, you can use delimited blocks, if you like:</p>
     這是中文
 }
 &lt;html&gt;code&lt;/html&gt;
+we should ignore link block
+[1]:http://www.yahoo.com
 </code></pre>
