@@ -28,5 +28,5 @@ keytool -v -importkeystore -srckeystore kaifio.jks -srcalias kaif -destkeystore 
 * extract private key from p12
 
 ```
-openssl pkcs12 -in kaif.p12 -out kaif_private.pem -nodes
+openssl pkcs12 -in kaifio.p12 -out kaif_private.pem -nodes
 ```

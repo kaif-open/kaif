@@ -2,7 +2,7 @@ ${message('email.reset-password.greeting', account.username)}
 
 ${message('email.reset-password.text1')}
 
-  http://kaif.io/account/reset-password?key=${token}
+  https://kaif.io/account/reset-password?key=${token}
 
 ${message('email.reset-password.text2')}
 

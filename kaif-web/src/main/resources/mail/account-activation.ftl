@@ -2,7 +2,7 @@ ${message('email.activation.greeting', account.username)}
 
 ${message('email.activation.text1')}
 
-  http://kaif.io/account/activation?key=${activationId}
+  https://kaif.io/account/activation?key=${activationId}
 
 ${message('email.activation.text2')}
 
