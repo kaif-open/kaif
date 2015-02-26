@@ -442,6 +442,7 @@ class Emitter {
         .append("/u/")
         .append(username)
         .appendHtml("\" class=\"user-link\">")
+        .append("/u/")
         .append(username);
     out.appendHtml("</a>");
     return pos + username.length() - 1;
@@ -492,6 +493,7 @@ class Emitter {
         .append("/z/")
         .append(zone)
         .appendHtml("\" class=\"zone-link\">")
+        .append("/z/")
         .append(zone);
     out.appendHtml("</a>");
     return pos + zone.length() - 1;
