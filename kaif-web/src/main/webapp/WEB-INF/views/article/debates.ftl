@@ -75,9 +75,10 @@ applyZoneTheme=true
 
     <div>
         <div kmark-previewer class="hidden kmark kmark-preview"></div>
-        <textarea name="contentInput" class="pure-input-1-2 kmark-input" maxlength="4096" rows="3"></textarea>
+        <textarea name="contentInput" class="pure-input-1-2 kmark-input" maxlength="4096"
+                  rows="3"></textarea>
     </div>
-    <div class="debate-form-action">
+    <div class="form-action-bar">
         <button type="submit" class="pure-button pure-button-primary">留言</button>
         <button class="pure-button" kmark-debate-cancel>取消</button>
         <button class="pure-button"
@@ -88,9 +89,10 @@ applyZoneTheme=true
 <form class="pure-form hidden debate-form" comp-template="edit-kmark-form">
     <div>
         <div kmark-previewer class="hidden kmark kmark-preview"></div>
-        <textarea name="contentInput" class="pure-input-1 kmark-input" maxlength="4096" rows="3"></textarea>
+        <textarea name="contentInput" class="pure-input-1 kmark-input" maxlength="4096"
+                  rows="3"></textarea>
     </div>
-    <div class="debate-form-action">
+    <div class="form-action-bar">
         <button type="submit" class="pure-button pure-button-primary">修改</button>
         <button class="pure-button" kmark-cancel>取消</button>
         <button class="pure-button"

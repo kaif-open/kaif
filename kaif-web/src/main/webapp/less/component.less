@@ -10,6 +10,13 @@
 }
 
 //
+// sign-up-form
+//
+.sign-up-form {
+  max-width: @screen-sm-min;
+}
+
+//
 // article
 //
 
@@ -126,9 +133,22 @@
   }
 }
 
+// see settings.part.ftl
+.about-me-control {
+  label {
+    vertical-align: top !important;
+  }
+  .about-me {
+    //below style is like [input] of pure-css
+    border: 1px solid #ccc;
+    box-shadow: inset 0 1px 3px #ddd;
+    border-radius: 4px;
+  }
+}
+
 .about-me {
   background-color: @gray-lightest;
-  padding: @padding-lg-vertical @padding-sm-horizontal;
+  padding: @padding-vertical @padding-sm-horizontal;
   min-height: 10em;
 }
 
@@ -254,7 +274,8 @@
 //
 
 .kmark-preview {
-  border: 1px dotted @gray-light;
+  border: 2px dashed @brand-info;
+  border-radius: @border-radius;
   padding: @padding-sm-vertical @padding-sm-horizontal;
   min-height: 100px;
 }

@@ -3,7 +3,7 @@
 
 <@template.page layout='small'>
 
-<form class="pure-form pure-form-stacked" sign-up-form>
+<form class="pure-form pure-form-stacked sign-up-form" sign-up-form>
     <fieldset>
 
         <legend>註冊新帳號</legend>

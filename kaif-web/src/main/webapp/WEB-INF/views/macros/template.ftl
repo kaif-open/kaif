@@ -100,11 +100,11 @@ sample configs:
     <div class="container">
         <#if layout == 'small'>
             <div class="pure-g">
-                <div class="pure-u pure-u-md-1-5"></div>
-                <div class="pure-u-1 pure-u-md-3-5 l-box">
+                <div class="pure-u pure-u-lg-1-6"></div>
+                <div class="pure-u-1 pure-u-lg-2-3 l-box">
                     <#nested>
                 </div>
-                <div class="pure-u pure-u-md-1-5"></div>
+                <div class="pure-u pure-u-lg-1-6"></div>
             </div>
         <#elseif layout == 'full'>
         <#-- full layout let nested take full control -->

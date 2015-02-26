@@ -13,10 +13,14 @@
 body {
   line-height: 1.7em;
   font-size: @font-size-sm;
-  font-family: @font-family-base;
   @media (min-width: @screen-md-min) {
     font-size: @font-size;
   }
+}
+
+html, button, input, select, textarea,
+.pure-g [class *= "pure-u"] {
+  font-family: @font-family-base;
 }
 
 code, pre {
@@ -117,5 +121,39 @@ main {
   a:hover {
     text-decoration: none;
     color: lighten(@link-color, 35%);
+  }
+}
+
+//
+// override pure-form-aligned behavior
+// see purecss source code for detail
+//
+.pure-form-aligned {
+  .pure-control-group {
+    .psuedo-input {
+      display: inline-block;
+    }
+    & > .psuedo-input,
+    & > textarea,
+    & > input[type=text],
+    & > input[type=email],
+    & > input[type=password],
+    & > input[type=url] {
+      width: 50%;
+
+      //pure-form-aligned switch to stack at 480px
+      @media screen and (max-width: 480px) {
+        width: 100%;
+      }
+    }
+
+    label {
+      @media screen and (max-width: @screen-sm-max) {
+        width: 7em;
+      }
+      @media screen and (max-width: 480px) {
+        width: 100%;
+      }
+    }
   }
 }
