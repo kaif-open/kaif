@@ -31,6 +31,7 @@ import io.kaif.model.account.Authority;
 import io.kaif.model.account.Authorization;
 import io.kaif.model.exception.OldPasswordNotMatchException;
 import io.kaif.service.AccountService;
+import io.kaif.web.support.AccessDeniedException;
 
 @Service
 @Transactional
@@ -113,7 +114,7 @@ public class AccountServiceImpl implements AccountService {
     return Optional.ofNullable(accessToken)
         .flatMap(accountDao::strongVerifyAccount)
         .map(this::createAccountAuth)
-        .get();
+        .orElseThrow(() -> new AccessDeniedException("could not extends token because verify failed"));
   }
 
   @Override

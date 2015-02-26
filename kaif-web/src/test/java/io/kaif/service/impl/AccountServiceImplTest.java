@@ -26,6 +26,7 @@ import io.kaif.model.account.Authority;
 import io.kaif.model.account.Authorization;
 import io.kaif.model.exception.OldPasswordNotMatchException;
 import io.kaif.test.DbIntegrationTests;
+import io.kaif.web.support.AccessDeniedException;
 
 public class AccountServiceImplTest extends DbIntegrationTests {
 
@@ -296,6 +297,20 @@ public class AccountServiceImplTest extends DbIntegrationTests {
     AccountAuth extend = service.extendsAccessToken(accountAccessToken);
     assertFalse(extend.equals(accountAuth));
     assertTrue(service.strongVerifyAccessToken(extend.getAccessToken()).isPresent());
+  }
+
+  @Test
+  public void extendsAccessToken_verify_db_failed() throws Exception {
+    Account account = service.createViaEmail("bbbb99", "bar@gmail.com", "pppwww", lc);
+    AccountAuth accountAuth = service.authenticate("bbbb99", "pppwww").get();
+    AccountAccessToken outOfDateToken = service.strongVerifyAccessToken(accountAuth.getAccessToken())
+        .get();
+    service.updateNewPassword(account, "pppwww", "pw2newone", Locale.ENGLISH);
+    try {
+      service.extendsAccessToken(outOfDateToken);
+      fail("AccessDeniedException expected");
+    } catch (AccessDeniedException expected) {
+    }
   }
 
   @Test
