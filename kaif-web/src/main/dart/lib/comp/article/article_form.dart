@@ -38,10 +38,10 @@ class ArticleForm {
 
   void _checkCanCreateArticleOnZone() {
     String zone = zoneInput.value;
+    submitElem.disabled = true; //disable first, wait ajax to enable
     if (isStringBlank(zone)) {
       return;
     }
-    submitElem.disabled = true; //disable first, wait ajax to enable
     articleService.canCreateArticle(zone).then((ok) {
       submitElem.disabled = !ok;
       elem.querySelector('[can-not-create-article-hint]').classes.toggle('hidden', ok);
