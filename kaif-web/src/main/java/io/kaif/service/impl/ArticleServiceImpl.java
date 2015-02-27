@@ -3,7 +3,7 @@ package io.kaif.service.impl;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import javax.annotation.Nullable;
 
@@ -57,12 +57,16 @@ public class ArticleServiceImpl implements ArticleService {
       String link) {
     return createArticle(authorization,
         zone,
-        author -> articleDao.createExternalLink(zone, author, title, link, Instant.now()));
+        (zoneInfo, author) -> articleDao.createExternalLink(zoneInfo,
+            author,
+            title,
+            link,
+            Instant.now()));
   }
 
   private Article createArticle(Authorization authorization,
       Zone zone,
-      Function<Account, Article> articleCreator) {
+      BiFunction<ZoneInfo, Account, Article> articleCreator) {
     //creating article should not use cache
     ZoneInfo zoneInfo = zoneDao.loadZoneWithoutCache(zone);
 
@@ -70,7 +74,7 @@ public class ArticleServiceImpl implements ArticleService {
         .filter(zoneInfo::canWriteArticle)
         .orElseThrow(() -> new AccessDeniedException("no write to create article at zone:" + zone));
 
-    Article article = articleCreator.apply(author);
+    Article article = articleCreator.apply(zoneInfo, author);
     if (zoneInfo.getWriteAuthority() == Authority.CITIZEN) {
       accountDao.increaseArticleCount(author);
     }
@@ -87,7 +91,11 @@ public class ArticleServiceImpl implements ArticleService {
   public Article createSpeak(Authorization authorization, Zone zone, String title, String content) {
     return createArticle(authorization,
         zone,
-        author -> articleDao.createSpeak(zone, author, title, content, Instant.now()));
+        (zoneInfo, author) -> articleDao.createSpeak(zoneInfo,
+            author,
+            title,
+            content,
+            Instant.now()));
   }
 
   public Optional<Article> findArticle(FlakeId articleId) {

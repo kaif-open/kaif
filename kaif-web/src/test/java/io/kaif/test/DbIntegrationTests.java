@@ -98,7 +98,7 @@ public abstract class DbIntegrationTests extends AbstractTransactionalJUnit4Spri
   }
 
   protected final Article savedArticle(ZoneInfo zoneInfo, Account author, String title) {
-    return articleDao.createExternalLink(zoneInfo.getZone(),
+    return articleDao.createExternalLink(zoneInfo,
         author,
         title,
         "http://example.com/" + title,

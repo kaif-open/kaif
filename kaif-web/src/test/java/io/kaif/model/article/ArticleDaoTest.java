@@ -85,6 +85,7 @@ public class ArticleDaoTest extends DbIntegrationTests {
 
   private Article savedArticleWithId(ZoneInfo zoneInfo, Instant time) {
     Article article = Article.createExternalLink(zoneInfo.getZone(),
+        zoneInfo.getAliasName(),
         FlakeId.startOf(time.toEpochMilli()),
         account,
         "title x",

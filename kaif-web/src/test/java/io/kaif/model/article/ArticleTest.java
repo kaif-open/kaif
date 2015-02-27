@@ -15,12 +15,14 @@ public class ArticleTest implements ModelFixture {
 
   FlakeId articleId = FlakeId.valueOf(123);
   Zone zone = Zone.valueOf("abc");
+  String zoneAlias = "abc-alias";
   Account account = accountCitizen("foo");
   Instant now = Instant.now();
 
   @Test
   public void createExternalLink_escape() throws Exception {
     Article article = Article.createExternalLink(zone,
+        zoneAlias,
         articleId,
         account,
         "title1<script>alert('123');</script>",
@@ -34,6 +36,7 @@ public class ArticleTest implements ModelFixture {
   @Test
   public void createSpeak_escape() throws Exception {
     Article article = Article.createSpeak(zone,
+        zoneAlias,
         articleId,
         account,
         "title1<script>alert('123');</script>",
@@ -55,6 +58,7 @@ public class ArticleTest implements ModelFixture {
   public void getRenderContent() throws Exception {
     String content = "pixel `art` is better";
     Article speakArticle = Article.createSpeak(zone,
+        zoneAlias,
         articleId,
         account,
         "title 123",
@@ -64,6 +68,7 @@ public class ArticleTest implements ModelFixture {
     assertEquals("<p>pixel <code>art</code> is better</p>\n", speakArticle.getRenderContent());
 
     Article linkArticle = Article.createExternalLink(zone,
+        zoneAlias,
         articleId,
         account,
         "title 123",
@@ -77,6 +82,7 @@ public class ArticleTest implements ModelFixture {
   @Test
   public void linkHintForExternal() throws Exception {
     Article externalLink = Article.createExternalLink(zone,
+        zoneAlias,
         articleId,
         account,
         "title",
@@ -86,6 +92,7 @@ public class ArticleTest implements ModelFixture {
     assertEquals("foo.com", externalLink.getLinkHint());
 
     externalLink = Article.createExternalLink(zone,
+        zoneAlias,
         articleId,
         account,
         "title",
@@ -99,6 +106,7 @@ public class ArticleTest implements ModelFixture {
   public void linkHintForSpeak() throws Exception {
 
     Article speak = Article.createSpeak(zone,
+        zoneAlias,
         articleId,
         account,
         "title",

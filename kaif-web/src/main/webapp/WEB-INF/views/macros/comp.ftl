@@ -4,11 +4,11 @@
 
 <#-- Article components -->
 
-<#macro articleList data>
+<#macro articleList data showZone=false>
     <#local articlePage=data />
 <div class="article-list" article-list>
     <#list articlePage.articles as article>
-        <@comp.article data=article />
+        <@comp.article data=article showZone=showZone/>
     </#list>
     <div class="article-list-pager grid-center-row">
         <#if articlePage.articles?size == 0 >
@@ -22,7 +22,7 @@
 </div>
 </#macro>
 
-<#macro article data hidden=false parentMode=false>
+<#macro article data hidden=false parentMode=false showZone=false>
 
     <#local article=data />
     <#local hiddenCls=hidden?string("hidden", "") />
@@ -67,6 +67,10 @@
                    href="<@url.account data=article/>">${article.authorName}</a>
                 張貼於 <@util.time instant=article.createTime />
             </span>
+            <#if showZone>
+                <a href="<@url.zone data=article/>"><i
+                        class="fa fa-caret-right"></i> ${article.aliasName}</a>
+            </#if>
         </div>
     </div>
 </div>
@@ -139,7 +143,8 @@
                 <a href="<@url.debate data=debate/>" title="永久連結"
                    rel="nofollow"><@util.time instant=debate.createTime /></a>
 
-                <a href="#" debate-content-editor data-debate-id="${debate.debateId}" class="hidden">編輯</a>
+                <a href="#" debate-content-editor data-debate-id="${debate.debateId}"
+                   class="hidden">編輯</a>
             </#compress>
         </div>
         <div class="debate-child">

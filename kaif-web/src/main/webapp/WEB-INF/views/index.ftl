@@ -19,7 +19,7 @@ head=headContent
     <@template.home>
     <div class="grid">
         <div class="grid-body">
-            <@comp.articleList data=articlePage></@comp.articleList>
+            <@comp.articleList data=articlePage showZone=true></@comp.articleList>
         </div>
         <aside class="grid-aside">
             <@aside.recommendZones zoneInfos=recommendZones />

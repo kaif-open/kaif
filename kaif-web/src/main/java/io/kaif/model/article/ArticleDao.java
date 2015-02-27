@@ -39,6 +39,7 @@ public class ArticleDao implements DaoOperations {
   private final RowMapper<Article> articleMapper = (rs, rowNum) -> {
     return new Article(//
         Zone.valueOf(rs.getString("zone")),
+        rs.getString("aliasName"),
         FlakeId.valueOf(rs.getLong("articleId")),
         rs.getString("title"),
         rs.getString("link"),
@@ -65,11 +66,12 @@ public class ArticleDao implements DaoOperations {
     jdbc().update(""
             + " INSERT "
             + "   INTO Article "
-            + "        (zone, articleid, title, link, content, contentType, "
+            + "        (zone, aliasName, articleid, title, link, content, contentType, "
             + "         createTime, authorid, authorname, deleted, upvote, downvote, debatecount)"
             + " VALUES "
-            + questions(13),
+            + questions(14),
         article.getZone().value(),
+        article.getAliasName(),
         article.getArticleId().value(),
         article.getTitle(),
         article.getLink(),
@@ -120,13 +122,19 @@ public class ArticleDao implements DaoOperations {
     return jdbc().query(sql, articleMapper, start.value(), limit);
   }
 
-  public Article createExternalLink(Zone zone,
+  public Article createExternalLink(ZoneInfo zoneInfo,
       Account author,
       String title,
       String url,
       Instant now) {
     FlakeId flakeId = articleFlakeIdGenerator.next();
-    return insertArticle(Article.createExternalLink(zone, flakeId, author, title, url, now));
+    return insertArticle(Article.createExternalLink(zoneInfo.getZone(),
+        zoneInfo.getAliasName(),
+        flakeId,
+        author,
+        title,
+        url,
+        now));
   }
 
   /**
@@ -240,8 +248,13 @@ public class ArticleDao implements DaoOperations {
         article.getArticleId().value());
   }
 
-  public Article createSpeak(Zone zone, Account author, String title, String content, Instant now) {
-    return insertArticle(Article.createSpeak(zone,
+  public Article createSpeak(ZoneInfo zoneInfo,
+      Account author,
+      String title,
+      String content,
+      Instant now) {
+    return insertArticle(Article.createSpeak(zoneInfo.getZone(),
+        zoneInfo.getAliasName(),
         articleFlakeIdGenerator.next(),
         author,
         title,

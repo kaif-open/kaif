@@ -60,6 +60,7 @@ public interface ModelFixture extends TimeFixture {
     Instant now = Instant.now();
     Account author = accountCitizen("user" + new Random().nextInt(100));
     return Article.createExternalLink(zone,
+        zone.value() + "-alias",
         new ArticleFlakeIdGenerator(99).next(),
         author,
         title,
@@ -70,6 +71,7 @@ public interface ModelFixture extends TimeFixture {
   default Article article(Zone zone, FlakeId articleId, String title) {
     Account author = accountCitizen("user" + new Random().nextInt(100));
     return Article.createExternalLink(zone,
+        zone.value() + "-alias",
         articleId,
         author,
         title,
@@ -79,6 +81,12 @@ public interface ModelFixture extends TimeFixture {
 
   default Article articleSpeak(Zone zone, FlakeId articleId, String title) {
     Account author = accountCitizen("user" + new Random().nextInt(100));
-    return Article.createSpeak(zone, articleId, author, title, title + "-content", Instant.now());
+    return Article.createSpeak(zone,
+        zone.value() + "-alias",
+        articleId,
+        author,
+        title,
+        title + "-content",
+        Instant.now());
   }
 }

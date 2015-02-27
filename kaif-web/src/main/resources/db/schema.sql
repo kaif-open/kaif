@@ -34,6 +34,7 @@ CREATE TABLE ZoneInfo (
 CREATE TABLE Article (
   articleId   BIGINT         NOT NULL,
   zone        VARCHAR(4096)  NOT NULL,
+  aliasName   VARCHAR(4096)  NOT NULL,
   title       VARCHAR(4096)  NOT NULL,
   link        VARCHAR(4096)  NULL,
   content     VARCHAR(16384) NULL,

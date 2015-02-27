@@ -28,6 +28,7 @@ public class Article {
   public static final int CONTENT_MAX = 4096;
 
   public static Article createSpeak(Zone zone,
+      String zoneAliasName,
       FlakeId articleId,
       Account author,
       String title,
@@ -37,6 +38,7 @@ public class Article {
     Preconditions.checkArgument(isValidContent(content));
     String safeTitle = HtmlUtils.htmlEscape(title);
     return new Article(zone,
+        zoneAliasName,
         articleId,
         safeTitle,
         null,
@@ -56,6 +58,7 @@ public class Article {
   }
 
   public static Article createExternalLink(Zone zone,
+      String zoneAliasName,
       FlakeId articleId,
       Account author,
       String title,
@@ -66,6 +69,7 @@ public class Article {
     String safeTitle = HtmlUtils.htmlEscape(title);
     String safeLink = HtmlUtils.htmlEscape(link);
     return new Article(zone,
+        zoneAliasName,
         articleId,
         safeTitle,
         safeLink,
@@ -102,6 +106,7 @@ public class Article {
   }
 
   private final Zone zone;
+  private final String aliasName;
   private final FlakeId articleId;
   private final String title;
   private final Instant createTime;
@@ -117,6 +122,7 @@ public class Article {
   private final long debateCount;
 
   Article(Zone zone,
+      String aliasName,
       FlakeId articleId,
       String title,
       String link,
@@ -130,6 +136,7 @@ public class Article {
       long downVote,
       long debateCount) {
     this.zone = zone;
+    this.aliasName = aliasName;
     this.articleId = articleId;
     this.title = title;
     this.link = link;
@@ -194,6 +201,10 @@ public class Article {
 
   public String getLink() {
     return link;
+  }
+
+  public String getAliasName() {
+    return aliasName;
   }
 
   @Override
