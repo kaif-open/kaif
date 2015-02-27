@@ -5,7 +5,7 @@
 <#import "../macros/template.ftl" as template>
 
 <#assign headContent>
-<title>User ${account.username} | Kaif</title>
+<title>${account.username} | kaif.io</title>
 <link rel="canonical" href="https://kaif.io/<@url.account data=account/>"/>
 </#assign>
 

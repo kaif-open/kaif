@@ -12,7 +12,7 @@
 <#-- TODO description and open graph, twitter card...etc -->
 
 <meta name="description"
-      content="${article.title} | ${zoneInfo.aliasName} ${zoneInfo.name} | kaif.io">
+      content="${article.title} | ${zoneInfo.aliasName}">
 
 </#assign>
 

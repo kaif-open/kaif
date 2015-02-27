@@ -6,8 +6,8 @@
 
 <#assign headContent>
 
-<title>kaif.io</title>
-<meta name="description" content="kaif.io">
+<title>綜合文章區 | kaif.io</title>
+<meta name="description" content="最新與最熱門的文章都在 kaif.io">
 
 </#assign>
 

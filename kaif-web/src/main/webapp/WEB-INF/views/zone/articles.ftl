@@ -10,7 +10,7 @@
 
 <#-- TODO description and open graph, twitter card...etc -->
 
-<meta name="description" content="${zoneInfo.aliasName} ${zoneInfo.name} | kaif.io">
+<meta name="description" content="${zoneInfo.aliasName} - <@url.zone data=zoneInfo/>">
 
 </#assign>
 

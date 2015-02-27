@@ -5,8 +5,8 @@
 
 <#assign headContent>
 
-<title>kaif.io - 討論區列表</title>
-<meta name="討論區按字母排序" content="kaif.io">
+<title>討論區列表 | kaif.io</title>
+<meta name="description" content="討論區按字母排序">
 
 </#assign>
 
