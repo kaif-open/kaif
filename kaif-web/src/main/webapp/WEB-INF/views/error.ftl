@@ -7,7 +7,6 @@
 
 <@template.page layout='small' head=headContent errorPage=true >
 
-<h1>
 <#-- TODO show stacktrace in dev mode
      TODO beautify with a little error detail
      TODO error page should not use template or external css/font/js,
@@ -15,9 +14,18 @@
   -->
     <#assign resStatus = (Request['status'])!500 />
     <#if resStatus == 404>
-        404 Not Found
+    <div style="text-align: center">
+        <h1>404 Not Found 查無此頁</h1>
+    </div>
+
+    <style>body {
+        margin: 0
+    }</style>
+    <iframe src="http://404page.missingkids.org.tw/api?key=zhhw-kiPRaLa4QEEDdeK" width="100%"
+            height="635" frameborder="0"></iframe>
     <#else>
+    <h1>
         Error ${resStatus}
+    </h1>
     </#if>
-</h1>
 </@template.page>
