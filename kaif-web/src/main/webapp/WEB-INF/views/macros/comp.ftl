@@ -44,7 +44,13 @@
             <#else>
                 <a href="<@url.article data=article />">${article.title}</a>
             </#if>
-            <span class="article-link-hint">(${article.linkHint})</span>
+            <span class="article-link-hint">
+                <#if article.externalLink>
+                    (${article.linkHint})
+                <#else>
+                    (<span class="speak-hint">${article.linkHint}</span>)
+                </#if>
+            </span>
         </div>
         <#if parentMode && article.hasMarkDownContent() >
             <div class="article-content">
