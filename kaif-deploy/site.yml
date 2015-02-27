@@ -38,6 +38,8 @@
       nginx_http_params:
         - sendfile "on"
         - access_log "/var/log/nginx/access.log"
+        # for nginx debugging
+        # - error_log "/var/log/nginx/debug_error.log" debug
         - proxy_cache_path {{nginx_cache_dir}} levels=1:2 keys_zone=one:10m
         - proxy_temp_path {{nginx_cache_dir}}/tmp
         - ssl_protocols TLSv1 TLSv1.1 TLSv1.2
@@ -47,7 +49,6 @@
         - ssl_dhparam /etc/nginx_pki/dhparam.pem
         - ssl_stapling on
         - ssl_stapling_verify on
-        # TODO intermediate cert
         - ssl_trusted_certificate /etc/nginx_pki/gd_bundle-g2-g1.crt
         - resolver 8.8.4.4 8.8.8.8 valid=300s
         - resolver_timeout 10s
@@ -69,9 +70,13 @@
         kaif_80:
           - listen 80
           - server_name .kaif.io
-          - return 301 https://$host$request_uri
+          - return 301 https://kaif.io$request_uri
+        kaif_www:
+          - listen 443 ssl
+          - server_name www.kaif.io
+          - return 301 https://kaif.io$request_uri
         kaif:
-          - server_name .kaif.io
+          - server_name kaif.io localdev.kaif.io
           ### ssl
           - listen 443 ssl spdy
           - ssl_session_cache builtin:1000 shared:SSL:10m

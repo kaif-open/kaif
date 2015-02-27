@@ -9,7 +9,7 @@
   # configure distro
   #
   - name: upgrade apt to latest safe
-    apt: upgrade=safe state=latest update_cache=yes cache_valid_time=86400
+    apt: upgrade=safe state=latest update_cache=yes cache_valid_time=864000
     sudo: yes
 
   ## 
