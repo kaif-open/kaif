@@ -78,7 +78,9 @@
         kaif:
           - server_name kaif.io localdev.kaif.io
           ### ssl
-          - listen 443 ssl spdy
+          # temporary disable spdy because nginx 1.7.10 not work in safari 8
+          # - listen 443 ssl spdy
+          - listen 443 ssl
           - ssl_session_cache builtin:1000 shared:SSL:10m
           - ssl_session_timeout 10m
           - ssl_certificate /etc/nginx_pki/kaif.io.crt
@@ -86,7 +88,8 @@
           - proxy_redirect http:// $scheme://
           ### security
           # do not use "includeSubdomains;" because blog.kaif.io
-          - add_header Strict-Transport-Security "max-age=31536000;"
+          # and don't include `;` in configuration, nginx ansible role fail to process it
+          - add_header Strict-Transport-Security "max-age=31536000"
           - add_header X-Frame-Options SAMEORIGIN
           - add_header X-Content-Type-Options nosniff
           ### IE cookie
