@@ -74,8 +74,9 @@
                 張貼於 <@util.time instant=article.createTime />
             </span>
             <#if showZone>
-                <a href="<@url.zone data=article/>"><i
-                        class="fa fa-caret-right"></i> ${article.aliasName}</a>
+                <a href="<@url.zone data=article/>">
+                    <i class="fa fa-caret-right"></i> ${article.aliasName}
+                </a>
             </#if>
         </div>
     </div>
