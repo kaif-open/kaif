@@ -24,6 +24,7 @@ error.whitelabel.enabled: false
 
 ## actuator
 management.context-path: /actuate
+management.add-application-context-header: false
 endpoints.info.enabled: true
 endpoints.health.enabled: true
 
