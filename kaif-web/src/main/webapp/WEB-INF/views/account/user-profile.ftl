@@ -5,7 +5,7 @@
 <#import "../macros/template.ftl" as template>
 
 <#assign headContent>
-<title>${account.username} | kaif.io</title>
+<title>關於 ${account.username} | kaif.io</title>
 <link rel="canonical" href="https://kaif.io/<@url.account data=account/>"/>
 </#assign>
 
@@ -13,36 +13,23 @@
 layout='small'
 head=headContent>
 
-<div>
-    <table class="user-infos">
-        <tr>
-            <th>帳號</th>
-            <td>${account.username}</td>
-        </tr>
-        <tr>
-            <th>註冊於</th>
-            <td><@util.time instant=account.createTime  maxUnit="Day" /></td>
-        </tr>
-        <tr>
-            <th>留言</th>
-            <td>${accountStats.debateCount}</td>
-        </tr>
-        <tr>
-            <th>發文</th>
-            <td>${accountStats.articleCount}</td>
-        </tr>
-        <tr>
-            <th>積分</th>
-            <td>${accountStats.debateUpVoted - accountStats.debateDownVoted}</td>
-        </tr>
-        <tr>
-            <th>關於我</th>
-            <td>
-                <div class="kmark about-me">${account.renderDescription}</div>
-            </td>
-        </tr>
-    </table>
-</div>
+<div class="user-profile">
+    <@util.time instant=account.createTime  maxUnit="Day" />
+    <h2>關於 ${account.username}</h2>
 
+    <div class="kmark">${account.renderDescription}</div>
+    <div class="user-info-list">
+        <div>
+            文章分享 <span class="user-number">${accountStats.articleCount}</span> 篇
+        </div>
+        <div>
+            爭論激辯 <span class="user-number">${accountStats.debateCount}</span> 回
+        </div>
+        <div>
+            個人積分 <span class="user-number">${accountStats.debateUpVoted - accountStats.debateDownVoted}</span>
+            點
+        </div>
+    </div>
+</div>
 
 </@template.page>

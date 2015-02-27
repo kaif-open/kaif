@@ -123,16 +123,31 @@
 // user-profile
 //
 
-.user-infos {
-  width: 100%;
-  th {
-    text-align: right;
-    color: @gray-light;
-    vertical-align: top;
+.user-profile {
+  border: 2px solid @gray-light;
+  margin-top: 30px;
+  padding: 30px;
+  .user-info-list {
+    margin-top: 30px;
+    font-size: @font-size-lg;
+    div {
+      padding-bottom: @padding-lg-vertical;
+    }
+    .user-number {
+      color: @brand-triangle-color;
+      font-family: serif;
+      font-size: @font-size * 2;
+    }
   }
-  td {
-    vertical-align: top;
-    padding-left: @padding-lg-vertical;
+  time {
+    display:block;
+    color: @gray-light;
+    float: right;
+    padding-top: 1em;
+  }
+  .kmark {
+    font-size: @font-size;
+    padding: @padding-lg-vertical @padding-lg-horizontal;
   }
 }
 
