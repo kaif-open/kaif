@@ -36,7 +36,6 @@ cd kaif/kaif-deploy
 ./play_vagrant_deploy_war.sh
 ```
 
-
 * shutdown vm
 
 ```
@@ -49,7 +48,6 @@ vagrant halt kaif
 vagrant reload kaif
 ```
 
-
 * destroy vm (delete all data)
 
 ```
@@ -60,4 +58,48 @@ vagrant destroy kaif
 
 ```
 vagrant box remove ubuntu14
+```
+
+### sample command for production
+
+* connect to google cloud engine
+
+```
+cd kaif/kaif-deploy
+ssh -F gce.ssh_config kaif
+```
+
+* you can configure your .ssh to make connect to kaif server easier:
+
+  * add following to your `/.ssh/config`
+
+```
+Host kaif
+  HostName kaif.io
+  StrictHostKeyChecking no
+  IdentityFile ~/develop/kaif-all/kaif/kaif-deploy/secret/kaif_rsa
+  User ubuntu
+```
+
+  * you should change `IdentityFile` location if your kaif project in different location
+  * after configured, you can ssh to server by `ssh kaif` .
+
+* provision ansible to production
+  Use with caution because it may update many dependencies, should do this at midnight
+
+```
+cd kaif/kaif-deploy
+ansible-playbook -i production --private-key secret/kaif_rsa site.yml
+```
+
+* deploy war to production
+
+```
+cd kaif/kaif-deploy
+
+# run playbook directly
+ansible-playbook -i production --private-key secret/kaif_rsa deploy/deploy_war.yml
+
+# or simply use script
+./play_production_deploy.war.sh
 ```

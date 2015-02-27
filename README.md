@@ -76,3 +76,7 @@
 ```
 
  * go visit https://localdev.kaif.io/ to check nginx is ready
+
+### Production provision and deployment
+
+ * you need secret files to operate production servers. see kaif-deploy/README.md for detail
