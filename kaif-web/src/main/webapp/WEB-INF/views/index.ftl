@@ -22,6 +22,7 @@ head=headContent
             <@comp.articleList data=articlePage showZone=true></@comp.articleList>
         </div>
         <aside class="grid-aside">
+            <@aside.createArticle />
             <@aside.recommendZones zoneInfos=recommendZones />
         </aside>
     </div>

@@ -6,7 +6,7 @@ import 'package:kaif_web/model.dart';
 import 'dart:async';
 
 
-typedef Future _articleCreator();
+typedef Future _articleCreator(String zone);
 
 //TODO auto save draft if speak mode
 //TODO kmark preview, for article
@@ -14,30 +14,40 @@ class ArticleForm {
 
   final Element elem;
   final ArticleService articleService;
-  String zone;
   Alert alert;
   SubmitButtonInputElement submitElem;
+  SelectElement zoneInput;
 
   ArticleForm(this.elem, this.articleService, AccountSession accountSession) {
     alert = new Alert.append(elem);
     submitElem = elem.querySelector('[type=submit]');
-    HiddenInputElement zoneInput = elem.querySelector('[name=zoneInput]');
-    zone = zoneInput.value;
+    elem.onSubmit.listen(_onSubmit);
+
+    zoneInput = elem.querySelector('[name=zoneInput]');
+    zoneInput.onChange.listen((Event e) {
+      _checkCanCreateArticleOnZone();
+    });
 
     if (accountSession.isSignIn) {
-      articleService.canCreateArticle(zone).then((ok) {
-        if (ok) {
-          submitElem.disabled = false;
-          elem.onSubmit.listen(_onSubmit);
-        } else {
-          elem.querySelector('[can-not-create-article-hint]').classes.toggle('hidden', false);
-        }
-      }).catchError((e) {
-        alert.renderError('$e');
-      });
+      zoneInput.disabled = false;
+      _checkCanCreateArticleOnZone();
     } else {
       elem.querySelector('[not-sign-in-hint]').classes.toggle('hidden', false);
     }
+  }
+
+  void _checkCanCreateArticleOnZone() {
+    String zone = zoneInput.value;
+    if (isStringBlank(zone)) {
+      return;
+    }
+    submitElem.disabled = true; //disable first, wait ajax to enable
+    articleService.canCreateArticle(zone).then((ok) {
+      submitElem.disabled = !ok;
+      elem.querySelector('[can-not-create-article-hint]').classes.toggle('hidden', ok);
+    }).catchError((e) {
+      alert.renderError('$e');
+    });
   }
 
   void _onSubmit(Event e) {
@@ -62,7 +72,7 @@ class ArticleForm {
     if (urlInput != null) {
       urlInput.value = urlInput.value.trim();
 
-      _runCreate(() {
+      _runCreate((String zone) {
         return articleService.createExternalLink(zone, urlInput.value, titleInput.value);
       });
 
@@ -74,7 +84,7 @@ class ArticleForm {
         alert.renderError(i18n('article.min-content', [articleContentMin]));
         return;
       }
-      _runCreate(() {
+      _runCreate((String zone) {
         return articleService.createSpeak(zone, contentInput.value, titleInput.value);
       });
     }
@@ -82,10 +92,10 @@ class ArticleForm {
 
   void _runCreate(_articleCreator articleCreator) {
     submitElem.disabled = true;
-
+    String zone = zoneInput.value;
     var loading = new Loading.small()
       ..renderAfter(submitElem);
-    articleCreator()
+    articleCreator(zone)
     .then((_) {
       elem.remove();
       new Toast.success(i18n('article.create-success'), seconds:2).render().then((_) {

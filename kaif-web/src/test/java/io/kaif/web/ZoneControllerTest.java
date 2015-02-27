@@ -2,9 +2,12 @@ package io.kaif.web;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -179,8 +182,12 @@ public class ZoneControllerTest extends MvcIntegrationTests {
   @Test
   public void createSpeak() throws Exception {
     when(zoneService.loadZone(Zone.valueOf("programming"))).thenReturn(zoneInfo);
+    ZoneInfo another = zoneDefault("another");
+    when(zoneService.listRecommendZones()).thenReturn(asList(zoneInfo, another));
     mockMvc.perform(get("/z/programming/article/create-speak"))
         .andExpect(view().name("article/create"))
+        .andExpect(model().attribute("candidateZoneInfos", hasItem(another)))
+        .andExpect(model().attribute("candidateZoneInfos", not(hasItem(zoneInfo))))
         .andExpect(content().string(containsString("id=\"contentInput\"")));
   }
 }

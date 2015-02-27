@@ -95,7 +95,7 @@ public class ZoneController {
   public Object createArticle(@PathVariable("zone") String rawZone, HttpServletRequest request) {
     return resolveZone(request,
         rawZone,
-        zoneInfo -> new ModelAndView("article/create").addObject("zoneInfo", zoneInfo));
+        zoneInfo -> new CreateArticleModelAndView(zoneService, zoneInfo));
   }
 
   @RequestMapping("/{zone}/debates/{articleId}")

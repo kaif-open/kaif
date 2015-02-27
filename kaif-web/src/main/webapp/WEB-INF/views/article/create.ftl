@@ -9,15 +9,20 @@
 
 <@template.page
 layout='full'
-applyZoneTheme=true
+applyZoneTheme=zoneInfo??
 head=headContent
 >
+    <#assign createLinkPath >
+        <@url.createArticleLink />
+    </#assign>
+    <#assign createSpeakPath>
+        <@url.createArticleSpeak />
+    </#assign>
 
-    <#assign createLinkPath='/z/${zoneInfo.name}/article/create-link' />
-    <#assign createSpeakPath='/z/${zoneInfo.name}/article/create-speak' />
-
-<div class="zone ${zoneInfo.theme}">
-    <@template.zoneHeader subTitle=" - 新文章發表"/>
+<div class="zone ${(zoneInfo.theme)!''}">
+    <#if zoneInfo??>
+        <@template.zoneHeader subTitle=" - 新文章發表"/>
+    </#if>
     <nav class="zone-menu pure-menu pure-menu-open pure-menu-horizontal">
         <@util.menuLink createLinkPath '分享新連結'/>
         <@util.menuLink createSpeakPath '我有話要說'/>
@@ -29,7 +34,18 @@ head=headContent
             </div>
         </div>
         <aside class="grid-aside">
-            發文規則... TODO
+            <div class="aside-card">
+                <h4>發文規則</h4>
+
+                <div class="aside-card-box">
+                    <ul>
+                        <li>勿發離題的文章</li>
+                        <li>禁止殺人標題法引誘點擊</li>
+                        <li>標題應清楚摘要文章內容</li>
+                        <li>勿在標題劇透一年內的新劇情</li>
+                    </ul>
+                </div>
+            </div>
         </aside>
     </div>
 </div>
@@ -37,8 +53,6 @@ head=headContent
 
 <#macro articleForm>
 <form class="pure-form pure-form-stacked article-form" article-form>
-
-    <input type="hidden" value="${zoneInfo.name}" name="zoneInput">
 
     <div class="pure-control-group">
         <label for="titleInput">標題</label>
@@ -77,6 +91,25 @@ head=headContent
                     ></textarea>
         </div>
     </#if>
+
+    <div class="pure-control-group">
+        <label for="createArticleZoneInput">討論區</label>
+        <select id="createArticleZoneInput"
+                class="pure-input-1"
+                name="zoneInput"
+                required
+                title="請選擇發表的討論區"
+                disabled>
+            <#if zoneInfo?? >
+                <option value="${zoneInfo.zone}" selected>${zoneInfo.aliasName}</option>
+            <#else>
+                <option value="">(請選擇討論區)</option>
+            </#if>
+            <#list candidateZoneInfos as z>
+                <option value="${z.zone}">${z.aliasName}</option>
+            </#list>
+        </select>
+    </div>
     <div class="pure-controls">
         <button type="submit" disabled
                 class="pure-button pure-button-primary">

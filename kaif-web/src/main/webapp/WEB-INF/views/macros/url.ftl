@@ -80,3 +80,25 @@
         </#if>
     </#compress>
 </#macro>
+
+<#-- implicit variable zoneInfo -->
+<#macro createArticleLink><#compress>
+    <#if zoneInfo??>
+        <#assign prefix='/z/${zoneInfo.name}' />
+    <#else>
+        <#assign prefix='' />
+    </#if>
+${prefix}/article/create-link
+</#compress>
+</#macro>
+
+<#-- implicit variable zoneInfo -->
+<#macro createArticleSpeak><#compress>
+    <#if zoneInfo??>
+        <#assign prefix='/z/${zoneInfo.name}' />
+    <#else>
+        <#assign prefix='' />
+    </#if>
+${prefix}/article/create-speak
+</#compress>
+</#macro>

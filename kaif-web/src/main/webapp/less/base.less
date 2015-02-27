@@ -49,6 +49,21 @@ a {
   color: @link-color;
 }
 
+// chrome's default height is small
+select {
+  height: 34px;
+}
+
+ol, ul {
+  // make mobile padding smaller
+  padding-left: 30px;
+
+  @media (min-width: @screen-xl-min) {
+    //this is pure-css default
+    padding-left: 40px;
+  }
+}
+
 //
 // site-layout: make footer stay bottom
 //
