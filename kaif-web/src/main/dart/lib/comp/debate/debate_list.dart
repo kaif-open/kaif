@@ -19,7 +19,8 @@ class DebateList {
              this.serverPartLoader) {
 
     List<DebateComp> debateComps = elem.querySelectorAll('[debate]').map((el) {
-      return new DebateComp(el, articleService, voteService, accountSession);
+      return new DebateComp(el, articleService, voteService, accountSession)
+        ..reloadWhenReply = false;
     }).toList();
 
     _initDebateVoters(debateComps);

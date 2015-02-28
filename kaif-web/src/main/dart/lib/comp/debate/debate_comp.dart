@@ -18,7 +18,7 @@ class DebateComp {
   String articleId;
   String debateId;
   String debaterName;
-  bool reloadWhenReply = false;
+  bool reloadWhenReply = true;
   DebateVoteBox voteBox;
 
   DebateComp(this.elem, this.articleService, this.voteService, this.accountSession) {
