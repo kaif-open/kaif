@@ -1,7 +1,6 @@
 library article_list;
 
 import 'dart:html';
-import 'package:kaif_web/util.dart';
 import 'package:kaif_web/model.dart';
 import '../vote/votable.dart';
 import 'dart:async';

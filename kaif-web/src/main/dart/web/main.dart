@@ -74,7 +74,7 @@ class AppModule {
       new DebateTree(el, articleService, voteService, accountSession);
     });
     parent.querySelectorAll('[debate-list]').forEach((el) {
-      new DebateList(el, articleService, voteService, accountSession);
+      new DebateList(el, articleService, voteService, accountSession, serverPartLoader);
     });
     parent.querySelectorAll('[article-list]').forEach((el) {
       new ArticleList(el, articleService, voteService, accountSession);

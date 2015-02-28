@@ -18,7 +18,7 @@ class DebateComp {
   String articleId;
   String debateId;
   String debaterName;
-
+  bool reloadWhenReply = false;
   DebateVoteBox voteBox;
 
   DebateComp(this.elem, this.articleService, this.voteService, this.accountSession) {
@@ -102,6 +102,7 @@ class DebateReplier {
       elem.parent.insertAdjacentElement('afterEnd', placeHolderElem);
       form = new DebateForm.placeHolder(
           placeHolderElem, articleService, debateComp.zone, debateComp.articleId)
+        ..reloadWhenSubmit = debateComp.reloadWhenReply
         ..parentDebateId = debateComp.debateId;
     }
     form.show();

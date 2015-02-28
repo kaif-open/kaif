@@ -27,6 +27,7 @@ class DebateForm {
   TextInputElement _contentInput;
   Alert _alert;
   String parentDebateId;
+  bool reloadWhenSubmit = true;
   bool _previewVisible = false;
 
   canCloseDebate(bool value) {
@@ -123,7 +124,9 @@ class DebateForm {
       _contentInput.value = '';
       _elem.remove();
       new Toast.success(i18n('debate.create-success'), seconds:2).render().then((_) {
-        route.reload();
+        if (reloadWhenSubmit) {
+          route.reload();
+        }
       });
     }).catchError((e) {
       _alert.renderError('${e}');

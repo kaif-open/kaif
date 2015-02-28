@@ -44,3 +44,12 @@ Element _unSafeHtml(String rawHtml) {
 void unSafeInnerHtml(Element parent, String rawInnerHtml) {
   parent.setInnerHtml(rawInnerHtml, validator:_SCRIPT_LESS_VALIDATOR);
 }
+
+void elementInsertAfter(Element sibling, Element elem) {
+  var childNodes = sibling.parent.nodes;
+  if (childNodes.isEmpty || childNodes.last == sibling) {
+    childNodes.add(elem);
+    return;
+  }
+  childNodes.insert(childNodes.indexOf(sibling) + 1, elem);
+}

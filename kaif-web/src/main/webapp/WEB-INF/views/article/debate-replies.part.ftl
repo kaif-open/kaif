@@ -25,7 +25,6 @@
                 </a>
             </div>
         </div>
-
     </div>
 
 </#list>
@@ -33,10 +32,12 @@
     <div class="debate-list-pager grid-center-row">
     <#if debates?size == 0>
         <p>沒有回應了</p>
-    </#if>
-    <#if true>
-        <a href="#TODO"
-           class="pure-button"><i class="fa fa-caret-right"></i> 下一頁</a>
+    <#else>
+        <a href="#" debate-list-pager class="pure-button">
+            <i class="fa fa-caret-right"></i> 下一頁
+        </a>
     </#if>
     </div>
+    <div next-debate-list></div>
 </div>
+

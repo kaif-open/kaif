@@ -1,14 +1,5 @@
 part of view;
 
-void _insertAfter(Element sibling, Element elem) {
-  var childNodes = sibling.parent.nodes;
-  if (childNodes.isEmpty || childNodes.last == sibling) {
-    childNodes.add(elem);
-    return;
-  }
-  childNodes.insert(childNodes.indexOf(sibling) + 1, elem);
-}
-
 class Loading {
 
   Element _el;
@@ -32,7 +23,7 @@ class Loading {
   }
 
   void renderAfter(Element sibling) {
-    _insertAfter(sibling, _el);
+    elementInsertAfter(sibling, _el);
   }
 
   void renderAppend(Element parent) {
@@ -186,7 +177,7 @@ class Alert {
   factory Alert.after(Element sibling) {
     var alert = new Alert._();
 
-    _insertAfter(sibling, alert._safeHtmlElem);
+    elementInsertAfter(sibling, alert._safeHtmlElem);
 
     return alert;
   }
