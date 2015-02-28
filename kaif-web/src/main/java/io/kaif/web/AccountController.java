@@ -65,8 +65,8 @@ public class AccountController {
   }
 
   @RequestMapping("/debate-replies")
-  public ModelAndView debateReplies() {
-    return PartTemplate.fullLayout();
+  public String debateReplies() {
+    return "article/debate-replies";
   }
 
   @RequestMapping("/debate-replies.part")

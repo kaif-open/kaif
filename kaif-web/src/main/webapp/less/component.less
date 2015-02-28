@@ -21,7 +21,6 @@
 //
 
 .article-list {
-  margin-bottom: @padding-lg-vertical;
 }
 
 .article-list-pager {
@@ -138,7 +137,7 @@
     }
   }
   time {
-    display:block;
+    display: block;
     color: @gray-light;
     float: right;
     padding-top: 1em;
@@ -173,7 +172,6 @@
 //
 
 .debate-tree {
-  margin-bottom: @padding-lg-vertical;
 }
 
 .debate-form-container {
@@ -282,8 +280,50 @@
     .grid-convex, .debate-child .grid-convex {
       width: 26px;
     }
+
     .debate-child {
       margin-left: -20px;
+    }
+  }
+}
+
+//
+// debate-list
+//
+.debate-list {
+
+  .debate-list-pager {
+    margin-top: @padding-lg-vertical;
+  }
+}
+
+//
+// debate-standalone
+//
+.debate-standalone {
+
+  .debate {
+    .debate-action {
+
+    }
+  }
+
+  .debate-navigation {
+    color: @gray-light;
+    padding-top: @padding-lg-vertical;
+    padding-bottom: @padding-lg-vertical;
+    border-bottom: 1px solid @gray-lighter;
+    & > * {
+      padding-right: @padding-horizontal;
+    }
+
+    a {
+      color: @gray-light;
+      text-decoration: none;
+      white-space: nowrap;
+      &:hover {
+        color: @link-hover-color;
+      }
     }
   }
 }

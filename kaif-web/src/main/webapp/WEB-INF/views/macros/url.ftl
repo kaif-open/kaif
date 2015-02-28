@@ -52,7 +52,7 @@
   -->
 <#function isCurrentPath targetPath includePart=false>
     <#local currentPath = springMacroRequestContext.getRequestUri() />
-    <#return currentPath == targetPath || (includePart && currentPath + '.part' == targetPath) />
+    <#return currentPath == targetPath || (includePart && currentPath == targetPath + '.part') />
 </#function>
 
 <#-- zone url,
@@ -65,7 +65,14 @@
 
 <#-- debate's permanent url,
      data is Debate -->
-<#macro debate data>/z/${data.zone}/debates/${data.articleId}/${data.debateId}</#macro>
+<#macro debate data parent=false><#compress>
+    <#if parent>
+    /z/${data.zone}/debates/${data.articleId}/${data.parentDebateId}
+    <#else>
+    /z/${data.zone}/debates/${data.articleId}/${data.debateId}
+    </#if>
+</#compress>
+</#macro>
 
 <#-- account's public url, data can be
      Account, Debate (debaterName), Article (article author name) -->

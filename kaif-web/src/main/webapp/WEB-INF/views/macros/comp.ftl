@@ -105,6 +105,8 @@
 
 <div id="debate-${debate.debateId}" class="debate grid-row"
      debate
+     data-article-id="${debate.articleId}"
+     data-zone="${debate.zone}"
      data-debate-id="${debate.debateId}"
      data-debater-name="${debate.debaterName}">
     <div class="debate-vote-box votable grid-convex" debate-vote-box
@@ -140,9 +142,6 @@
                     <a href="#" debate-replier
                        data-debate-id="${debate.debateId}">回應</a>
                 </#if>
-                <#if debate.hasParent() && !parentMode >
-                    <a href="#debate-${debate.parentDebateId}">上層</a>
-                </#if>
             <#--
               permenant link is sub debate tree only, we don't want google index it.
               so rel="nofollow"
@@ -172,4 +171,20 @@
         </div>
     </div>
     </#if>
+</#macro>
+
+<#macro debateForm>
+<form class="pure-form hidden debate-form" comp-template="debate-form">
+    <div>
+        <div kmark-previewer class="hidden kmark kmark-preview"></div>
+        <textarea name="contentInput" class="pure-input-1-2 kmark-input" maxlength="4096"
+                  rows="3"></textarea>
+    </div>
+    <div class="form-action-bar">
+        <button type="submit" class="pure-button pure-button-primary">留言</button>
+        <button class="pure-button" kmark-debate-cancel>取消</button>
+        <button class="pure-button"
+                kmark-preview><@spring.messageText "kmark.preview" "Preview" /></button>
+    </div>
+</form>
 </#macro>

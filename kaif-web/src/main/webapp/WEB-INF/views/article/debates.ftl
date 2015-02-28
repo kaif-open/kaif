@@ -69,22 +69,7 @@ applyZoneTheme=true
     </@template.zone>
 
 <#-- component templates -->
-<form class="pure-form hidden debate-form" comp-template="debate-form">
-    <input type="hidden" name="zoneInput" value="${article.zone}">
-    <input type="hidden" name="articleInput" value="${article.articleId}">
-
-    <div>
-        <div kmark-previewer class="hidden kmark kmark-preview"></div>
-        <textarea name="contentInput" class="pure-input-1-2 kmark-input" maxlength="4096"
-                  rows="3"></textarea>
-    </div>
-    <div class="form-action-bar">
-        <button type="submit" class="pure-button pure-button-primary">留言</button>
-        <button class="pure-button" kmark-debate-cancel>取消</button>
-        <button class="pure-button"
-                kmark-preview><@spring.messageText "kmark.preview" "Preview" /></button>
-    </div>
-</form>
+    <@comp.debateForm />
 
 <form class="pure-form hidden debate-form" comp-template="edit-kmark-form">
     <div>
@@ -99,4 +84,6 @@ applyZoneTheme=true
                 kmark-preview><@spring.messageText "kmark.preview" "Preview" /></button>
     </div>
 </form>
+
+
 </@template.page>

@@ -9,6 +9,7 @@ import 'package:kaif_web/comp/account/account_settings.dart';
 import 'package:kaif_web/comp/article/article_form.dart';
 import 'package:kaif_web/comp/article/article-list.dart';
 import 'package:kaif_web/comp/debate/debate_tree.dart';
+import 'package:kaif_web/comp/debate/debate_list.dart';
 import 'package:kaif_web/comp/server_part_loader.dart';
 import 'dart:html';
 import 'dart:async';
@@ -71,6 +72,9 @@ class AppModule {
     });
     parent.querySelectorAll('[debate-tree]').forEach((el) {
       new DebateTree(el, articleService, voteService, accountSession);
+    });
+    parent.querySelectorAll('[debate-list]').forEach((el) {
+      new DebateList(el, articleService, voteService, accountSession);
     });
     parent.querySelectorAll('[article-list]').forEach((el) {
       new ArticleList(el, articleService, voteService, accountSession);

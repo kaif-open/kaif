@@ -15,6 +15,8 @@ class DebateForm {
 
 
   final ArticleService _articleService;
+  final String zone;
+  final String articleId;
 
   bool _opened = false;
   Element _elem;
@@ -32,10 +34,10 @@ class DebateForm {
   }
 
   DebateForm.placeHolder(Element placeHolder,
-                         ArticleService _articleService) :
-  this._(placeHolder, _articleService);
+                         ArticleService _articleService, String zone, String articleId) :
+  this._(placeHolder, _articleService, zone, articleId);
 
-  DebateForm._(this._placeHolderElem, this._articleService) {
+  DebateForm._(this._placeHolderElem, this._articleService, this.zone, this.articleId) {
     _elem = _debateFormTemplate.createElement();
     _elem.querySelector('[kmark-preview]').onClick.listen(_onPreview);
 
@@ -100,8 +102,6 @@ class DebateForm {
     //TODO prompt login/registration if not login
 
     _alert.hide();
-    HiddenInputElement articleInput = _elem.querySelector('input[name=articleInput]');
-    HiddenInputElement zoneInput = _elem.querySelector('input[name=zoneInput]');
     _contentInput.value = _contentInput.value.trim();
 
     //check Debate.CONTENT_MIN in java
@@ -115,8 +115,8 @@ class DebateForm {
 
     var loading = new Loading.small()
       ..renderAfter(submit);
-    _articleService.debate(zoneInput.value,
-    articleInput.value,
+    _articleService.debate(zone,
+    articleId,
     parentDebateId,
     _contentInput.value)
     .then((_) {
