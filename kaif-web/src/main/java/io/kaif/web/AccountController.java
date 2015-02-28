@@ -1,5 +1,6 @@
 package io.kaif.web;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.Cookie;
@@ -11,10 +12,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountOnceToken;
+import io.kaif.model.debate.Debate;
 import io.kaif.service.AccountService;
+import io.kaif.service.ArticleService;
 import io.kaif.web.support.PartTemplate;
 
 @Controller
@@ -23,6 +27,9 @@ public class AccountController {
 
   @Autowired
   private AccountService accountService;
+
+  @Autowired
+  private ArticleService articleService;
 
   @RequestMapping("/sign-up")
   public ModelAndView signUp() {
@@ -55,6 +62,19 @@ public class AccountController {
   public ModelAndView settingsPart(AccountAccessToken accountAccessToken) {
     Account account = accountService.findMe(accountAccessToken).orElse(null);
     return new ModelAndView("account/settings.part").addObject("account", account);
+  }
+
+  @RequestMapping("/debate-replies")
+  public ModelAndView debateReplies() {
+    return PartTemplate.fullLayout();
+  }
+
+  @RequestMapping("/debate-replies.part")
+  public ModelAndView debateRepliesPart(AccountAccessToken accountAccessToken,
+      @RequestParam(value = "startDebateId", required = false) String startDebateId) {
+    List<Debate> debates = articleService.listReplyToDebates(accountAccessToken,
+        Optional.ofNullable(startDebateId).map(FlakeId::fromString).orElse(null));
+    return new ModelAndView("article/debate-replies.part").addObject("debates", debates);
   }
 
   @RequestMapping("/activation")

@@ -1,5 +1,6 @@
 package io.kaif.web;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -13,9 +14,13 @@ import java.util.Optional;
 import org.junit.Test;
 import org.mockito.Matchers;
 
+import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.Authorization;
+import io.kaif.model.article.Article;
+import io.kaif.model.debate.Debate;
+import io.kaif.model.zone.Zone;
 import io.kaif.test.MvcIntegrationTests;
 
 public class AccountControllerTest extends MvcIntegrationTests {
@@ -31,6 +36,24 @@ public class AccountControllerTest extends MvcIntegrationTests {
         .andExpect(view().name("account/settings.part"))
         .andExpect(content().string(containsString("foo@example.com")))
         .andExpect(content().string(containsString("foo")));
+  }
+
+  @Test
+  public void debateRepliesPart() throws Exception {
+    Account account = accountCitizen("bar111");
+    String token = prepareAccessToken(account);
+
+    Article article = article(Zone.valueOf("xyz123"), "title1");
+    Debate d1 = debate(article, "reply 00001", null);
+    Debate d2 = debate(article, "reply 00002", null);
+    when(articleService.listReplyToDebates(Matchers.isA(Authorization.class),
+        isNull(FlakeId.class))).thenReturn(asList(d1, d2));
+
+    mockMvc.perform(get("/account/debate-replies.part").header(AccountAccessToken.HEADER_KEY,
+        token))
+        .andExpect(view().name("article/debate-replies.part"))
+        .andExpect(content().string(containsString("reply 00001")))
+        .andExpect(content().string(containsString("reply 00002")));
   }
 
   @Test
