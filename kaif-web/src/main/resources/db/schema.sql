@@ -95,6 +95,8 @@ CREATE TABLE DebateVoter (
   PRIMARY KEY (voterId, articleId, debateId)
 );
 
+CREATE INDEX DebateVoterDebateIdIndex ON DebateVoter (voterId, debateId);
+
 CREATE TABLE AccountStats (
   accountId       UUID   NOT NULL REFERENCES Account (accountId),
   debateCount     BIGINT NOT NULL DEFAULT 0,

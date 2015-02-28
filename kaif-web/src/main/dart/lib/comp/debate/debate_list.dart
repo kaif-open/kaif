@@ -23,12 +23,10 @@ class DebateList {
 
   void _initDebateVoters(List<DebateComp> debateComps) {
     List<DebateVoteBox> voteBoxes = debateComps.map((comp) => comp.voteBox).toList();
-
+    List<String> debateIds = debateComps.map((comp) => comp.debateId).toList();
     Future<List<DebateVoter>> future;
     if (accountSession.isSignIn) {
-      //TODO, change to debateIds
-      future = new Future.value([]);
-      // voteService.listDebateVoters(articleId);
+      future = voteService.listDebateVotersByIds(debateIds);
     } else {
       future = new Future.value([]);
     }

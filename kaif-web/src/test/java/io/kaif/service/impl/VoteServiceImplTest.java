@@ -54,11 +54,12 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   private Account debater;
   private Article article;
   private ZoneInfo zoneInfo;
+  private Account author;
 
   @Before
   public void setUp() throws Exception {
     zoneInfo = savedZoneDefault("hacker");
-    Account author = savedAccountCitizen("hc1");
+    author = savedAccountCitizen("hc1");
     article = savedArticle(zoneInfo, author, "new cython 3");
     Debate debate = savedDebate(article, "it is slow", null);
 
@@ -208,6 +209,21 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     service.voteDebate(UP, zone, articleId, debateId, voter, UP, 20);
     assertDebateTotalVote(1, 0);
     assertEquals(UP, service.listDebateVoters(voter, articleId).get(0).getVoteState());
+  }
+
+  @Test
+  public void listDebateVotersByIds() throws Exception {
+    assertEquals(0, service.listDebateVotersByIds(voter, Collections.emptyList()).size());
+
+    service.voteDebate(UP, zone, articleId, debateId, voter, EMPTY, 20);
+    Article a2 = savedArticle(zoneInfo, author, "another article");
+    Debate d2 = savedDebate(a2, "foo", null);
+    service.voteDebate(UP, zone, a2.getArticleId(), d2.getDebateId(), voter, EMPTY, 20);
+    List<DebateVoter> debateVoters = service.listDebateVotersByIds(voter,
+        asList(debateId, d2.getDebateId()));
+    assertEquals(2, debateVoters.size());
+    assertEquals(debateId, debateVoters.get(0).getDebateId());
+    assertEquals(d2.getDebateId(), debateVoters.get(1).getDebateId());
   }
 
   @Test

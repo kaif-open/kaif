@@ -28,3 +28,5 @@ COMMIT;
 
 
 CREATE INDEX DebateReplyToAccountId ON Debate (replyToAccountId);
+
+CREATE INDEX DebateVoterDebateIdIndex ON DebateVoter (voterId, debateId);

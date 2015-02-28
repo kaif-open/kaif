@@ -121,4 +121,9 @@ public class VoteServiceImpl implements VoteService {
   public List<ArticleVoter> listArticleVoters(Authorization voter, List<FlakeId> articleIds) {
     return voteDao.listArticleVoters(voter.authenticatedId(), articleIds);
   }
+
+  @Override
+  public List<DebateVoter> listDebateVotersByIds(Authorization voter, List<FlakeId> debateIds) {
+    return voteDao.listDebateVotersByIds(voter.authenticatedId(), debateIds);
+  }
 }

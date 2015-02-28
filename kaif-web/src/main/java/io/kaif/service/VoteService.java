@@ -29,4 +29,6 @@ public interface VoteService {
       long previousCount);
 
   List<ArticleVoter> listArticleVoters(Authorization voter, List<FlakeId> articleIds);
+
+  List<DebateVoter> listDebateVotersByIds(Authorization voter, List<FlakeId> debateIds);
 }

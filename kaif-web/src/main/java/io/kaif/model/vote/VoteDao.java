@@ -180,4 +180,20 @@ public class VoteDao implements DaoOperations {
         + "  WHERE voterId = :voterId "
         + "    AND articleId IN (:articleIds) ", params, articleVoterMapper);
   }
+
+  public List<DebateVoter> listDebateVotersByIds(UUID voterId, List<FlakeId> debateIds) {
+    if (debateIds.isEmpty()) {
+      return Collections.emptyList();
+    }
+    Map<String, Object> params = ImmutableMap.of("voterId",
+        voterId,
+        "debateIds",
+        debateIds.stream().map(FlakeId::value).collect(toList()));
+    return namedJdbc().query(""
+        + " SELECT * "
+        + "   FROM DebateVoter"
+        + "  WHERE voterId = :voterId "
+        + "    AND debateId IN (:debateIds) ", params, debateVoterMapper);
+
+  }
 }

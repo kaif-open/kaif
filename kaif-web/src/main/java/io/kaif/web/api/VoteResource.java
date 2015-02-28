@@ -124,4 +124,14 @@ public class VoteResource {
         .map(DebateVoter::toDto)
         .collect(toList());
   }
+
+  @RequestMapping(value = "/debate-voters-by-ids", method = RequestMethod.GET)
+  public List<DebateVoterDto> lisDebateVoters(AccountAccessToken token,
+      @RequestParam("debateIds") List<String> debateIds) {
+    List<FlakeId> flakeIds = debateIds.stream().map(FlakeId::fromString).collect(toList());
+    return voteService.listDebateVotersByIds(token, flakeIds)
+        .stream()
+        .map(DebateVoter::toDto)
+        .collect(toList());
+  }
 }
