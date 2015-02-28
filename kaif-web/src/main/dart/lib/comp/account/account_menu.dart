@@ -12,6 +12,7 @@ class AccountMenu {
       elem.append(_menuLink(route.signIn, i18n('account-menu.sign-in')));
       elem.append(_menuLink(route.signUp, i18n('account-menu.sign-up')));
     } else {
+      elem.append(_menuLink(route.debateReplies, i18n('account-menu.debate-replies')));
       elem.append(_menuLink(route.settings, auth.username));
       elem.nodes.add(_createSignOut());
     }

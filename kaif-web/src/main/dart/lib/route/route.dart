@@ -15,6 +15,8 @@ class Router {
 
   String get signIn => '/account/sign-in';
 
+  String get debateReplies => '/account/debate-replies';
+
   String get home => '/' ;
 
   void reload() {
