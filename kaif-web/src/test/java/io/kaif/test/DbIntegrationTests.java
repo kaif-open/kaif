@@ -2,6 +2,7 @@ package io.kaif.test;
 
 import java.time.Instant;
 import java.util.EnumSet;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.mockito.Mockito;
@@ -106,7 +107,7 @@ public abstract class DbIntegrationTests extends AbstractTransactionalJUnit4Spri
   }
 
   protected final Debate savedDebate(Article article, String content, Debate parent) {
-    final Account debater = savedAccountCitizen(article.getAuthorName() + "-debate");
+    final Account debater = savedAccountCitizen(article.getAuthorName() + UUID.randomUUID());
     return debateDao.create(article, parent, content, debater, Instant.now());
   }
 

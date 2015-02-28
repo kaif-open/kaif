@@ -65,6 +65,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
     Debate debate = service.loadDebate(created.getDebateId());
     assertEquals(DebateContentType.MARK_DOWN, debate.getContentType());
+    assertEquals(citizen.getAccountId(), debate.getReplyToAccountId());
     assertEquals("debater1", debate.getDebaterName());
     assertEquals(debater.getAccountId(), debate.getDebaterId());
     assertFalse(debate.hasParent());
@@ -204,6 +205,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertTrue(l2.hasParent());
     assertTrue(l2.isParent(l1));
     assertFalse(l1.isParent(l2));
+    assertEquals(l1.getDebaterId(), l2.getReplyToAccountId());
 
     assertEquals(2, service.findArticle(article.getArticleId()).get().getDebateCount());
     Debate l3 = service.debate(zoneInfo.getZone(),
@@ -218,6 +220,26 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertFalse(l2.isParent(l3));
 
     assertEquals(3, service.findArticle(article.getArticleId()).get().getDebateCount());
+  }
+
+  @Test
+  public void listReplyToDebates() throws Exception {
+    assertEquals(0, service.listReplyToDebates(citizen, null).size());
+    //    Account debater = savedAccountCitizen("debater1");
+    Debate l1 = savedDebate(article, "reply to my article", null);
+    assertEquals(asList(l1), service.listReplyToDebates(citizen, null));
+
+    Debate authorReply = service.debate(zoneInfo.getZone(),
+        article.getArticleId(),
+        Debate.NO_PARENT,
+        citizen,
+        "article author reply self is ignored");
+
+    savedDebate(article, "not reply to me is ignored", l1);
+
+    Debate l2 = savedDebate(article, "a debate reply to me", authorReply);
+    assertEquals(asList(l2, l1), service.listReplyToDebates(citizen, null));
+    assertEquals(asList(l1), service.listReplyToDebates(citizen, l2.getDebateId()));
   }
 
   @Test

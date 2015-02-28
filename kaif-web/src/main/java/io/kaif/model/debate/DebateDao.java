@@ -39,6 +39,7 @@ public class DebateDao implements DaoOperations {
         FlakeId.valueOf(rs.getLong("debateId")),
         Zone.valueOf(rs.getString("zone")),
         FlakeId.valueOf(rs.getLong("parentDebateId")),
+        UUID.fromString(rs.getString("replyToAccountId")),
         rs.getInt("level"),
         rs.getString("content"),
         DebateContentType.valueOf(rs.getString("contentType")),
@@ -59,14 +60,16 @@ public class DebateDao implements DaoOperations {
     jdbc().update(""
             + " INSERT "
             + "   INTO Debate "
-            + "        (articleid, debateid, zone, parentdebateid, level, content, contenttype, "
+            + "        (articleid, debateid, zone, parentdebateid,replyToAccountId, level, "
+            + "         content, contenttype, "
             + "         debaterid, debatername, upvote, downvote, createtime, lastupdatetime)"
             + " VALUES "
-            + questions(13),
+            + questions(14),
         debate.getArticleId().value(),
         debate.getDebateId().value(),
         debate.getZone().value(),
         debate.getParentDebateId().value(),
+        debate.getReplyToAccountId(),
         debate.getLevel(),
         debate.getContent(),
         debate.getContentType().name(),
@@ -167,4 +170,23 @@ public class DebateDao implements DaoOperations {
         + "  WHERE debateId = ? ", content, Timestamp.from(now), debateId.value());
   }
 
+  public List<Debate> listLatestDebateByReplyTo(UUID replyToAccountId,
+      @Nullable FlakeId startDebateId,
+      int size) {
+    FlakeId start = Optional.ofNullable(startDebateId).orElse(FlakeId.MAX);
+    ImmutableMap<String, Object> params = ImmutableMap.of("accountId",
+        replyToAccountId,
+        "start",
+        start.value(),
+        "size",
+        size);
+    return namedJdbc().query(""
+        + " SELECT * "
+        + "   FROM Debate "
+        + "  WHERE replyToAccountId = :accountId "
+        + "    AND debaterid <> :accountId "
+        + "    AND debateId < :start "
+        + "  ORDER BY debateid DESC "
+        + "  LIMIT :size ", params, debateMapper);
+  }
 }

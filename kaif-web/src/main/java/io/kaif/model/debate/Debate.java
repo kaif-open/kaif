@@ -31,10 +31,12 @@ public class Debate {
     Optional<Debate> optParent = Optional.ofNullable(parent);
     FlakeId parentId = optParent.map(Debate::getDebateId).orElse(NO_PARENT);
     int parentLevel = optParent.map(Debate::getLevel).orElse(0);
+    UUID replyToAccountId = optParent.map(Debate::getDebaterId).orElseGet(article::getAuthorId);
     return new Debate(article.getArticleId(),
         debateId,
         article.getZone(),
         parentId,
+        replyToAccountId,
         parentLevel + 1,
         content,
         DebateContentType.MARK_DOWN,
@@ -63,11 +65,13 @@ public class Debate {
   private final long downVote;
   private final Instant createTime;
   private final Instant lastUpdateTime;
+  private final UUID replyToAccountId;
 
   Debate(FlakeId articleId,
       FlakeId debateId,
       Zone zone,
       FlakeId parentDebateId,
+      UUID replyToAccountId,
       int level,
       String content,
       DebateContentType contentType,
@@ -83,6 +87,7 @@ public class Debate {
     this.articleId = articleId;
     this.debateId = debateId;
     this.parentDebateId = parentDebateId;
+    this.replyToAccountId = replyToAccountId;
     this.level = level;
     this.content = content;
     this.contentType = contentType;
@@ -154,6 +159,10 @@ public class Debate {
     return KmarkProcessor.escapeHtml(content);
   }
 
+  public UUID getReplyToAccountId() {
+    return replyToAccountId;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -193,6 +202,7 @@ public class Debate {
         ", downVote=" + downVote +
         ", createTime=" + createTime +
         ", lastUpdateTime=" + lastUpdateTime +
+        ", replyToAccountId=" + replyToAccountId +
         '}';
   }
 
@@ -217,6 +227,7 @@ public class Debate {
         debateId,
         zone,
         parentDebateId,
+        replyToAccountId,
         level,
         content,
         contentType,

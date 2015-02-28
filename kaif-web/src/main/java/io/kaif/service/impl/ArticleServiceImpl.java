@@ -197,4 +197,12 @@ public class ArticleServiceImpl implements ArticleService {
     return debateDao.loadDebate(debateId);
   }
 
+  @Override
+  public List<Debate> listReplyToDebates(Authorization authorization,
+      @Nullable FlakeId startDebateId) {
+    return debateDao.listLatestDebateByReplyTo(authorization.authenticatedId(),
+        startDebateId,
+        PAGE_SIZE);
+  }
+
 }
