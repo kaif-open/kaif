@@ -182,6 +182,15 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
+  public void debateSelfVoteDoNotCountInTotalVote() throws Exception {
+    service.voteDebate(UP, zone, articleId, debateId, debater, EMPTY, 20);
+
+    AccountStats stats = accountDao.loadStats(debater.getUsername());
+    assertEquals(0, stats.getDebateDownVoted());
+    assertEquals(0, stats.getDebateUpVoted());
+  }
+
+  @Test
   public void cancelVoteArticle() throws Exception {
     service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
     service.voteArticle(EMPTY, zone, articleId, voter, UP, 0);

@@ -112,7 +112,8 @@ public class VoteServiceImpl implements VoteService {
     UUID debaterId = debateDao.loadDebaterId(debateId);
     // total debate vote score only count citizen zone. (tourist zone like /z/test
     // or kVoting will not count)
-    if (zoneInfo.getVoteAuthority() == Authority.CITIZEN) {
+    if (zoneInfo.getVoteAuthority() == Authority.CITIZEN && !voter.authenticatedId()
+        .equals(debaterId)) {
       accountDao.changeTotalVotedDebate(debaterId, upVoteDelta, downVoteDelta);
     }
   }
