@@ -3,6 +3,7 @@ part of view;
 class Loading {
 
   Element _el;
+  Timer _timer;
 
   factory Loading.none() {
     return const _NoneLoading();
@@ -22,16 +23,32 @@ class Loading {
     """);
   }
 
-  void renderAfter(Element sibling) {
-    elementInsertAfter(sibling, _el);
+  void renderAfter(Element sibling, {Duration delay}) {
+    if (delay != null) {
+      _timer = new Timer(delay, () {
+        elementInsertAfter(sibling, _el);
+      });
+    } else {
+      elementInsertAfter(sibling, _el);
+    }
   }
 
-  void renderAppend(Element parent) {
-    parent.append(_el);
+  void renderAppend(Element parent, {Duration delay}) {
+    if (delay != null) {
+      _timer = new Timer(delay, () {
+        parent.append(_el);
+      });
+    } else {
+      parent.append(_el);
+    }
   }
 
   void remove() {
     _el.remove();
+    if (_timer != null) {
+      _timer.cancel();
+      _timer = null;
+    }
   }
 }
 
@@ -42,12 +59,16 @@ class _NoneLoading implements Loading {
 
   Element get _el => null;
 
+  void set _timer(_) {}
+
+  Timer get _timer => null;
+
   const _NoneLoading();
 
-  void renderAfter(Element parent) {
+  void renderAfter(Element parent, {Duration delay}) {
   }
 
-  void renderAppend(Element sibling) {
+  void renderAppend(Element sibling, {Duration delay}) {
   }
 
   void remove() {

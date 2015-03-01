@@ -15,7 +15,7 @@ class ServerPartLoader {
 
   Future loadInto(Element elem, String partPath, {Loading loading}) {
     Loading progress = loading == null ? new Loading.none() : loading;
-    progress.renderAppend(elem);
+    progress.renderAppend(elem, delay:const Duration(milliseconds:500));
 
     return _partService.loadPart(partPath).then((htmlText) {
       progress.remove();
