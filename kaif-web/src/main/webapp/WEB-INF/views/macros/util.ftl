@@ -30,3 +30,23 @@
 </time>
 </#compress>
 </#macro>
+
+<#macro bookmarklet>
+<div class="bookmarklet">
+    <h3>貼文小幫手: Bookmarklet</h3>
+
+    <p>你可以使用 Bookmarket 一鍵完成分享文章！</p>
+
+    <p>安裝：將下面的連結拖拉瀏覽器的書簽列</p>
+
+    <div class="bookmarklet-container">
+        <i class="fa fa-caret-right"></i>
+        <a class="bookmarklet-link" rel="nofollow"
+           href="javascript:window.location=%22https://kaif.io/article/create-link?c=%22+encodeURIComponent(document.location)+%22&t=%22+encodeURIComponent(document.title)">
+            分享到 Kaif
+        </a>
+        <i class="fa fa-caret-left"></i>
+    </div>
+    <p>以後看到你覺得很棒的網頁，直接點書簽列上的 <strong style="white-space: nowrap">[ 分享到 Kaif ]</strong> 鈕即可。</p>
+</div>
+</#macro>

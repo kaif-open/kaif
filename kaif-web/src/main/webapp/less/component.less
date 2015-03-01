@@ -389,3 +389,30 @@
   .mixin-down-triangle(@color: @down-voted-color; @width: @triangle-width);
   transform: rotate(-360deg);
 }
+
+//
+// bookmarklet
+//
+
+.bookmarklet {
+  h3 {
+    border-bottom: 1px solid @gray-lighter;
+  }
+  max-width: @screen-sm-min;
+  padding: @padding-lg-vertical @padding-lg-horizontal;
+  background-color: @gray-lightest;
+  border-radius: @border-radius;
+  .bookmarklet-container {
+    text-align: center;
+    a.bookmarklet-link {
+      font-weight: bold;
+      font-size: @font-size-lg;
+      padding-left: @padding-xs-horizontal;
+      padding-right: @padding-xs-horizontal;
+    }
+  }
+
+  .article-form & {
+    margin-top: 50px;
+  }
+}

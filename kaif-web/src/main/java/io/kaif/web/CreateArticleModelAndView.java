@@ -18,5 +18,12 @@ public class CreateArticleModelAndView extends ModelAndView {
             .stream()
             .filter(z -> !z.equals(zoneInfo))
             .collect(toList()));
+    preFilled("", "");
+  }
+
+  public CreateArticleModelAndView preFilled(String content, String title) {
+    addObject("preFilledContent", content);
+    addObject("preFilledTitle", title);
+    return this;
   }
 }

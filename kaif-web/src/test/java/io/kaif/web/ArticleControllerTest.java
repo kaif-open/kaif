@@ -32,4 +32,12 @@ public class ArticleControllerTest extends MvcIntegrationTests {
         .andExpect(view().name("article/create"))
         .andExpect(content().string(containsString("id=\"contentInput\"")));
   }
+
+  @Test
+  public void bookmarklet() throws Exception {
+    mockMvc.perform(//
+        get("/article/create-link").param("c", "http://foo.com").param("t", "my_title_abc"))
+        .andExpect(content().string(containsString("value=\"http://foo.com\"")))
+        .andExpect(content().string(containsString("my_title_abc")));
+  }
 }

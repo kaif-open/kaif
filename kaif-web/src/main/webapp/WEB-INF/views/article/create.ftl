@@ -30,7 +30,7 @@ head=headContent
     <div class="grid">
         <div class="grid-body">
             <div class="grid-center-row">
-                <@articleForm />
+                <@articleForm preFilledContent=preFilledContent preFilledTitle=preFilledTitle/>
             </div>
         </div>
         <aside class="grid-aside">
@@ -51,7 +51,7 @@ head=headContent
 </div>
 </@template.page>
 
-<#macro articleForm>
+<#macro articleForm preFilledContent="", preFilledTitle="">
 <form class="pure-form pure-form-stacked article-form" article-form>
 
     <div class="pure-control-group">
@@ -63,7 +63,7 @@ head=headContent
                   maxlength="128"
                   required
                   title="標題必填"
-                ></textarea>
+                >${preFilledTitle}</textarea>
     </div>
 
     <#if url.isCurrentPath(createLinkPath)>
@@ -75,6 +75,7 @@ head=headContent
                    placeholder="http://..."
                    maxlength="512"
                    required
+                   value="${preFilledContent}"
                    title="連結必填, 必須以 http 開頭"
                     >
         </div>
@@ -88,7 +89,7 @@ head=headContent
                       maxlength="4096"
                       required
                       title="內文必填"
-                    ></textarea>
+                    >${preFilledContent}</textarea>
         </div>
     </#if>
 
@@ -143,5 +144,9 @@ head=headContent
             </p>
         </div>
     </div>
+
+    <#if url.isCurrentPath(createLinkPath)>
+        <@util.bookmarklet />
+    </#if>
 </form>
 </#macro>
