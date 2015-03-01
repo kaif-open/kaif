@@ -120,10 +120,10 @@ public class ArticleResource {
     return articleService.updateDebateContent(request.debateId, token, request.content.trim());
   }
 
+  //no need authenticate
   @RequestMapping(value = "/debate/content/preview", method = RequestMethod.PUT, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
-  public String previewDebateContent(AccountAccessToken token,
-      @Valid @RequestBody PreviewDebate request) {
+  public String previewDebateContent(@Valid @RequestBody PreviewDebate request) {
     return Debate.renderContentPreview(request.content);
   }
 

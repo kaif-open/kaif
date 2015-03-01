@@ -167,10 +167,10 @@ public class AccountResource {
     return accountService.updateDescription(accessToken, request.description);
   }
 
+  //this method is public, do not need authenticate
   @RequestMapping(value = "/description/preview", method = RequestMethod.PUT, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
-  public String previewDescriptionContent(AccountAccessToken token,
-      @Valid @RequestBody PreviewDescription request) {
+  public String previewDescriptionContent(@Valid @RequestBody PreviewDescription request) {
     return Account.renderDescriptionPreview(request.description);
   }
 
