@@ -5,7 +5,7 @@ Long user name exceed max <a href="/u/abcdefghijklmno" class="user-link">/u/abcd
 /u/中文不會是
 <a href="/u/abc" class="user-link">/u/abc</a>中文
 <s><a href="/u/abc" class="user-link">/u/abc</a></s>
-no nested link:<a href="http://qoo.com" class="reference-link">qoo/u/abc</a><span class="reference-link-index">1</span>
+no nested link:<a href="http://qoo.com" class="reference-link" rel="nofollow" target="_blank">qoo/u/abc</a><span class="reference-link-index">1</span>
 not work in code block <code>/u/koji</code></p>
 <pre><code>not work in code block /u/koji
 </code></pre>

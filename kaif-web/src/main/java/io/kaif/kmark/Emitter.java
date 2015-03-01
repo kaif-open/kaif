@@ -246,7 +246,11 @@ class Emitter {
     }
     if (lr.hasHttpScheme()) {
       this.config.decorator.openLink(out);
-      out.appendHtml(" href=\"").append(lr.link).appendHtml("\" class=\"reference-link\">");
+      out.appendHtml(" href=\"").append(lr.link).appendHtml("\"");
+      if (!Strings.isNullOrEmpty(lr.title)) {
+        out.appendHtml(" title=\"").append(lr.title).appendHtml("\"");
+      }
+      out.appendHtml(" class=\"reference-link\" rel=\"nofollow\" target=\"_blank\">");
       this.recursiveEmitLine(out, name, 0, MarkToken.LINK);
       out.appendHtml("</a>");
     } else {
