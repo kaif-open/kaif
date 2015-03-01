@@ -34,7 +34,7 @@ class DebateComp {
     var replierElem = elem.querySelector('[debate-replier]');
     if (replierElem != null) {
       // null means could not reply (exceed reply limit)
-      new DebateReplier(replierElem, articleService, this);
+      new DebateReplier(replierElem, this);
     }
 
     if (accountSession.isSelf(debaterName)) {
@@ -82,12 +82,11 @@ class DebateEditor {
 
 class DebateReplier {
   final Element elem;
-  final ArticleService articleService;
   final DebateComp debateComp;
 
   DebateForm form;
 
-  DebateReplier(this.elem, this.articleService, this.debateComp) {
+  DebateReplier(this.elem, this.debateComp) {
     elem.onClick.listen(_onClick);
   }
 
@@ -101,7 +100,8 @@ class DebateReplier {
       Element placeHolderElem = new DivElement();
       elem.parent.insertAdjacentElement('afterEnd', placeHolderElem);
       form = new DebateForm.placeHolder(
-          placeHolderElem, articleService, debateComp.zone, debateComp.articleId)
+          placeHolderElem, debateComp.articleService, debateComp.accountSession, debateComp.zone,
+          debateComp.articleId)
         ..reloadWhenSubmit = debateComp.reloadWhenReply
         ..parentDebateId = debateComp.debateId;
     }

@@ -15,6 +15,7 @@ class DebateForm {
 
 
   final ArticleService _articleService;
+  final AccountSession _accountSession;
   final String zone;
   final String articleId;
 
@@ -35,10 +36,14 @@ class DebateForm {
   }
 
   DebateForm.placeHolder(Element placeHolder,
-                         ArticleService _articleService, String zone, String articleId) :
-  this._(placeHolder, _articleService, zone, articleId);
+                         ArticleService _articleService,
+                         AccountSession _accountSession,
+                         String zone,
+                         String articleId) :
+  this._(placeHolder, _articleService, _accountSession, zone, articleId);
 
-  DebateForm._(this._placeHolderElem, this._articleService, this.zone, this.articleId) {
+  DebateForm._(this._placeHolderElem, this._articleService, this._accountSession, this.zone,
+               this.articleId) {
     _elem = _debateFormTemplate.createElement();
     _elem.querySelector('[kmark-preview]').onClick.listen(_onPreview);
 
@@ -100,7 +105,13 @@ class DebateForm {
       ..preventDefault()
       ..stopPropagation();
 
-    //TODO prompt login/registration if not login
+    if (!_accountSession.isSignIn) {
+      var actionElem = new AnchorElement()
+        ..href = route.signIn
+        ..text = i18n('account-menu.sign-in');
+      new SnackBar(i18n('debate.sign-in-to-debate'), action:actionElem).render();
+      return;
+    }
 
     _alert.hide();
     _contentInput.value = _contentInput.value.trim();

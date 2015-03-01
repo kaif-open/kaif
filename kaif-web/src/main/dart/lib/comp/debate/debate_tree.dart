@@ -24,7 +24,7 @@ class DebateTree {
 
     var articleId = articleComp.articleId;
     elem.querySelectorAll('[debate-form]').forEach((el) {
-      new DebateForm.placeHolder(el, articleService, zone, articleId)
+      new DebateForm.placeHolder(el, articleService, accountSession, zone, articleId)
         ..canCloseDebate(false)
         ..show();
     });

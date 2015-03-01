@@ -50,7 +50,7 @@ applyZoneTheme=true
                                 <textarea rows="3" class="pure-input-1-2 kmark-input"></textarea>
                             </div>
                             <div class="pure-u-1">
-                                <button type="submit" class="pure-button pure-button-primary">留言
+                                <button type="submit" class="pure-button pure-button-primary">討論
                                 </button>
                             </div>
                         </div>
