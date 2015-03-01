@@ -137,21 +137,18 @@
             <div debate-content-edit class="hidden"></div>
         </div>
         <div class="debate-action">
-            <#compress>
-                <#if !debate.maxLevel>
-                    <a href="#" debate-replier
-                       data-debate-id="${debate.debateId}">回應</a>
-                </#if>
-            <#--
-              permenant link is sub debate tree only, we don't want google index it.
-              so rel="nofollow"
-              -->
-                <a href="<@url.debate data=debate/>" title="永久連結"
-                   rel="nofollow"><@util.time instant=debate.createTime /></a>
-
-                <a href="#" debate-content-editor data-debate-id="${debate.debateId}"
-                   class="hidden">編輯</a>
-            </#compress>
+            <#if !debate.maxLevel>
+                <a href="#" debate-replier
+                   data-debate-id="${debate.debateId}">回應</a>
+            </#if>
+        <#--
+          permenant link is sub debate tree only, we don't want google index it.
+          so rel="nofollow"
+          -->
+            <a href="<@url.debate data=debate/>" title="永久連結"
+               rel="nofollow"><@util.time instant=debate.createTime /></a>
+            <a href="#" debate-content-editor data-debate-id="${debate.debateId}"
+               class="hidden">編輯</a>
         </div>
         <div class="debate-child">
         <#-- child debate here -->
