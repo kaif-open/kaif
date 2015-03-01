@@ -174,7 +174,9 @@
 <form class="pure-form hidden debate-form" comp-template="debate-form">
     <div>
         <div kmark-previewer class="hidden kmark kmark-preview"></div>
-        <textarea name="contentInput" class="pure-input-1-2 kmark-input" maxlength="4096"
+        <textarea name="contentInput"
+                  class="pure-input-1 kmark-input"
+                  maxlength="4096"
                   rows="3"></textarea>
     </div>
     <div class="form-action-bar">

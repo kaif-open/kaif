@@ -13,7 +13,7 @@
 // sign-up-form
 //
 .sign-up-form {
-  max-width: @screen-sm-min;
+  max-width: @form-max-width;
 }
 
 //
@@ -113,7 +113,7 @@
 
 .article-form {
   margin-top: @padding-vertical;
-  max-width: @screen-sm-min;
+  max-width: @form-max-width;
 }
 
 //
@@ -179,6 +179,10 @@
   margin-top: @padding-lg-vertical;
   border-top: 1px dashed @gray-lighter;
   max-width: @text-content-max-width;
+}
+
+.debate-form {
+  max-width: @form-max-width;
 }
 
 .child-debate-hint {
@@ -403,7 +407,9 @@
   h3 {
     border-bottom: 1px solid @gray-lighter;
   }
-  max-width: @screen-sm-min;
+  //bookmarklet page currently place within form
+  max-width: @form-max-width;
+
   padding: @padding-lg-vertical @padding-lg-horizontal;
   background-color: @gray-lightest;
   border-radius: @border-radius;

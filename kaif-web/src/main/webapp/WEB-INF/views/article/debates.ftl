@@ -43,15 +43,18 @@ applyZoneTheme=true
                     <@comp.article data=article parentMode=true />
                     <div class="grid-center-row debate-form-container">
                     <#-- place holder debate-form will replace by comp-template
-                         keep place holder looks the same as comp-template
+                         keep place holder looks the same as <@comp.debateForm>
+                         (but without cancel button)
                          -->
-                        <div class="pure-form pure-g" debate-form>
-                            <div class="pure-u-1">
-                                <textarea rows="3" class="pure-input-1-2 kmark-input"></textarea>
+                        <div class="pure-form debate-form">
+                            <div>
+                                <div class="hidden kmark kmark-preview"></div>
+                                <textarea class="pure-input-1 kmark-input" rows="3"></textarea>
                             </div>
-                            <div class="pure-u-1">
-                                <button type="submit" class="pure-button pure-button-primary">討論
+                            <div class="form-action-bar">
+                                <button type="submit" class="pure-button pure-button-primary">留言
                                 </button>
+                                <button class="pure-button"><@spring.messageText "kmark.preview" "Preview" /></button>
                             </div>
                         </div>
                     </div>
