@@ -19,7 +19,7 @@ public class Debate {
 
   public static final FlakeId NO_PARENT = FlakeId.MIN;
   private static final int MAX_LEVEL = 10;
-  public static final int CONTENT_MIN = 10;
+  public static final int CONTENT_MIN = 5;
   public static final int CONTENT_MAX = 4096;
 
   public static Debate create(Article article,

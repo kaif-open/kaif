@@ -117,8 +117,8 @@ class DebateForm {
     _contentInput.value = _contentInput.value.trim();
 
     //check Debate.CONTENT_MIN in java
-    if (_contentInput.value.length < 10) {
-      _alert.renderError(i18n('debate.min-content', [10]));
+    if (_contentInput.value.length < 5) {
+      _alert.renderError(i18n('debate.min-content', [5]));
       return;
     }
 
