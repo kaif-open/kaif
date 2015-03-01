@@ -51,6 +51,11 @@ class AppModule {
   }
 
   void _initializeComponents(dynamic parent) {
+    // flash scope message if any, note that we show flash when:
+    // 1. page loaded or
+    // 2. part-template loaded
+    FlashToast.flashIfAny();
+
     //TODO group in url module
     parent.querySelectorAll('[sign-up-form]').forEach((el) {
       new SignUpForm(el, accountService);

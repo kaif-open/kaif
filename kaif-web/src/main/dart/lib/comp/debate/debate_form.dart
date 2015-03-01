@@ -134,11 +134,14 @@ class DebateForm {
     .then((_) {
       _contentInput.value = '';
       _elem.remove();
-      new Toast.success(i18n('debate.create-success'), seconds:2).render().then((_) {
-        if (reloadWhenSubmit) {
-          route.reload();
-        }
-      });
+      if (reloadWhenSubmit) {
+        new FlashToast.success(i18n('debate.create-success'), seconds:2);
+        route.reload();
+      } else {
+        new Toast.success(i18n('debate.create-success'), seconds:2).render();
+        // note that if no reload, the debate form component is corrupted and could
+        // not submit again (currently this is fine)
+      }
     }).catchError((e) {
       _alert.renderError('${e}');
     }).whenComplete(() {

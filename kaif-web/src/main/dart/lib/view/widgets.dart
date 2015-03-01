@@ -164,6 +164,66 @@ class Toast {
   }
 }
 
+/**
+ * store message in flash scope, the message won't show after page load again
+ *
+ * only allow single one flash message to exist.
+ */
+class FlashToast {
+  static const _STORAGE_KEY = 'FLASH_TOAST';
+
+  FlashToast._(String message, String type, int seconds) {
+    window.sessionStorage[_STORAGE_KEY] = JSON.encode({
+        'message' : message,
+        'type': type,
+        'seconds': seconds,
+        'createTime': new DateTime.now().millisecondsSinceEpoch
+    });
+  }
+
+  FlashToast.error(String message, {int seconds:10}) : this._(message, 'error', seconds);
+
+  FlashToast.success(String message, {int seconds:10}) : this._(message, 'success', seconds);
+
+  /**
+   * show message once, this is called automatically by main, don't call this manually.
+   */
+  static Future flashIfAny() {
+    return new Future.sync(() {
+      if (!window.sessionStorage.containsKey(_STORAGE_KEY)) {
+        return null;
+      }
+      Map data = JSON.decode(window.sessionStorage[_STORAGE_KEY]);
+      window.sessionStorage.remove(_STORAGE_KEY);
+      DateTime createTime = new DateTime.fromMillisecondsSinceEpoch(data['createTime']);
+      if (createTime.add(const Duration(seconds:60)).isBefore(new DateTime.now())) {
+        //expired, ignored
+        return null;
+      }
+
+      String message = data['message'];
+      String type = data['type'];
+      Duration duration = new Duration(seconds: data['seconds']);
+      return _render(message, type, duration);
+    }).catchError((e) {
+      //ignore all error because sessionStorage are editable by end user, it may be corrupted
+    });
+  }
+
+  static Future _render(String message, String type, Duration duration) {
+    var safeHtmlElem = new DivElement()
+      ..classes.addAll(['alert', 'alert-${type}', 'toast']);
+
+    //.text = message to ensure safe html here !
+    safeHtmlElem.text = message;
+    (window.document as HtmlDocument).body.append(safeHtmlElem);
+
+    return new Future.delayed(duration, () {
+      safeHtmlElem.remove();
+    });
+  }
+}
+
 class Alert {
 
   Element _safeHtmlElem;
