@@ -35,8 +35,8 @@
 
         <div class="pure-controls">
             <label for="consentInput" class="pure-checkbox">
-                <input id="consentInput" type="checkbox">
-                <span id="consentLabel">我同意本站使用條款</span>
+                <input id="consentInput" type="checkbox" required title="請同意條款">
+                <span id="consentLabel">我同意本站 <a href="/z/kaif-terms">服務條款</a></span>
             </label>
             <button type="submit" class="pure-button pure-button-primary">
                 <@spring.messageText "account-menu.sign-up" "Sign Up" />

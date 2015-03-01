@@ -25,16 +25,17 @@ class SignUpForm {
         _showHint(i18n('sign-up.invalid-name'), ok:false);
         return;
       }
-      // TODO throttle speed ?
+
       accountService.isNameAvailable(partial).then((available) {
         String hintText = available ? 'sign-up.available' : 'sign-up.name-already-taken';
         _showHint(i18n(hintText), ok:available);
       });
     });
 
-    elem.querySelector('#consentInput').onClick.first.then((e) {
+    elem.querySelector('#consentInput')
+      ..onClick.first.then((e) {
       e.target.disabled = true;
-      elem.querySelector('#consentLabel').text = 'X的！這個站還沒有條款，你同意什麼！';
+      elem.querySelector('#consentLabel').text = '我猜你沒讀，不過就當作你看過了吧';
     });
   }
 
@@ -51,7 +52,8 @@ class SignUpForm {
     SubmitButtonInputElement submit = elem.querySelector('[type=submit]');
     submit.disabled = true;
 
-    var loading = new Loading.small()..renderAfter(submit);
+    var loading = new Loading.small()
+      ..renderAfter(submit);
     accountService.createAccount(nameInput.value, emailInput.value, passwordInput.value)
     .then((_) {
       route.gotoSignInWithSignUpSuccess();
