@@ -98,9 +98,8 @@ class ArticleForm {
     articleCreator(zone)
     .then((_) {
       elem.remove();
-      new Toast.success(i18n('article.create-success'), seconds:2).render().then((_) {
-        route.gotoNewArticlesOfZone(zone);
-      });
+      new FlashToast.success(i18n('article.create-success'), seconds:2);
+      route.gotoNewArticlesOfZone(zone);
     }).catchError((e) {
       alert.renderError('${e}');
     }).whenComplete(() {

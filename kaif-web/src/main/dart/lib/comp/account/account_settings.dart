@@ -54,7 +54,7 @@ class _DescriptionEditor {
   final AccountService accountService;
   EditDescriptionForm form;
 
-  _DescriptionEditor( this.contentEditElem, this.contentElem, this.actionElem, this.accountService) {
+  _DescriptionEditor(this.contentEditElem, this.contentElem, this.actionElem, this.accountService) {
     actionElem.onClick.listen(_onClick);
   }
 
@@ -67,7 +67,8 @@ class _DescriptionEditor {
     .then((content) {
       //lazy create
       if (form == null) {
-        form = new EditDescriptionForm.placeHolder(contentEditElem, contentElem, actionElem, accountService);
+        form = new EditDescriptionForm.placeHolder(contentEditElem, contentElem, actionElem,
+        accountService);
       }
       form
         ..content = content
@@ -114,8 +115,8 @@ class _UpdateNewPasswordForm {
       accountSession.save(auth);
       elem.remove();
       alert.hide();
-      new Toast.success(i18n('account-settings.update-new-password-success'), seconds:3)
-      .render().then((_) => route.reload());
+      new FlashToast.success(i18n('account-settings.update-new-password-success'), seconds:3);
+      route.reload();
     }).catchError((e) {
       alert.renderError('${e}');
     }).whenComplete(() {
