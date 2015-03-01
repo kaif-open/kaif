@@ -46,7 +46,7 @@ applyZoneTheme=true
                          keep place holder looks the same as <@comp.debateForm>
                          (but without cancel button)
                          -->
-                        <div class="pure-form debate-form">
+                        <div class="pure-form debate-form" debate-form>
                             <div>
                                 <div class="hidden kmark kmark-preview"></div>
                                 <textarea class="pure-input-1 kmark-input" rows="3"></textarea>
@@ -54,7 +54,10 @@ applyZoneTheme=true
                             <div class="form-action-bar">
                                 <button type="submit" class="pure-button pure-button-primary">留言
                                 </button>
-                                <button class="pure-button"><@spring.messageText "kmark.preview" "Preview" /></button>
+                                <button type="button" class="pure-button">
+                                    <@spring.messageText "kmark.preview" "Preview" /></button>
+                                <button type="button" class="pure-button">
+                                    <@spring.messageText "kmark.help" "Format Help" /></button>
                             </div>
                         </div>
                     </div>
@@ -82,11 +85,14 @@ applyZoneTheme=true
     </div>
     <div class="form-action-bar">
         <button type="submit" class="pure-button pure-button-primary">修改</button>
-        <button class="pure-button" kmark-cancel>取消</button>
-        <button class="pure-button"
+        <button type="button" class="pure-button" kmark-cancel>取消</button>
+        <button type="button" class="pure-button"
                 kmark-preview><@spring.messageText "kmark.preview" "Preview" /></button>
+        <button type="button" class="pure-button" kmark-help-toggle>
+            <@spring.messageText "kmark.help" "Format Help" />
+        </button>
     </div>
+    <@comp.kmarkHelp />
 </form>
-
 
 </@template.page>

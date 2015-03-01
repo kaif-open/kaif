@@ -1,4 +1,5 @@
 <#import "/spring.ftl" as spring />
+<#import "../macros/comp.ftl" as comp>
 
 <div account-settings>
     <div class="pure-form pure-form-aligned">
@@ -99,6 +100,10 @@
         <button class="pure-button" kmark-cancel>取消</button>
         <button class="pure-button"
                 kmark-preview><@spring.messageText "kmark.preview" "Preview" /></button>
+        <button type="button" class="pure-button" kmark-help-toggle>
+        <@spring.messageText "kmark.help" "Format Help" />
+        </button>
     </div>
+<@comp.kmarkHelp />
 </form>
 

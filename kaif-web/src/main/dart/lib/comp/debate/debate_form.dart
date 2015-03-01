@@ -3,7 +3,8 @@ library debate_form;
 import 'dart:html';
 import 'package:kaif_web/util.dart';
 import 'package:kaif_web/model.dart';
-import 'package:kaif_web/comp/comp_template.dart';
+import '../comp_template.dart';
+import '../kmark/edit_kmark_form.dart';
 
 /**
  * final field in library scope is lazy in dart. so the template only loaded when we
@@ -54,6 +55,7 @@ class DebateForm {
     _elem.querySelector('[kmark-debate-cancel]').onClick.listen(_onCancel);
     _previewCancelElem = _elem.querySelector('[kmark-preview-cancel]');
     _contentInput = _elem.querySelector('textarea[name=contentInput]');
+    KmarkHelper.enableIfExist(_elem);
   }
 
   void _updatePreviewVisibility({bool previewVisible}) {

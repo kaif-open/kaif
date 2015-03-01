@@ -35,6 +35,22 @@ abstract class EditKmarkForm {
     _elem.querySelector('[kmark-cancel]').onClick.listen(_onCancel);
     _alert = new Alert.append(_elem);
     _elem.onSubmit.listen(_onSubmit);
+
+    KmarkHelper.enableIfExist(_elem);
+  }
+
+  void _initHelp() {
+    Element toggleElem = _elem.querySelector('[kmark-help-toggle]');
+    Element helpElem = _elem.querySelector('[kmark-help]');
+    if (toggleElem == null || helpElem == null) {
+      return;
+    }
+    toggleElem.onClick.listen((e) {
+      e
+        ..stopPropagation()
+        ..preventDefault();
+      helpElem.classes.toggle('hidden');
+    });
   }
 
   void _onCancel(Event e) {
@@ -78,7 +94,7 @@ abstract class EditKmarkForm {
   int get minContentLength;
 
   String get submitSuccessMessageKey;
-  
+
   String get contentTooShortMessageKey;
 
   void _onSubmit(Event e) {
@@ -151,4 +167,21 @@ abstract class EditKmarkForm {
     _previewBtn.text = _previewVisible ? i18n('kmark.finish-preview')
                        : i18n('kmark.preview');
   }
-} 
+}
+
+class KmarkHelper {
+  static void enableIfExist(Element parentElem) {
+    Element toggleElem = parentElem.querySelector('[kmark-help-toggle]');
+    Element helpElem = parentElem.querySelector('[kmark-help]');
+    if (toggleElem == null || helpElem == null) {
+      return;
+    }
+    toggleElem.onClick.listen((e) {
+      e
+        ..stopPropagation()
+        ..preventDefault();
+      bool isHidden = helpElem.classes.toggle('hidden');
+      toggleElem.text = isHidden ? i18n("kmark.help") : i18n("kmark.finish-help");
+    });
+  }
+}

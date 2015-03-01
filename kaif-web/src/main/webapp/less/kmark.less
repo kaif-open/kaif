@@ -61,3 +61,32 @@
     padding-left: @padding-xs-horizontal;
   }
 }
+
+.kmark-help {
+  font-size: @font-size-sm;
+  background-color: lighten(@brand-info, 43%);
+  margin-top: @padding-vertical;
+  padding: @padding-vertical @padding-horizontal;
+  border-radius: @border-radius;
+  h4, p, pre{
+    margin: @padding-xs-vertical @padding-xs-horizontal;
+  }
+  h4 {
+    white-space: nowrap;
+  }
+  table {
+    th {
+      text-align: left;
+    }
+    th, td {
+      padding: @padding-xs-vertical @padding-xs-horizontal;
+      vertical-align: top;
+    }
+    tr td:first-child {
+      white-space: nowrap;
+    }
+    tr td:nth-child(2), tr td:nth-child(3) {
+      width: 50%;
+    }
+  }
+}

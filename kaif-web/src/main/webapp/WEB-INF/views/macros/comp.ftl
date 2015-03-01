@@ -181,9 +181,171 @@
     </div>
     <div class="form-action-bar">
         <button type="submit" class="pure-button pure-button-primary">留言</button>
-        <button class="pure-button" kmark-debate-cancel>取消</button>
-        <button class="pure-button"
+        <button type="button" class="pure-button" kmark-debate-cancel>取消</button>
+        <button type="button" class="pure-button"
                 kmark-preview><@spring.messageText "kmark.preview" "Preview" /></button>
+        <button type="button" class="pure-button"
+                kmark-help-toggle><@spring.messageText "kmark.help" "Format Help" /></button>
     </div>
+    <@kmarkHelp />
 </form>
+</#macro>
+
+<#macro kmarkHelp>
+<div class="kmark-help hidden" kmark-help>
+    <h4>Kmark 語法說明</h4>
+
+    <p>Kmark 是一個類似 <a href="http://en.wikipedia.org/wiki/Markdown" target="_blank">Markdown</a>
+        語法的格式，以下為提供的功能:</p>
+    <table class="pure-table pure-table-horizontal">
+        <tr>
+            <th>種類</th>
+            <th>語法</th>
+            <th>呈現</th>
+        </tr>
+        <tr>
+            <td>
+                斜體
+            </td>
+            <td>
+                <p>
+                    *兩邊加單星*
+                </p>
+            </td>
+            <td>
+                <div class="kmark">
+                    <em>兩邊加單星</em>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                粗體
+            </td>
+            <td>
+                <p>
+                    **兩邊加雙星**
+                </p>
+            </td>
+            <td>
+                <div class="kmark">
+                    <strong>兩邊加雙星</strong>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                刪除線
+            </td>
+            <td>
+                <p>
+                    ~~兩邊加雙曲號~~
+                </p>
+            </td>
+            <td>
+                <div class="kmark">
+                    <del>兩邊加雙曲號</del>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                引用
+            </td>
+            <td>
+                <p>
+                    > 左邊加個大於符號
+                </p>
+            </td>
+            <td>
+                <div class="kmark">
+                    <blockquote>左邊加個大於符號</blockquote>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                列表
+            </td>
+            <td>
+<pre> * 可用星號
+ * 也可以 - 減號
+ * 數字加點也可以
+</pre>
+            </td>
+            <td>
+                <div class="kmark">
+                    <ul>
+                        <li>可用星號</li>
+                        <li>也可以 - 減號</li>
+                        <li>數字加點也可以</li>
+                    </ul>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                固定寬字
+            </td>
+            <td>
+                <p>
+                    `abcdefghijk`
+                </p>
+
+                <p>
+                    兩邊用倒引號包住
+                </p>
+            </td>
+            <td>
+                <div class="kmark">
+                    <code>abcdefghijk</code>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                編碼區塊
+            </td>
+            <td>
+<pre>```
+function abc()
+```</pre>
+                <p>上下都用三個倒引號包住</p>
+            </td>
+            <td>
+                <div class="kmark">
+                    <pre><code>function abc()</code></pre>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                連結
+            </td>
+            <td>
+<pre>
+[這是連結][1]
+[1]: http://example.com
+</pre>
+                <p>
+                    連結第一部份是文字，先用中括號包住，後面再加上 <strong>[編號]</strong>。
+                    第二部份是連結本身，放在文末，開頭是 <strong>[編號]: http</strong>
+                </p>
+            </td>
+            <td>
+                <div class="kmark">
+                    <p><a href="http://example.com" class="reference-link">這是連結</a><span
+                            class="reference-link-index">1</span></p>
+
+                    <div class="reference-appendix-block">
+                        <div class="reference-appendix-index">1</div>
+                        <div class="reference-appendix-wrap"><a href="http://example.com"
+                                                                rel="nofollow" target="_blank">http://example.com</a>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
 </#macro>
