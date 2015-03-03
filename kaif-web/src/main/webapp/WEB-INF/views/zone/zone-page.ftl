@@ -26,8 +26,8 @@ applyZoneTheme=true
             <#if articlePage??>
                 <@comp.articleList data=articlePage></@comp.articleList>
             </#if>
-            <#if debates??>
-            <@comp.debateList data=debates></@comp.debateList>
+            <#if debateList??>
+            <@comp.debateList data=debateList></@comp.debateList>
         </#if>
         </div>
 

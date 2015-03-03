@@ -1,8 +1,11 @@
 package io.kaif.model.article;
 
+import static java.util.stream.Collectors.*;
+
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Repository;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 import io.kaif.database.DaoOperations;
 import io.kaif.flake.FlakeId;
@@ -286,5 +290,18 @@ public class ArticleDao implements DaoOperations {
         + "  LIMIT ? ", zoneDao.getZoneInfoMapper(), startArticleId.value(), size);
     //immutable for cache
     return ImmutableList.copyOf(results);
+  }
+
+  public List<Article> listArticlesByDebates(List<FlakeId> debateIds) {
+    if (debateIds.isEmpty()) {
+      return Collections.emptyList();
+    }
+    final String sql = ""
+        + " SELECT DISTINCT ON (a.articleid) a.* "
+        + "   FROM Article a "
+        + "   JOIN Debate d ON (d.articleId = a.articleId) "
+        + "  WHERE d.debateId IN (:debateIds) ";
+    List<Long> values = debateIds.stream().map(FlakeId::value).collect(toList());
+    return namedJdbc().query(sql, ImmutableMap.of("debateIds", values), articleMapper);
   }
 }

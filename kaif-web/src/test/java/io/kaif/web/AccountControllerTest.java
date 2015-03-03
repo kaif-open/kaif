@@ -49,6 +49,8 @@ public class AccountControllerTest extends MvcIntegrationTests {
     when(articleService.listReplyToDebates(Matchers.isA(Authorization.class),
         isNull(FlakeId.class))).thenReturn(asList(d1, d2));
 
+    when(articleService.listArticlesByDebates(asList(d1.getDebateId(),
+        d2.getDebateId()))).thenReturn(asList(article));
     mockMvc.perform(get("/account/debate-replies.part").header(AccountAccessToken.HEADER_KEY,
         token))
         .andExpect(view().name("article/debate-replies.part"))

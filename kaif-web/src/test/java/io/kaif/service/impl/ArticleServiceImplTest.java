@@ -92,7 +92,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
-  public void listLatestDebatesByZone() throws Exception {
+  public void listLatestZoneDebates() throws Exception {
 
     assertEquals(0, service.listLatestZoneDebates(zoneInfo.getZone(), null).size());
     Debate d1 = savedDebate(article, "foo-12345", null);
@@ -100,6 +100,21 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
     assertEquals(asList(d2, d1), service.listLatestZoneDebates(zoneInfo.getZone(), null));
     assertEquals(asList(d1), service.listLatestZoneDebates(zoneInfo.getZone(), d2.getDebateId()));
+  }
+
+  @Test
+  public void listArticlesByDebates() throws Exception {
+    assertEquals(0, service.listArticlesByDebates(Collections.emptyList()).size());
+
+    Article a2 = savedArticle(zoneInfo, citizen, "another article");
+    Debate d1 = savedDebate(article, "foo-12345", null);
+    Debate d2 = savedDebate(a2, "foo-about", null);
+    Debate d3 = savedDebate(a2, "foo-duplicate", null);
+
+    List<Article> articles = service.listArticlesByDebates(asList(d1.getDebateId(),
+        d2.getDebateId(), d3.getDebateId()));
+    assertEquals(2, articles.size());
+    assertTrue(articles.containsAll(asList(article, a2)));
   }
 
   @Test

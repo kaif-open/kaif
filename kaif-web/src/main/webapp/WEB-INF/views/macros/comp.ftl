@@ -170,8 +170,9 @@
     </#if>
 </#macro>
 
+<#-- data is DebateList -->
 <#macro debateList data ajaxPager=false>
-    <#local debates=data />
+    <#local debates=data.debates />
 <div class="debate-list" debate-list>
     <#list debates as debateItem>
         <div class="debate-standalone">
@@ -184,14 +185,15 @@
                             討論串
                         </a>
                     </#if>
-                    <a href="<@url.article data=debateItem />">
-                        <i class="fa fa-caret-right"></i>
-                        文章
-                    </a>
                     <a href="<@url.zone data=debateItem />">
                         <i class="fa fa-caret-right"></i>
                         <@url.zone data=debateItem />
                     </a>
+                    <a href="<@url.article data=debateItem />">
+                        <i class="fa fa-caret-right"></i>
+                    ${util.abbreviate(data.getArticle(debateItem).title, 20)}
+                    </a>
+
                 </div>
             </div>
         </div>

@@ -1,8 +1,10 @@
 package io.kaif.web;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,7 +19,10 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import io.kaif.flake.FlakeId;
+import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticlePage;
+import io.kaif.model.debate.Debate;
+import io.kaif.model.debate.DebateList;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.ArticleService;
@@ -97,11 +102,15 @@ public class ZoneController {
       HttpServletRequest request) {
     return resolveZone(request, rawZone, zoneInfo -> {
       FlakeId startDebateId = Optional.ofNullable(start).map(FlakeId::fromString).orElse(null);
+      List<Debate> debates = articleService.listLatestZoneDebates(zoneInfo.getZone(),
+          startDebateId);
+      List<Article> articles = articleService.listArticlesByDebates(debates.stream()
+          .map(Debate::getDebateId)
+          .collect(Collectors.toList()));
       return new ModelAndView("zone/zone-page")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("recommendZones", zoneService.listRecommendZones())
-          .addObject("debates",
-              articleService.listLatestZoneDebates(zoneInfo.getZone(), startDebateId));
+          .addObject("debateList", new DebateList(debates, articles));
     });
   }
 

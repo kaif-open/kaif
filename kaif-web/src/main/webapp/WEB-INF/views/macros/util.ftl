@@ -17,6 +17,18 @@
 <li class="${selected?string('pure-menu-selected','')}"><a href="${href}">${name}</a></li>
 </#macro>
 
+<#function abbreviate str max>
+    <#if str?? >
+        <#if str?length <= max>
+            <#return str />
+        <#else>
+            <#return str?substring(0, max)  + '...'/>
+        </#if>
+    <#else >
+        <#return ''/>
+    </#if>
+</#function>
+
 <#--
  show relative time of Instant. the output is wrapped by html5 time tag
  -->

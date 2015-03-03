@@ -15,6 +15,7 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableMap;
 
 import io.kaif.model.article.Article;
+import io.kaif.model.debate.Debate;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.test.MvcIntegrationTests;
 
@@ -68,8 +69,11 @@ public class HomeControllerTest extends MvcIntegrationTests {
   @Test
   public void listLatestDebates() throws Exception {
     Article article = article(funZone.getZone(), "article 1");
+    Debate debate = debate(article, "123456", null);
     when(articleService.listLatestDebates(null)).thenReturn(//
-        asList(debate(article, "123456", null)));
+        asList(debate));
+    when(articleService.listArticlesByDebates(asList(debate.getDebateId()))).thenReturn(asList(
+        article));
     mockMvc.perform(get("/new-debate"))
         .andExpect(model().attributeExists("recommendZones"))
         .andExpect(content().string(containsString("123456")));

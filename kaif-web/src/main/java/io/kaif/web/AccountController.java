@@ -1,5 +1,7 @@
 package io.kaif.web;
 
+import static java.util.stream.Collectors.*;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -16,7 +18,9 @@ import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountOnceToken;
+import io.kaif.model.article.Article;
 import io.kaif.model.debate.Debate;
+import io.kaif.model.debate.DebateList;
 import io.kaif.service.AccountService;
 import io.kaif.service.ArticleService;
 import io.kaif.web.support.PartTemplate;
@@ -74,7 +78,11 @@ public class AccountController {
       @RequestParam(value = "startDebateId", required = false) String startDebateId) {
     List<Debate> debates = articleService.listReplyToDebates(accountAccessToken,
         Optional.ofNullable(startDebateId).map(FlakeId::fromString).orElse(null));
-    return new ModelAndView("article/debate-replies.part").addObject("debates", debates);
+    List<Article> articles = articleService.listArticlesByDebates(debates.stream()
+        .map(Debate::getDebateId)
+        .collect(toList()));
+    return new ModelAndView("article/debate-replies.part").addObject("debateList",
+        new DebateList(debates, articles));
   }
 
   @RequestMapping("/activation")

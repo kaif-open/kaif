@@ -22,9 +22,9 @@ head=headContent
             <#if articlePage??>
                 <@comp.articleList data=articlePage showZone=true></@comp.articleList>
             </#if>
-            <#if debates??>
-                <@comp.debateList data=debates></@comp.debateList>
-            </#if>
+            <#if debateList??>
+            <@comp.debateList data=debateList></@comp.debateList>
+        </#if>
         </div>
         <aside class="grid-aside">
             <@aside.createArticle />
