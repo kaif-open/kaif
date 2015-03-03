@@ -44,4 +44,8 @@ public interface ArticleService {
   Article createSpeak(Authorization authorization, Zone zone, String title, String content);
 
   List<Debate> listReplyToDebates(Authorization authorization, @Nullable FlakeId startDebateId);
+
+  List<Debate> listLatestDebates(@Nullable FlakeId startDebateId);
+
+  List<Debate> listLatestDebatesByZone(Zone zone, @Nullable FlakeId startDebateId);
 }

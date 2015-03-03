@@ -189,4 +189,25 @@ public class DebateDao implements DaoOperations {
         + "  ORDER BY debateid DESC "
         + "  LIMIT :size ", params, debateMapper);
   }
+
+  public List<Debate> listDebatesByTimeDesc(FlakeId startDebateId, int size) {
+    FlakeId start = Optional.ofNullable(startDebateId).orElse(FlakeId.MAX);
+    return jdbc().query(""
+        + " SELECT * "
+        + "   FROM Debate "
+        + "  WHERE debateId < ? "
+        + "  ORDER BY debateId DESC "
+        + "  LIMIT ? ", debateMapper, start.value(), size);
+  }
+
+  public List<Debate> listZoneDebatesByTimeDesc(Zone zone, FlakeId startDebateId, int size) {
+    FlakeId start = Optional.ofNullable(startDebateId).orElse(FlakeId.MAX);
+    return jdbc().query(""
+        + " SELECT * "
+        + "   FROM Debate "
+        + "  WHERE debateId < ? "
+        + "    AND zone = ? "
+        + "  ORDER BY debateId DESC "
+        + "  LIMIT ? ", debateMapper, start.value(), zone.value(), size);
+  }
 }

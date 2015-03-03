@@ -205,4 +205,13 @@ public class ArticleServiceImpl implements ArticleService {
         PAGE_SIZE);
   }
 
+  @Override
+  public List<Debate> listLatestDebates(@Nullable FlakeId startDebateId) {
+    return debateDao.listDebatesByTimeDesc(startDebateId, PAGE_SIZE);
+  }
+
+  @Override
+  public List<Debate> listLatestDebatesByZone(Zone zone, @Nullable FlakeId startDebateId) {
+    return debateDao.listZoneDebatesByTimeDesc(zone, startDebateId, PAGE_SIZE);
+  }
 }

@@ -73,6 +73,7 @@ CREATE TABLE Debate (
 CREATE INDEX DebaterIndex ON Debate (debaterId);
 CREATE INDEX DebateArticleIndex ON Debate (articleId);
 CREATE INDEX DebateReplyToAccountId ON Debate (replyToAccountId);
+CREATE INDEX DebateZoneIndex ON Debate (zone);
 
 -- foreign key is intended exclude
 CREATE TABLE ArticleVoter (

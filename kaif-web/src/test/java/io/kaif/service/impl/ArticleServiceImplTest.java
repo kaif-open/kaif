@@ -82,6 +82,27 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
+  public void listLatestDebates() throws Exception {
+    assertEquals(0, service.listLatestDebates(null).size());
+    Debate d1 = savedDebate(null);
+    Debate d2 = savedDebate(null);
+
+    assertEquals(asList(d2, d1), service.listLatestDebates(null));
+    assertEquals(asList(d1), service.listLatestDebates(d2.getDebateId()));
+  }
+
+  @Test
+  public void listLatestDebatesByZone() throws Exception {
+
+    assertEquals(0, service.listLatestDebatesByZone(zoneInfo.getZone(), null).size());
+    Debate d1 = savedDebate(article, "foo-12345", null);
+    Debate d2 = savedDebate(article, "foo-12345", null);
+
+    assertEquals(asList(d2, d1), service.listLatestDebatesByZone(zoneInfo.getZone(), null));
+    assertEquals(asList(d1), service.listLatestDebatesByZone(zoneInfo.getZone(), d2.getDebateId()));
+  }
+
+  @Test
   public void loadDebaterId_cache() throws Exception {
     Account debater = savedAccountCitizen("debater1");
     Debate created = service.debate(zoneInfo.getZone(),
