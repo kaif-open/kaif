@@ -40,6 +40,15 @@ public class HomeController {
             new ArticlePage(articleService.listLatestArticles(startArticleId)));
   }
 
+  @RequestMapping("/new-debate")
+  public ModelAndView listLatestDebates(
+      @RequestParam(value = "start", required = false) String start) {
+    FlakeId startDebateId = Optional.ofNullable(start).map(FlakeId::fromString).orElse(null);
+    return new ModelAndView("index") //
+        .addObject("recommendZones", zoneService.listRecommendZones())
+        .addObject("debates", articleService.listLatestDebates(startDebateId));
+  }
+
   @RequestMapping("/zone/a-z")
   public ModelAndView zoneAtoZ() {
     return new ModelAndView("zone/zone-a-z").addObject("zoneAtoZ", zoneService.listZoneAtoZ());

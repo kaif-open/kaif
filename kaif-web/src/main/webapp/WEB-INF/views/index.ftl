@@ -19,7 +19,12 @@ head=headContent
     <@template.home>
     <div class="grid">
         <div class="grid-body">
-            <@comp.articleList data=articlePage showZone=true></@comp.articleList>
+            <#if articlePage??>
+                <@comp.articleList data=articlePage showZone=true></@comp.articleList>
+            </#if>
+            <#if debates??>
+                <@comp.debateList data=debates></@comp.debateList>
+            </#if>
         </div>
         <aside class="grid-aside">
             <@aside.createArticle />

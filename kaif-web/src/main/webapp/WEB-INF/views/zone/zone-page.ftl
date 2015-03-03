@@ -23,7 +23,12 @@ applyZoneTheme=true
 
     <div class="grid">
         <div class="grid-body">
-            <@comp.articleList data=articlePage></@comp.articleList>
+            <#if articlePage??>
+                <@comp.articleList data=articlePage></@comp.articleList>
+            </#if>
+            <#if debates??>
+            <@comp.debateList data=debates></@comp.debateList>
+        </#if>
         </div>
 
         <aside class="grid-aside">

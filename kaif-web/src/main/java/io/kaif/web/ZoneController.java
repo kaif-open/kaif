@@ -38,7 +38,7 @@ public class ZoneController {
       HttpServletRequest request) throws IOException {
     FlakeId startArticleId = Optional.ofNullable(start).map(FlakeId::fromString).orElse(null);
     return resolveZone(request, rawZone, zoneInfo -> {
-      return new ModelAndView("zone/articles")//
+      return new ModelAndView("zone/zone-page")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("recommendZones", zoneService.listRecommendZones())
           .addObject("articlePage",
@@ -82,12 +82,26 @@ public class ZoneController {
       HttpServletRequest request) {
     return resolveZone(request, rawZone, zoneInfo -> {
       FlakeId startArticleId = Optional.ofNullable(start).map(FlakeId::fromString).orElse(null);
-      return new ModelAndView("zone/articles")//
+      return new ModelAndView("zone/zone-page")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("recommendZones", zoneService.listRecommendZones())
           .addObject("articlePage",
               new ArticlePage(articleService.listLatestZoneArticles(zoneInfo.getZone(),
                   startArticleId)));
+    });
+  }
+
+  @RequestMapping("/{zone}/new-debate")
+  public Object newDebates(@PathVariable("zone") String rawZone,
+      @RequestParam(value = "start", required = false) String start,
+      HttpServletRequest request) {
+    return resolveZone(request, rawZone, zoneInfo -> {
+      FlakeId startDebateId = Optional.ofNullable(start).map(FlakeId::fromString).orElse(null);
+      return new ModelAndView("zone/zone-page")//
+          .addObject("zoneInfo", zoneInfo)
+          .addObject("recommendZones", zoneService.listRecommendZones())
+          .addObject("debates",
+              articleService.listLatestZoneDebates(zoneInfo.getZone(), startDebateId));
     });
   }
 

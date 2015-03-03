@@ -211,7 +211,7 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public List<Debate> listLatestDebatesByZone(Zone zone, @Nullable FlakeId startDebateId) {
+  public List<Debate> listLatestZoneDebates(Zone zone, @Nullable FlakeId startDebateId) {
     return debateDao.listZoneDebatesByTimeDesc(zone, startDebateId, PAGE_SIZE);
   }
 }

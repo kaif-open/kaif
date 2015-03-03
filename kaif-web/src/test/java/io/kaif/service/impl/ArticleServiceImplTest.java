@@ -94,12 +94,12 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   @Test
   public void listLatestDebatesByZone() throws Exception {
 
-    assertEquals(0, service.listLatestDebatesByZone(zoneInfo.getZone(), null).size());
+    assertEquals(0, service.listLatestZoneDebates(zoneInfo.getZone(), null).size());
     Debate d1 = savedDebate(article, "foo-12345", null);
     Debate d2 = savedDebate(article, "foo-12345", null);
 
-    assertEquals(asList(d2, d1), service.listLatestDebatesByZone(zoneInfo.getZone(), null));
-    assertEquals(asList(d1), service.listLatestDebatesByZone(zoneInfo.getZone(), d2.getDebateId()));
+    assertEquals(asList(d2, d1), service.listLatestZoneDebates(zoneInfo.getZone(), null));
+    assertEquals(asList(d1), service.listLatestZoneDebates(zoneInfo.getZone(), d2.getDebateId()));
   }
 
   @Test

@@ -63,6 +63,34 @@ public class ZoneControllerTest extends MvcIntegrationTests {
   }
 
   @Test
+  public void newDebates() throws Exception {
+    Zone z = zoneInfo.getZone();
+    when(zoneService.loadZone(z)).thenReturn(zoneInfo);
+    Article a = article(z, "python is serious");
+    Debate d1 = debate(a, "agree, good.", null);
+    Debate d2 = debate(a, "it's too simple.", null);
+    when(articleService.listLatestZoneDebates(z, null)).thenReturn(//
+        asList(d1, d2));
+    mockMvc.perform(get("/z/programming/new-debate"))
+        .andExpect(content().string(containsString("agree, good.")))
+        .andExpect(content().string(containsString("it&#39;s too simple")));
+  }
+
+  @Test
+  public void newDebatesWithPaging() throws Exception {
+    Zone z = zoneInfo.getZone();
+    when(zoneService.loadZone(z)).thenReturn(zoneInfo);
+    Article a = article(z, "golang must be");
+    Debate d1 = debate(a, "cool", null);
+    Debate d2 = debate(a, "poor", null);
+    when(articleService.listLatestZoneDebates(z, FlakeId.fromString("abcdefghi"))).thenReturn(//
+        asList(d1, d2));
+    mockMvc.perform(get("/z/programming/new-debate").param("start", "abcdefghi"))
+        .andExpect(content().string(containsString("cool")))
+        .andExpect(content().string(containsString("poor")));
+  }
+
+  @Test
   public void newArticlesWithPaging() throws Exception {
     Zone z = zoneInfo.getZone();
     when(zoneService.loadZone(z)).thenReturn(zoneInfo);

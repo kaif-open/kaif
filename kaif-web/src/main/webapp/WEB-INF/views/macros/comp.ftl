@@ -170,6 +170,53 @@
     </#if>
 </#macro>
 
+<#macro debateList data ajaxPager=false>
+    <#local debates=data />
+<div class="debate-list" debate-list>
+    <#list debates as debateItem>
+        <div class="debate-standalone">
+            <@debate data=debateItem />
+            <div class="grid-row">
+                <div class="grid-center-row debate-navigation">
+                    <#if debateItem.hasParent()>
+                        <a href="<@url.debate data=debateItem parent=true/>">
+                            <i class="fa fa-caret-right"></i>
+                            討論串
+                        </a>
+                    </#if>
+                    <a href="<@url.article data=debateItem />">
+                        <i class="fa fa-caret-right"></i>
+                        文章
+                    </a>
+                    <a href="<@url.zone data=debateItem />">
+                        <i class="fa fa-caret-right"></i>
+                        <@url.zone data=debateItem />
+                    </a>
+                </div>
+            </div>
+        </div>
+    </#list>
+    <div class="debate-list-pager grid-center-row">
+        <#if debates?size == 0>
+            <p>沒有回應了</p>
+        <#else>
+            <#if ajaxPager>
+                <a href="#" debate-list-pager class="pure-button">
+                    <i class="fa fa-caret-right"></i> 下一頁
+                </a>
+            <#else>
+                <a href="<@url.current start=debates?last.debateId />"
+                   class="pure-button"><i class="fa fa-caret-right"></i> 下一頁</a>
+            </#if>
+        </#if>
+    </div>
+    <#if ajaxPager>
+        <div next-debate-list></div>
+    </#if>
+</div>
+</#macro>
+
+
 <#macro debateForm>
 <form class="pure-form hidden debate-form" comp-template="debate-form">
     <div>

@@ -176,6 +176,7 @@ sample configs:
     <nav class="zone-menu pure-menu pure-menu-open pure-menu-horizontal">
         <@util.menuLink '/z/${zoneInfo.name}' '熱門'/>
         <@util.menuLink '/z/${zoneInfo.name}/new' '最新'/>
+        <@util.menuLink '/z/${zoneInfo.name}/new-debate' '最新討論'/>
         ${menus}
     </nav>
     <#nested/>
@@ -202,6 +203,7 @@ sample configs:
     <nav class="home-menu pure-menu pure-menu-open pure-menu-horizontal">
         <@util.menuLink '/' '綜合熱門'/>
         <@util.menuLink '/new' '綜合最新'/>
+        <@util.menuLink '/new-debate' '最新討論'/>
         <@util.menuLink '/zone/a-z' '所有討論區'/>
     </nav>
     <#nested/>
