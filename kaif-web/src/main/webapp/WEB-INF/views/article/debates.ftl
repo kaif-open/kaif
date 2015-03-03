@@ -21,11 +21,7 @@ layout='full'
 head=headContent
 applyZoneTheme=true
 >
-    <#assign debateMenus>
-        <@util.menuLink '/z/${zoneInfo.name}/debates/${article.articleId}' '討論'/>
-    </#assign>
-
-    <@template.zone data=zoneInfo menus=debateMenus>
+    <@template.zone data=zoneInfo showMenu=false>
 
     <div class="grid">
 

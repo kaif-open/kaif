@@ -167,18 +167,19 @@ sample configs:
 <#--
  zone layout
 -->
-<#macro zone data menus="">
+<#macro zone data showMenu=true>
 
     <#local zoneInfo=data />
 
 <div class="zone ${zoneInfo.theme}">
     <@zoneHeader/>
-    <nav class="zone-menu pure-menu pure-menu-open pure-menu-horizontal">
-        <@util.menuLink '/z/${zoneInfo.name}' '熱門'/>
-        <@util.menuLink '/z/${zoneInfo.name}/new' '最新'/>
-        <@util.menuLink '/z/${zoneInfo.name}/new-debate' '最新討論'/>
-        ${menus}
-    </nav>
+    <#if showMenu>
+        <nav class="zone-menu pure-menu pure-menu-open pure-menu-horizontal">
+            <@util.menuLink '/z/${zoneInfo.name}' '熱門'/>
+            <@util.menuLink '/z/${zoneInfo.name}/new' '最新'/>
+            <@util.menuLink '/z/${zoneInfo.name}/new-debate' '最新討論'/>
+        </nav>
+    </#if>
     <#nested/>
 </div>
 </#macro>

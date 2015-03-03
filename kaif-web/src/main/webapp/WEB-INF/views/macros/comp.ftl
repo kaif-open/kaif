@@ -171,7 +171,7 @@
 </#macro>
 
 <#-- data is DebateList -->
-<#macro debateList data ajaxPager=false>
+<#macro debateList data ajaxPager=false showZone=true >
     <#local debates=data.debates />
 <div class="debate-list" debate-list>
     <#list debates as debateItem>
@@ -179,21 +179,24 @@
             <@debate data=debateItem />
             <div class="grid-row">
                 <div class="grid-center-row debate-navigation">
+                    <#--
                     <#if debateItem.hasParent()>
                         <a href="<@url.debate data=debateItem parent=true/>">
                             <i class="fa fa-caret-right"></i>
                             討論串
                         </a>
                     </#if>
-                    <a href="<@url.zone data=debateItem />">
-                        <i class="fa fa-caret-right"></i>
-                        <@url.zone data=debateItem />
-                    </a>
-                    <a href="<@url.article data=debateItem />">
+                    -->
+                    <a href="<@url.article data=debateItem />${'#debate-'+debateItem.debateId}">
                         <i class="fa fa-caret-right"></i>
                     ${util.abbreviate(data.getArticle(debateItem).title, 20)}
                     </a>
-
+                    <#if showZone>
+                        <a href="<@url.zone data=debateItem />">
+                            <i class="fa fa-caret-right"></i>
+                            <@url.zone data=debateItem />
+                        </a>
+                    </#if>
                 </div>
             </div>
         </div>
