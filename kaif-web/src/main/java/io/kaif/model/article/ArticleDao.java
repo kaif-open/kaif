@@ -1,17 +1,24 @@
 package io.kaif.model.article;
 
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.*;
 
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -21,8 +28,12 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 
 import io.kaif.database.DaoOperations;
 import io.kaif.flake.FlakeId;
@@ -34,12 +45,11 @@ import io.kaif.model.zone.ZoneInfo;
 @Repository
 public class ArticleDao implements DaoOperations {
 
+  private static final Logger logger = LoggerFactory.getLogger(ArticleDao.class);
   @Autowired
   private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
   @Autowired
   private ArticleFlakeIdGenerator articleFlakeIdGenerator;
-
   private final RowMapper<Article> articleMapper = (rs, rowNum) -> {
     return new Article(//
         Zone.valueOf(rs.getString("zone")),
@@ -59,6 +69,20 @@ public class ArticleDao implements DaoOperations {
   };
   @Autowired
   private ZoneDao zoneDao;
+  private final LoadingCache<FlakeId, Article> articleByDebatesCache = CacheBuilder.newBuilder()
+      .maximumSize(2000)
+      .refreshAfterWrite(10, TimeUnit.MINUTES)
+      .build(new CacheLoader<FlakeId, Article>() {
+        @Override
+        public Article load(FlakeId key) throws Exception {
+          return listArticlesByDebatesWithoutCache(asList(key)).get(key);
+        }
+
+        @Override
+        public Map<FlakeId, Article> loadAll(Iterable<? extends FlakeId> keys) throws Exception {
+          return listArticlesByDebatesWithoutCache(Lists.newArrayList(keys));
+        }
+      });
 
   @Override
   public NamedParameterJdbcTemplate namedJdbc() {
@@ -268,7 +292,8 @@ public class ArticleDao implements DaoOperations {
 
   @VisibleForTesting
   @CacheEvict(value = "listHotZones", allEntries = true)
-  void evictAllCaches() {
+  public void evictAllCaches() {
+    articleByDebatesCache.invalidateAll();
   }
 
   /**
@@ -293,15 +318,31 @@ public class ArticleDao implements DaoOperations {
   }
 
   public List<Article> listArticlesByDebates(List<FlakeId> debateIds) {
+    Map<FlakeId, Article> articles;
+    try {
+      articles = articleByDebatesCache.getAll(debateIds);
+    } catch (ExecutionException e) {
+      logger.warn("list article by debates cache failed", e);
+      articles = listArticlesByDebatesWithoutCache(debateIds);
+    }
+    return articles.values().stream().distinct().collect(toList());
+  }
+
+  private Map<FlakeId, Article> listArticlesByDebatesWithoutCache(List<FlakeId> debateIds) {
     if (debateIds.isEmpty()) {
-      return Collections.emptyList();
+      return Collections.emptyMap();
     }
     final String sql = ""
-        + " SELECT DISTINCT ON (a.articleid) a.* "
+        + " SELECT d.debateId, a.* "
         + "   FROM Article a "
         + "   JOIN Debate d ON (d.articleId = a.articleId) "
         + "  WHERE d.debateId IN (:debateIds) ";
     List<Long> values = debateIds.stream().map(FlakeId::value).collect(toList());
-    return namedJdbc().query(sql, ImmutableMap.of("debateIds", values), articleMapper);
+    HashMap<FlakeId, Article> articles = new HashMap<>();
+    namedJdbc().query(sql, ImmutableMap.of("debateIds", values), rs -> {
+      FlakeId debateId = FlakeId.valueOf(rs.getLong("debateId"));
+      articles.put(debateId, articleMapper.mapRow(rs, 0));
+    });
+    return articles;
   }
 }

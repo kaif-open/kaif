@@ -112,9 +112,30 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     Debate d3 = savedDebate(a2, "foo-duplicate", null);
 
     List<Article> articles = service.listArticlesByDebates(asList(d1.getDebateId(),
-        d2.getDebateId(), d3.getDebateId()));
+        d2.getDebateId(),
+        d3.getDebateId()));
     assertEquals(2, articles.size());
     assertTrue(articles.containsAll(asList(article, a2)));
+  }
+
+  @Test
+  public void listArticlesByDebates_cache() throws Exception {
+    assertEquals(0, service.listArticlesByDebates(Collections.emptyList()).size());
+
+    Article a2 = savedArticle(zoneInfo, citizen, "another article");
+    Debate d1 = savedDebate(article, "foo-12345", null);
+    Debate d2 = savedDebate(a2, "foo-about", null);
+
+    List<Article> articles = service.listArticlesByDebates(asList(d1.getDebateId(),
+        d2.getDebateId()));
+    List<Article> articles2 = service.listArticlesByDebates(asList(d1.getDebateId(),
+        d2.getDebateId()));
+    assertSame(articles2.get(0), articles.get(0));
+    assertSame(articles2.get(1), articles.get(1));
+
+    articleDao.evictAllCaches();
+    List<Article> refreshed = service.listArticlesByDebates(asList(d2.getDebateId()));
+    assertNotSame(refreshed.get(0), articles2.get(1));
   }
 
   @Test
