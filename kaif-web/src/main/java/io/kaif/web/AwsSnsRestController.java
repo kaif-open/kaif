@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -162,6 +163,8 @@ public class AwsSnsRestController {
   private static final Logger logger = Logger.getLogger(AwsSnsRestController.class);
   private static final String NO_SUCH_FIELD = "-no-such-field";
   private final ObjectMapper objectMapper = new ObjectMapper();
+
+  @Autowired
   private AccountService accountService;
 
   public AwsSnsRestController() {
