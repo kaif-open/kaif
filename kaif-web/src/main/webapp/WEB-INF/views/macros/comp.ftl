@@ -99,7 +99,7 @@
 <#-- if parentMode set to true, it means this debate is top of the page
      it will handle `parent` link differently. (also show hint)
   -->
-<#macro debate data parentMode=false>
+<#macro debate data parentMode=false editable=true>
 
     <#local debate=data />
 
@@ -147,8 +147,10 @@
           -->
             <a href="<@url.debate data=debate/>" title="永久連結"
                rel="nofollow"><@util.time instant=debate.createTime /></a>
-            <a href="#" debate-content-editor data-debate-id="${debate.debateId}"
-               class="hidden">編輯</a>
+            <#if editable>
+                <a href="#" debate-content-editor data-debate-id="${debate.debateId}"
+                   class="hidden">編輯</a>
+            </#if>
         </div>
         <div class="debate-child">
         <#-- child debate here -->
@@ -176,17 +178,17 @@
 <div class="debate-list" debate-list>
     <#list debates as debateItem>
         <div class="debate-standalone">
-            <@debate data=debateItem />
+            <@debate data=debateItem editable=false />
             <div class="grid-row">
                 <div class="grid-center-row debate-navigation">
-                    <#--
-                    <#if debateItem.hasParent()>
-                        <a href="<@url.debate data=debateItem parent=true/>">
-                            <i class="fa fa-caret-right"></i>
-                            討論串
-                        </a>
-                    </#if>
-                    -->
+                <#--
+                <#if debateItem.hasParent()>
+                    <a href="<@url.debate data=debateItem parent=true/>">
+                        <i class="fa fa-caret-right"></i>
+                        討論串
+                    </a>
+                </#if>
+                -->
                     <a href="<@url.article data=debateItem />${'#debate-'+debateItem.debateId}">
                         <i class="fa fa-caret-right"></i>
                     ${util.abbreviate(data.getArticle(debateItem).title, 20)}

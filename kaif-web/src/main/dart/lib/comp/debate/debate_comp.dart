@@ -38,9 +38,13 @@ class DebateComp {
     }
 
     if (accountSession.isSelf(debaterName)) {
+      var editorElem = elem.querySelector('[debate-content-editor]');
       Element contentElem = elem.querySelector('[debate-content]');
       Element contentEditElem = elem.querySelector('[debate-content-edit]');
-      var editorElem = elem.querySelector('[debate-content-editor]');
+      //if any element missing, this debate is not editable
+      if (editorElem == null || contentElem == null || contentEditElem == null) {
+        return;
+      }
       new DebateEditor(contentElem, contentEditElem, editorElem, this);
     }
   }

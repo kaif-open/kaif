@@ -15,15 +15,16 @@
 layout='full'
 head=headContent
 >
-
     <@template.home>
     <div class="grid">
         <div class="grid-body">
             <#if articlePage??>
                 <@comp.articleList data=articlePage showZone=true></@comp.articleList>
             </#if>
-            <#if debateList??>
+
+        <#if debateList??>
             <@comp.debateList data=debateList></@comp.debateList>
+            <@comp.debateForm/>
         </#if>
         </div>
         <aside class="grid-aside">
