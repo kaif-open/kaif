@@ -38,6 +38,7 @@ import com.google.common.collect.Lists;
 import io.kaif.database.DaoOperations;
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
+import io.kaif.model.debate.DebateFlakeIdGenerator;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
@@ -46,10 +47,13 @@ import io.kaif.model.zone.ZoneInfo;
 public class ArticleDao implements DaoOperations {
 
   private static final Logger logger = LoggerFactory.getLogger(ArticleDao.class);
+
   @Autowired
   private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
   @Autowired
-  private ArticleFlakeIdGenerator articleFlakeIdGenerator;
+  private DebateFlakeIdGenerator debateFlakeIdGenerator;
+
   private final RowMapper<Article> articleMapper = (rs, rowNum) -> {
     return new Article(//
         Zone.valueOf(rs.getString("zone")),
@@ -155,7 +159,7 @@ public class ArticleDao implements DaoOperations {
       String title,
       String url,
       Instant now) {
-    FlakeId flakeId = articleFlakeIdGenerator.next();
+    FlakeId flakeId = debateFlakeIdGenerator.next();
     return insertArticle(Article.createExternalLink(zoneInfo.getZone(),
         zoneInfo.getAliasName(),
         flakeId,
@@ -283,7 +287,7 @@ public class ArticleDao implements DaoOperations {
       Instant now) {
     return insertArticle(Article.createSpeak(zoneInfo.getZone(),
         zoneInfo.getAliasName(),
-        articleFlakeIdGenerator.next(),
+        debateFlakeIdGenerator.next(),
         author,
         title,
         content,

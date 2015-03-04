@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
-import io.kaif.model.article.ArticleFlakeIdGenerator;
 import io.kaif.model.debate.DebateFlakeIdGenerator;
 
 @Configuration
@@ -23,11 +22,6 @@ public class ModelConfiguration {
     public void setNodeId(int nodeId) {
       this.nodeId = nodeId;
     }
-  }
-
-  @Bean
-  public ArticleFlakeIdGenerator articleFlakeIdGenerator(FlakeIdProperties properties) {
-    return new ArticleFlakeIdGenerator(properties.nodeId);
   }
 
   @Bean

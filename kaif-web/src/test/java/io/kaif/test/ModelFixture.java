@@ -9,7 +9,6 @@ import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.Authority;
 import io.kaif.model.article.Article;
-import io.kaif.model.article.ArticleFlakeIdGenerator;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateFlakeIdGenerator;
 import io.kaif.model.zone.Zone;
@@ -61,7 +60,7 @@ public interface ModelFixture extends TimeFixture {
     Account author = accountCitizen("user" + new Random().nextInt(100));
     return Article.createExternalLink(zone,
         zone.value() + "-alias",
-        new ArticleFlakeIdGenerator(99).next(),
+        new DebateFlakeIdGenerator(99).next(),
         author,
         title,
         "http://example.com/" + title,
