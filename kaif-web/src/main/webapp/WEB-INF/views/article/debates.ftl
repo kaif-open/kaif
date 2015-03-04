@@ -64,6 +64,11 @@ applyZoneTheme=true
             </div>
         </div>
         <aside class="grid-aside">
+            <#if parentDebate??>
+                <@aside.shortUrl data=parentDebate />
+            <#else>
+                <@aside.shortUrl data=article />
+            </#if>
             <@aside.createArticle />
             <@aside.recommendZones zoneInfos=recommendZones />
         </aside>

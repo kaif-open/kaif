@@ -52,6 +52,19 @@ public class DebateTest implements ModelFixture {
   }
 
   @Test
+  public void getShortUrlPath() throws Exception {
+    Article article = article(Zone.valueOf("foo"), "title xyz");
+    Debate debate = Debate.create(article,
+        FlakeId.fromString("fromSum"),
+        null,
+        "not used",
+        accountCitizen("debater1"),
+        Instant.now());
+
+    assertEquals("/d/fromSum", debate.getShortUrlPath());
+  }
+
+  @Test
   public void preview() throws Exception {
     String content = "pixel art is better at [9gaga][1]\n\n[1]: http://www.google.com";
     assertEquals(

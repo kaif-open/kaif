@@ -247,4 +247,7 @@ public class Debate {
     return lastUpdateTime.isAfter(createTime);
   }
 
+  public String getShortUrlPath() {
+    return String.format("/d/%s", getDebateId());
+  }
 }

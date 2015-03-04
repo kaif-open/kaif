@@ -43,3 +43,14 @@
     </div>
 </div>
 </#macro>
+
+<#-- data can be Debate or Article -->
+<#macro shortUrl data>
+<div class="aside-card aside-short-url">
+    <h4>短網址</h4>
+
+    <div class="aside-card-box">
+        <input short-url-input type="text" value="https://kaif.io${data.shortUrlPath}">
+    </div>
+</div>
+</#macro>

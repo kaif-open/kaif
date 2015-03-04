@@ -11,6 +11,7 @@ import 'package:kaif_web/comp/article/article-list.dart';
 import 'package:kaif_web/comp/debate/debate_tree.dart';
 import 'package:kaif_web/comp/debate/debate_list.dart';
 import 'package:kaif_web/comp/server_part_loader.dart';
+import 'package:kaif_web/comp/short_url.dart';
 import 'dart:html';
 import 'dart:async';
 
@@ -83,6 +84,10 @@ class AppModule {
     });
     parent.querySelectorAll('[article-list]').forEach((el) {
       new ArticleList(el, articleService, voteService, accountSession);
+    });
+
+    parent.querySelectorAll('[short-url-input]').forEach((el) {
+      new ShortUrlInput(el);
     });
   }
 

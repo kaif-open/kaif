@@ -272,4 +272,8 @@ public class Article {
   public boolean hasMarkDownContent() {
     return contentType == ArticleContentType.MARK_DOWN;
   }
+
+  public String getShortUrlPath() {
+    return String.format("/d/%s", getArticleId());
+  }
 }

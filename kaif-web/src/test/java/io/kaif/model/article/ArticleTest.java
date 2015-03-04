@@ -103,6 +103,16 @@ public class ArticleTest implements ModelFixture {
   }
 
   @Test
+  public void getShortUrlPath() throws Exception {
+    assertEquals("/d/xyz1234",
+        article(zone, FlakeId.fromString("xyz1234"), "foo title").getShortUrlPath());
+    assertEquals("/d/cuteCate",
+        article(Zone.valueOf("funny"),
+            FlakeId.fromString("cuteCate"),
+            "foo title").getShortUrlPath());
+  }
+
+  @Test
   public void linkHintForSpeak() throws Exception {
 
     Article speak = Article.createSpeak(zone,
