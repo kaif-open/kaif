@@ -64,13 +64,16 @@
     <div class="aside-card-box" style="min-height: 71px;">
         <style>
             .gsc-input-box {
-                min-height: 33px;
+                min-height: 34px;
             }
 
             input.gsc-search-button-v2 {
                 width: auto;
-                height: 30px;
+                height: 32px;
                 margin-top: 8px;
+            }
+            form.gsc-search-box {
+                margin-bottom: 0;
             }
         </style>
         <script>

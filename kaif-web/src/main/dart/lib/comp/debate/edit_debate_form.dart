@@ -11,7 +11,7 @@ class EditDebateForm extends EditKmarkForm {
   String debateId;
 
   @override
-  int get minContentLength => 10;
+  int get minContentLength => 5;
 
   @override
   String get contentTooShortMessageKey => 'debate.min-content';

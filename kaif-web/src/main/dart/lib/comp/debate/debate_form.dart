@@ -135,7 +135,6 @@ class DebateForm {
     _contentInput.value)
     .then((_) {
       _contentInput.value = '';
-      _elem.remove();
       if (reloadWhenSubmit) {
         new FlashToast.success(i18n('debate.create-success'), seconds:2);
         route.reload();
