@@ -1,6 +1,7 @@
 package io.kaif.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.Nullable;
 
@@ -18,6 +19,8 @@ public interface ArticleService {
   List<Article> listLatestZoneArticles(Zone zone, @Nullable FlakeId startArticleId);
 
   Article loadArticle(FlakeId articleId);
+
+  Optional<Article> findArticle(FlakeId articleId);
 
   Debate debate(Zone zone,
       FlakeId articleId,

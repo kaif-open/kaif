@@ -98,6 +98,7 @@ public class ArticleServiceImpl implements ArticleService {
             Instant.now()));
   }
 
+  @Override
   public Optional<Article> findArticle(FlakeId articleId) {
     return articleDao.findArticle(articleId);
   }
