@@ -178,5 +178,6 @@ dependencies {
   compile 'org.ocpsoft.prettytime:prettytime:3.2.7.Final'
   compile 'org.apache.commons:commons-math3:3.4.1'
 
+  compile 'com.rometools:rome:1.5.0'
 }
 

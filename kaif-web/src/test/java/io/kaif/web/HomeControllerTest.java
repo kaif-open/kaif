@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.xpath;
 
 import java.util.List;
 
@@ -41,6 +42,17 @@ public class HomeControllerTest extends MvcIntegrationTests {
         .andExpect(content().string(containsString("recommend2")))
         .andExpect(content().string(containsString("/snapshot/css/kaif.css")))
         .andExpect(content().string(containsString("/snapshot/web/main.dart.js")));
+  }
+
+  @Test
+  public void rssFeed() throws Exception {
+    when(articleService.listTopArticles(null)).thenReturn(//
+        asList(article(funZone.getZone(), "joke xyz 1")));
+    mockMvc.perform(get("/.rss"))
+        .andExpect(xpath("/rss/channel/title").string("KAIF"))
+            //中文測試會是iso-8859-1，但正式跑又是utf8
+            //.andExpect(xpath("/rss/channel/description").string("綜合熱門"))
+        .andExpect(xpath("/rss/channel/item[1]/title").string("joke xyz 1"));
   }
 
   @Test

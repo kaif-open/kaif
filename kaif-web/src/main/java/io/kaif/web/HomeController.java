@@ -36,6 +36,14 @@ public class HomeController {
         .addObject("articlePage", new ArticlePage(articleService.listTopArticles(startArticleId)));
   }
 
+  @RequestMapping("/.rss")
+  public Object rssFeed() {
+    ModelAndView modelAndView = new ModelAndView().addObject("articlePage",
+        articleService.listTopArticles(null));
+    modelAndView.setView(new HotArticleRssContentView());
+    return modelAndView;
+  }
+
   @RequestMapping("/new")
   public ModelAndView listLatestArticles(
       @RequestParam(value = "start", required = false) String start) {

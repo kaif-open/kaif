@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.xpath;
 
 import java.util.List;
 
@@ -46,6 +47,24 @@ public class ZoneControllerTest extends MvcIntegrationTests {
         .andExpect(content().string(containsString("programming-alias")))
         .andExpect(content().string(containsString("php-lang")))
         .andExpect(content().string(containsString("href=\"/z/programming?start=phpone\"")));
+  }
+
+  @Test
+  public void rssFeed() throws Exception {
+    Zone z = zoneInfo.getZone();
+    when(zoneService.loadZone(z)).thenReturn(zoneInfo);
+
+    Article article1 = article(z, "javascript discussion");
+    Article article2 = article(z, FlakeId.fromString("phpone"), "php-lang discussion");
+
+    when(articleService.listHotZoneArticles(z, null)).thenReturn(//
+        asList(article1, article2));
+
+    mockMvc.perform(get("/z/programming/.rss"))
+        .andExpect(xpath("/rss/channel/title").string("programming"))
+            //.andExpect(xpath("/rss/channel/description").string("programming-alias 熱門"))
+        .andExpect(xpath("/rss/channel/item[1]/title").string("javascript discussion"))
+        .andExpect(xpath("/rss/channel/item[2]/guid").string("phpone"));
   }
 
   @Test

@@ -52,6 +52,17 @@ public class ZoneController {
     });
   }
 
+  @RequestMapping("/{zone}/.rss")
+  public Object rssFeed(@PathVariable("zone") String rawZone, HttpServletRequest request) {
+    return resolveZone(request, rawZone, zoneInfo -> {
+      request.getRequestURL();
+      ModelAndView modelAndView = new ModelAndView().addObject("zoneInfo", zoneInfo)
+          .addObject("articlePage", articleService.listHotZoneArticles(zoneInfo.getZone(), null));
+      modelAndView.setView(new HotArticleRssContentView());
+      return modelAndView;
+    });
+  }
+
   private Object resolveZone(HttpServletRequest request,
       String decodedRawZone,
       Function<ZoneInfo, ModelAndView> onZoneInfo) {
