@@ -29,6 +29,7 @@ head=headContent
         </div>
         <aside class="grid-aside">
             <@aside.createArticle />
+            <@aside.search />
             <@aside.recommendZones zoneInfos=recommendZones />
         </aside>
     </div>

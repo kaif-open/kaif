@@ -54,3 +54,39 @@
     </div>
 </div>
 </#macro>
+
+<#macro search>
+<div class="aside-card">
+    <h4>站內搜尋</h4>
+
+<#-- google search input style is stranged, try to fix it, we add min-height
+     in card-box to prevent size bounce when page loaded -->
+    <div class="aside-card-box" style="min-height: 71px;">
+        <style>
+            .gsc-input-box {
+                min-height: 33px;
+            }
+
+            input.gsc-search-button-v2 {
+                width: auto;
+                height: 30px;
+                margin-top: 8px;
+            }
+        </style>
+        <script>
+            (function () {
+                var cx = '005595287635600419689:mkvbjm66l84';
+                var gcse = document.createElement('script');
+                gcse.type = 'text/javascript';
+                gcse.async = true;
+                gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                '//www.google.com/cse/cse.js?cx=' + cx;
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(gcse, s);
+            })();
+        </script>
+        <gcse:searchbox-only></gcse:searchbox-only>
+    </div>
+</div>
+
+</#macro>
