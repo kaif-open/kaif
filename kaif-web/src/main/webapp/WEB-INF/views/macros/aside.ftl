@@ -50,7 +50,7 @@
     <h4>短網址</h4>
 
     <div class="aside-card-box">
-        <input short-url-input type="text" value="https://kaif.io${data.shortUrlPath}">
+        <input short-url-input type="text" value="http://kaif.io${data.shortUrlPath}">
     </div>
 </div>
 </#macro>
