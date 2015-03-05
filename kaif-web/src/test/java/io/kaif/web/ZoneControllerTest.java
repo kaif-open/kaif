@@ -60,7 +60,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
     when(articleService.listHotZoneArticles(z, null)).thenReturn(//
         asList(article1, article2));
 
-    mockMvc.perform(get("/z/programming/.rss"))
+    mockMvc.perform(get("/z/programming/hot.rss"))
         .andExpect(xpath("/rss/channel/title").string("programming"))
             //.andExpect(xpath("/rss/channel/description").string("programming-alias 熱門"))
         .andExpect(xpath("/rss/channel/item[1]/title").string("javascript discussion"))

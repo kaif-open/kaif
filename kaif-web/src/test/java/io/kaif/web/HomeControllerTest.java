@@ -48,7 +48,7 @@ public class HomeControllerTest extends MvcIntegrationTests {
   public void rssFeed() throws Exception {
     when(articleService.listTopArticles(null)).thenReturn(//
         asList(article(funZone.getZone(), "joke xyz 1")));
-    mockMvc.perform(get("/.rss"))
+    mockMvc.perform(get("/hot.rss"))
         .andExpect(xpath("/rss/channel/title").string("kaif"))
             //中文測試會是iso-8859-1，但正式跑又是utf8
             //.andExpect(xpath("/rss/channel/description").string("綜合熱門"))

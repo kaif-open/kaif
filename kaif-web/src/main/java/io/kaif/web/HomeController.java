@@ -36,7 +36,7 @@ public class HomeController {
         .addObject("articlePage", new ArticlePage(articleService.listTopArticles(startArticleId)));
   }
 
-  @RequestMapping("/.rss")
+  @RequestMapping("/hot.rss")
   public Object rssFeed() {
     ModelAndView modelAndView = new ModelAndView().addObject("articlePage",
         articleService.listTopArticles(null));

@@ -52,7 +52,7 @@ public class ZoneController {
     });
   }
 
-  @RequestMapping("/{zone}/.rss")
+  @RequestMapping("/{zone}/hot.rss")
   public Object rssFeed(@PathVariable("zone") String rawZone, HttpServletRequest request) {
     return resolveZone(request, rawZone, zoneInfo -> {
       request.getRequestURL();
