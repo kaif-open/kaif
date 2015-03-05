@@ -105,6 +105,7 @@ public class HotArticleRssContentView extends AbstractRssFeedView {
   protected List<Item> buildFeedItems(Map<String, Object> model,
       HttpServletRequest request,
       HttpServletResponse response) throws Exception {
+    @SuppressWarnings("unchecked")
     List<Article> hotArticles = (List<Article>) model.get("articlePage");
     return hotArticles.stream().map(this::convertArticle).collect(Collectors.toList());
   }
