@@ -42,7 +42,7 @@ public class HotArticleRssContentView extends AbstractRssFeedView {
       feed.setLink(zoneUrl(zoneInfo.getZone()));
       feed.setDescription(zoneInfo.getAliasName() + " 熱門");
     } else {
-      feed.setTitle("KAIF");
+      feed.setTitle("kaif");
       feed.setLink(SCHEME_AND_HOST);
       feed.setDescription("綜合熱門");
     }
@@ -64,7 +64,7 @@ public class HotArticleRssContentView extends AbstractRssFeedView {
     return entry;
   }
 
-  private StringBuilder buildAuthorPart(String username) {
+  private String buildAuthorPart(String username) {
     StringBuilder builder = new StringBuilder();
     builder.append("由");
     builder.append("<a href=\"");
@@ -73,7 +73,7 @@ public class HotArticleRssContentView extends AbstractRssFeedView {
     builder.append("\">");
     builder.append(username);
     builder.append("</a>張貼<br>");
-    return builder;
+    return builder.toString();
   }
 
   private String buildSummary(Article article) {
@@ -83,7 +83,7 @@ public class HotArticleRssContentView extends AbstractRssFeedView {
       builder.append("<a href=\"");
       builder.append(article.getLink());
       builder.append("\">");
-      builder.append("[link]");
+      builder.append("[原文連結]");
       builder.append("</a>");
     } else {
       builder.append("<div>");
