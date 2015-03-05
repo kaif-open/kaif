@@ -105,12 +105,13 @@ public class ArticleResource {
 
   @RequestMapping(value = "/debate", method = RequestMethod.PUT, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
-  public void create(AccountAccessToken token, @Valid @RequestBody CreateDebate request) {
-    articleService.debate(request.zone,
+  public SingleWrapper<String> create(AccountAccessToken token,
+      @Valid @RequestBody CreateDebate request) {
+    return SingleWrapper.of(articleService.debate(request.zone,
         request.articleId,
         request.parentDebateId,
         token,
-        request.content.trim());
+        request.content.trim()).getDebateId().toString());
   }
 
   @RequestMapping(value = "/debate/content", method = RequestMethod.POST, consumes = {

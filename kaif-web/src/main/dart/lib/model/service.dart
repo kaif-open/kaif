@@ -287,13 +287,16 @@ class ArticleService extends _AbstractService {
     .then((req) => req.responseText);
   }
 
-  Future debate(String zone, String articleId, String parentDebateId, String content) {
+  /**
+   * return created debateId
+   */
+  Future<String> debate(String zone, String articleId, String parentDebateId, String content) {
     String parent = isStringBlank(parentDebateId) ? null : parentDebateId;
     var json = {
         'zone':zone, 'articleId':articleId, 'parentDebateId':parent, 'content':content
     };
     return _putJson(_getUrl('/debate'), json)
-    .then((res) => null);
+    .then(_mapToSingleWrapper);
   }
 
   Future<bool> canCreateArticle(String zone) {

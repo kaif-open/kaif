@@ -36,6 +36,12 @@ class Router {
     _gotoWithQuery('/z/${zone}/new', null);
   }
 
+  /**
+   * change page to target path, with optional query string.
+   * the change will be history of browser
+   *
+   * browser do not send referrer.
+   */
   void _gotoWithQuery(String path, String queryString) {
     if (queryString == null) {
       window.location.href = path;

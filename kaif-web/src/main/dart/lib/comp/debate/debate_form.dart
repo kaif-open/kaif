@@ -133,12 +133,13 @@ class DebateForm {
     articleId,
     parentDebateId,
     _contentInput.value)
-    .then((_) {
+    .then((String debateId) {
       _contentInput.value = '';
       if (reloadWhenSubmit) {
         new FlashToast.success(i18n('debate.create-success'), seconds:2);
         route.reload();
       } else {
+        _elem.remove();
         new Toast.success(i18n('debate.create-success'), seconds:2).render();
         // note that if no reload, the debate form component is corrupted and could
         // not submit again (currently this is fine)
