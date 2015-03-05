@@ -62,13 +62,12 @@
     <div class="aside-card-box">
         <form class="pure-form search-form" action="https://www.google.com/cse/publicurl">
             <input type="hidden" name="cx" value="005595287635600419689:mkvbjm66l84"/>
-            <input type="text" name="q"/>
+            <input type="text" name="q" placeholder="Google"/>
             <button type="submit"
                     class="pure-button pure-button-primary">搜尋
             </button>
         </form>
     </div>
-</div>
 </div>
 
 </#macro>
