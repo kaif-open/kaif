@@ -163,6 +163,26 @@ a.create-article {
   }
 }
 
+//
+// search
+//
+
+.search-form {
+  .flex-display(inline-flex);
+  .justify-content(space-between);
+  width:100%;
+  input[type=text] {
+    .flex-grow(1);
+  }
+  button[type=submit] {
+    .flex-basis(90px);
+    margin-left: @padding-xs-horizontal;
+    @media only screen and (max-width: @screen-md-max) {
+      margin-top: 0;
+    }
+  }
+}
+
 .form-action-bar {
   & > .pure-button {
     margin-top: 0.7em;

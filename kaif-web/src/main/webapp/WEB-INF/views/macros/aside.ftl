@@ -59,37 +59,16 @@
 <div class="aside-card">
     <h4>站內搜尋</h4>
 
-<#-- google search input style is stranged, try to fix it, we add min-height
-     in card-box to prevent size bounce when page loaded -->
-    <div class="aside-card-box" style="min-height: 71px;">
-        <style>
-            .gsc-input-box {
-                min-height: 34px;
-            }
-
-            input.gsc-search-button-v2 {
-                width: auto;
-                height: 32px;
-                margin-top: 8px;
-            }
-            form.gsc-search-box {
-                margin-bottom: 0;
-            }
-        </style>
-        <script>
-            (function () {
-                var cx = '005595287635600419689:mkvbjm66l84';
-                var gcse = document.createElement('script');
-                gcse.type = 'text/javascript';
-                gcse.async = true;
-                gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
-                '//www.google.com/cse/cse.js?cx=' + cx;
-                var s = document.getElementsByTagName('script')[0];
-                s.parentNode.insertBefore(gcse, s);
-            })();
-        </script>
-        <gcse:searchbox-only></gcse:searchbox-only>
+    <div class="aside-card-box">
+        <form class="pure-form search-form" action="https://www.google.com/cse/publicurl">
+            <input type="hidden" name="cx" value="005595287635600419689:mkvbjm66l84"/>
+            <input type="text" name="q"/>
+            <button type="submit"
+                    class="pure-button pure-button-primary">搜尋
+            </button>
+        </form>
     </div>
+</div>
 </div>
 
 </#macro>
