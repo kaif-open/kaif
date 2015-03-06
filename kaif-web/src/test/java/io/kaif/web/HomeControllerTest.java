@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.xpath;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
@@ -47,10 +48,11 @@ public class HomeControllerTest extends MvcIntegrationTests {
   @Test
   public void rssFeed() throws Exception {
     when(articleService.listTopArticles(null)).thenReturn(//
-        asList(article(funZone.getZone(), "joke xyz 1")));
-    mockMvc.perform(get("/hot.rss")).andExpect(xpath("/rss/channel/title").string("kaif"))
-        //中文測試會是iso-8859-1，但正式跑又是utf8
-        //.andExpect(xpath("/rss/channel/description").string("綜合熱門"))
+        Collections.singletonList(article(funZone.getZone(), "joke xyz 1")));
+    mockMvc.perform(get("/hot.rss"))
+        .andExpect(content().encoding("UTF-8"))
+        .andExpect(xpath("/rss/channel/title").string("熱門 kaif.io"))
+        .andExpect(xpath("/rss/channel/description").string("綜合熱門"))
         .andExpect(xpath("/rss/channel/item[1]/title").string("joke xyz 1"));
   }
 

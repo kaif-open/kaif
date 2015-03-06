@@ -24,6 +24,10 @@ public class HotArticleRssContentView extends AbstractRssFeedView {
 
   private final static String SCHEME_AND_HOST = "https://kaif.io";
 
+  public HotArticleRssContentView() {
+    setContentType("application/rss+xml;charset=UTF-8");
+  }
+
   private static String zoneUrl(Zone zone) {
     return SCHEME_AND_HOST + "/z/" + zone.value();
   }
@@ -38,11 +42,11 @@ public class HotArticleRssContentView extends AbstractRssFeedView {
       HttpServletRequest request) {
     ZoneInfo zoneInfo = (ZoneInfo) model.get("zoneInfo");
     if (zoneInfo != null) {
-      feed.setTitle(zoneInfo.getName());
+      feed.setTitle(zoneInfo.getName() + " kaif.io");
       feed.setLink(zoneUrl(zoneInfo.getZone()));
       feed.setDescription(zoneInfo.getAliasName() + " 熱門");
     } else {
-      feed.setTitle("kaif");
+      feed.setTitle("熱門 kaif.io");
       feed.setLink(SCHEME_AND_HOST);
       feed.setDescription("綜合熱門");
     }
