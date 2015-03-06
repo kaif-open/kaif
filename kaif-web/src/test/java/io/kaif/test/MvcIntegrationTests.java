@@ -1,6 +1,8 @@
 package io.kaif.test;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 import java.util.Optional;
 
@@ -20,6 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -104,5 +107,9 @@ public abstract class MvcIntegrationTests implements ModelFixture {
         account.getAuthorities());
     when(accountService.tryDecodeAccessToken(token)).thenReturn(Optional.of(accountAccessToken));
     return token;
+  }
+
+  protected final ResultMatcher containsDebateFormTemplate() {
+    return content().string(containsString("comp-template=\"debate-form\""));
   }
 }

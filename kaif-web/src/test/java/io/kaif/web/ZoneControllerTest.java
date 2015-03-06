@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.test.web.servlet.ResultMatcher;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.article.Article;
@@ -60,9 +61,9 @@ public class ZoneControllerTest extends MvcIntegrationTests {
     when(articleService.listHotZoneArticles(z, null)).thenReturn(//
         asList(article1, article2));
 
-    mockMvc.perform(get("/z/programming/hot.rss"))
-        .andExpect(xpath("/rss/channel/title").string("programming"))
-            //.andExpect(xpath("/rss/channel/description").string("programming-alias 熱門"))
+    mockMvc.perform(get("/z/programming/hot.rss")).andExpect(xpath("/rss/channel/title").string(
+        "programming"))
+        //.andExpect(xpath("/rss/channel/description").string("programming-alias 熱門"))
         .andExpect(xpath("/rss/channel/item[1]/title").string("javascript discussion"))
         .andExpect(xpath("/rss/channel/item[2]/guid").string("phpone"));
   }
@@ -95,7 +96,8 @@ public class ZoneControllerTest extends MvcIntegrationTests {
     mockMvc.perform(get("/z/programming/new-debate"))
         .andExpect(content().string(containsString("python is serious")))
         .andExpect(content().string(containsString("agree, good.")))
-        .andExpect(content().string(containsString("it&#39;s too simple")));
+        .andExpect(content().string(containsString("it&#39;s too simple")))
+        .andExpect(containsDebateFormTemplate());
   }
 
   @Test
@@ -148,7 +150,8 @@ public class ZoneControllerTest extends MvcIntegrationTests {
         .andExpect(content().string(containsString("programming-alias")))
         .andExpect(content().string(containsString("erlang discussion")))
         .andExpect(content().string(containsString("ERLANG is bad")))
-        .andExpect(content().string(containsString("JAVA is better")));
+        .andExpect(content().string(containsString("JAVA is better")))
+        .andExpect(containsDebateFormTemplate());
   }
 
   @Test

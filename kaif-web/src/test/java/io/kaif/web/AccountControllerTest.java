@@ -39,6 +39,11 @@ public class AccountControllerTest extends MvcIntegrationTests {
   }
 
   @Test
+  public void debateReplies() throws Exception {
+    mockMvc.perform(get("/account/debate-replies")).andExpect(containsDebateFormTemplate());
+  }
+
+  @Test
   public void debateRepliesPart() throws Exception {
     Account account = accountCitizen("bar111");
     String token = prepareAccessToken(account);
