@@ -72,9 +72,21 @@
 
 </#macro>
 
-<#macro rss link>
+<#-- hot rss aside card
+     with optional implicit argument `zoneInfo` -->
+<#macro rss>
 <div class="aside-card">
-    <h4><a class="plain" href="${link}"><i class="fa fa-rss-square rss-icon"></i> RSS 熱門</a></h4>
+    <h4>訂閱 RSS</h4>
+
+    <div class="aside-card-box">
+        <#if zoneInfo??>
+            <a class="plain" href="/z/${zoneInfo.name}/hot.rss"><i
+                    class="fa fa-rss-square rss-icon"></i> ${zoneInfo.aliasName} - 熱門</a>
+        <#else>
+            <a class="plain" href="/hot.rss"><i
+                    class="fa fa-rss-square rss-icon"></i> 綜合 - 熱門</a>
+        </#if>
+    </div>
 </div>
 
 </#macro>

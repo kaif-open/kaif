@@ -8,9 +8,9 @@
 
 <title>綜合文章區 | kaif.io</title>
 <meta name="description" content="最新與最熱門的文章都在 kaif.io">
-<#if url.isCurrentPath('/')>
+    <#if url.isCurrentPath('/')>
     <link rel="alternate" type="application/rss+xml" title="RSS" href="https://kaif.io/hot.rss"/>
-</#if>
+    </#if>
 </#assign>
 
 <@template.page
@@ -32,9 +32,7 @@ head=headContent
             <@aside.createArticle />
             <@aside.search />
             <@aside.recommendZones zoneInfos=recommendZones />
-        <#if url.isCurrentPath('/')>
-            <@aside.rss '/hot.rss'/>
-        </#if>
+            <@aside.rss/>
         </aside>
     </div>
     </@template.home>

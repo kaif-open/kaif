@@ -50,9 +50,11 @@
 
      includePart=true will treat current path `/foo/bar.part` same as target path `/foo/bar`
   -->
-<#function isCurrentPath targetPath includePart=false>
+<#function isCurrentPath targetPath includePart=false matchEndSlash=true>
     <#local currentPath = springMacroRequestContext.getRequestUri() />
-    <#return currentPath == targetPath || (includePart && currentPath == targetPath + '.part') />
+    <#return currentPath == targetPath
+    || (matchEndSlash && (currentPath == targetPath + '/'))
+    || (includePart && currentPath == targetPath + '.part') />
 </#function>
 
 <#-- zone url,

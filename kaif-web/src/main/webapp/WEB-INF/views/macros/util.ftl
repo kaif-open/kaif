@@ -10,8 +10,6 @@
      if `create.part` use menuLink, it won't work because the url is not same as
      landing page
      thus we compare both url
-
-     TODO menuLink in part template should use dart to render and highlight
   -->
     <#local selected = url.isCurrentPath(href, true) />
 <li class="${selected?string('pure-menu-selected','')}"><a href="${href}">${name}</a></li>
