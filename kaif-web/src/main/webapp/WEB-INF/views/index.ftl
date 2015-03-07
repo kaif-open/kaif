@@ -8,7 +8,9 @@
 
 <title>綜合文章區 | kaif.io</title>
 <meta name="description" content="最新與最熱門的文章都在 kaif.io">
-
+<#if url.isCurrentPath('/', true)>
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="https://kaif.io/hot.rss"/>
+</#if>
 </#assign>
 
 <@template.page
@@ -21,7 +23,6 @@ head=headContent
             <#if articlePage??>
                 <@comp.articleList data=articlePage showZone=true></@comp.articleList>
             </#if>
-
         <#if debateList??>
             <@comp.debateList data=debateList></@comp.debateList>
             <@comp.debateForm/>

@@ -11,7 +11,9 @@
 <#-- TODO description and open graph, twitter card...etc -->
 
 <meta name="description" content="${zoneInfo.aliasName} - <@url.zone data=zoneInfo/>">
-
+<#if url.isCurrentPath('/z/${zoneInfo.name}', true)>
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="https://kaif.io/z/${zoneInfo.name}/hot.rss"/>
+</#if>
 </#assign>
 
 <@template.page
