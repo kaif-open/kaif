@@ -71,3 +71,10 @@
 </div>
 
 </#macro>
+
+<#macro rss link>
+<div class="aside-card">
+    <h4><a class="plain" href="${link}"><i class="fa fa-rss-square rss-icon"></i> RSS 熱門</a></h4>
+</div>
+
+</#macro>

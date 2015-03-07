@@ -11,7 +11,7 @@
 <#-- TODO description and open graph, twitter card...etc -->
 
 <meta name="description" content="${zoneInfo.aliasName} - <@url.zone data=zoneInfo/>">
-<#if url.isCurrentPath('/z/${zoneInfo.name}', true)>
+<#if url.isCurrentPath('/z/${zoneInfo.name}') || url.isCurrentPath('/z/${zoneInfo.name}/')>
     <link rel="alternate" type="application/rss+xml" title="RSS" href="https://kaif.io/z/${zoneInfo.name}/hot.rss"/>
 </#if>
 </#assign>
@@ -38,6 +38,9 @@ applyZoneTheme=true
         <aside class="grid-aside">
             <@aside.createArticle />
             <@aside.recommendZones zoneInfos=recommendZones />
+            <#if url.isCurrentPath('/z/${zoneInfo.name}') || url.isCurrentPath('/z/${zoneInfo.name}/')>
+                <@aside.rss '/z/${zoneInfo.name}/hot.rss'/>
+            </#if>
         </aside>
     </div>
 
