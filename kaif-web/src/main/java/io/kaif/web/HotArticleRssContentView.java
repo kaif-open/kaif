@@ -1,10 +1,12 @@
 package io.kaif.web;
 
+import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.*;
+
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,6 +26,9 @@ public class HotArticleRssContentView extends AbstractRssFeedView {
 
   private final static String SCHEME_AND_HOST = "https://kaif.io";
 
+  //kaif first date
+  private final static Instant DEFAULT_INSTANT = Instant.ofEpochMilli(1424915802000L);
+
   public HotArticleRssContentView() {
     setContentType("application/rss+xml;charset=UTF-8");
   }
@@ -41,16 +46,26 @@ public class HotArticleRssContentView extends AbstractRssFeedView {
       Channel feed,
       HttpServletRequest request) {
     ZoneInfo zoneInfo = (ZoneInfo) model.get("zoneInfo");
+    @SuppressWarnings("unchecked")
+    List<Article> articles = (List<Article>) model.get("articlePage");
     if (zoneInfo != null) {
       feed.setTitle(zoneInfo.getName() + " kaif.io");
       feed.setLink(zoneUrl(zoneInfo.getZone()));
       feed.setDescription(zoneInfo.getAliasName() + " 熱門");
+      feed.setPubDate(buildFeedUpdateTime(articles, zoneInfo.getCreateTime()));
     } else {
       feed.setTitle("熱門 kaif.io");
       feed.setLink(SCHEME_AND_HOST);
       feed.setDescription("綜合熱門");
+      feed.setPubDate(buildFeedUpdateTime(articles, DEFAULT_INSTANT));
     }
-    feed.setPubDate(Date.from(Instant.now()));
+  }
+
+  private Date buildFeedUpdateTime(List<Article> articlePage, Instant fallbackTime) {
+    return Date.from(articlePage.stream()
+        .collect(maxBy(comparing(Article::getCreateTime)))
+        .map(Article::getCreateTime)
+        .orElse(fallbackTime));
   }
 
   private Item convertArticle(Article article) {
@@ -111,6 +126,6 @@ public class HotArticleRssContentView extends AbstractRssFeedView {
       HttpServletResponse response) throws Exception {
     @SuppressWarnings("unchecked")
     List<Article> hotArticles = (List<Article>) model.get("articlePage");
-    return hotArticles.stream().map(this::convertArticle).collect(Collectors.toList());
+    return hotArticles.stream().map(this::convertArticle).collect(toList());
   }
 }

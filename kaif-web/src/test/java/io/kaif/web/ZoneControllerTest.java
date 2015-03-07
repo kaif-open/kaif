@@ -13,11 +13,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.xpath;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.test.web.servlet.ResultMatcher;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.article.Article;
@@ -30,6 +33,10 @@ import io.kaif.test.MvcIntegrationTests;
 public class ZoneControllerTest extends MvcIntegrationTests {
 
   ZoneInfo zoneInfo = zoneDefault("programming");
+
+  public static final DateTimeFormatter RFC1123_FORMATTER = DateTimeFormatter.ofPattern(
+      "EEE, dd MMM yyyy HH:mm:ss zzz")
+      .withZone(ZoneId.of("GMT")).withLocale(Locale.US);
 
   @Test
   public void hotArticlesWithPaging() throws Exception {
@@ -58,14 +65,32 @@ public class ZoneControllerTest extends MvcIntegrationTests {
     Article article1 = article(z, "javascript discussion");
     Article article2 = article(z, FlakeId.fromString("phpone"), "php-lang discussion");
 
-    when(articleService.listHotZoneArticles(z, null)).thenReturn(//
+    when(articleService.listCachedHotZoneArticles(z)).thenReturn(//
         asList(article1, article2));
+
+    //java.time's RFC1123's dd allow 1 digit, not compatible with rss view
+    String pubDateStr = RFC1123_FORMATTER.format(article2.getCreateTime());
 
     mockMvc.perform(get("/z/programming/hot.rss"))
         .andExpect(xpath("/rss/channel/title").string("programming kaif.io"))
         .andExpect(xpath("/rss/channel/description").string("programming-alias 熱門"))
+        .andExpect(xpath("/rss/channel/pubDate").string(pubDateStr))
         .andExpect(xpath("/rss/channel/item[1]/title").string("javascript discussion"))
         .andExpect(xpath("/rss/channel/item[2]/guid").string("phpone"));
+  }
+
+  @Test
+  public void rssFeed_no_articles() throws Exception {
+    Zone z = zoneInfo.getZone();
+    when(zoneService.loadZone(z)).thenReturn(zoneInfo);
+
+    String pubDateStr = RFC1123_FORMATTER.format(zoneInfo.getCreateTime());
+
+    when(articleService.listCachedHotZoneArticles(z)).thenReturn(Collections.emptyList());
+    mockMvc.perform(get("/z/programming/hot.rss"))
+        .andExpect(xpath("/rss/channel/title").string("programming kaif.io"))
+        .andExpect(xpath("/rss/channel/description").string("programming-alias 熱門"))
+        .andExpect(xpath("/rss/channel/pubDate").string(pubDateStr));
   }
 
   @Test

@@ -1,6 +1,7 @@
 package io.kaif.service.impl;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.*;
 import static org.junit.Assert.*;
 
@@ -136,6 +137,17 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     articleDao.evictAllCaches();
     List<Article> refreshed = service.listArticlesByDebates(asList(d2.getDebateId()));
     assertNotSame(refreshed.get(0), articles2.get(1));
+  }
+
+  @Test
+  public void listCachedHotZoneArticles() throws Exception {
+    List<Article> articleList = service.listCachedHotZoneArticles(zoneInfo.getZone());
+    assertSame(articleList, service.listCachedHotZoneArticles(zoneInfo.getZone()));
+
+    Zone otherZone = savedZoneDefault("others").getZone();
+    assertNotSame(articleList, service.listCachedHotZoneArticles(otherZone));
+    assertNotSame(articleList, service.listCachedTopArticles());
+
   }
 
   @Test
@@ -338,7 +350,8 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     Article a3 = service.createExternalLink(author, fooZone.getZone(), "title2", "http://foo2.com");
 
     assertEquals(asList(a3, a2, a1), service.listLatestZoneArticles(fooZone.getZone(), null));
-    assertEquals(asList(a1), service.listLatestZoneArticles(fooZone.getZone(), a2.getArticleId()));
+    assertEquals(singletonList(a1),
+        service.listLatestZoneArticles(fooZone.getZone(), a2.getArticleId()));
     articleDao.markAsDeleted(a1);
     assertEquals("listLatest should exclude deleted",
         asList(a3, a2),
@@ -368,7 +381,14 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     articleDao.markAsDeleted(articles.get(1));
 
     List<Article> firstPageWithoutDeleted = articles.stream().skip(2).limit(25).collect(toList());
-    assertEquals(firstPageWithoutDeleted, service.listHotZoneArticles(fooZone.getZone(), null));
+    assertEquals(firstPageWithoutDeleted,
+        service.listHotZoneArticles(fooZone.getZone(), null));
+  }
+
+  @Test
+  public void listCachedTopArticles() throws Exception {
+    List<Article> articles = service.listCachedTopArticles();
+    assertSame(articles, service.listCachedTopArticles());
   }
 
   @Test

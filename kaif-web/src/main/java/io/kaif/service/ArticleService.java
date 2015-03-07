@@ -34,6 +34,10 @@ public interface ArticleService {
 
   List<Article> listLatestArticles(@Nullable FlakeId startArticleId);
 
+  List<Article> listCachedHotZoneArticles(Zone zone);
+
+  List<Article> listCachedTopArticles();
+
   List<Article> listTopArticles(@Nullable FlakeId startArticleId);
 
   String loadEditableDebateContent(FlakeId debateId, Authorization editor);

@@ -1,6 +1,7 @@
 package io.kaif.web;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -8,8 +9,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.xpath;
 
-import java.util.Collections;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -47,21 +50,25 @@ public class HomeControllerTest extends MvcIntegrationTests {
 
   @Test
   public void rssFeed() throws Exception {
-    when(articleService.listTopArticles(null)).thenReturn(//
-        Collections.singletonList(article(funZone.getZone(), "joke xyz 1")));
+    Article article = article(funZone.getZone(), "joke xyz 1");
+    when(articleService.listCachedTopArticles()).thenReturn(singletonList(article));
+
+    final DateTimeFormatter RFC1123_FORMATTER = DateTimeFormatter.ofPattern(
+        "EEE, dd MMM yyyy HH:mm:ss zzz")
+        .withZone(ZoneId.of("GMT")).withLocale(Locale.US);
+
     mockMvc.perform(get("/hot.rss"))
         .andExpect(content().encoding("UTF-8"))
         .andExpect(xpath("/rss/channel/title").string("熱門 kaif.io"))
         .andExpect(xpath("/rss/channel/description").string("綜合熱門"))
+        .andExpect(xpath("/rss/channel/pubDate").string(RFC1123_FORMATTER.format(article.getCreateTime())))
         .andExpect(xpath("/rss/channel/item[1]/title").string("joke xyz 1"));
   }
 
   @Test
   public void zones() throws Exception {
     ImmutableMap<String, List<ZoneInfo>> zones = ImmutableMap.of("F",
-        asList(funZone, zoneDefault("fortran")),
-        "T",
-        asList(toyZone, zoneDefault("tcl")));
+        asList(funZone, zoneDefault("fortran")), "T", asList(toyZone, zoneDefault("tcl")));
     when(zoneService.listZoneAtoZ()).thenReturn(zones);
 
     mockMvc.perform(get("/zone/a-z"))
@@ -84,9 +91,9 @@ public class HomeControllerTest extends MvcIntegrationTests {
     Article article = article(funZone.getZone(), "article 1");
     Debate debate = debate(article, "123456", null);
     when(articleService.listLatestDebates(null)).thenReturn(//
-        asList(debate));
-    when(articleService.listArticlesByDebates(asList(debate.getDebateId()))).thenReturn(asList(
-        article));
+        singletonList(debate));
+    when(articleService.listArticlesByDebates(singletonList(debate.getDebateId()))).thenReturn(
+        singletonList(article));
     mockMvc.perform(get("/new-debate"))
         .andExpect(model().attributeExists("recommendZones"))
         .andExpect(content().string(containsString("123456")))

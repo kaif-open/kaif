@@ -30,7 +30,18 @@ public class UtilConfiguration {
   public CacheManager compositeCacheManager() {
     return new CompositeCacheManager(debaterIdCacheManager(),
         zoneInfoCacheManager(),
-        listHotZonesCacheManager());
+        listHotZonesCacheManager(),
+        rssHotArticlesCacheManager());
+  }
+
+  @Bean
+  public CacheManager rssHotArticlesCacheManager() {
+    CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
+        .expireAfterWrite(4, TimeUnit.HOURS)
+        .maximumSize(100);
+    GuavaCacheManager cacheManager = new GuavaCacheManager("rssHotArticles");
+    cacheManager.setCacheBuilder(cacheBuilder);
+    return cacheManager;
   }
 
   @Bean

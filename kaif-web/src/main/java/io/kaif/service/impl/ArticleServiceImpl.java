@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -180,6 +181,18 @@ public class ArticleServiceImpl implements ArticleService {
   public List<Article> listHotZoneArticles(Zone zone, FlakeId startArticleId) {
     //TODO cache
     return articleDao.listZoneHotArticles(zone, startArticleId, PAGE_SIZE);
+  }
+
+  @Override
+  @Cacheable(value = "rssHotArticles")
+  public List<Article> listCachedHotZoneArticles(Zone zone) {
+    return listHotZoneArticles(zone, null);
+  }
+
+  @Override
+  @Cacheable(value = "rssHotArticles")
+  public List<Article> listCachedTopArticles() {
+    return listTopArticles(null);
   }
 
   @Override
