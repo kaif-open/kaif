@@ -52,3 +52,35 @@ a.plain {
     border-width: @width * 2 @width 0 @width;
   }
 }
+
+//
+// small mixin
+//
+.size(@width; @height) {
+  width: @width;
+  height: @height;
+}
+
+.square(@size) {
+  .size(@size; @size);
+}
+
+.margin-v(@size) {
+  margin-top: @size;
+  margin-bottom: @size;
+}
+
+.margin-h(@size) {
+  margin-left: @size;
+  margin-right: @size;
+}
+
+.padding-v(@size) {
+  padding-top: @size;
+  padding-bottom: @size;
+}
+
+.padding-h(@size) {
+  padding-left: @size;
+  padding-right: @size;
+}

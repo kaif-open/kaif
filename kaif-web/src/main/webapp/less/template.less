@@ -6,53 +6,97 @@
 // top-menu
 //
 .top-menu {
-  padding: 0.5em;
-  text-align: center;
+
+  @logo-height: 25px;
+  @logo-margin: 10px;
+  @top-height: (@logo-height + @logo-margin * 2);
+  @top-link-color: lighten(@link-color, 35%);
+  @top-link-hover-color: lighten(@link-color, 45%);
+
+  .padding-h(@padding-sm-horizontal);
+  text-align: left;
   z-index: @zindex-navbar;
+  height: @top-height;
+  line-height: @top-height;
 
-  @media (min-width: @screen-md-min) {
-    & {
-      text-align: left;
+  & > ul {
+    float: right;
+  }
+
+  img.logo {
+    width: 60px;
+    height: @logo-height;
+    .margin-v(@logo-margin);
+  }
+
+  // override purecss block mode in mobile
+  @media (max-width: 480px) {
+    &.pure-menu-horizontal > .pure-menu-children > li {
+      display: inline-block;
     }
 
-    & ul {
-      float: right;
+    .pure-menu-can-have-children .pure-menu-children li {
+      border: 0;
+    }
+
+    // smaller padding in mobile
+    &.pure-menu a {
+      .padding-h(10px);
     }
   }
-}
 
-.top-menu.pure-menu-open {
-  background: inherit; //override pure-menu
-}
-
-.pure-menu.pure-menu-open.pure-menu-fixed {
-  /* Fixed menus normally have a border at the bottom. */
-  border-bottom: none;
-  /* I need a higher z-index here because of the scroll-over effect. */
-  z-index: 4;
-}
-
-.top-menu .pure-menu-heading {
-  color: white;
-  font-weight: 400;
-  line-height: 1em;
-}
-
-img.logo {
-  width: 60px;
-  height: 25px;
-}
-
-.top-menu li {
-  a, a:visited {
-    text-decoration: none;
-    color: lighten(@link-color, 25%);
+  &.pure-menu .pure-menu-heading {
+    .padding-v(0);
   }
-  a:hover {
-    background: none;
-    text-decoration: none;
-    color: lighten(@link-color, 35%);
+
+  &.pure-menu-open {
+    background: inherit; //override pure-menu
   }
+
+  &.pure-menu-horizontal .pure-menu-open {
+    background-color: @header-hover-bg;
+    border: 0;
+  }
+
+  //remove vertical-align: middle in purecss because it cause
+  //strange top padding
+  &.pure-menu.pure-menu-horizontal > ul,
+  & > ul > li {
+    vertical-align: top;
+  }
+
+  & > ul > li > a {
+    line-height: inherit;
+    border: 0;
+    outline: none;
+    .padding-v(0);
+
+    color: @top-link-color;
+    text-decoration: none;
+
+    &:hover, &:focus, &:active {
+      background-color: @header-hover-bg;
+      text-decoration: none;
+      color: @top-link-hover-color;
+    }
+  }
+
+  // children menu
+  &.pure-menu.pure-menu-horizontal li .pure-menu-children {
+    background: @header-bg;
+    border: 0;
+    a {
+      color: @top-link-color;
+      &:hover, &:focus, &:active {
+        background-color: @header-hover-bg;
+        color: @top-link-hover-color;
+      }
+    }
+    .pure-menu-separator {
+      background-color: @gray-light;
+    }
+  }
+
 }
 
 //
@@ -170,7 +214,7 @@ a.create-article {
 .search-form {
   .flex-display(inline-flex);
   .justify-content(space-between);
-  width:100%;
+  width: 100%;
   input[type=text] {
     .flex-grow(1);
   }

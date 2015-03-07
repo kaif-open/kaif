@@ -109,7 +109,7 @@ main {
 // header
 //
 .header {
-  background: #2d3e50;
+  background: @header-bg;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.10);
 }
 
@@ -136,11 +136,11 @@ main {
 
   a, a:visited {
     text-decoration: none;
-    color: lighten(@link-color, 25%);
+    color: lighten(@link-color, 35%);
   }
   a:hover {
     text-decoration: none;
-    color: lighten(@link-color, 35%);
+    color: lighten(@link-color, 45%);
   }
 }
 
@@ -175,5 +175,19 @@ main {
         width: 100%;
       }
     }
+  }
+}
+
+//
+// enhance pure menu drop down
+//
+.pure-menu-open.pure-menu-can-have-children ul {
+  //make vertical drop down below menu label
+  top: 100%;
+
+  &.menu-right {
+    //right alignment:
+    left: auto;
+    right: 0;
   }
 }

@@ -12,11 +12,48 @@ class AccountMenu {
       elem.append(_menuLink(route.signIn, i18n('account-menu.sign-in')));
       elem.append(_menuLink(route.signUp, i18n('account-menu.sign-up')));
     } else {
-      elem.append(_menuLink(route.debateReplies, i18n('account-menu.debate-replies')));
-      elem.append(_menuLink(route.settings, auth.username));
-      elem.nodes.add(_createSignOut());
+      unSafeInnerHtml(elem, """
+          <li class="pure-menu-can-have-children">
+              <a class="pure-menu-label" href="#" username></a>
+              <ul class="pure-menu-children menu-right" child-menu>
+              </ul >
+          </li>
+      """);
+
+      //notification:
+      elem.nodes.insert(0, _menuLink(route.debateReplies, i18n('account-menu.debate-replies')));
+
+      elem.querySelector('[username]')
+        ..text = auth.username;
+
+      elem.querySelector('[child-menu]')
+        ..append(_menuLink(route.user(auth.username), route.user(auth.username)))
+        ..append(_menuLink(route.settings, i18n('account-menu.settings')))
+        ..appendHtml(_menuSeparator)
+        ..append(_createSignOut());
+
+      _enablePureCssDropDown(elem);
     }
   }
+
+  /*
+     only support one level drop down, purecss-0.5
+   */
+  void _enablePureCssDropDown(Element parent) {
+    var dropDownTarget = parent.querySelector('.pure-menu-can-have-children');
+    var dropDownMenu = dropDownTarget.querySelector('.pure-menu-label');
+    dropDownMenu.onClick.listen((e) {
+      e
+        ..preventDefault()
+        ..stopPropagation();
+      dropDownTarget.classes.toggle('pure-menu-open');
+    });
+    // cancel drop down menu if click outside
+    document.documentElement.onClick.listen((
+        e) => dropDownTarget.classes.toggle('pure-menu-open', false));
+  }
+
+  String get _menuSeparator => '<li class="pure-menu-separator"></li>';
 
   Element _menuLink(String href, String text) {
     //use .text = value to ensure safe html

@@ -82,14 +82,17 @@ sample configs:
             <a class="pure-menu-heading" href="/">
                 <img class="logo"
                      src="<@url.dynamicRes/>/img/kaif_white@2x.png"
-                     alt="KAIF"/>
+                     alt="kaif"/>
             </a>
-            <ul account-menu>
+            <ul class="pure-menu-children" account-menu>
             <#-- mock
-            <li><a href="/account/sign-up">Sign Up</a></li>
-            <li><a href="/account/sign-in">Sign In</a></li>
-            <li><a href="/account/settings">myname</a></li>
-            <li><a href="/account/sign-out">Sign Out</a></li>
+                <li class="pure-menu-can-have-children pure-menu-open">
+                    <a class="pure-menu-label" href="#">Top</a>
+                    <ul >
+                        <li><a href="#">sub 1</a></li>
+                        <li><a href="#">sub 2</a></li>
+                    </ul >
+                </li>
             -->
             </ul>
         </div>
