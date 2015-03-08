@@ -5,7 +5,11 @@ import 'package:kaif_web/util.dart';
 
 
 class KmarkAutoLinker {
+
   final TextAreaElement contentInput;
+
+  static final RegExp _PURE_LINK_REGEX = new RegExp(r'^\s*(https?://[^\s]+)\s*$',
+  caseSensitive:false);
 
   KmarkAutoLinker(this.contentInput) {
     contentInput.onPaste.listen(_onPasted);
@@ -28,15 +32,46 @@ class KmarkAutoLinker {
 
   void _onTextPasted(String text) {
     //detect only pure link text
-    var match = new RegExp(r'^\s*(https?://[^\s]+)\s*$').firstMatch(text);
+    var match = _PURE_LINK_REGEX.firstMatch(text);
     if (match == null) {
       return;
     }
     var link = match.group(1);
-    _onLinkPasted(link);
+    if (_isLinkWithinCodeBlock(contentInput.value, link)) {
+      return;
+    }
+
+    _applyAutoLink(link);
   }
 
-  void _onLinkPasted(String link) {
+  /**
+   * detect pasted link is within <code> or <pre>, we count number of `fence` syntax before link text.
+   * if count is odd, it means user is editing within the block. the same apply to `code` syntax
+   */
+  bool _isLinkWithinCodeBlock(String fullText, String link) {
+    var position = fullText.indexOf(link);
+    if (position < 0) {
+      return false;
+    }
+    String textBeforeLink = fullText.substring(0, fullText.indexOf(link));
+    const fence = '```';
+    int fenceCount = fence.allMatches(textBeforeLink).length;
+    print(fenceCount.toString());
+    if (fenceCount % 2 == 1) {
+      // odd number of fence, it means the link within fence block, so we won't trigger it;
+      return true;
+    }
+    String textWithoutFence = textBeforeLink.replaceAll(fence, '');
+    const code = '`';
+    int codeCount = code.allMatches(textWithoutFence).length;
+    if (codeCount % 2 == 1) {
+      // same as fence rule
+      return true;
+    }
+    return false;
+  }
+
+  void _applyAutoLink(String link) {
     // note that contentInput.value now include pasted text.
 
     // compute next appendix index
@@ -62,7 +97,12 @@ class KmarkAutoLinker {
   }
 }
 
+/**
+ * the parser support index is not number, (because server allow non-number index).
+ */
 class ReferenceAppendix {
+  static final RegExp _LINE_PATTERN = new RegExp(r'^\s*\[([^\]]+)\]:\s*(http.+)\s*$',
+  multiLine:true);
   final String index;
   final String url;
 
@@ -75,12 +115,11 @@ class ReferenceAppendix {
     return maxIndex + 1;
   }
 
-  static List<ReferenceAppendix> tryParse(String rawLine) {
-    if (rawLine == null) {
+  static List<ReferenceAppendix> tryParse(String rawLines) {
+    if (rawLines == null) {
       return [];
     }
-    return new RegExp(r'^\s*\[([^\]]+)\]:\s*(http.+)\s*$', multiLine:true)
-    .allMatches(rawLine, 0).map((match) {
+    return _LINE_PATTERN.allMatches(rawLines).map((match) {
       return new ReferenceAppendix(match.group(1), match.group(2));
     }).toList();
   }

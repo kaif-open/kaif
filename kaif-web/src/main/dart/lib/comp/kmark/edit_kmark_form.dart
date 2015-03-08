@@ -36,6 +36,7 @@ abstract class EditKmarkForm {
     _elem.querySelector('[kmark-cancel]').onClick.listen(_onCancel);
     _alert = new Alert.append(_elem);
     _elem.onSubmit.listen(_onSubmit);
+    new KmarkAutoLinker(_contentInput);
     KmarkHelper.enableIfExist(_elem);
   }
 
