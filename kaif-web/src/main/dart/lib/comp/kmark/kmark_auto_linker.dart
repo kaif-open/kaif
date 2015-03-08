@@ -2,7 +2,7 @@ library kmark_auto_linker;
 import 'dart:html';
 import 'dart:math' as Math;
 import 'package:kaif_web/util.dart';
-
+import 'dart:async';
 
 class KmarkAutoLinker {
 
@@ -12,25 +12,44 @@ class KmarkAutoLinker {
   caseSensitive:false);
 
   KmarkAutoLinker(this.contentInput) {
+    //chrome/firefox/safari supported
     contentInput.onPaste.listen(_onPasted);
   }
 
   void _onPasted(Event e) {
-    //chrome/firefox/safari supported
-    var items = e.clipboardData.items;
-    for (var i = 0; i < items.length; i++) {
-      var item = items[i];
-      // debug
-      // print("type: ${item.type}, kind: ${item.kind}");
 
-      if (item.type == 'text/plain') {
-        item.getAsString().then(_onTextPasted);
-        break;
-      }
-    }
+    // print("onPasted range: ${contentInput.selectionStart}, ${contentInput.selectionEnd}");
+
+    var initialText = contentInput.value;
+    var pasteAtIndex = contentInput.selectionStart;
+    //if paste without selection, length is 0
+    var selectionLength = contentInput.selectionEnd - pasteAtIndex;
+    var selectionText = initialText.substring(contentInput.selectionStart,
+    contentInput.selectionEnd);
+
+    // print("current: $initialText");
+    new Timer(const Duration(milliseconds:1), () {
+      var pastedTextLength = contentInput.value.length - (initialText.length - selectionLength);
+      var end = pasteAtIndex + pastedTextLength;
+      var pastedText = contentInput.value.substring(pasteAtIndex, end);
+      _onTextPasted(selectionText, pastedText);
+    });
+
+    // clipboardData only support in chrome, give up
+    //    var items = e.clipboardData.items;
+    //    for (var i = 0; i < items.length; i++) {
+    //      var item = items[i];
+    //      // debug
+    //      print("type: ${item.type}, kind: ${item.kind}");
+    //
+    //      if (item.type == 'text/plain') {
+    //        item.getAsString().then(_onTextPasted);
+    //        break;
+    //      }
+    //    }
   }
 
-  void _onTextPasted(String text) {
+  void _onTextPasted(String selectionText, String text) {
     //detect only pure link text
     var match = _PURE_LINK_REGEX.firstMatch(text);
     if (match == null) {
@@ -41,12 +60,14 @@ class KmarkAutoLinker {
       return;
     }
 
-    _applyAutoLink(link);
+    _applyAutoLink(selectionText, link);
   }
 
   /**
    * detect pasted link is within <code> or <pre>, we count number of `fence` syntax before link text.
-   * if count is odd, it means user is editing within the block. the same apply to `code` syntax
+   * if count is odd, it means user is editing within the block.
+   *
+   * The same rule apply to `code` syntax.
    */
   bool _isLinkWithinCodeBlock(String fullText, String link) {
     var position = fullText.indexOf(link);
@@ -71,7 +92,7 @@ class KmarkAutoLinker {
     return false;
   }
 
-  void _applyAutoLink(String link) {
+  void _applyAutoLink(String selectionText, String link) {
     // note that contentInput.value now include pasted text.
 
     // compute next appendix index
@@ -80,10 +101,13 @@ class KmarkAutoLinker {
     int nextIndex = ReferenceAppendix.nextIndex(existRefs);
 
     // replace with placeholder and append appendix
+    var placeholder = isStringBlank(selectionText)
+                      ? i18n("kmark.auto-link-placeholder")
+                      : selectionText.trim();
+    var replacedText = " [$placeholder][$nextIndex] ";
+
     // note that we only search first occurrence of link, so if multiple link present.
     // the replace will be problematic.
-    var placeholder = i18n("kmark.auto-link-placeholder");
-    var replacedText = " [$placeholder][$nextIndex] ";
     contentInput.value = contentInput.value.replaceFirst(link, replacedText);
     if (existRefs.isEmpty) {
       contentInput.value += "\n";
