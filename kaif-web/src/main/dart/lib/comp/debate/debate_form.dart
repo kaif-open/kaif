@@ -5,6 +5,7 @@ import 'package:kaif_web/util.dart';
 import 'package:kaif_web/model.dart';
 import '../comp_template.dart';
 import '../kmark/edit_kmark_form.dart';
+import '../kmark/kmark_auto_linker.dart';
 
 /**
  * final field in library scope is lazy in dart. so the template only loaded when we
@@ -26,7 +27,7 @@ class DebateForm {
   Element _previewerElem;
   Element _previewCancelElem;
   ButtonElement _previewBtn;
-  TextInputElement _contentInput;
+  TextAreaElement _contentInput;
   Alert _alert;
   String parentDebateId;
   bool reloadWhenSubmit = true;
@@ -55,6 +56,7 @@ class DebateForm {
     _elem.querySelector('[kmark-debate-cancel]').onClick.listen(_onCancel);
     _previewCancelElem = _elem.querySelector('[kmark-preview-cancel]');
     _contentInput = _elem.querySelector('textarea[name=contentInput]');
+    new KmarkAutoLinker(_contentInput);
     KmarkHelper.enableIfExist(_elem);
   }
 

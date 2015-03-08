@@ -4,12 +4,13 @@ import 'dart:html';
 import 'dart:async';
 import 'package:kaif_web/util.dart';
 import 'package:kaif_web/comp/comp_template.dart';
+import 'kmark_auto_linker.dart';
 
 final ComponentTemplate _editKmarkFormTemplate = new ComponentTemplate.take('edit-kmark-form');
 
 abstract class EditKmarkForm {
 
-  TextInputElement _contentInput;
+  TextAreaElement _contentInput;
   Element _elem;
   Element _contentElem;
   Element _previewerElem;
@@ -35,7 +36,6 @@ abstract class EditKmarkForm {
     _elem.querySelector('[kmark-cancel]').onClick.listen(_onCancel);
     _alert = new Alert.append(_elem);
     _elem.onSubmit.listen(_onSubmit);
-
     KmarkHelper.enableIfExist(_elem);
   }
 
