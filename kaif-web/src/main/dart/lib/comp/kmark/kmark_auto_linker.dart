@@ -32,7 +32,7 @@ class KmarkAutoLinker {
       var pastedTextLength = contentInput.value.length - (initialText.length - selectionLength);
       var end = pasteAtIndex + pastedTextLength;
       var pastedText = contentInput.value.substring(pasteAtIndex, end);
-      _onTextPasted(selectionText, pastedText);
+      _onTextPasted(selectionText, pastedText.trim());
     });
 
     // clipboardData only support in chrome, give up
@@ -50,6 +50,12 @@ class KmarkAutoLinker {
   }
 
   void _onTextPasted(String selectionText, String text) {
+    // if user selected url and paste new link, we don't process
+    // it because user just replace it's old link
+    if (_PURE_LINK_REGEX.hasMatch(selectionText)) {
+      return;
+    }
+
     //detect only pure link text
     var match = _PURE_LINK_REGEX.firstMatch(text);
     if (match == null) {
@@ -60,7 +66,23 @@ class KmarkAutoLinker {
       return;
     }
 
+    if (_isLinkOnReferenceAppendix(contentInput.value, link)) {
+      return;
+    }
+
     _applyAutoLink(selectionText, link);
+  }
+
+  /**
+   * two cases:
+   *
+   * 1. user manually editing appendix section, when he paste into this section,
+   *    we should not process it
+   * 2. user paste a link in textarea, but the link already in appendix, we ignore this case too.
+   */
+  bool _isLinkOnReferenceAppendix(String fullText, String link) {
+    var existRefs = ReferenceAppendix.tryParse(fullText);
+    return existRefs.any((ref) => ref.url == link);
   }
 
   /**
