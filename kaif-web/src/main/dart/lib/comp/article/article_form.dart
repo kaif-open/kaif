@@ -4,6 +4,7 @@ import 'dart:html';
 import 'package:kaif_web/util.dart';
 import 'package:kaif_web/model.dart';
 import 'dart:async';
+import '../kmark/kmark_auto_linker.dart';
 
 
 typedef Future _articleCreator(String zone);
@@ -17,6 +18,7 @@ class ArticleForm {
   Alert alert;
   SubmitButtonInputElement submitElem;
   SelectElement zoneInput;
+  TextAreaElement contentInput;
 
   ArticleForm(this.elem, this.articleService, AccountSession accountSession) {
     alert = new Alert.append(elem);
@@ -33,6 +35,11 @@ class ArticleForm {
       _checkCanCreateArticleOnZone();
     } else {
       elem.querySelector('[not-sign-in-hint]').classes.toggle('hidden', false);
+    }
+
+    contentInput = elem.querySelector('#contentInput');
+    if (contentInput != null) {
+      new KmarkAutoLinker(contentInput);
     }
   }
 
@@ -67,7 +74,6 @@ class ArticleForm {
     }
 
     TextInputElement urlInput = elem.querySelector('#urlInput');
-    TextAreaElement contentInput = elem.querySelector('#contentInput');
 
     if (urlInput != null) {
       urlInput.value = urlInput.value.trim();
