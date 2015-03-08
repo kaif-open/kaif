@@ -34,6 +34,11 @@
     }
   }
 
+  a.reference-link:hover {
+    color: @link-hover-color;
+    text-decoration: none;
+  }
+
   .reference-appendix-block {
     margin-top: @padding-lg-vertical;
     margin-bottom: @padding-sm-vertical;
@@ -49,10 +54,6 @@
     float: left;
   }
 
-  .reference-broken-link {
-    text-decoration: underline;
-  }
-
   .reference-link-index {
     vertical-align: super;
     font-size: @font-size-sm;
@@ -62,6 +63,13 @@
     overflow: hidden;
     text-overflow: ellipsis;
     padding-left: @padding-xs-horizontal;
+    a {
+      text-decoration: none;
+      color: @gray-light;
+      &:hover {
+        color: @link-hover-color;
+      }
+    }
   }
 }
 
