@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableMap;
 
 import io.kaif.database.DaoOperations;
 import io.kaif.flake.FlakeId;
+import io.kaif.model.KaifIdGenerator;
 import io.kaif.model.account.Account;
 import io.kaif.model.article.Article;
 import io.kaif.model.zone.Zone;
@@ -31,7 +32,7 @@ public class DebateDao implements DaoOperations {
   private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
   @Autowired
-  private DebateFlakeIdGenerator debateFlakeIdGenerator;
+  private KaifIdGenerator kaifIdGenerator;
 
   private final RowMapper<Debate> debateMapper = (rs, rowNum) -> {
 
@@ -96,7 +97,7 @@ public class DebateDao implements DaoOperations {
       String content,
       Account debater,
       Instant now) {
-    FlakeId debateId = debateFlakeIdGenerator.next();
+    FlakeId debateId = kaifIdGenerator.next();
     return insertDebate(Debate.create(article, debateId, parent, content, debater, now));
   }
 

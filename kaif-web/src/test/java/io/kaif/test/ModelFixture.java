@@ -10,7 +10,7 @@ import io.kaif.model.account.Account;
 import io.kaif.model.account.Authority;
 import io.kaif.model.article.Article;
 import io.kaif.model.debate.Debate;
-import io.kaif.model.debate.DebateFlakeIdGenerator;
+import io.kaif.model.KaifIdGenerator;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 
@@ -48,7 +48,7 @@ public interface ModelFixture extends TimeFixture {
     Instant now = Instant.now();
     Account debater = accountCitizen("debater-" + new Random().nextInt(100));
     return Debate.create(article,
-        new DebateFlakeIdGenerator(99).next(),
+        new KaifIdGenerator(99).next(),
         parent,
         content,
         debater,
@@ -60,7 +60,7 @@ public interface ModelFixture extends TimeFixture {
     Account author = accountCitizen("user" + new Random().nextInt(100));
     return Article.createExternalLink(zone,
         zone.value() + "-alias",
-        new DebateFlakeIdGenerator(99).next(),
+        new KaifIdGenerator(99).next(),
         author,
         title,
         "http://example.com/" + title,

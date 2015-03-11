@@ -80,7 +80,7 @@ public class AwsSnsRestControllerTest {
     request.setContent(toJsonBytes(ImmutableMap.of("Type",
         "Notification",
         "MessageId",
-        "21b2766f-a4c2-5e4f-8eaa-3aa9775ce46f'",
+        "21b2766f-a4c2-5e4f-8eaa-3aa9775ce46f",
         "Message",
         message)));
 
@@ -117,7 +117,7 @@ public class AwsSnsRestControllerTest {
     request.setContent(toJsonBytes(ImmutableMap.of("Type",
         "Notification",
         "MessageId",
-        "7eac2174-75c1-5c0a-9a5d-6db373a6be23'",
+        "7eac2174-75c1-5c0a-9a5d-6db373a6be23",
         "Message",
         message)));
 
@@ -158,7 +158,7 @@ public class AwsSnsRestControllerTest {
     request.setContent(toJsonBytes(ImmutableMap.of("Type",
         "Notification",
         "MessageId",
-        "cb0b3e1f-01f0-531c-90f5-72d810c7f6a7'",
+        "cb0b3e1f-01f0-531c-90f5-72d810c7f6a7",
         "Message",
         message)));
 
