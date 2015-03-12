@@ -57,4 +57,6 @@ public interface ArticleService {
   List<Debate> listLatestZoneDebates(Zone zone, @Nullable FlakeId startDebateId);
 
   List<Article> listArticlesByDebates(List<FlakeId> debateIds);
+
+  List<Debate> listDebatesById(List<FlakeId> debateIds);
 }

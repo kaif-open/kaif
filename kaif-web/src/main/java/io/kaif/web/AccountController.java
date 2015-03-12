@@ -21,8 +21,11 @@ import io.kaif.model.account.AccountOnceToken;
 import io.kaif.model.article.Article;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateList;
+import io.kaif.model.feed.FeedAsset;
+import io.kaif.model.feed.NewsFeed;
 import io.kaif.service.AccountService;
 import io.kaif.service.ArticleService;
+import io.kaif.service.FeedService;
 import io.kaif.web.support.PartTemplate;
 
 @Controller
@@ -34,6 +37,8 @@ public class AccountController {
 
   @Autowired
   private ArticleService articleService;
+  @Autowired
+  private FeedService feedService;
 
   @RequestMapping("/sign-up")
   public ModelAndView signUp() {
@@ -83,6 +88,27 @@ public class AccountController {
         .collect(toList()));
     return new ModelAndView("article/debate-replies.part").addObject("debateList",
         new DebateList(debates, articles));
+  }
+
+  @RequestMapping("/news-feed")
+  public String newsFeed() {
+    return "account/news-feed";
+  }
+
+  @RequestMapping("/news-feed.part")
+  public ModelAndView newsFeedPart(AccountAccessToken accountAccessToken,
+      @RequestParam(value = "startAssetId", required = false) String startAssetId) {
+    List<FeedAsset> feedAssets = feedService.listFeeds(accountAccessToken,
+        Optional.ofNullable(startAssetId).map(FlakeId::fromString).orElse(null));
+    List<Debate> debates = articleService.listDebatesById(feedAssets.stream()
+        .filter(f -> f.getAssetType().isDebate())
+        .map(FeedAsset::getAssetId)
+        .collect(toList()));
+    List<Article> articles = articleService.listArticlesByDebates(debates.stream()
+        .map(Debate::getDebateId)
+        .collect(toList()));
+    return new ModelAndView("account/news-feed.part").addObject("newsFeed",
+        new NewsFeed(feedAssets, debates, articles));
   }
 
   @RequestMapping("/activation")

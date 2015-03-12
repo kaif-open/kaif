@@ -6,11 +6,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.kaif.flake.FlakeId;
+import io.kaif.model.KaifIdGenerator;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.Authority;
 import io.kaif.model.article.Article;
 import io.kaif.model.debate.Debate;
-import io.kaif.model.KaifIdGenerator;
+import io.kaif.model.feed.FeedAsset;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 
@@ -47,12 +48,11 @@ public interface ModelFixture extends TimeFixture {
   default Debate debate(Article article, String content, Debate parent) {
     Instant now = Instant.now();
     Account debater = accountCitizen("debater-" + new Random().nextInt(100));
-    return Debate.create(article,
-        new KaifIdGenerator(99).next(),
-        parent,
-        content,
-        debater,
-        now);
+    return Debate.create(article, new KaifIdGenerator(99).next(), parent, content, debater, now);
+  }
+
+  default FeedAsset assetReply(Debate debate) {
+    return FeedAsset.createReply(debate.getDebateId(), debate.getReplyToAccountId(), Instant.now());
   }
 
   default Article article(Zone zone, String title) {

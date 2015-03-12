@@ -127,7 +127,6 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public String updateDebateContent(FlakeId debateId, Authorization editorAuth, String content) {
-
     Debate debate = debateDao.loadDebate(debateId);
     accountDao.strongVerifyAccount(editorAuth)
         .filter(debate::canEdit)
@@ -232,5 +231,10 @@ public class ArticleServiceImpl implements ArticleService {
   @Override
   public List<Article> listArticlesByDebates(List<FlakeId> debateIds) {
     return articleDao.listArticlesByDebates(debateIds);
+  }
+
+  @Override
+  public List<Debate> listDebatesById(List<FlakeId> debateIds) {
+    return debateDao.listDebatesById(debateIds);
   }
 }

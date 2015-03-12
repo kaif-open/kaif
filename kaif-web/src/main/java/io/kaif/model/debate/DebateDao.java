@@ -1,22 +1,34 @@
 package io.kaif.model.debate;
 
+import static io.kaif.util.MoreCollectors.toImmutableMap;
+import static java.util.stream.Collectors.*;
+
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 
 import io.kaif.database.DaoOperations;
 import io.kaif.flake.FlakeId;
@@ -28,12 +40,11 @@ import io.kaif.model.zone.Zone;
 @Repository
 public class DebateDao implements DaoOperations {
 
+  private static final Logger logger = LoggerFactory.getLogger(DebateDao.class);
   @Autowired
   private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
   @Autowired
   private KaifIdGenerator kaifIdGenerator;
-
   private final RowMapper<Debate> debateMapper = (rs, rowNum) -> {
 
     return new Debate(FlakeId.valueOf(rs.getLong("articleId")),
@@ -51,6 +62,26 @@ public class DebateDao implements DaoOperations {
         rs.getTimestamp("createTime").toInstant(),
         rs.getTimestamp("lastUpdateTime").toInstant());
   };
+
+  /**
+   * although cached debate will be evict when content updated, but the total vote is not real time
+   * value. so the voting count will be 10 minutes delayed currently. and DebateTree is not yet
+   * cache yet, so user may see inconsistent.
+   */
+  private final LoadingCache<FlakeId, Debate> debatesCache = CacheBuilder.newBuilder()
+      .maximumSize(2000)
+      .refreshAfterWrite(10, TimeUnit.MINUTES)
+      .build(new CacheLoader<FlakeId, Debate>() {
+        @Override
+        public Debate load(FlakeId key) throws Exception {
+          return loadDebate(key);
+        }
+
+        @Override
+        public Map<FlakeId, Debate> loadAll(Iterable<? extends FlakeId> keys) throws Exception {
+          return listDebatesByIdWithoutCache(Lists.newArrayList(keys));
+        }
+      });
 
   @Override
   public NamedParameterJdbcTemplate namedJdbc() {
@@ -91,18 +122,18 @@ public class DebateDao implements DaoOperations {
     return jdbc().query(sql, debateMapper, debateId.value()).stream().findAny();
   }
 
-  //TODO evict cache
   public Debate create(Article article,
       @Nullable Debate parent,
       String content,
       Account debater,
       Instant now) {
+    //TODO evict DebateTree cache
     FlakeId debateId = kaifIdGenerator.next();
     return insertDebate(Debate.create(article, debateId, parent, content, debater, now));
   }
 
   public DebateTree listDebateTreeByArticle(FlakeId articleId, @Nullable FlakeId parentDebateId) {
-    //TODO cache
+    //TODO cache whole DebateTree
     List<Debate> flatten = listDepthFirstDebatesByArticle(articleId, parentDebateId);
     return DebateTree.fromDepthFirst(flatten).sortByBestScore();
   }
@@ -144,13 +175,18 @@ public class DebateDao implements DaoOperations {
         + "    SET upVote = upVote + (?) "
         + "      , downVote = downVote + (?) "
         + "  WHERE debateId = ? ", upVoteDelta, downVoteDelta, debateId.value());
+    //should we evict debatesCache ?
   }
 
-  /**
-   * @see io.kaif.config.UtilConfiguration#debaterIdCacheManager()
-   */
-  @Cacheable(value = "DebaterId")
   public UUID loadDebaterId(FlakeId debateId) throws EmptyResultDataAccessException {
+    try {
+      return debatesCache.get(debateId).getDebaterId();
+    } catch (ExecutionException e) {
+      return loadDebaterIdWithoutCache(debateId);
+    }
+  }
+
+  private UUID loadDebaterIdWithoutCache(FlakeId debateId) throws EmptyResultDataAccessException {
     return UUID.fromString(jdbc().queryForObject(" SELECT debaterId FROM Debate WHERE debateId = ? ",
         String.class,
         debateId.value()));
@@ -162,13 +198,14 @@ public class DebateDao implements DaoOperations {
         debateId.value());
   }
 
-  //TODO evict cache
   public void updateContent(FlakeId debateId, String content, Instant now) {
     jdbc().update(""
         + " UPDATE Debate "
         + "    SET content = ?"
         + "      , lastUpdateTime = ? "
         + "  WHERE debateId = ? ", content, Timestamp.from(now), debateId.value());
+    debatesCache.invalidate(debateId);
+    //TODO evict DebateTree
   }
 
   public List<Debate> listLatestDebateByReplyTo(UUID replyToAccountId,
@@ -210,5 +247,29 @@ public class DebateDao implements DaoOperations {
         + "    AND zone = ? "
         + "  ORDER BY debateId DESC "
         + "  LIMIT ? ", debateMapper, start.value(), zone.value(), size);
+  }
+
+  public List<Debate> listDebatesById(List<FlakeId> debateIds) {
+    if (debateIds.isEmpty()) {
+      return Collections.emptyList();
+    }
+    Map<FlakeId, Debate> results;
+    try {
+      results = debatesCache.getAll(debateIds);
+    } catch (ExecutionException e) {
+      logger.warn("list debates by id cache failed", e);
+      results = listDebatesByIdWithoutCache(debateIds);
+    }
+    return results.values().stream().distinct().collect(toList());
+  }
+
+  private Map<FlakeId, Debate> listDebatesByIdWithoutCache(List<FlakeId> debateIds) {
+    if (debateIds.isEmpty()) {
+      return Collections.emptyMap();
+    }
+    List<Debate> debates = namedJdbc().query(" SELECT * FROM Debate WHERE debateId IN (:ids) ",
+        ImmutableMap.of("ids", debateIds.stream().map(FlakeId::value).collect(toList())),
+        debateMapper);
+    return debates.stream().collect(toImmutableMap(Debate::getDebateId, Function.identity()));
   }
 }

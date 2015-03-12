@@ -5,12 +5,14 @@ import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.*;
 import static org.junit.Assert.*;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,6 +139,35 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     articleDao.evictAllCaches();
     List<Article> refreshed = service.listArticlesByDebates(asList(d2.getDebateId()));
     assertNotSame(refreshed.get(0), articles2.get(1));
+  }
+
+  @Test
+  public void listDebatesByIds() throws Exception {
+    assertEquals(0, service.listDebatesById(Collections.emptyList()).size());
+
+    Debate d1 = savedDebate(article, "foo-12345", null);
+    Debate d2 = savedDebate(article, "foo-about", null);
+    Debate d3 = savedDebate(article, "foo-duplicate", null);
+
+    assertThat(service.listDebatesById(asList(d1.getDebateId(), d2.getDebateId())),
+        Matchers.hasItems(d1, d2));
+    assertThat(service.listDebatesById(asList(d3.getDebateId(), d2.getDebateId())),
+        Matchers.hasItems(d3, d2));
+  }
+
+  @Test
+  public void listDebatesByIds_cached() throws Exception {
+    assertEquals(0, service.listDebatesById(Collections.emptyList()).size());
+
+    Debate d1 = debateDao.create(article, null, "foo-12345", citizen, Instant.now());
+
+    List<Debate> loaded = service.listDebatesById(asList(d1.getDebateId()));
+    assertEquals(asList(d1), loaded);
+    assertSame(loaded.get(0), service.listDebatesById(asList(d1.getDebateId())).get(0));
+
+    service.updateDebateContent(d1.getDebateId(), citizen, "new content");
+    assertEquals("new content",
+        service.listDebatesById(asList(d1.getDebateId())).get(0).getContent());
   }
 
   @Test
@@ -381,8 +412,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     articleDao.markAsDeleted(articles.get(1));
 
     List<Article> firstPageWithoutDeleted = articles.stream().skip(2).limit(25).collect(toList());
-    assertEquals(firstPageWithoutDeleted,
-        service.listHotZoneArticles(fooZone.getZone(), null));
+    assertEquals(firstPageWithoutDeleted, service.listHotZoneArticles(fooZone.getZone(), null));
   }
 
   @Test

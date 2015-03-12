@@ -20,6 +20,7 @@ import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.Authorization;
 import io.kaif.model.article.Article;
 import io.kaif.model.debate.Debate;
+import io.kaif.model.feed.FeedAsset;
 import io.kaif.model.zone.Zone;
 import io.kaif.test.MvcIntegrationTests;
 
@@ -41,6 +42,35 @@ public class AccountControllerTest extends MvcIntegrationTests {
   @Test
   public void debateReplies() throws Exception {
     mockMvc.perform(get("/account/debate-replies")).andExpect(containsDebateFormTemplate());
+  }
+
+  @Test
+  public void newsFeed() throws Exception {
+    mockMvc.perform(get("/account/news-feed")).andExpect(containsDebateFormTemplate());
+  }
+
+  @Test
+  public void newsFeedPart() throws Exception {
+    Account account = accountCitizen("bar111");
+    String token = prepareAccessToken(account);
+
+    Article article = article(Zone.valueOf("xyz123"), "title1");
+    Debate d1 = debate(article, "reply 00001", null);
+    Debate d2 = debate(article, "reply 00002", null);
+    FeedAsset f1 = assetReply(d1);
+    FeedAsset f2 = assetReply(d2);
+    when(feedService.listFeeds(Matchers.isA(Authorization.class),
+        isNull(FlakeId.class))).thenReturn(asList(f1, f2));
+
+    when(articleService.listDebatesById(asList(d1.getDebateId(), d2.getDebateId()))).thenReturn(
+        asList(d1, d2));
+
+    when(articleService.listArticlesByDebates(asList(d1.getDebateId(),
+        d2.getDebateId()))).thenReturn(asList(article));
+    mockMvc.perform(get("/account/news-feed.part").header(AccountAccessToken.HEADER_KEY, token))
+        .andExpect(view().name("account/news-feed.part"))
+        .andExpect(content().string(containsString("reply 00001")))
+        .andExpect(content().string(containsString("reply 00002")));
   }
 
   @Test

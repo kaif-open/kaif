@@ -5,7 +5,7 @@
 <#import "../macros/util.ftl" as util>
 
 <#assign headContent>
-<title>最近的回應給我的討論 | kaif.io</title>
+<title>News Feed | kaif.io</title>
 </#assign>
 
 <@template.page layout='full' head=headContent>
@@ -16,7 +16,6 @@
 </nav>
 
 <div class="grid">
-
     <div class="grid-body">
     <#-- dart will search #__part_template and set innerHtml with part
        check ServerPartLoader in main.dart
