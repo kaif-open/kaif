@@ -5,7 +5,6 @@ import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.*;
 import static org.junit.Assert.*;
 
-import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -486,13 +485,9 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     AccountStats stats = accountService.loadAccountStats(citizen.getUsername());
     assertEquals(1, stats.getArticleCount());
 
-    String bucket = created.getCreateTime()
-        .atZone(ZoneId.of("Asia/Taipei"))
-        .toLocalDate()
-        .toString();
     RotateVoteStats rotateVoteStats = rotateVoteStatsDao.findRotateVoteStats(citizen.getAccountId(),
         article.getZone(),
-        bucket)
+        article.getCreateTime())
         .get();
     assertEquals(1, rotateVoteStats.getArticleCount());
   }

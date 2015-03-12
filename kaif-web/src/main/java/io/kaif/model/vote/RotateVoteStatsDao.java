@@ -1,5 +1,6 @@
 package io.kaif.model.vote;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,9 +39,13 @@ public class RotateVoteStatsDao implements DaoOperations {
     return namedParameterJdbcTemplate;
   }
 
-  public Optional<RotateVoteStats> findRotateVoteStats(UUID accountId, Zone zone, String bucket) {
+  public Optional<RotateVoteStats> findRotateVoteStats(UUID accountId, Zone zone, Instant instant) {
     final String sql = " SELECT * FROM RotateVoteStats WHERE accountId = ? AND zone = ? AND bucket = ? LIMIT 1 ";
-    return jdbc().query(sql, rotateVoteStatsMapper, accountId, zone.value(), bucket)
+    return jdbc().query(sql,
+        rotateVoteStatsMapper,
+        accountId,
+        zone.value(),
+        convertToBucket(instant))
         .stream()
         .findAny();
   }
