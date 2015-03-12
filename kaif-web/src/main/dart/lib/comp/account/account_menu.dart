@@ -21,7 +21,7 @@ class AccountMenu {
       """);
 
       //notification:
-      elem.nodes.insert(0, _menuLink(route.debateReplies, i18n('account-menu.debate-replies')));
+      elem.nodes.insert(0, _menuLink(route.newsFeed, i18n('account-menu.news-feed')));
 
       elem.querySelector('[username]')
         ..text = auth.username;

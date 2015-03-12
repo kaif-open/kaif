@@ -4,31 +4,16 @@
 <#import "../macros/util.ftl" as util>
 
 
-<div class="debate-list">
+<div class="news-feed" news-feed debate-list>
 <#list newsFeed.feedAssets as asset>
     <#if asset.assetType.debate>
-        <#assign debateItem=newsFeed.getDebate(asset)/>
-
-    <#-- TODO extra macro -->
-        <div class="debate-standalone">
-            <@comp.debate data=debateItem editable=false />
-            <div class="grid-row">
-                <div class="grid-center-row debate-navigation">
-                    <a href="<@url.article data=debateItem />${'#debate-'+debateItem.debateId}">
-                        <i class="fa fa-caret-right"></i>
-                    ${util.abbreviate(newsFeed.getArticle(debateItem).title, 20)}
-                    </a>
-                    <a href="<@url.zone data=debateItem />">
-                        <i class="fa fa-caret-right"></i>
-                        <@url.zone data=debateItem />
-                    </a>
-                </div>
-            </div>
-        </div>
+    <div class="feed-asset" feed-asset data-asset-id="${asset.assetId}">
+        <#assign debate=newsFeed.getDebate(asset)/>
+        <@comp.debateStandAlone data=debate article=newsFeed.getArticle(debate) />
     <#else>
         TODO other asset
     </#if>
-
+</div>
 </#list>
 
     <div class="news-feed-pager grid-center-row">
@@ -41,3 +26,4 @@
     </#if>
     </div>
     <div next-news-feed></div>
+</div>

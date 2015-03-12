@@ -172,36 +172,31 @@
     </#if>
 </#macro>
 
+<#macro debateStandAlone data article>
+    <#local debateItem=data/>
+<div class="debate-standalone">
+    <@debate data=debateItem editable=false />
+    <div class="grid-row">
+        <div class="grid-center-row debate-navigation">
+            <a href="<@url.article data=debateItem />${'#debate-'+debateItem.debateId}">
+                <i class="fa fa-caret-right"></i>
+            ${util.abbreviate(article.title, 20)}
+            </a>
+            <a href="<@url.zone data=debateItem />">
+                <i class="fa fa-caret-right"></i>
+                <@url.zone data=debateItem />
+            </a>
+        </div>
+    </div>
+</div>
+</#macro>
+
 <#-- data is DebateList -->
 <#macro debateList data ajaxPager=false showZone=true >
     <#local debates=data.debates />
 <div class="debate-list" debate-list>
     <#list debates as debateItem>
-        <div class="debate-standalone">
-            <@debate data=debateItem editable=false />
-            <div class="grid-row">
-                <div class="grid-center-row debate-navigation">
-                <#--
-                <#if debateItem.hasParent()>
-                    <a href="<@url.debate data=debateItem parent=true/>">
-                        <i class="fa fa-caret-right"></i>
-                        討論串
-                    </a>
-                </#if>
-                -->
-                    <a href="<@url.article data=debateItem />${'#debate-'+debateItem.debateId}">
-                        <i class="fa fa-caret-right"></i>
-                    ${util.abbreviate(data.getArticle(debateItem).title, 20)}
-                    </a>
-                    <#if showZone>
-                        <a href="<@url.zone data=debateItem />">
-                            <i class="fa fa-caret-right"></i>
-                            <@url.zone data=debateItem />
-                        </a>
-                    </#if>
-                </div>
-            </div>
-        </div>
+        <@debateStandAlone data=debateItem article=data.getArticle(debateItem) />
     </#list>
     <div class="debate-list-pager grid-center-row">
         <#if debates?size == 0>

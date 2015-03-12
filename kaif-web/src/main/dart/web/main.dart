@@ -2,6 +2,7 @@ import 'package:kaif_web/model.dart';
 import 'package:kaif_web/util.dart';
 import 'package:kaif_web/comp/account/sign_up_form.dart';
 import 'package:kaif_web/comp/account/sign_in_form.dart';
+import 'package:kaif_web/comp/account/news_feed.dart';
 import 'package:kaif_web/comp/account/forget_password_form.dart';
 import 'package:kaif_web/comp/account/reset_password_form.dart';
 import 'package:kaif_web/comp/account/account_menu.dart';
@@ -85,7 +86,9 @@ class AppModule {
     parent.querySelectorAll('[article-list]').forEach((el) {
       new ArticleList(el, articleService, voteService, accountSession);
     });
-
+    parent.querySelectorAll('[news-feed]').forEach((el) {
+      new NewsFeed(el, serverPartLoader);
+    });
     parent.querySelectorAll('[short-url-input]').forEach((el) {
       new ShortUrlInput(el);
     });

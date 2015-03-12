@@ -58,11 +58,13 @@ public class FeedAssetDao implements DaoOperations {
 
   public List<FeedAsset> listFeedsDesc(UUID accountId, @Nullable FlakeId startId, int size) {
     FlakeId startAssetId = Optional.ofNullable(startId).orElse(FlakeId.MAX);
-    return jdbc().query(" SELECT * FROM FeedAsset WHERE accountId = ? AND assetId < ? LIMIT ? ",
-        feedAssetRowMapper,
-        accountId,
-        startAssetId.value(),
-        size);
+    return jdbc().query(""
+        + " SELECT * "
+        + "   FROM FeedAsset "
+        + "  WHERE accountId = ? "
+        + "    AND assetId < ? "
+        + "  ORDER BY assetId DESC "
+        + "  LIMIT ? ", feedAssetRowMapper, accountId, startAssetId.value(), size);
   }
 
   public void acknowledge(UUID accountId) {
