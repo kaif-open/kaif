@@ -25,6 +25,7 @@ import io.kaif.model.article.ArticleDao;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateDao;
 import io.kaif.model.debate.DebateTree;
+import io.kaif.model.vote.RotateVoteStatsDao;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
@@ -50,6 +51,9 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Autowired
   private DebateDao debateDao;
+
+  @Autowired
+  private RotateVoteStatsDao rotateVoteStatsDao;
 
   @Override
   public Article createExternalLink(Authorization authorization,
@@ -78,6 +82,7 @@ public class ArticleServiceImpl implements ArticleService {
     Article article = articleCreator.apply(zoneInfo, author);
     if (zoneInfo.getWriteAuthority() == Authority.CITIZEN) {
       accountDao.increaseArticleCount(author);
+      rotateVoteStatsDao.increaseArticleCount(article);
     }
     return article;
   }

@@ -6,6 +6,8 @@ import java.sql.Array;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.UUID;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -33,6 +35,8 @@ public interface DaoOperations {
      */
     R apply(T t, U u) throws SQLException;
   }
+
+  ZoneId ZONE_TAIPEI = ZoneId.of("Asia/Taipei");
 
   NamedParameterJdbcTemplate namedJdbc();
 
@@ -104,5 +108,9 @@ public interface DaoOperations {
   default String questions(int count) {
     Preconditions.checkArgument(count > 0, "generate questions must at least 1");
     return " (" + IntStream.rangeClosed(1, count).mapToObj(i -> "?").collect(joining(",")) + ") ";
+  }
+
+  default String convertToBucket(Instant instant) {
+    return instant.atZone(ZONE_TAIPEI).toLocalDate().toString();
   }
 }

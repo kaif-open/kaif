@@ -5,6 +5,7 @@ import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.*;
 import static org.junit.Assert.*;
 
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,8 @@ import io.kaif.model.article.ArticleDao;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateContentType;
 import io.kaif.model.debate.DebateDao;
+import io.kaif.model.vote.RotateVoteStats;
+import io.kaif.model.vote.RotateVoteStatsDao;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.AccountService;
@@ -43,6 +46,9 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
   @Autowired
   private ArticleDao articleDao;
+
+  @Autowired
+  private RotateVoteStatsDao rotateVoteStatsDao;
 
   private ZoneInfo zoneInfo;
   private Article article;
@@ -479,6 +485,16 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertFalse(article.isExternalLink());
     AccountStats stats = accountService.loadAccountStats(citizen.getUsername());
     assertEquals(1, stats.getArticleCount());
+
+    String bucket = created.getCreateTime()
+        .atZone(ZoneId.of("Asia/Taipei"))
+        .toLocalDate()
+        .toString();
+    RotateVoteStats rotateVoteStats = rotateVoteStatsDao.findRotateVoteStats(citizen.getAccountId(),
+        article.getZone(),
+        bucket)
+        .get();
+    assertEquals(1, rotateVoteStats.getArticleCount());
   }
 
   @Test
