@@ -29,6 +29,7 @@ import io.kaif.model.debate.DebateDao;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.AccountService;
+import io.kaif.service.FeedService;
 import io.kaif.test.DbIntegrationTests;
 import io.kaif.web.support.AccessDeniedException;
 
@@ -45,6 +46,9 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
   @Autowired
   private ArticleDao articleDao;
+
+  @Autowired
+  private FeedService feedService;
 
   private ZoneInfo zoneInfo;
   private Article article;
@@ -82,6 +86,31 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
     assertEquals(1, service.findArticle(article.getArticleId()).get().getDebateCount());
     assertEquals(1, accountService.loadAccountStats(debater.getUsername()).getDebateCount());
+  }
+
+  @Test
+  public void debate_replyFeed() throws Exception {
+    service.debate(zoneInfo.getZone(),
+        article.getArticleId(),
+        Debate.NO_PARENT,
+        citizen,
+        "reply to self article has no feed");
+    assertEquals(0, feedService.listFeeds(citizen, null).size());
+
+    Account debater = savedAccountCitizen("debater1");
+    Debate debate = service.debate(zoneInfo.getZone(),
+        article.getArticleId(),
+        Debate.NO_PARENT,
+        debater,
+        "some one reply to my article");
+    assertEquals(debate.getDebateId(), feedService.listFeeds(citizen, null).get(0).getAssetId());
+
+    Debate respone = service.debate(zoneInfo.getZone(),
+        article.getArticleId(),
+        debate.getDebateId(),
+        citizen,
+        "author reply me");
+    assertEquals(respone.getDebateId(), feedService.listFeeds(debater, null).get(0).getAssetId());
   }
 
   @Test

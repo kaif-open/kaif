@@ -29,6 +29,7 @@ import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.ArticleService;
+import io.kaif.service.FeedService;
 import io.kaif.web.support.AccessDeniedException;
 
 @Service
@@ -50,6 +51,8 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Autowired
   private DebateDao debateDao;
+  @Autowired
+  private FeedService feedService;
 
   @Override
   public Article createExternalLink(Authorization authorization,
@@ -165,6 +168,10 @@ public class ArticleServiceImpl implements ArticleService {
 
     if (zoneInfo.getDebateAuthority() == Authority.CITIZEN) {
       accountDao.increaseDebateCount(debater);
+    }
+
+    if (!debate.getReplyToAccountId().equals(debater.getAccountId())) {
+      feedService.createReplyFeed(debate.getDebateId(), debate.getReplyToAccountId());
     }
     return debate;
   }
