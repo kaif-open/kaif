@@ -85,6 +85,10 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
     assertEquals(1, service.findArticle(article.getArticleId()).get().getDebateCount());
     assertEquals(1, accountService.loadAccountStats(debater.getUsername()).getDebateCount());
+    assertEquals(1,
+        rotateVoteStatsDao.findRotateVoteStats(debater.getAccountId(),
+            debate.getZone(),
+            debate.getCreateTime()).get().getDebateCount());
   }
 
   @Test

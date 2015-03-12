@@ -171,6 +171,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     if (zoneInfo.getDebateAuthority() == Authority.CITIZEN) {
       accountDao.increaseDebateCount(debater);
+      rotateVoteStatsDao.increaseDebateCount(debate);
     }
     return debate;
   }

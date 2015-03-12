@@ -14,6 +14,7 @@ import com.google.common.collect.ImmutableMap;
 
 import io.kaif.database.DaoOperations;
 import io.kaif.model.article.Article;
+import io.kaif.model.debate.Debate;
 import io.kaif.model.zone.Zone;
 
 @Repository
@@ -103,6 +104,18 @@ public class RotateVoteStatsDao implements DaoOperations {
         article.getAuthorName(),
         0,
         1,
+        0,
+        0,
+        0);
+  }
+
+  public void increaseDebateCount(Debate debate) {
+    updateRotateVoteStats(debate.getDebaterId(),
+        debate.getZone(),
+        convertToBucket(debate.getCreateTime()),
+        debate.getDebaterName(),
+        1,
+        0,
         0,
         0,
         0);
