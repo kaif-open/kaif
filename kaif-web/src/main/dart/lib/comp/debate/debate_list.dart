@@ -56,7 +56,6 @@ class DebateList {
         ..preventDefault()
         ..stopPropagation();
       pagerAnchor.remove();
-      //note this searching globally because we need it to be outside of component
       Element nextWrapper = elem.querySelector('[next-debate-list]');
       //move next list to outside of current debate-list
       elementInsertAfter(elem, nextWrapper);

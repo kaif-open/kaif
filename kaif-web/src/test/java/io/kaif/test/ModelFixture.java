@@ -48,7 +48,7 @@ public interface ModelFixture extends TimeFixture {
   default Debate debate(Article article, String content, Debate parent) {
     Instant now = Instant.now();
     Account debater = accountCitizen("debater-" + new Random().nextInt(100));
-    return Debate.create(article, new KaifIdGenerator(99).next(), parent, content, debater, now);
+    return Debate.create(article, nextFlakeId(), parent, content, debater, now);
   }
 
   default FeedAsset assetReply(Debate debate) {
@@ -60,11 +60,15 @@ public interface ModelFixture extends TimeFixture {
     Account author = accountCitizen("user" + new Random().nextInt(100));
     return Article.createExternalLink(zone,
         zone.value() + "-alias",
-        new KaifIdGenerator(99).next(),
+        nextFlakeId(),
         author,
         title,
         "http://example.com/" + title,
         now);
+  }
+
+  default FlakeId nextFlakeId() {
+    return new KaifIdGenerator(99).next();
   }
 
   default Article article(Zone zone, FlakeId articleId, String title) {

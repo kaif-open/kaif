@@ -7,6 +7,9 @@ import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateList;
 
 public class NewsFeed {
+
+  public static final int MAX_UNREAD_COUNT = 11;
+
   private final List<FeedAsset> feedAssets;
   private final DebateList debateList;
 

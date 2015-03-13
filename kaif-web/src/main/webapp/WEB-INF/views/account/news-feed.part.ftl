@@ -4,7 +4,7 @@
 <#import "../macros/util.ftl" as util>
 
 
-<div class="news-feed" news-feed debate-list>
+<div class="news-feed" news-feed debate-list data-first-page="${isFirstPage?string}">
 <#list newsFeed.feedAssets as asset>
     <#if asset.assetType.debate>
     <div class="feed-asset" feed-asset data-asset-id="${asset.assetId}">

@@ -67,7 +67,9 @@ class AccountMenu {
   final Element elem;
   final AccountSession accountSession ;
 
-  AccountMenu(this.elem, this.accountSession) {
+  final NewsFeedNotification newsFeedNotification;
+
+  AccountMenu(this.elem, this.accountSession, this.newsFeedNotification) {
     var localAccount = accountSession.current;
     _render(localAccount);
 
@@ -80,6 +82,10 @@ class AccountMenu {
       // TODO show error ?
       accountSession.signOut();
       route.reload();
+    });
+
+    newsFeedNotification.getNewsFeedUnread().then((value) {
+      print("unread>> $value");
     });
   }
 

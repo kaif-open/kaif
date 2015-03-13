@@ -90,4 +90,5 @@ class AccountSession {
     _current = null;
     accountDao.remove();
   }
+
 }

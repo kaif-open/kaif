@@ -11,4 +11,8 @@ public interface FeedService {
   FeedAsset createReplyFeed(FlakeId debateId, UUID replyToAccountId);
 
   List<FeedAsset> listFeeds(Authorization authorization, FlakeId startAssetId);
+
+  void acknowledge(Authorization authorization, FlakeId assetId);
+
+  int countUnread(Authorization authorization);
 }

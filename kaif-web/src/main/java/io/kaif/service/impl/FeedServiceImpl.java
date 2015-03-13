@@ -11,6 +11,7 @@ import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Authorization;
 import io.kaif.model.feed.FeedAsset;
 import io.kaif.model.feed.FeedAssetDao;
+import io.kaif.model.feed.NewsFeed;
 import io.kaif.service.FeedService;
 
 @Service
@@ -33,5 +34,22 @@ public class FeedServiceImpl implements FeedService {
     return feedAssetDao.listFeedsDesc(authorization.authenticatedId(),
         startAssetId,
         FEED_PAGE_SIZE);
+  }
+
+  @Override
+  public void acknowledge(Authorization authorization, FlakeId assetId) {
+    feedAssetDao.acknowledge(authorization.authenticatedId(), assetId);
+  }
+
+  @Override
+  public int countUnread(Authorization authorization) {
+    List<FeedAsset> recent = feedAssetDao.listFeedsDesc(authorization.authenticatedId(),
+        null,
+        NewsFeed.MAX_UNREAD_COUNT);
+    return recent.stream()
+        .filter(FeedAsset::isAcked)
+        .findFirst()
+        .map(recent::indexOf)
+        .orElse(recent.size());
   }
 }

@@ -67,7 +67,9 @@ public class FeedAssetDao implements DaoOperations {
         + "  LIMIT ? ", feedAssetRowMapper, accountId, startAssetId.value(), size);
   }
 
-  public void acknowledge(UUID accountId) {
-
+  public void acknowledge(UUID accountId, FlakeId assetId) {
+    jdbc().update(" UPDATE FeedAsset SET acked = TRUE WHERE accountId = ? AND assetId = ? ",
+        accountId,
+        assetId.value());
   }
 }

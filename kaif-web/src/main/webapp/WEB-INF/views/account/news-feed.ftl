@@ -11,7 +11,7 @@
 <@template.page layout='full' head=headContent>
 
 <nav class="zone-menu pure-menu pure-menu-open pure-menu-horizontal">
-    <@util.menuLink '/account/news-feed' 'News Feed'/>
+    <@util.menuLink '/account/news-feed' '新消息'/>
     <@util.menuLink '/account/debate-replies' '最近回應給我'/>
 </nav>
 

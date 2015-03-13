@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.common.base.Strings;
+
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
@@ -98,8 +100,11 @@ public class AccountController {
   @RequestMapping("/news-feed.part")
   public ModelAndView newsFeedPart(AccountAccessToken accountAccessToken,
       @RequestParam(value = "startAssetId", required = false) String startAssetId) {
-    List<FeedAsset> feedAssets = feedService.listFeeds(accountAccessToken,
-        Optional.ofNullable(startAssetId).map(FlakeId::fromString).orElse(null));
+    FlakeId start = Optional.ofNullable(startAssetId)
+        .map(Strings::emptyToNull)
+        .map(FlakeId::fromString)
+        .orElse(null);
+    List<FeedAsset> feedAssets = feedService.listFeeds(accountAccessToken, start);
     List<Debate> debates = articleService.listDebatesById(feedAssets.stream()
         .filter(f -> f.getAssetType().isDebate())
         .map(FeedAsset::getAssetId)
@@ -107,8 +112,9 @@ public class AccountController {
     List<Article> articles = articleService.listArticlesByDebates(debates.stream()
         .map(Debate::getDebateId)
         .collect(toList()));
+
     return new ModelAndView("account/news-feed.part").addObject("newsFeed",
-        new NewsFeed(feedAssets, debates, articles));
+        new NewsFeed(feedAssets, debates, articles)).addObject("isFirstPage", start == null);
   }
 
   @RequestMapping("/activation")

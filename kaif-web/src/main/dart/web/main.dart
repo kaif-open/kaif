@@ -38,6 +38,7 @@ class AppModule {
   VoteService voteService;
   PartService partService;
   ServerPartLoader serverPartLoader;
+  NewsFeedNotification newsFeedNotification;
 
   AppModule() {
     accountDao = new AccountDao();
@@ -48,7 +49,7 @@ class AppModule {
     articleService = new ArticleService(serverType, accessTokenProvider);
     voteService = new VoteService(serverType, accessTokenProvider);
     partService = new PartService(serverType, accessTokenProvider);
-
+    newsFeedNotification = new NewsFeedNotification(accountService, accountSession);
     serverPartLoader = new ServerPartLoader(partService, _initializeComponents);
   }
 
@@ -87,7 +88,7 @@ class AppModule {
       new ArticleList(el, articleService, voteService, accountSession);
     });
     parent.querySelectorAll('[news-feed]').forEach((el) {
-      new NewsFeed(el, serverPartLoader);
+      new NewsFeed(el, serverPartLoader, newsFeedNotification);
     });
     parent.querySelectorAll('[short-url-input]').forEach((el) {
       new ShortUrlInput(el);
@@ -96,7 +97,7 @@ class AppModule {
 
   void start() {
     //AccountMenu is singleton, it is not part of other components
-    new AccountMenu(querySelector('[account-menu]'), accountSession);
+    new AccountMenu(querySelector('[account-menu]'), accountSession, newsFeedNotification);
 
     // apply to whole page
     _initializeComponents(window.document);
