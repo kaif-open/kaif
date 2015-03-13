@@ -67,10 +67,14 @@ public class DebateDao implements DaoOperations {
    * although cached debate will be evict when content updated, but the total vote is not real time
    * value. so the voting count will be 10 minutes delayed currently. and DebateTree is not yet
    * cache yet, so user may see inconsistent.
+   * <p>
+   * TODO we should use refreshAfterWrite() here but due to guava loadAll() issue
+   * (https://github.com/google/guava/issues/1975)
+   * we have to use expireAfterWrite() to allow more loadAll() optimization
    */
   private final LoadingCache<FlakeId, Debate> debatesCache = CacheBuilder.newBuilder()
       .maximumSize(2000)
-      .refreshAfterWrite(10, TimeUnit.MINUTES)
+      .expireAfterWrite(10, TimeUnit.MINUTES)
       .build(new CacheLoader<FlakeId, Debate>() {
         @Override
         public Debate load(FlakeId key) throws Exception {

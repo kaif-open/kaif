@@ -37,8 +37,8 @@ import com.google.common.collect.Lists;
 
 import io.kaif.database.DaoOperations;
 import io.kaif.flake.FlakeId;
-import io.kaif.model.account.Account;
 import io.kaif.model.KaifIdGenerator;
+import io.kaif.model.account.Account;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
@@ -71,11 +71,18 @@ public class ArticleDao implements DaoOperations {
         rs.getLong("downVote"),
         rs.getLong("debateCount"));
   };
+
+  /**
+   * TODO change to refreshAfterWrite after guava issue solved
+   * <p>
+   * see {@link io.kaif.model.debate.DebateDao#debatesCache} for why we have to
+   * use expireAfterWrite()
+   */
   @Autowired
   private ZoneDao zoneDao;
   private final LoadingCache<FlakeId, Article> articleByDebatesCache = CacheBuilder.newBuilder()
       .maximumSize(2000)
-      .refreshAfterWrite(10, TimeUnit.MINUTES)
+      .expireAfterWrite(10, TimeUnit.MINUTES)
       .build(new CacheLoader<FlakeId, Article>() {
         @Override
         public Article load(FlakeId key) throws Exception {
