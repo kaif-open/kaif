@@ -213,3 +213,24 @@ sample configs:
     <#nested/>
 </div>
 </#macro>
+
+<#--
+ user layout
+-->
+<#macro user username>
+<div class="grid">
+    <div class="grid-body">
+        <div class="user">
+            <nav class="user-menu pure-menu pure-menu-open pure-menu-horizontal">
+                <@util.menuLink '/u/${username}' '關於'/>
+                <@util.menuLink '/u/${username}/articles' '發表的文章'/>
+                <@util.menuLink '/u/${username}/debates' '參與的討論'/>
+            </nav>
+            <#nested/>
+        </div>
+    </div>
+    <aside class="grid-aside">
+    </aside>
+</div>
+
+</#macro>
