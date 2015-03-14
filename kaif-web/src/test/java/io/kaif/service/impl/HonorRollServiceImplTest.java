@@ -63,18 +63,26 @@ public class HonorRollServiceImplTest extends DbIntegrationTests {
     rotateVoteStatsDao.updateRotateVoteStats(increaseArticleVoter(FlakeId.endOf(instant.toEpochMilli()
             + 2),
         savedZoneDefault("pro").getZone()));
+    rotateVoteStatsDao.updateRotateVoteStats(increaseArticleVoter(FlakeId.endOf(instant.toEpochMilli()
+            + 3),
+        savedZoneDefault("abc").getZone()));
 
     service.setClock(clock);
 
     List<RotateVoteStats> rotateVoteStatses = service.listRotateVoteStats(citizen);
-    assertEquals(2, rotateVoteStatses.size());
-    assertEquals(2, rotateVoteStatses.get(0).getArticleCount());
-    assertEquals(LocalDate.now(clock).withDayOfMonth(1).toString(),
-        rotateVoteStatses.get(0).getBucket());
-    assertEquals("citizen1", rotateVoteStatses.get(0).getUsername());
-    assertEquals("pic", rotateVoteStatses.get(0).getZone().value());
-    assertEquals(1, rotateVoteStatses.get(1).getArticleCount());
-    assertEquals("pro", rotateVoteStatses.get(1).getZone().value());
+    assertEquals(3, rotateVoteStatses.size());
+    RotateVoteStats firstStats = rotateVoteStatses.get(0);
+    assertEquals("abc", firstStats.getZone().value());
+    assertEquals("2015-03-01", firstStats.getBucket());
+
+    RotateVoteStats secondStats = rotateVoteStatses.get(1);
+    assertEquals(2, secondStats.getArticleCount());
+    assertEquals("citizen1", secondStats.getUsername());
+    assertEquals("pic", secondStats.getZone().value());
+
+    RotateVoteStats thirdStats = rotateVoteStatses.get(2);
+    assertEquals(1, thirdStats.getArticleCount());
+    assertEquals("pro", thirdStats.getZone().value());
 
     service.setClock(Clock.fixed(LocalDate.of(2015, 2, 12)
         .atStartOfDay(BUCKET_ZONE)
@@ -113,6 +121,11 @@ public class HonorRollServiceImplTest extends DbIntegrationTests {
     assertEquals(12, honorRoll.get(0).getScore());
     assertEquals("king", honorRoll.get(1).getUsername());
     assertEquals(2, honorRoll.get(1).getScore());
+
+    service.setClock(Clock.fixed(LocalDate.of(2015, 4, 1)
+        .atStartOfDay(BUCKET_ZONE)
+        .toInstant(), BUCKET_ZONE));
+    assertEquals(0, service.listHonorRoll(zoneInfo.getZone()).size());
   }
 
 }

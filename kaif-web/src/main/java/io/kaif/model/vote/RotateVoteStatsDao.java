@@ -88,7 +88,7 @@ public class RotateVoteStatsDao implements DaoOperations {
   }
 
   public List<RotateVoteStats> listRotateVoteStatsByAccount(UUID uuid, Instant instant) {
-    final String sql = " SELECT * FROM RotateVoteStats WHERE accountId = ? AND bucket = ? ";
+    final String sql = " SELECT * FROM RotateVoteStats WHERE accountId = ? AND bucket = ? ORDER BY zone";
     return jdbc().query(sql,
         rotateVoteStatsMapper,
         uuid,
