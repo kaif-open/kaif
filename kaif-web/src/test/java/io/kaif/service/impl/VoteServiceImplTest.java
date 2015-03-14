@@ -206,6 +206,15 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
+  public void articleSelfVoteDoNotCountInRotateScore() throws Exception {
+    service.voteArticle(UP, zone, articleId, author, EMPTY, 100);
+    assertArticleTotalVote(1);
+    assertEquals(Optional.empty(), rotateVoteStatsDao.findRotateVoteStats(author.getAccountId(),
+        zone,
+        Instant.ofEpochMilli(article.getArticleId().epochMilli())));
+  }
+
+  @Test
   public void debateSelfVoteDoNotCountInTotalVote() throws Exception {
     service.voteDebate(UP, zone, articleId, debateId, debater, EMPTY, 20);
 

@@ -79,7 +79,7 @@ public class VoteServiceImpl implements VoteService {
     //no support down vote yet
     Preconditions.checkArgument(newState != VoteState.DOWN);
 
-    checkVoteAuthority(zone, authorization);
+    ZoneInfo zoneInfo = checkVoteAuthority(zone, authorization);
 
     voteDao.voteArticle(newState,
         articleId,
@@ -90,13 +90,16 @@ public class VoteServiceImpl implements VoteService {
 
     int upVoteDelta = newState.upVoteDeltaFrom(previousState);
     int downVoteDelta = newState.downVoteDeltaFrom(previousState);
-    articleDao.changeTotalVote(articleId, upVoteDelta, downVoteDelta);
 
+    articleDao.changeTotalVote(articleId, upVoteDelta, downVoteDelta);
     articleDao.findArticle(articleId)
+        .filter(article -> zoneInfo.getVoteAuthority() == Authority.CITIZEN
+            && !authorization.authenticatedId().equals(article.getAuthorId()))
         .ifPresent(article -> rotateVoteStatsDao.updateRotateVoteStats(HonorRollVoter.createByVote(
             article,
             upVoteDelta,
             downVoteDelta)));
+
   }
 
   @Override
