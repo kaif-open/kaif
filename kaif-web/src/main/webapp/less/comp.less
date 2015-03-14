@@ -471,3 +471,40 @@
     vertical-align: top;
   }
 }
+
+//
+// honor roll
+//
+.honor-positive-score {
+  color: @up-voted-color;
+  .up-vote {
+    .mixin-up-triangle(@color: @up-voted-color; @width: @triangle-width);
+  }
+}
+
+.honor-negative-score {
+  color: @down-voted-color;
+  .down-vote {
+    .mixin-down-triangle(@color: @down-voted-color; @width: @triangle-width);
+  }
+}
+
+.honor-roll-formula {
+  font-size: @font-size-lg;
+}
+
+.honor-roll-title {
+  color: @gray-light;
+  padding-top: @padding-lg-vertical;
+  padding-bottom: @padding-vertical;
+  margin-bottom: 0;
+  border-bottom: 1px solid @gray-lighter;
+  a {
+    color: @gray-light;
+    text-decoration: none;
+    white-space: nowrap;
+    &:hover {
+      color: @link-hover-color;
+    }
+  }
+}

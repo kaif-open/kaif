@@ -37,14 +37,14 @@ public class HonorRollServiceImpl implements HonorRollService {
   }
 
   @Override
-  public List<HonorRoll> listRotateVoteStats(String username) {
+  public List<HonorRoll> listHonorRolls(String username) {
     Account account = accountDao.loadByUsername(username);
     return honorRollDao.listHonorRollByAccount(account.getAccountId(),
         Instant.now(clock));
   }
 
   @Override
-  public List<HonorRoll> listHonorRoll(Zone zone) {
+  public List<HonorRoll> listHonorRolls(Zone zone) {
     return honorRollDao.listHonorRollByZone(zone, Instant.now(clock), PAGE_SIZE);
   }
 }

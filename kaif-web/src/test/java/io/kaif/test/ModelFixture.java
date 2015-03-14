@@ -12,6 +12,7 @@ import io.kaif.model.account.Authority;
 import io.kaif.model.article.Article;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.feed.FeedAsset;
+import io.kaif.model.vote.HonorRoll;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 
@@ -53,6 +54,14 @@ public interface ModelFixture extends TimeFixture {
 
   default FeedAsset assetReply(Debate debate) {
     return FeedAsset.createReply(debate.getDebateId(), debate.getReplyToAccountId(), Instant.now());
+  }
+
+  default HonorRoll honorRoll(Zone zone){
+    Random random = new Random();
+    Account account = accountCitizen("user" + random.nextInt(100));
+    return new HonorRoll(account.getAccountId(), zone, "", account.getUsername(), random.nextInt(
+        100), random
+        .nextInt(100), random.nextInt(100));
   }
 
   default Article article(Zone zone, String title) {

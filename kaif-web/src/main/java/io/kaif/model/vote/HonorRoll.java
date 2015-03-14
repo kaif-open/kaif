@@ -36,7 +36,7 @@ public class HonorRoll {
 
   private final long debateDownVoted;
 
-  HonorRoll(UUID accountId,
+  public HonorRoll(UUID accountId,
       Zone zone,
       String bucket,
       String username,

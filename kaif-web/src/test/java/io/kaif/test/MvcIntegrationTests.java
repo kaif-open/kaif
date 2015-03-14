@@ -36,6 +36,7 @@ import io.kaif.model.account.AccountAccessToken;
 import io.kaif.service.AccountService;
 import io.kaif.service.ArticleService;
 import io.kaif.service.FeedService;
+import io.kaif.service.HonorRollService;
 import io.kaif.service.VoteService;
 import io.kaif.service.ZoneService;
 
@@ -68,6 +69,11 @@ public abstract class MvcIntegrationTests implements ModelFixture {
     }
 
     @Bean
+    public HonorRollService honorRollService() {
+      return Mockito.mock(HonorRollService.class);
+    }
+
+    @Bean
     public ZoneService zoneService() {
       return Mockito.mock(ZoneService.class);
     }
@@ -91,6 +97,9 @@ public abstract class MvcIntegrationTests implements ModelFixture {
 
   @Autowired
   protected ArticleService articleService;
+
+  @Autowired
+  protected HonorRollService honorRollService;
 
   @Autowired
   protected VoteService voteService;

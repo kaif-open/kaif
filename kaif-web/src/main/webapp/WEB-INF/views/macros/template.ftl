@@ -225,6 +225,7 @@ sample configs:
                 <@util.menuLink '/u/${username}' '關於'/>
                 <@util.menuLink '/u/${username}/articles' '分享的文章'/>
                 <@util.menuLink '/u/${username}/debates' '參與的討論'/>
+                <@util.menuLink '/u/${username}/scores' '積分'/>
             </nav>
             <#nested/>
         </div>
