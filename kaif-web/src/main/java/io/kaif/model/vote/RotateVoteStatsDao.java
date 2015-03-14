@@ -1,6 +1,7 @@
 package io.kaif.model.vote;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -46,14 +47,14 @@ public class RotateVoteStatsDao implements DaoOperations {
         rotateVoteStatsMapper,
         accountId,
         zone.value(),
-        convertToBucket(instant))
+        monthlyBucket(instant).toString())
         .stream()
         .findAny();
   }
 
   public void updateRotateVoteStats(UUID accountId,
       Zone zone,
-      String bucket,
+      LocalDate bucket,
       String username,
       int debateCount,
       int articleCount,
@@ -85,7 +86,7 @@ public class RotateVoteStatsDao implements DaoOperations {
     Map<String, Object> params = ImmutableMap.<String, Object>builder()
         .put("accountId", accountId)
         .put("zone", zone.value())
-        .put("bucket", bucket)
+        .put("bucket", bucket.toString())
         .put("username", username)
         .put("deltaDebateCount", debateCount)
         .put("deltaArticleCount", articleCount)
@@ -100,7 +101,7 @@ public class RotateVoteStatsDao implements DaoOperations {
   public void increaseArticleCount(Article article) {
     updateRotateVoteStats(article.getAuthorId(),
         article.getZone(),
-        convertToBucket(article.getCreateTime()),
+        monthlyBucket(article.getArticleId()),
         article.getAuthorName(),
         0,
         1,
@@ -112,7 +113,7 @@ public class RotateVoteStatsDao implements DaoOperations {
   public void increaseDebateCount(Debate debate) {
     updateRotateVoteStats(debate.getDebaterId(),
         debate.getZone(),
-        convertToBucket(debate.getCreateTime()),
+        monthlyBucket(debate.getDebateId()),
         debate.getDebaterName(),
         1,
         0,

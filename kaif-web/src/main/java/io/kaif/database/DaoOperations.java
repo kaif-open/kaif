@@ -1,5 +1,6 @@
 package io.kaif.database;
 
+import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
 import static java.util.stream.Collectors.*;
 
 import java.sql.Array;
@@ -7,6 +8,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.UUID;
 import java.util.stream.IntStream;
@@ -18,6 +20,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import com.google.common.base.Preconditions;
+
+import io.kaif.flake.FlakeId;
 
 public interface DaoOperations {
 
@@ -110,7 +114,12 @@ public interface DaoOperations {
     return " (" + IntStream.rangeClosed(1, count).mapToObj(i -> "?").collect(joining(",")) + ") ";
   }
 
-  default String convertToBucket(Instant instant) {
-    return instant.atZone(ZONE_TAIPEI).toLocalDate().toString();
+  default LocalDate monthlyBucket(Instant instant) {
+    return instant.atZone(ZONE_TAIPEI).with(firstDayOfMonth()).toLocalDate();
   }
+
+  default LocalDate monthlyBucket(FlakeId flakeId) {
+    return monthlyBucket(Instant.ofEpochMilli(flakeId.epochMilli()));
+  }
+
 }
