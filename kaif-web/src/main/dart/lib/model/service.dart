@@ -179,6 +179,20 @@ class AccountService extends _AbstractService {
     .then(_mapToSingleWrapper);
   }
 
+  Future<int> newsFeedUnread() {
+    return _get(_getUrl('/news-feed-unread'), params:{
+    })
+    .then(_mapToSingleWrapper);
+  }
+
+  Future newsFeedAcknowledge(String assetId) {
+    var json = {
+        'assetId':assetId
+    };
+    return _postJson(_getUrl('/news-feed-acknowledge'), json)
+    .then((res) => null);
+  }
+
   Future<AccountAuth> authenticate(String username, String password) {
     var json = {
         'username':username, 'password':password

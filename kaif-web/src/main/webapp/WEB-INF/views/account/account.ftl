@@ -5,17 +5,24 @@
 <#import "../macros/util.ftl" as util>
 
 <#assign headContent>
-<title>最近的回應給我的討論 | kaif.io</title>
+<title>個人 | kaif.io</title>
 </#assign>
 
 <@template.page layout='full' head=headContent>
 
 <nav class="zone-menu pure-menu pure-menu-open pure-menu-horizontal">
-    <@util.menuLink '/account/debate-replies' '最近回應給我'/>
+    <#assign newsFeedName>
+        <@spring.messageText 'account-menu.news-feed' 'News Feed'/>
+    </#assign>
+    <@util.menuLink '/account/news-feed' newsFeedName/>
+    <@util.menuLink '/account/up-voted' '讚同的文章'/>
+    <#assign settingsName>
+    <@spring.messageText 'account-menu.settings' 'Settings'/>
+</#assign>
+    <@util.menuLink '/account/settings' settingsName/>
 </nav>
 
 <div class="grid">
-
     <div class="grid-body">
     <#-- dart will search #__part_template and set innerHtml with part
        check ServerPartLoader in main.dart

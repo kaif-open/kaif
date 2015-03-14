@@ -3,5 +3,5 @@
 <#import "../macros/comp.ftl" as comp>
 <#import "../macros/util.ftl" as util>
 
-<@comp.debateList data=debateList ajaxPager=true></@comp.debateList>
+<@comp.articleList data=articleList ajaxPager=true showZone=true></@comp.articleList>
 

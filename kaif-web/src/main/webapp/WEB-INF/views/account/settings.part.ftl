@@ -1,7 +1,7 @@
 <#import "/spring.ftl" as spring />
 <#import "../macros/comp.ftl" as comp>
 
-<div account-settings>
+<div account-settings class="grid-center-row">
     <div class="pure-form pure-form-aligned">
         <fieldset>
 

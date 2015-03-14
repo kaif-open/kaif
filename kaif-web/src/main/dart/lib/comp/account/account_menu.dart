@@ -20,8 +20,7 @@ class AccountMenu {
           </li>
       """);
 
-      //notification:
-      elem.nodes.insert(0, _menuLink(route.debateReplies, i18n('account-menu.debate-replies')));
+      elem.nodes.insert(0, _menuElement(route.newsFeed, counterNotification.elem));
 
       elem.querySelector('[username]')
         ..text = auth.username;
@@ -63,11 +62,21 @@ class AccountMenu {
       ..text = text) ;
   }
 
+  Element _menuElement(String href, Element body) {
+    return new LIElement()
+      ..append(new AnchorElement()
+      ..href = href
+      ..append(body)) ;
+  }
 
   final Element elem;
   final AccountSession accountSession ;
 
-  AccountMenu(this.elem, this.accountSession) {
+  final NewsFeedNotification newsFeedNotification;
+  CounterNotification counterNotification;
+
+  AccountMenu(this.elem, this.accountSession, this.newsFeedNotification) {
+    counterNotification = new CounterNotification();
     var localAccount = accountSession.current;
     _render(localAccount);
 
@@ -77,9 +86,16 @@ class AccountMenu {
       }
     }).catchError((permissionError) {
       // should means invalid token
-      // TODO show error ?
       accountSession.signOut();
       route.reload();
+    });
+
+    newsFeedNotification.onUnreadChanged.listen((value) {
+      counterNotification.counter = value;
+    });
+
+    newsFeedNotification.getUnread().then((value) {
+      counterNotification.counter = value;
     });
   }
 
@@ -93,6 +109,38 @@ class AccountMenu {
       route.gotoHome();
     });
     return signOut;
+  }
+
+}
+
+class CounterNotification {
+  Element elem;
+  Element textElem;
+  Element counterElem;
+
+  CounterNotification() {
+    elem = new SpanElement()
+      ..classes.add("notification");
+
+    //use .text = value to ensure safe html
+    textElem = new SpanElement()
+      ..classes.add("notification-name")
+      ..text = i18n('account-menu.news-feed');
+
+    counterElem = new SpanElement()
+      ..classes.add('notification-counter');
+
+    elem
+      ..append(textElem)
+      ..append(counterElem);
+
+    counter = 0;
+
+  }
+
+  set counter(int value) {
+    counterElem.classes.toggle('hidden', value <= 0);
+    counterElem.text = value > 10 ? '10+' : value.toString();
   }
 
 }

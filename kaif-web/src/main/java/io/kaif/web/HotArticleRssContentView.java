@@ -29,10 +29,6 @@ public class HotArticleRssContentView extends AbstractRssFeedView {
   //kaif first date
   private final static Instant DEFAULT_INSTANT = Instant.ofEpochMilli(1424915802000L);
 
-  public HotArticleRssContentView() {
-    setContentType("application/rss+xml;charset=UTF-8");
-  }
-
   private static String zoneUrl(Zone zone) {
     return SCHEME_AND_HOST + "/z/" + zone.value();
   }
@@ -41,13 +37,17 @@ public class HotArticleRssContentView extends AbstractRssFeedView {
     return zoneUrl(article.getZone()) + "/debates/" + article.getArticleId().toString();
   }
 
+  public HotArticleRssContentView() {
+    setContentType("application/rss+xml;charset=UTF-8");
+  }
+
   @Override
   protected void buildFeedMetadata(Map<String, Object> model,
       Channel feed,
       HttpServletRequest request) {
     ZoneInfo zoneInfo = (ZoneInfo) model.get("zoneInfo");
     @SuppressWarnings("unchecked")
-    List<Article> articles = (List<Article>) model.get("articlePage");
+    List<Article> articles = (List<Article>) model.get("articles");
     if (zoneInfo != null) {
       feed.setTitle(zoneInfo.getName() + " kaif.io");
       feed.setLink(zoneUrl(zoneInfo.getZone()));
@@ -61,8 +61,8 @@ public class HotArticleRssContentView extends AbstractRssFeedView {
     }
   }
 
-  private Date buildFeedUpdateTime(List<Article> articlePage, Instant fallbackTime) {
-    return Date.from(articlePage.stream()
+  private Date buildFeedUpdateTime(List<Article> articles, Instant fallbackTime) {
+    return Date.from(articles.stream()
         .collect(maxBy(comparing(Article::getCreateTime)))
         .map(Article::getCreateTime)
         .orElse(fallbackTime));
@@ -125,7 +125,7 @@ public class HotArticleRssContentView extends AbstractRssFeedView {
       HttpServletRequest request,
       HttpServletResponse response) throws Exception {
     @SuppressWarnings("unchecked")
-    List<Article> hotArticles = (List<Article>) model.get("articlePage");
+    List<Article> hotArticles = (List<Article>) model.get("articles");
     return hotArticles.stream().map(this::convertArticle).collect(toList());
   }
 }

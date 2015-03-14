@@ -20,9 +20,8 @@ public class ShortUrlController {
   private ArticleService articleService;
 
   @RequestMapping("/{flakeId}")
-  public View redirectDebateOrArticle(@PathVariable("flakeId") String flakeId) {
-    FlakeId id = FlakeId.fromString(flakeId);
-    return articleService.findArticle(id).map(article -> {
+  public View redirectDebateOrArticle(@PathVariable("flakeId") FlakeId flakeId) {
+    return articleService.findArticle(flakeId).map(article -> {
       RedirectView redirectView = new RedirectView(String.format("/z/%s/debates/%s",
           article.getZone().value(),
           article.getArticleId()));
@@ -30,7 +29,7 @@ public class ShortUrlController {
       return redirectView;
     }).orElseGet(() -> {
       // if not found will throw exception and go to 404
-      Debate debate = articleService.loadDebate(id);
+      Debate debate = articleService.loadDebate(flakeId);
       RedirectView redirectView = new RedirectView(String.format("/z/%s/debates/%s/%s",
           debate.getZone().value(),
           debate.getArticleId(),

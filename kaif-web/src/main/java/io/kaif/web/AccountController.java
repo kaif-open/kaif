@@ -19,11 +19,15 @@ import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountOnceToken;
 import io.kaif.model.article.Article;
+import io.kaif.model.article.ArticleList;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateList;
+import io.kaif.model.feed.FeedAsset;
+import io.kaif.model.feed.NewsFeed;
 import io.kaif.service.AccountService;
 import io.kaif.service.ArticleService;
-import io.kaif.web.support.PartTemplate;
+import io.kaif.service.FeedService;
+import io.kaif.service.VoteService;
 
 @Controller
 @RequestMapping("/account")
@@ -34,6 +38,10 @@ public class AccountController {
 
   @Autowired
   private ArticleService articleService;
+  @Autowired
+  private FeedService feedService;
+  @Autowired
+  private VoteService voteService;
 
   @RequestMapping("/sign-up")
   public ModelAndView signUp() {
@@ -58,8 +66,8 @@ public class AccountController {
   }
 
   @RequestMapping("/settings")
-  public ModelAndView settings() {
-    return PartTemplate.smallLayout();
+  public String settings() {
+    return "account/account";
   }
 
   @RequestMapping("/settings.part")
@@ -68,21 +76,38 @@ public class AccountController {
     return new ModelAndView("account/settings.part").addObject("account", account);
   }
 
-  @RequestMapping("/debate-replies")
-  public String debateReplies() {
-    return "article/debate-replies";
+  @RequestMapping("/news-feed")
+  public String newsFeed() {
+    return "account/account";
   }
 
-  @RequestMapping("/debate-replies.part")
-  public ModelAndView debateRepliesPart(AccountAccessToken accountAccessToken,
-      @RequestParam(value = "startDebateId", required = false) String startDebateId) {
-    List<Debate> debates = articleService.listReplyToDebates(accountAccessToken,
-        Optional.ofNullable(startDebateId).map(FlakeId::fromString).orElse(null));
+  @RequestMapping("/up-voted")
+  public String upVoted() {
+    return "account/account";
+  }
+
+  @RequestMapping("/news-feed.part")
+  public ModelAndView newsFeedPart(AccountAccessToken accountAccessToken,
+      @RequestParam(value = "start", required = false) FlakeId startAssetId) {
+    List<FeedAsset> feedAssets = feedService.listFeeds(accountAccessToken, startAssetId);
+    List<Debate> debates = articleService.listDebatesById(feedAssets.stream()
+        .filter(f -> f.getAssetType().isDebate())
+        .map(FeedAsset::getAssetId)
+        .collect(toList()));
     List<Article> articles = articleService.listArticlesByDebates(debates.stream()
         .map(Debate::getDebateId)
         .collect(toList()));
-    return new ModelAndView("article/debate-replies.part").addObject("debateList",
-        new DebateList(debates, articles));
+
+    return new ModelAndView("account/news-feed.part").addObject("newsFeed",
+        new NewsFeed(feedAssets, debates, articles)).addObject("isFirstPage", startAssetId == null);
+  }
+
+  @RequestMapping("/up-voted.part")
+  public ModelAndView upVotedPart(AccountAccessToken accountAccessToken,
+      @RequestParam(value = "start", required = false) FlakeId startArticleId) {
+    List<Article> articles = voteService.listUpVotedArticles(accountAccessToken, startArticleId);
+    return new ModelAndView("account/up-voted.part").addObject("articleList",
+        new ArticleList(articles));
   }
 
   @RequestMapping("/activation")

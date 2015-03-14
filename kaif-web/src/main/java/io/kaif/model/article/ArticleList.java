@@ -9,12 +9,12 @@ import javax.annotation.Nullable;
 
 import io.kaif.flake.FlakeId;
 
-public class ArticlePage {
+public class ArticleList {
   private final List<Article> articles;
   private final FlakeId oldestArticleId;
   private final FlakeId newestArticleId;
 
-  public ArticlePage(List<Article> articles) {
+  public ArticleList(List<Article> articles) {
     this.articles = articles;
     if (articles.isEmpty()) {
       this.oldestArticleId = FlakeId.MIN;

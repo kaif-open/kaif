@@ -2,6 +2,7 @@ import 'package:kaif_web/model.dart';
 import 'package:kaif_web/util.dart';
 import 'package:kaif_web/comp/account/sign_up_form.dart';
 import 'package:kaif_web/comp/account/sign_in_form.dart';
+import 'package:kaif_web/comp/account/news_feed.dart';
 import 'package:kaif_web/comp/account/forget_password_form.dart';
 import 'package:kaif_web/comp/account/reset_password_form.dart';
 import 'package:kaif_web/comp/account/account_menu.dart';
@@ -31,15 +32,18 @@ customizeDev() {
 
 class AppModule {
   AccountDao accountDao;
+  NewsFeedDao newsFeedDao;
   AccountSession accountSession;
   AccountService accountService;
   ArticleService articleService;
   VoteService voteService;
   PartService partService;
   ServerPartLoader serverPartLoader;
+  NewsFeedNotification newsFeedNotification;
 
   AppModule() {
     accountDao = new AccountDao();
+    newsFeedDao = new NewsFeedDao();
     accountSession = new AccountSession(accountDao);
 
     var accessTokenProvider = accountSession.provideAccessToken;
@@ -47,7 +51,7 @@ class AppModule {
     articleService = new ArticleService(serverType, accessTokenProvider);
     voteService = new VoteService(serverType, accessTokenProvider);
     partService = new PartService(serverType, accessTokenProvider);
-
+    newsFeedNotification = new NewsFeedNotification(accountService, accountSession, newsFeedDao);
     serverPartLoader = new ServerPartLoader(partService, _initializeComponents);
   }
 
@@ -83,9 +87,11 @@ class AppModule {
       new DebateList(el, articleService, voteService, accountSession, serverPartLoader);
     });
     parent.querySelectorAll('[article-list]').forEach((el) {
-      new ArticleList(el, articleService, voteService, accountSession);
+      new ArticleList(el, articleService, voteService, accountSession, serverPartLoader);
     });
-
+    parent.querySelectorAll('[news-feed]').forEach((el) {
+      new NewsFeedComp(el, serverPartLoader, newsFeedNotification);
+    });
     parent.querySelectorAll('[short-url-input]').forEach((el) {
       new ShortUrlInput(el);
     });
@@ -93,7 +99,7 @@ class AppModule {
 
   void start() {
     //AccountMenu is singleton, it is not part of other components
-    new AccountMenu(querySelector('[account-menu]'), accountSession);
+    new AccountMenu(querySelector('[account-menu]'), accountSession, newsFeedNotification);
 
     // apply to whole page
     _initializeComponents(window.document);

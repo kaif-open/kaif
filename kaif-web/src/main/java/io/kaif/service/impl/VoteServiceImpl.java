@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +16,7 @@ import io.kaif.flake.FlakeId;
 import io.kaif.model.account.AccountDao;
 import io.kaif.model.account.Authority;
 import io.kaif.model.account.Authorization;
+import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleDao;
 import io.kaif.model.debate.DebateDao;
 import io.kaif.model.vote.ArticleVoter;
@@ -136,5 +139,12 @@ public class VoteServiceImpl implements VoteService {
   @Override
   public List<DebateVoter> listDebateVotersByIds(Authorization voter, List<FlakeId> debateIds) {
     return voteDao.listDebateVotersByIds(voter.authenticatedId(), debateIds);
+  }
+
+  @Override
+  public List<Article> listUpVotedArticles(Authorization voter, @Nullable FlakeId startArticleId) {
+    return voteDao.listUpVotedArticles(voter.authenticatedId(),
+        startArticleId,
+        ArticleServiceImpl.PAGE_SIZE);
   }
 }

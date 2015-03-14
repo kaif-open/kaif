@@ -135,6 +135,18 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
+  public void listUpVotedArticles() throws Exception {
+    assertEquals(0, service.listUpVotedArticles(voter, null).size());
+    savedArticle(zoneInfo, savedAccountCitizen("other2"), "not voted");
+    Article a3 = savedArticle(zoneInfo, savedAccountCitizen("other3"), "title 3");
+    service.voteArticle(UP, zone, a3.getArticleId(), voter, EMPTY, 100);
+    service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
+
+    assertEquals(asList(a3, article), service.listUpVotedArticles(voter, null));
+    assertEquals(asList(article), service.listUpVotedArticles(voter, a3.getArticleId()));
+  }
+
+  @Test
   public void upVoteArticle_ignore_duplicate() throws Exception {
     service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
     service.voteArticle(UP, zone, articleId, voter, UP, 100);

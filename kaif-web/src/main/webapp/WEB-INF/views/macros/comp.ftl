@@ -4,19 +4,25 @@
 
 <#-- Article components -->
 
-<#macro articleList data showZone=false>
-    <#local articlePage=data />
+<#-- data is ArticleList.java -->
+<#macro articleList data ajaxPager=false showZone=false>
 <div class="article-list" article-list>
-    <#list articlePage.articles as article>
+    <#list data.articles as article>
         <@comp.article data=article showZone=showZone/>
     </#list>
+
     <div class="article-list-pager grid-center-row">
-        <#if articlePage.articles?size == 0 >
-            沒有文章
-        </#if>
-        <#if articlePage.hasNext()>
-            <a href="<@url.current start=articlePage.lastArticleId />"
-               class="pure-button"><i class="fa fa-caret-right"></i> 下一頁</a>
+        <#if data.articles?size == 0 >
+            <p>沒有文章</p>
+        <#else>
+            <#if ajaxPager>
+                <a href="#" ajax-pager class="pure-button">
+                    <i class="fa fa-caret-right"></i> 下一頁
+                </a>
+            <#else>
+                <a href="<@url.current start=data.lastArticleId />"
+                   class="pure-button"><i class="fa fa-caret-right"></i> 下一頁</a>
+            </#if>
         </#if>
     </div>
 </div>
@@ -172,43 +178,38 @@
     </#if>
 </#macro>
 
+<#macro debateStandAlone data article>
+    <#local debateItem=data/>
+<div class="debate-standalone">
+    <@debate data=debateItem editable=false />
+    <div class="grid-row">
+        <div class="grid-center-row debate-navigation">
+            <a href="<@url.article data=debateItem />${'#debate-'+debateItem.debateId}">
+                <i class="fa fa-caret-right"></i>
+            ${util.abbreviate(article.title, 20)}
+            </a>
+            <a href="<@url.zone data=debateItem />">
+                <i class="fa fa-caret-right"></i>
+                <@url.zone data=debateItem />
+            </a>
+        </div>
+    </div>
+</div>
+</#macro>
+
 <#-- data is DebateList -->
 <#macro debateList data ajaxPager=false showZone=true >
     <#local debates=data.debates />
 <div class="debate-list" debate-list>
     <#list debates as debateItem>
-        <div class="debate-standalone">
-            <@debate data=debateItem editable=false />
-            <div class="grid-row">
-                <div class="grid-center-row debate-navigation">
-                <#--
-                <#if debateItem.hasParent()>
-                    <a href="<@url.debate data=debateItem parent=true/>">
-                        <i class="fa fa-caret-right"></i>
-                        討論串
-                    </a>
-                </#if>
-                -->
-                    <a href="<@url.article data=debateItem />${'#debate-'+debateItem.debateId}">
-                        <i class="fa fa-caret-right"></i>
-                    ${util.abbreviate(data.getArticle(debateItem).title, 20)}
-                    </a>
-                    <#if showZone>
-                        <a href="<@url.zone data=debateItem />">
-                            <i class="fa fa-caret-right"></i>
-                            <@url.zone data=debateItem />
-                        </a>
-                    </#if>
-                </div>
-            </div>
-        </div>
+        <@debateStandAlone data=debateItem article=data.getArticle(debateItem) />
     </#list>
     <div class="debate-list-pager grid-center-row">
         <#if debates?size == 0>
             <p>沒有回應了</p>
         <#else>
             <#if ajaxPager>
-                <a href="#" debate-list-pager class="pure-button">
+                <a href="#" ajax-pager class="pure-button">
                     <i class="fa fa-caret-right"></i> 下一頁
                 </a>
             <#else>
@@ -217,9 +218,6 @@
             </#if>
         </#if>
     </div>
-    <#if ajaxPager>
-        <div next-debate-list></div>
-    </#if>
 </div>
 </#macro>
 

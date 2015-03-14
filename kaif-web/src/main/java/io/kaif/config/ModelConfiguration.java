@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
-import io.kaif.model.debate.DebateFlakeIdGenerator;
+import io.kaif.model.KaifIdGenerator;
 
 @Configuration
 public class ModelConfiguration {
@@ -25,7 +25,7 @@ public class ModelConfiguration {
   }
 
   @Bean
-  public DebateFlakeIdGenerator debateFlakeIdGenerator(FlakeIdProperties properties) {
-    return new DebateFlakeIdGenerator(properties.nodeId);
+  public KaifIdGenerator debateFlakeIdGenerator(FlakeIdProperties properties) {
+    return new KaifIdGenerator(properties.nodeId);
   }
 }
