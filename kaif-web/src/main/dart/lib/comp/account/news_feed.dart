@@ -20,9 +20,7 @@ class NewsFeed {
     _initPager(assets.isEmpty ? null : assets.last.assetId);
 
     if (isFirstPage && assets.isNotEmpty) {
-      notification.acknowledge(assets.first.assetId).then((_) {
-        print('>>> acked');
-      });
+      notification.acknowledge(assets.first.assetId);
     }
   }
 

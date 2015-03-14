@@ -12,18 +12,24 @@ class NewsFeedNotification {
 
   final AccountService accountService;
   final AccountSession accountSession;
+  final StreamController<int> _onUnreadChanged = new StreamController.broadcast();
 
   NewsFeedNotification(this.accountService, this.accountSession) {
   }
 
-  Future<int> getNewsFeedUnread() {
+  Future<int> getUnread() {
     if (!accountSession.isSignIn) {
       return new Future.value(0);
     }
     return accountService.newsFeedUnread();
   }
 
+  Stream get onUnreadChanged => _onUnreadChanged.stream;
+
   Future acknowledge(String assetId) {
-    return accountService.newsFeedAcknowledge(assetId);
+    return accountService.newsFeedAcknowledge(assetId).then((v) {
+      _onUnreadChanged.add(0);
+      return v;
+    });
   }
 }
