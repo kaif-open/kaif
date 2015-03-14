@@ -3,7 +3,6 @@ package io.kaif.web;
 import static java.util.stream.Collectors.*;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,8 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.google.common.base.Strings;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
@@ -43,11 +40,7 @@ public class UserController {
 
   @RequestMapping("/u/{username}/articles")
   public ModelAndView createdArticles(@PathVariable("username") String username,
-      @RequestParam(value = "start", required = false) String start) {
-    FlakeId startArticleId = Optional.ofNullable(start)
-        .map(Strings::emptyToNull)
-        .map(FlakeId::fromString)
-        .orElse(null);
+      @RequestParam(value = "start", required = false) FlakeId startArticleId) {
     List<Article> articles = articleService.listArticlesByAuthor(username, startArticleId);
     return new ModelAndView("account/user-articles")//
         .addObject("articleList", new ArticleList(articles)).addObject("username", username);
@@ -55,11 +48,7 @@ public class UserController {
 
   @RequestMapping("/u/{username}/debates")
   public ModelAndView createdDebates(@PathVariable("username") String username,
-      @RequestParam(value = "start", required = false) String start) {
-    FlakeId startDebateId = Optional.ofNullable(start)
-        .map(Strings::emptyToNull)
-        .map(FlakeId::fromString)
-        .orElse(null);
+      @RequestParam(value = "start", required = false) FlakeId startDebateId) {
     List<Debate> debates = articleService.listDebatesByDebater(username, startDebateId);
     List<Article> articles = articleService.listArticlesByDebates(debates.stream()
         .map(Debate::getDebateId)

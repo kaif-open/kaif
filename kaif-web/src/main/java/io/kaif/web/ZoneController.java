@@ -2,7 +2,6 @@ package io.kaif.web;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -39,9 +38,8 @@ public class ZoneController {
 
   @RequestMapping("/{zone}")
   public Object hotArticles(@PathVariable("zone") String rawZone,
-      @RequestParam(value = "start", required = false) String start,
+      @RequestParam(value = "start", required = false) FlakeId startArticleId,
       HttpServletRequest request) throws IOException {
-    FlakeId startArticleId = Optional.ofNullable(start).map(FlakeId::fromString).orElse(null);
     return resolveZone(request, rawZone, zoneInfo -> {
       return new ModelAndView("zone/zone-page")//
           .addObject("zoneInfo", zoneInfo)
@@ -94,10 +92,9 @@ public class ZoneController {
 
   @RequestMapping("/{zone}/new")
   public Object newArticles(@PathVariable("zone") String rawZone,
-      @RequestParam(value = "start", required = false) String start,
+      @RequestParam(value = "start", required = false) FlakeId startArticleId,
       HttpServletRequest request) {
     return resolveZone(request, rawZone, zoneInfo -> {
-      FlakeId startArticleId = Optional.ofNullable(start).map(FlakeId::fromString).orElse(null);
       return new ModelAndView("zone/zone-page")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("recommendZones", zoneService.listRecommendZones())
@@ -109,10 +106,9 @@ public class ZoneController {
 
   @RequestMapping("/{zone}/new-debate")
   public Object newDebates(@PathVariable("zone") String rawZone,
-      @RequestParam(value = "start", required = false) String start,
+      @RequestParam(value = "start", required = false) FlakeId startDebateId,
       HttpServletRequest request) {
     return resolveZone(request, rawZone, zoneInfo -> {
-      FlakeId startDebateId = Optional.ofNullable(start).map(FlakeId::fromString).orElse(null);
       List<Debate> debates = articleService.listLatestZoneDebates(zoneInfo.getZone(),
           startDebateId);
       List<Article> articles = articleService.listArticlesByDebates(debates.stream()
@@ -134,10 +130,9 @@ public class ZoneController {
 
   @RequestMapping("/{zone}/debates/{articleId}")
   public Object articleDebates(@PathVariable("zone") String rawZone,
-      @PathVariable("articleId") String articleId,
+      @PathVariable("articleId") FlakeId articleFlakeId,
       HttpServletRequest request) throws IOException {
     return resolveZone(request, rawZone, zoneInfo -> {
-      FlakeId articleFlakeId = FlakeId.fromString(articleId);
       return new ModelAndView("article/debates")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("recommendZones", zoneService.listRecommendZones())
@@ -148,12 +143,10 @@ public class ZoneController {
 
   @RequestMapping("/{zone}/debates/{articleId}/{parentDebateId}")
   public Object childDebates(@PathVariable("zone") String rawZone,
-      @PathVariable("articleId") String articleId,
-      @PathVariable("parentDebateId") String parentDebateId,
+      @PathVariable("articleId") FlakeId articleFlakeId,
+      @PathVariable("parentDebateId") FlakeId debateFlakeId,
       HttpServletRequest request) throws IOException {
     return resolveZone(request, rawZone, zoneInfo -> {
-      FlakeId articleFlakeId = FlakeId.fromString(articleId);
-      FlakeId debateFlakeId = FlakeId.fromString(parentDebateId);
       return new ModelAndView("article/debates")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("article", articleService.loadArticle(articleFlakeId))

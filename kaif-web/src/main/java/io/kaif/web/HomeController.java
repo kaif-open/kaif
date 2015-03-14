@@ -3,7 +3,6 @@ package io.kaif.web;
 import static java.util.stream.Collectors.*;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,8 +28,8 @@ public class HomeController {
   private ZoneService zoneService;
 
   @RequestMapping("/")
-  public ModelAndView index(@RequestParam(value = "start", required = false) String start) {
-    FlakeId startArticleId = Optional.ofNullable(start).map(FlakeId::fromString).orElse(null);
+  public ModelAndView index(
+      @RequestParam(value = "start", required = false) FlakeId startArticleId) {
     return new ModelAndView("index")//
         .addObject("recommendZones", zoneService.listRecommendZones())
         .addObject("articleList", new ArticleList(articleService.listTopArticles(startArticleId)));
@@ -46,8 +45,7 @@ public class HomeController {
 
   @RequestMapping("/new")
   public ModelAndView listLatestArticles(
-      @RequestParam(value = "start", required = false) String start) {
-    FlakeId startArticleId = Optional.ofNullable(start).map(FlakeId::fromString).orElse(null);
+      @RequestParam(value = "start", required = false) FlakeId startArticleId) {
     return new ModelAndView("index") //
         .addObject("recommendZones", zoneService.listRecommendZones())
         .addObject("articleList",
@@ -56,8 +54,7 @@ public class HomeController {
 
   @RequestMapping("/new-debate")
   public ModelAndView listLatestDebates(
-      @RequestParam(value = "start", required = false) String start) {
-    FlakeId startDebateId = Optional.ofNullable(start).map(FlakeId::fromString).orElse(null);
+      @RequestParam(value = "start", required = false) FlakeId startDebateId) {
     List<Debate> debates = articleService.listLatestDebates(startDebateId);
     List<Article> articles = articleService.listArticlesByDebates(debates.stream()
         .map(Debate::getDebateId)

@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.google.common.base.Strings;
-
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
@@ -82,9 +80,8 @@ public class AccountController {
 
   @RequestMapping("/debate-replies.part")
   public ModelAndView debateRepliesPart(AccountAccessToken accountAccessToken,
-      @RequestParam(value = "startDebateId", required = false) String startDebateId) {
-    List<Debate> debates = articleService.listReplyToDebates(accountAccessToken,
-        Optional.ofNullable(startDebateId).map(FlakeId::fromString).orElse(null));
+      @RequestParam(value = "startDebateId", required = false) FlakeId startDebateId) {
+    List<Debate> debates = articleService.listReplyToDebates(accountAccessToken, startDebateId);
     List<Article> articles = articleService.listArticlesByDebates(debates.stream()
         .map(Debate::getDebateId)
         .collect(toList()));
@@ -99,12 +96,8 @@ public class AccountController {
 
   @RequestMapping("/news-feed.part")
   public ModelAndView newsFeedPart(AccountAccessToken accountAccessToken,
-      @RequestParam(value = "startAssetId", required = false) String startAssetId) {
-    FlakeId start = Optional.ofNullable(startAssetId)
-        .map(Strings::emptyToNull)
-        .map(FlakeId::fromString)
-        .orElse(null);
-    List<FeedAsset> feedAssets = feedService.listFeeds(accountAccessToken, start);
+      @RequestParam(value = "startAssetId", required = false) FlakeId startAssetId) {
+    List<FeedAsset> feedAssets = feedService.listFeeds(accountAccessToken, startAssetId);
     List<Debate> debates = articleService.listDebatesById(feedAssets.stream()
         .filter(f -> f.getAssetType().isDebate())
         .map(FeedAsset::getAssetId)
@@ -114,7 +107,7 @@ public class AccountController {
         .collect(toList()));
 
     return new ModelAndView("account/news-feed.part").addObject("newsFeed",
-        new NewsFeed(feedAssets, debates, articles)).addObject("isFirstPage", start == null);
+        new NewsFeed(feedAssets, debates, articles)).addObject("isFirstPage", startAssetId == null);
   }
 
   @RequestMapping("/activation")
