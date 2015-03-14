@@ -87,7 +87,7 @@ class AppModule {
       new DebateList(el, articleService, voteService, accountSession, serverPartLoader);
     });
     parent.querySelectorAll('[article-list]').forEach((el) {
-      new ArticleList(el, articleService, voteService, accountSession);
+      new ArticleList(el, articleService, voteService, accountSession, serverPartLoader);
     });
     parent.querySelectorAll('[news-feed]').forEach((el) {
       new NewsFeedComp(el, serverPartLoader, newsFeedNotification);

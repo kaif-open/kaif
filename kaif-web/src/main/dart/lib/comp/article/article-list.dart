@@ -4,6 +4,7 @@ import 'dart:html';
 import 'package:kaif_web/model.dart';
 import '../vote/votable.dart';
 import 'dart:async';
+import '../server_part_loader.dart';
 
 class ArticleList {
 
@@ -12,12 +13,16 @@ class ArticleList {
   final VoteService voteService;
   final AccountSession accountSession;
 
-  ArticleList(this.elem, this.articleService, this.voteService, this.accountSession) {
+  ArticleList(this.elem, this.articleService, this.voteService, this.accountSession,
+              ServerPartLoader serverPartLoader) {
     List<ArticleComp> articleComps = elem.querySelectorAll('[article]').map((Element el) {
       return new ArticleComp(el, voteService, accountSession);
     }).toList();
 
     _initArticleVoters(articleComps);
+
+    new PartLoaderPager(elem, serverPartLoader,
+    articleComps.isNotEmpty ? articleComps.last.articleId : null);
   }
 
   _initArticleVoters(List<ArticleComp> articleComps) {

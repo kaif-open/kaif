@@ -5,18 +5,24 @@
 <#-- Article components -->
 
 <#-- data is ArticleList.java -->
-<#macro articleList data showZone=false>
+<#macro articleList data ajaxPager=false showZone=false>
 <div class="article-list" article-list>
     <#list data.articles as article>
         <@comp.article data=article showZone=showZone/>
     </#list>
+
     <div class="article-list-pager grid-center-row">
         <#if data.articles?size == 0 >
             沒有文章
-        </#if>
-        <#if data.hasNext()>
-            <a href="<@url.current start=data.lastArticleId />"
-               class="pure-button"><i class="fa fa-caret-right"></i> 下一頁</a>
+        <#elseif data.hasNext()>
+            <#if ajaxPager>
+                <a href="#" ajax-pager class="pure-button">
+                    <i class="fa fa-caret-right"></i> 下一頁
+                </a>
+            <#else>
+                <a href="<@url.current start=data.lastArticleId />"
+                   class="pure-button"><i class="fa fa-caret-right"></i> 下一頁</a>
+            </#if>
         </#if>
     </div>
 </div>

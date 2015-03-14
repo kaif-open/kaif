@@ -51,3 +51,30 @@ class ServerPartLoader {
   }
 }
 
+class PartLoaderPager {
+
+  PartLoaderPager(Element parentElem, ServerPartLoader serverPartLoader, String nextStart) {
+    if (isStringBlank(nextStart)) {
+      return;
+    }
+    Element pagerAnchor = parentElem.querySelector('[ajax-pager]');
+    if (pagerAnchor == null) {
+      return;
+    }
+    pagerAnchor.onClick.first.then((e) {
+      e
+        ..preventDefault()
+        ..stopPropagation();
+      pagerAnchor.remove();
+      Element nextWrapper = new DivElement();
+      //move next list to outside of current list
+      elementInsertAfter(parentElem, nextWrapper);
+
+      //load next page, this will create another part
+      serverPartLoader.loadInto(nextWrapper,
+      route.currentPartTemplatePath() + "?start=${nextStart}",
+      loading:new Loading.largeCenter());
+    });
+  }
+}
+

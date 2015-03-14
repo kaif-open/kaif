@@ -47,14 +47,7 @@ import io.kaif.model.zone.ZoneInfo;
 public class ArticleDao implements DaoOperations {
 
   private static final Logger logger = LoggerFactory.getLogger(ArticleDao.class);
-
-  @Autowired
-  private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
-  @Autowired
-  private KaifIdGenerator kaifIdGenerator;
-
-  private final RowMapper<Article> articleMapper = (rs, rowNum) -> {
+  public static final RowMapper<Article> ARTICLE_ROW_MAPPER = (rs, rowNum) -> {
     return new Article(//
         Zone.valueOf(rs.getString("zone")),
         rs.getString("aliasName"),
@@ -71,7 +64,10 @@ public class ArticleDao implements DaoOperations {
         rs.getLong("downVote"),
         rs.getLong("debateCount"));
   };
-
+  @Autowired
+  private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+  @Autowired
+  private KaifIdGenerator kaifIdGenerator;
   /**
    * TODO change to refreshAfterWrite after guava issue solved
    * <p>
@@ -128,7 +124,7 @@ public class ArticleDao implements DaoOperations {
 
   public Optional<Article> findArticle(FlakeId articleId) {
     final String sql = " SELECT * FROM Article WHERE articleId = ? LIMIT 1 ";
-    return jdbc().query(sql, articleMapper, articleId.value()).stream().findAny();
+    return jdbc().query(sql, ARTICLE_ROW_MAPPER, articleId.value()).stream().findAny();
   }
 
   public List<Article> listZoneArticlesDesc(Zone zone,
@@ -143,7 +139,7 @@ public class ArticleDao implements DaoOperations {
         + "    AND deleted = FALSE "
         + "  ORDER BY articleId DESC "
         + "  LIMIT ? ";
-    return jdbc().query(sql, articleMapper, start.value(), zone.value(), limit);
+    return jdbc().query(sql, ARTICLE_ROW_MAPPER, start.value(), zone.value(), limit);
   }
 
   /**
@@ -158,7 +154,7 @@ public class ArticleDao implements DaoOperations {
         + "    AND deleted = FALSE "
         + "  ORDER BY articleId DESC "
         + "  LIMIT ? ";
-    return jdbc().query(sql, articleMapper, start.value(), limit);
+    return jdbc().query(sql, ARTICLE_ROW_MAPPER, start.value(), limit);
   }
 
   public Article createExternalLink(ZoneInfo zoneInfo,
@@ -182,7 +178,7 @@ public class ArticleDao implements DaoOperations {
    */
   public Article loadArticle(FlakeId articleId) throws EmptyResultDataAccessException {
     final String sql = " SELECT * FROM Article WHERE articleId = ? ";
-    return jdbc().queryForObject(sql, articleMapper, articleId.value());
+    return jdbc().queryForObject(sql, ARTICLE_ROW_MAPPER, articleId.value());
   }
 
   public void increaseDebateCount(Article article) {
@@ -221,7 +217,7 @@ public class ArticleDao implements DaoOperations {
           + "    AND deleted = FALSE "
           + "  ORDER BY hotRanking(upVote, downVote, createTime) DESC "
           + "  LIMIT ? ";
-      return jdbc().query(sql, articleMapper, zone.value(), limit);
+      return jdbc().query(sql, ARTICLE_ROW_MAPPER, zone.value(), limit);
     }
     final String sql = ""
         + " WITH RankArticle "
@@ -236,7 +232,7 @@ public class ArticleDao implements DaoOperations {
         + "    AND deleted = FALSE "
         + "  ORDER BY hot DESC "
         + "  LIMIT ? ";
-    return jdbc().query(sql, articleMapper, zone.value(), startArticleId.value(), limit);
+    return jdbc().query(sql, ARTICLE_ROW_MAPPER, zone.value(), startArticleId.value(), limit);
   }
 
   public List<Article> listHotArticlesExcludeHidden(@Nullable FlakeId startArticleId, int limit) {
@@ -261,7 +257,7 @@ public class ArticleDao implements DaoOperations {
           + "    AND a.deleted = FALSE "
           + "  ORDER BY hotRanking(a.upVote, a.downVote, a.createTime) DESC "
           + "  LIMIT ? ";
-      return jdbc().query(sql, articleMapper, upperTimeBound.value(), limit);
+      return jdbc().query(sql, ARTICLE_ROW_MAPPER, upperTimeBound.value(), limit);
     }
     final String sql = ""
         + " WITH RankArticle "
@@ -278,7 +274,11 @@ public class ArticleDao implements DaoOperations {
         + "    AND deleted = FALSE "
         + "  ORDER BY hot DESC "
         + "  LIMIT ? ";
-    return jdbc().query(sql, articleMapper, upperTimeBound.value(), startArticleId.value(), limit);
+    return jdbc().query(sql,
+        ARTICLE_ROW_MAPPER,
+        upperTimeBound.value(),
+        startArticleId.value(),
+        limit);
   }
 
   //TODO evict any related cache
@@ -352,7 +352,7 @@ public class ArticleDao implements DaoOperations {
     HashMap<FlakeId, Article> articles = new HashMap<>();
     namedJdbc().query(sql, ImmutableMap.of("debateIds", values), rs -> {
       FlakeId debateId = FlakeId.valueOf(rs.getLong("debateId"));
-      articles.put(debateId, articleMapper.mapRow(rs, 0));
+      articles.put(debateId, ARTICLE_ROW_MAPPER.mapRow(rs, 0));
     });
     return articles;
   }
@@ -369,6 +369,6 @@ public class ArticleDao implements DaoOperations {
         + "    AND deleted = FALSE "
         + "  ORDER BY articleId DESC "
         + "  LIMIT ? ";
-    return jdbc().query(sql, articleMapper, start.value(), authorId, size);
+    return jdbc().query(sql, ARTICLE_ROW_MAPPER, start.value(), authorId, size);
   }
 }

@@ -46,7 +46,19 @@ public class AccountControllerTest extends MvcIntegrationTests {
 
   @Test
   public void newsFeed() throws Exception {
-    mockMvc.perform(get("/account/news-feed")).andExpect(containsDebateFormTemplate());
+    mockMvc.perform(get("/account/news-feed"))
+        .andExpect(view().name("account/account"))
+        .andExpect(containsDebateFormTemplate());
+  }
+
+  @Test
+  public void upVoted() throws Exception {
+    mockMvc.perform(get("/account/up-voted")).andExpect(view().name("account/account"));
+  }
+
+  @Test
+  public void settings() throws Exception {
+    mockMvc.perform(get("/account/settings")).andExpect(view().name("account/account"));
   }
 
   @Test
@@ -73,6 +85,19 @@ public class AccountControllerTest extends MvcIntegrationTests {
         .andExpect(model().attribute("isFirstPage", true))
         .andExpect(content().string(containsString("reply 00001")))
         .andExpect(content().string(containsString("reply 00002")));
+  }
+
+  @Test
+  public void upVotedPart() throws Exception {
+    Account account = accountCitizen("bar111");
+    String token = prepareAccessToken(account);
+
+    Article article = article(Zone.valueOf("xyz123"), "my up voted title 1");
+    when(voteService.listUpVotedArticles(isA(Authorization.class),
+        isNull(FlakeId.class))).thenReturn(asList(article));
+    mockMvc.perform(get("/account/up-voted.part").header(AccountAccessToken.HEADER_KEY, token))
+        .andExpect(view().name("account/up-voted.part"))
+        .andExpect(content().string(containsString("my up voted title 1")));
   }
 
   @Test

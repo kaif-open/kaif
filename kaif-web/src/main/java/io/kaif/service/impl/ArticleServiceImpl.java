@@ -38,7 +38,7 @@ public class ArticleServiceImpl implements ArticleService {
 
   private static final Logger log = LoggerFactory.getLogger(ArticleServiceImpl.class);
 
-  private static final int PAGE_SIZE = 25;
+  static final int PAGE_SIZE = 25;
 
   @Autowired
   private AccountDao accountDao;
