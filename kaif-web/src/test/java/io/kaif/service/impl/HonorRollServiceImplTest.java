@@ -43,6 +43,7 @@ public class HonorRollServiceImplTest extends DbIntegrationTests {
     zoneInfo = savedZoneDefault("pic");
     citizen = savedAccountCitizen("citizen1");
     service.setClock(Clock.systemDefaultZone());
+    honorRollDao.evictAllCaches();
   }
 
   HonorRollVoter increaseArticleVoter(FlakeId flakeId, Zone zone) {
@@ -163,6 +164,9 @@ public class HonorRollServiceImplTest extends DbIntegrationTests {
     List<HonorRoll> honorRoll = service.listHonorRollsByZone(zoneInfo.getZone());
     assertEquals(allStats.stream().limit(20).map(HonorRollVoter::getUsername).collect(toList()),
         honorRoll.stream().map(HonorRoll::getUsername).collect(toList()));
+
+    List<HonorRoll> cached = service.listHonorRollsByZone(zoneInfo.getZone());
+    assertSame(honorRoll, cached);
   }
 
   @Test
@@ -227,6 +231,9 @@ public class HonorRollServiceImplTest extends DbIntegrationTests {
     assertEquals(-1, third.getScore());
     assertEquals("user-2", third.getUsername());
     assertNull(third.getZone());
+
+    List<HonorRoll> cached = service.listHonorRollsByZone(null);
+    assertSame(honorRoll, cached);
   }
 
   @Test

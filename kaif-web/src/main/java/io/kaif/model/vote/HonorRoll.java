@@ -61,34 +61,34 @@ public class HonorRoll {
       return false;
     }
 
-    HonorRoll that = (HonorRoll) o;
+    HonorRoll honorRoll = (HonorRoll) o;
 
-    if (articleUpVoted != that.articleUpVoted) {
+    if (articleUpVoted != honorRoll.articleUpVoted) {
       return false;
     }
-    if (debateUpVoted != that.debateUpVoted) {
+    if (debateUpVoted != honorRoll.debateUpVoted) {
       return false;
     }
-    if (debateDownVoted != that.debateDownVoted) {
+    if (debateDownVoted != honorRoll.debateDownVoted) {
       return false;
     }
-    if (!accountId.equals(that.accountId)) {
+    if (!accountId.equals(honorRoll.accountId)) {
       return false;
     }
-    if (!zone.equals(that.zone)) {
+    if (zone != null ? !zone.equals(honorRoll.zone) : honorRoll.zone != null) {
       return false;
     }
-    if (!bucket.equals(that.bucket)) {
+    if (!bucket.equals(honorRoll.bucket)) {
       return false;
     }
-    return username.equals(that.username);
+    return username.equals(honorRoll.username);
 
   }
 
   @Override
   public int hashCode() {
     int result = accountId.hashCode();
-    result = 31 * result + zone.hashCode();
+    result = 31 * result + (zone != null ? zone.hashCode() : 0);
     result = 31 * result + bucket.hashCode();
     result = 31 * result + username.hashCode();
     result = 31 * result + (int) (articleUpVoted ^ (articleUpVoted >>> 32));

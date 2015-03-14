@@ -10,11 +10,13 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 
 import io.kaif.database.DaoOperations;
@@ -93,32 +95,37 @@ public class HonorRollDao implements DaoOperations {
         monthlyBucket(instant).toString());
   }
 
+  @Cacheable(value = "listHonorRoll")
   public List<HonorRoll> listHonorRollByZone(@Nullable Zone zone, Instant instant, int limit) {
+    if (zone == null) {
+      return listHonorRoll(monthlyBucket(instant), limit);
+    }
     return listHonorRollByZone(zone, monthlyBucket(instant), limit);
   }
 
-  /**
-   * for cached purpose, using bucket as part of key
-   */
-  @Cacheable(value = "listHonorRoll")
-  public List<HonorRoll> listHonorRollByZone(@Nullable Zone zone, LocalDate bucket, int limit) {
-    if (zone == null) {
-      final String sql = //
-          "      SELECT accountId, bucket, username, NULL AS zone, "
-              + "       sum(articleUpVoted) AS articleUpVoted, "
-              + "       sum(debateUpVoted) AS debateUpVoted, "
-              + "       sum(debateDownVoted) AS debateDownVoted, "
-              + "       sum(articleUpVoted) + sum(debateUpVoted) - sum(debateDownVoted) AS score "
-              + "  FROM HonorRoll WHERE bucket = ? GROUP BY accountId, bucket, username ORDER BY score DESC, username ASC LIMIT ? ";
-      return jdbc().query(sql,
-          honorRollRowMapper,
-          bucket.toString(), limit);
-    } else {
-      final String sql = " SELECT * FROM HonorRoll WHERE zone = ? AND bucket = ? ORDER BY articleUpVoted + debateUpVoted - debateDownVoted DESC, username ASC LIMIT ? ";
-      return jdbc().query(sql,
-          honorRollRowMapper,
-          zone.value(),
-          bucket.toString(), limit);
-    }
+  private List<HonorRoll> listHonorRollByZone(Zone zone, LocalDate bucket, int limit) {
+    final String sql = " SELECT * FROM HonorRoll WHERE zone = ? AND bucket = ? ORDER BY articleUpVoted + debateUpVoted - debateDownVoted DESC, username ASC LIMIT ? ";
+    return jdbc().query(sql,
+        honorRollRowMapper,
+        zone.value(),
+        bucket.toString(), limit);
+  }
+
+  private List<HonorRoll> listHonorRoll(LocalDate bucket, int limit) {
+    final String sql = //
+        "      SELECT accountId, bucket, username, NULL AS zone, "
+            + "       sum(articleUpVoted) AS articleUpVoted, "
+            + "       sum(debateUpVoted) AS debateUpVoted, "
+            + "       sum(debateDownVoted) AS debateDownVoted, "
+            + "       sum(articleUpVoted) + sum(debateUpVoted) - sum(debateDownVoted) AS score "
+            + "  FROM HonorRoll WHERE bucket = ? GROUP BY accountId, bucket, username ORDER BY score DESC, username ASC LIMIT ? ";
+    return jdbc().query(sql,
+        honorRollRowMapper,
+        bucket.toString(), limit);
+  }
+
+  @VisibleForTesting
+  @CacheEvict(value = "listHonorRoll", allEntries = true)
+  public void evictAllCaches() {
   }
 }

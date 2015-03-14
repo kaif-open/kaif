@@ -30,7 +30,7 @@ public class UtilConfiguration {
   public CacheManager compositeCacheManager() {
     return new CompositeCacheManager(zoneInfoCacheManager(),
         listHotZonesCacheManager(),
-        rssHotArticlesCacheManager());
+        rssHotArticlesCacheManager(), honorRollsCacheManager());
   }
 
   @Bean
