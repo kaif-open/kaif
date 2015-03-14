@@ -244,4 +244,18 @@ public class ArticleServiceImpl implements ArticleService {
   public List<Debate> listDebatesById(List<FlakeId> debateIds) {
     return debateDao.listDebatesById(debateIds);
   }
+
+  @Override
+  public List<Article> listArticlesByAuthor(String username, @Nullable FlakeId startArticleId) {
+    // we don't use join because we may use cache to optimize later
+    Account author = accountDao.loadByUsername(username);
+    return articleDao.listArticlesByAuthor(author.getAccountId(), startArticleId, PAGE_SIZE);
+  }
+
+  @Override
+  public List<Debate> listDebatesByDebater(String username, @Nullable FlakeId startDebateId) {
+    // we don't use join because we may use cache to optimize later
+    Account debater = accountDao.loadByUsername(username);
+    return debateDao.listDebatesByDebater(debater.getAccountId(), startDebateId, PAGE_SIZE);
+  }
 }

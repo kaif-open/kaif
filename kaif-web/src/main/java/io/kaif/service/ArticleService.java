@@ -59,4 +59,8 @@ public interface ArticleService {
   List<Article> listArticlesByDebates(List<FlakeId> debateIds);
 
   List<Debate> listDebatesById(List<FlakeId> debateIds);
+
+  List<Article> listArticlesByAuthor(String username, @Nullable FlakeId startArticleId);
+
+  List<Debate> listDebatesByDebater(String username, @Nullable FlakeId startDebateId);
 }

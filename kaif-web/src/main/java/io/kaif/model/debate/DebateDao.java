@@ -276,4 +276,17 @@ public class DebateDao implements DaoOperations {
         debateMapper);
     return debates.stream().collect(toImmutableMap(Debate::getDebateId, Function.identity()));
   }
+
+  public List<Debate> listDebatesByDebater(UUID debaterId,
+      @Nullable FlakeId startDebateId,
+      int size) {
+    FlakeId start = Optional.ofNullable(startDebateId).orElse(FlakeId.MAX);
+    return jdbc().query(""
+        + " SELECT * "
+        + "   FROM Debate "
+        + "  WHERE debateId < ? "
+        + "    AND debaterId = ? "
+        + "  ORDER BY debateId DESC "
+        + "  LIMIT ? ", debateMapper, start.value(), debaterId, size);
+  }
 }

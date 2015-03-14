@@ -356,4 +356,19 @@ public class ArticleDao implements DaoOperations {
     });
     return articles;
   }
+
+  public List<Article> listArticlesByAuthor(UUID authorId,
+      @Nullable FlakeId startArticleId,
+      int size) {
+    FlakeId start = Optional.ofNullable(startArticleId).orElse(FlakeId.MAX);
+    final String sql = ""
+        + " SELECT * "
+        + "   FROM Article "
+        + "  WHERE articleId < ? "
+        + "    AND authorId = ? "
+        + "    AND deleted = FALSE "
+        + "  ORDER BY articleId DESC "
+        + "  LIMIT ? ";
+    return jdbc().query(sql, articleMapper, start.value(), authorId, size);
+  }
 }

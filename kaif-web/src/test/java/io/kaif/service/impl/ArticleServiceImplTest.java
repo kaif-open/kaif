@@ -354,7 +354,6 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   @Test
   public void listReplyToDebates() throws Exception {
     assertEquals(0, service.listReplyToDebates(citizen, null).size());
-    //    Account debater = savedAccountCitizen("debater1");
     Debate l1 = savedDebate(article, "reply to my article", null);
     assertEquals(asList(l1), service.listReplyToDebates(citizen, null));
 
@@ -369,6 +368,26 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     Debate l2 = savedDebate(article, "a debate reply to me", authorReply);
     assertEquals(asList(l2, l1), service.listReplyToDebates(citizen, null));
     assertEquals(asList(l1), service.listReplyToDebates(citizen, l2.getDebateId()));
+  }
+
+  @Test
+  public void listDebatesByDebater() throws Exception {
+    assertEquals(0, service.listDebatesByDebater(citizen.getUsername(), null).size());
+    Debate l1 = service.debate(zoneInfo.getZone(),
+        article.getArticleId(),
+        Debate.NO_PARENT,
+        citizen,
+        "debate 1");
+
+    Article article2 = savedArticle(zoneInfo, citizen, "another article");
+    Debate l2 = service.debate(zoneInfo.getZone(),
+        article2.getArticleId(),
+        Debate.NO_PARENT,
+        citizen,
+        "debate 2");
+
+    assertEquals(asList(l2, l1), service.listDebatesByDebater(citizen.getUsername(), null));
+    assertEquals(asList(l1), service.listDebatesByDebater(citizen.getUsername(), l2.getDebateId()));
   }
 
   @Test
@@ -416,6 +435,29 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertEquals("listLatest should exclude deleted",
         asList(a3, a2),
         service.listLatestZoneArticles(fooZone.getZone(), null));
+  }
+
+  @Test
+  public void listArticlesByAuthor() throws Exception {
+    Account author = savedAccountCitizen("citizen");
+
+    assertEquals(0, service.listArticlesByAuthor(author.getUsername(), null).size());
+
+    ZoneInfo fooZone = savedZoneDefault("foo");
+    Article a1 = service.createExternalLink(author, fooZone.getZone(), "title1", "http://foo1.com");
+    Article a2 = service.createSpeak(author, fooZone.getZone(), "title2", "good point");
+    Article a3 = service.createExternalLink(author,
+        zoneInfo.getZone(),
+        "title3",
+        "http://foo2.com");
+
+    assertEquals(asList(a3, a2, a1), service.listArticlesByAuthor(author.getUsername(), null));
+    assertEquals(singletonList(a1),
+        service.listArticlesByAuthor(author.getUsername(), a2.getArticleId()));
+    articleDao.markAsDeleted(a1);
+    assertEquals("listArticlesByUser should exclude deleted",
+        asList(a3, a2),
+        service.listArticlesByAuthor(author.getUsername(), null));
   }
 
   @Test
