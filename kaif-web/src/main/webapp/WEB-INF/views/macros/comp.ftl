@@ -14,7 +14,7 @@
     <div class="article-list-pager grid-center-row">
         <#if data.articles?size == 0 >
             沒有文章
-        <#elseif data.hasNext()>
+        <#else>
             <#if ajaxPager>
                 <a href="#" ajax-pager class="pure-button">
                     <i class="fa fa-caret-right"></i> 下一頁
@@ -209,7 +209,7 @@
             <p>沒有回應了</p>
         <#else>
             <#if ajaxPager>
-                <a href="#" debate-list-pager class="pure-button">
+                <a href="#" ajax-pager class="pure-button">
                     <i class="fa fa-caret-right"></i> 下一頁
                 </a>
             <#else>
@@ -218,9 +218,6 @@
             </#if>
         </#if>
     </div>
-    <#if ajaxPager>
-        <div next-debate-list></div>
-    </#if>
 </div>
 </#macro>
 

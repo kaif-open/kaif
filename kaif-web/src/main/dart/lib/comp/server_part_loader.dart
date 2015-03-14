@@ -61,6 +61,16 @@ class PartLoaderPager {
     if (pagerAnchor == null) {
       return;
     }
+
+    // note that multiple components may scanned same pager anchor
+    // we use flag to prevent multiple registration.
+    //
+    // news_feed.part.ftl has such problem.
+    if (pagerAnchor.dataset.containsKey('registered')) {
+      return;
+    }
+    pagerAnchor.dataset['registered'] = 'true';
+
     pagerAnchor.onClick.first.then((e) {
       e
         ..preventDefault()

@@ -83,7 +83,7 @@ public class AccountController {
 
   @RequestMapping("/debate-replies.part")
   public ModelAndView debateRepliesPart(AccountAccessToken accountAccessToken,
-      @RequestParam(value = "startDebateId", required = false) FlakeId startDebateId) {
+      @RequestParam(value = "start", required = false) FlakeId startDebateId) {
     List<Debate> debates = articleService.listReplyToDebates(accountAccessToken, startDebateId);
     List<Article> articles = articleService.listArticlesByDebates(debates.stream()
         .map(Debate::getDebateId)
@@ -104,7 +104,7 @@ public class AccountController {
 
   @RequestMapping("/news-feed.part")
   public ModelAndView newsFeedPart(AccountAccessToken accountAccessToken,
-      @RequestParam(value = "startAssetId", required = false) FlakeId startAssetId) {
+      @RequestParam(value = "start", required = false) FlakeId startAssetId) {
     List<FeedAsset> feedAssets = feedService.listFeeds(accountAccessToken, startAssetId);
     List<Debate> debates = articleService.listDebatesById(feedAssets.stream()
         .filter(f -> f.getAssetType().isDebate())

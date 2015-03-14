@@ -17,37 +17,13 @@ class NewsFeedComp {
       return new FeedAssetComp(el);
     }).toList();
 
-    _initPager(assets.isEmpty ? null : assets.last.assetId);
+    new PartLoaderPager(elem, serverPartLoader, assets.isEmpty ? null : assets.last.assetId);
 
     if (isFirstPage && assets.isNotEmpty) {
       notification.acknowledge(assets.first.assetId);
     }
   }
 
-  void _initPager(String startAssetId) {
-    if (startAssetId == null) {
-      return;
-    }
-    Element pagerAnchor = elem.querySelector('[news-feed-pager]');
-    if (pagerAnchor == null) {
-      return;
-    }
-
-    pagerAnchor.onClick.first.then((e) {
-      e
-        ..preventDefault()
-        ..stopPropagation();
-      pagerAnchor.remove();
-      Element nextWrapper = elem.querySelector('[next-news-feed]');
-      //move next list to outside of current news-feed
-      elementInsertAfter(elem, nextWrapper);
-
-      //load next page, this will create another NewsFeed component
-      serverPartLoader.loadInto(nextWrapper,
-      route.currentPartTemplatePath() + "?startAssetId=${startAssetId}",
-      loading:new Loading.largeCenter());
-    });
-  }
 }
 
 class FeedAssetComp {
@@ -57,6 +33,4 @@ class FeedAssetComp {
   FeedAssetComp(this.elem) {
     assetId = elem.dataset['asset-id'] ;
   }
-
-
 }

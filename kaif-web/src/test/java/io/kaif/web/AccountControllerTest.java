@@ -114,7 +114,7 @@ public class AccountControllerTest extends MvcIntegrationTests {
     when(articleService.listDebatesById(asList(d1.getDebateId()))).thenReturn(asList(d1));
 
     when(articleService.listArticlesByDebates(asList(d1.getDebateId()))).thenReturn(asList(article));
-    mockMvc.perform(get("/account/news-feed.part").param("startAssetId", "goodId")
+    mockMvc.perform(get("/account/news-feed.part").param("start", "goodId")
         .header(AccountAccessToken.HEADER_KEY, token))
         .andExpect(view().name("account/news-feed.part"))
         .andExpect(model().attribute("isFirstPage", false));

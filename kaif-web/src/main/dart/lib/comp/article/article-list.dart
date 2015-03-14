@@ -22,7 +22,7 @@ class ArticleList {
     _initArticleVoters(articleComps);
 
     new PartLoaderPager(elem, serverPartLoader,
-    articleComps.isNotEmpty ? articleComps.last.articleId : null);
+    articleComps.isEmpty ? null : articleComps.last.articleId);
   }
 
   _initArticleVoters(List<ArticleComp> articleComps) {

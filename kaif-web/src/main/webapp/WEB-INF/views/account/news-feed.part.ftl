@@ -20,10 +20,9 @@
     <#if newsFeed.feedAssets?size == 0>
         <p>沒有消息了</p>
     <#else>
-        <a href="#" news-feed-pager class="pure-button">
+        <a href="#" ajax-pager class="pure-button">
             <i class="fa fa-caret-right"></i> 下一頁
         </a>
     </#if>
     </div>
-    <div next-news-feed></div>
 </div>

@@ -223,7 +223,7 @@ sample configs:
         <div class="user">
             <nav class="user-menu pure-menu pure-menu-open pure-menu-horizontal">
                 <@util.menuLink '/u/${username}' '關於'/>
-                <@util.menuLink '/u/${username}/articles' '發表的文章'/>
+                <@util.menuLink '/u/${username}/articles' '分享的文章'/>
                 <@util.menuLink '/u/${username}/debates' '參與的討論'/>
             </nav>
             <#nested/>
