@@ -5,20 +5,18 @@ import java.util.UUID;
 
 import io.kaif.model.zone.Zone;
 
-public class RotateVoteStats {
+public class HonorRoll {
   /**
    * create monthly ranking now
    */
-  public static RotateVoteStats zero(UUID accountId,
+  public static HonorRoll zero(UUID accountId,
       Zone zone,
       YearMonth yearMonth,
       String username) {
-    return new RotateVoteStats(accountId,
+    return new HonorRoll(accountId,
         zone,
         yearMonth.atDay(1).toString(),
         username,
-        0,
-        0,
         0,
         0,
         0);
@@ -32,29 +30,23 @@ public class RotateVoteStats {
 
   private final String username;
 
-  private final long debateCount;
-
-  private final long articleCount;
-
   private final long articleUpVoted;
 
   private final long debateUpVoted;
 
   private final long debateDownVoted;
-  private String score;
 
-  RotateVoteStats(UUID accountId,
+  HonorRoll(UUID accountId,
       Zone zone,
       String bucket,
       String username,
-      long debateCount,
-      long articleCount, long articleUpVoted, long debateUpVoted, long debateDownVoted) {
+      long articleUpVoted,
+      long debateUpVoted,
+      long debateDownVoted) {
     this.accountId = accountId;
     this.zone = zone;
     this.bucket = bucket;
     this.username = username;
-    this.debateCount = debateCount;
-    this.articleCount = articleCount;
     this.articleUpVoted = articleUpVoted;
     this.debateUpVoted = debateUpVoted;
     this.debateDownVoted = debateDownVoted;
@@ -69,14 +61,8 @@ public class RotateVoteStats {
       return false;
     }
 
-    RotateVoteStats that = (RotateVoteStats) o;
+    HonorRoll that = (HonorRoll) o;
 
-    if (debateCount != that.debateCount) {
-      return false;
-    }
-    if (articleCount != that.articleCount) {
-      return false;
-    }
     if (articleUpVoted != that.articleUpVoted) {
       return false;
     }
@@ -105,8 +91,6 @@ public class RotateVoteStats {
     result = 31 * result + zone.hashCode();
     result = 31 * result + bucket.hashCode();
     result = 31 * result + username.hashCode();
-    result = 31 * result + (int) (debateCount ^ (debateCount >>> 32));
-    result = 31 * result + (int) (articleCount ^ (articleCount >>> 32));
     result = 31 * result + (int) (articleUpVoted ^ (articleUpVoted >>> 32));
     result = 31 * result + (int) (debateUpVoted ^ (debateUpVoted >>> 32));
     result = 31 * result + (int) (debateDownVoted ^ (debateDownVoted >>> 32));
@@ -127,14 +111,6 @@ public class RotateVoteStats {
 
   public String getUsername() {
     return username;
-  }
-
-  public long getDebateCount() {
-    return debateCount;
-  }
-
-  public long getArticleCount() {
-    return articleCount;
   }
 
   public long getArticleUpVoted() {

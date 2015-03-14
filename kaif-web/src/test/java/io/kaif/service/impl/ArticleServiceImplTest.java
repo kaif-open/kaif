@@ -26,8 +26,8 @@ import io.kaif.model.article.ArticleDao;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateContentType;
 import io.kaif.model.debate.DebateDao;
-import io.kaif.model.vote.RotateVoteStats;
-import io.kaif.model.vote.RotateVoteStatsDao;
+import io.kaif.model.vote.HonorRoll;
+import io.kaif.model.vote.HonorRollDao;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.AccountService;
@@ -48,9 +48,6 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
   @Autowired
   private ArticleDao articleDao;
-
-  @Autowired
-  private RotateVoteStatsDao rotateVoteStatsDao;
 
   @Autowired
   private FeedService feedService;
@@ -91,10 +88,6 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
     assertEquals(1, service.findArticle(article.getArticleId()).get().getDebateCount());
     assertEquals(1, accountService.loadAccountStats(debater.getUsername()).getDebateCount());
-    assertEquals(1,
-        rotateVoteStatsDao.findRotateVoteStats(debater.getAccountId(),
-            debate.getZone(),
-            debate.getCreateTime()).get().getDebateCount());
   }
 
   @Test
@@ -589,12 +582,6 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertFalse(article.isExternalLink());
     AccountStats stats = accountService.loadAccountStats(citizen.getUsername());
     assertEquals(1, stats.getArticleCount());
-
-    RotateVoteStats rotateVoteStats = rotateVoteStatsDao.findRotateVoteStats(citizen.getAccountId(),
-        article.getZone(),
-        article.getCreateTime())
-        .get();
-    assertEquals(1, rotateVoteStats.getArticleCount());
   }
 
   @Test

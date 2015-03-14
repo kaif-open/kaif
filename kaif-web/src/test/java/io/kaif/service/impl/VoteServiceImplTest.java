@@ -30,8 +30,8 @@ import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateDao;
 import io.kaif.model.vote.ArticleVoter;
 import io.kaif.model.vote.DebateVoter;
-import io.kaif.model.vote.RotateVoteStats;
-import io.kaif.model.vote.RotateVoteStatsDao;
+import io.kaif.model.vote.HonorRoll;
+import io.kaif.model.vote.HonorRollDao;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.test.DbIntegrationTests;
@@ -52,7 +52,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   private DebateDao debateDao;
 
   @Autowired
-  private RotateVoteStatsDao rotateVoteStatsDao;
+  private HonorRollDao honorRollDao;
 
   private Zone zone;
   private FlakeId articleId;
@@ -209,7 +209,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   public void articleSelfVoteDoNotCountInRotateScore() throws Exception {
     service.voteArticle(UP, zone, articleId, author, EMPTY, 100);
     assertArticleTotalVote(1);
-    assertEquals(Optional.empty(), rotateVoteStatsDao.findRotateVoteStats(author.getAccountId(),
+    assertEquals(Optional.empty(), honorRollDao.findHonorRoll(author.getAccountId(),
         zone,
         Instant.ofEpochMilli(article.getArticleId().epochMilli())));
   }
@@ -223,7 +223,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     assertEquals(0, stats.getDebateUpVoted());
 
     assertEquals(Optional.empty(),
-        rotateVoteStatsDao.findRotateVoteStats(debater.getAccountId(),
+        honorRollDao.findHonorRoll(debater.getAccountId(),
             zone,
             Instant.ofEpochMilli(debateId.epochMilli())));
   }
@@ -401,7 +401,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   }
 
   private void assertDebateRotateVoteStats(long upVoteDebate, long downVoteDebate) {
-    RotateVoteStats stats = rotateVoteStatsDao.findRotateVoteStats(debater.getAccountId(),
+    HonorRoll stats = honorRollDao.findHonorRoll(debater.getAccountId(),
         zone,
         Instant.ofEpochMilli(debateId.epochMilli())).get();
     assertEquals(upVoteDebate, stats.getDebateUpVoted());
@@ -409,7 +409,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   }
 
   private void assertArticleRotateVoteStats(long upVoteArticle) {
-    RotateVoteStats stats = rotateVoteStatsDao.findRotateVoteStats(author.getAccountId(),
+    HonorRoll stats = honorRollDao.findHonorRoll(author.getAccountId(),
         zone,
         Instant.ofEpochMilli(article.getArticleId().epochMilli())).get();
     assertEquals(upVoteArticle, stats.getArticleUpVoted());

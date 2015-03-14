@@ -12,8 +12,8 @@ import com.google.common.annotations.VisibleForTesting;
 
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountDao;
-import io.kaif.model.vote.RotateVoteStats;
-import io.kaif.model.vote.RotateVoteStatsDao;
+import io.kaif.model.vote.HonorRoll;
+import io.kaif.model.vote.HonorRollDao;
 import io.kaif.model.zone.Zone;
 import io.kaif.service.HonorRollService;
 
@@ -26,7 +26,7 @@ public class HonorRollServiceImpl implements HonorRollService {
   private static final int PAGE_SIZE = 20;
 
   @Autowired
-  RotateVoteStatsDao rotateVoteStatsDao;
+  HonorRollDao honorRollDao;
 
   @Autowired
   AccountDao accountDao;
@@ -37,14 +37,14 @@ public class HonorRollServiceImpl implements HonorRollService {
   }
 
   @Override
-  public List<RotateVoteStats> listRotateVoteStats(String username) {
+  public List<HonorRoll> listRotateVoteStats(String username) {
     Account account = accountDao.loadByUsername(username);
-    return rotateVoteStatsDao.listRotateVoteStatsByAccount(account.getAccountId(),
+    return honorRollDao.listHonorRollByAccount(account.getAccountId(),
         Instant.now(clock));
   }
 
   @Override
-  public List<RotateVoteStats> listHonorRoll(Zone zone) {
-    return rotateVoteStatsDao.listRotateVoteStatsByZone(zone, Instant.now(clock), PAGE_SIZE);
+  public List<HonorRoll> listHonorRoll(Zone zone) {
+    return honorRollDao.listHonorRollByZone(zone, Instant.now(clock), PAGE_SIZE);
   }
 }

@@ -17,17 +17,15 @@ import io.kaif.database.DaoOperations;
 import io.kaif.model.zone.Zone;
 
 @Repository
-public class RotateVoteStatsDao implements DaoOperations {
+public class HonorRollDao implements DaoOperations {
   @Autowired
   private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-  private RowMapper<RotateVoteStats> rotateVoteStatsMapper = (rs, rowNum) -> new RotateVoteStats(
+  private RowMapper<HonorRoll> honorRollRowMapper = (rs, rowNum) -> new HonorRoll(
       UUID.fromString(rs.getString("accountId")),
       Zone.valueOf(rs.getString("zone")),
       rs.getString("bucket"),
       rs.getString("username"),
-      rs.getLong("debateCount"),
-      rs.getLong("articleCount"),
       rs.getLong("articleUpVoted"),
       rs.getLong("debateUpVoted"),
       rs.getLong("debateDownVoted")
@@ -38,10 +36,10 @@ public class RotateVoteStatsDao implements DaoOperations {
     return namedParameterJdbcTemplate;
   }
 
-  public Optional<RotateVoteStats> findRotateVoteStats(UUID accountId, Zone zone, Instant instant) {
-    final String sql = " SELECT * FROM RotateVoteStats WHERE accountId = ? AND zone = ? AND bucket = ? LIMIT 1 ";
+  public Optional<HonorRoll> findHonorRoll(UUID accountId, Zone zone, Instant instant) {
+    final String sql = " SELECT * FROM HonorRoll WHERE accountId = ? AND zone = ? AND bucket = ? LIMIT 1 ";
     return jdbc().query(sql,
-        rotateVoteStatsMapper,
+        honorRollRowMapper,
         accountId,
         zone.value(),
         monthlyBucket(instant).toString())
@@ -51,12 +49,10 @@ public class RotateVoteStatsDao implements DaoOperations {
 
   public void updateRotateVoteStats(HonorRollVoter voter) {
     String upsert = ""
-        + "   WITH UpsertStats "
+        + "   WITH Upsert "
         + "     AS ("
-        + "             UPDATE RotateVoteStats "
-        + "                SET debateCount = debateCount + :deltaDebateCount "
-        + "                  , articleCount = articleCount + :deltaArticleCount "
-        + "                  , articleUpVoted = articleUpVoted + :deltaArticleUpVoted "
+        + "             UPDATE HonorRoll "
+        + "                SET articleUpVoted = articleUpVoted + :deltaArticleUpVoted "
         + "                  , debateUpVoted = debateUpVoted+ :deltaDebateUpVoted "
         + "                  , debateDownVoted = debateDownVoted + :deltaDebateDownVoted "
         + "              WHERE accountId = :accountId "
@@ -65,20 +61,18 @@ public class RotateVoteStatsDao implements DaoOperations {
         + "          RETURNING * "
         + "        ) "
         + " INSERT "
-        + "   INTO RotateVoteStats "
-        + "        (accountId, zone, bucket, username, debateCount, articleCount, articleUpVoted, "
+        + "   INTO HonorRoll "
+        + "        (accountId, zone, bucket, username, articleUpVoted, "
         + "         debateUpVoted, debateDownVoted) "
-        + " SELECT :accountId, :zone, :bucket, :username, :deltaDebateCount, :deltaArticleCount, "
+        + " SELECT :accountId, :zone, :bucket, :username, "
         + "        :deltaArticleUpVoted,:deltaDebateUpVoted,:deltaDebateDownVoted "
-        + "  WHERE NOT EXISTS (SELECT * FROM UpsertStats) ";
+        + "  WHERE NOT EXISTS (SELECT * FROM Upsert) ";
 
     Map<String, Object> params = ImmutableMap.<String, Object>builder()
         .put("accountId", voter.getAccountId())
         .put("zone", voter.getZone().value())
         .put("bucket", monthlyBucket(voter.getFlakeId()).toString())
         .put("username", voter.getUsername())
-        .put("deltaDebateCount", voter.getDeltaDebateCount())
-        .put("deltaArticleCount", voter.getDeltaArticleCount())
         .put("deltaArticleUpVoted", voter.getDeltaArticleUpVoted())
         .put("deltaDebateUpVoted", voter.getDeltaDebateUpVoted())
         .put("deltaDebateDownVoted", voter.getDeltaDebateDownVoted())
@@ -87,18 +81,18 @@ public class RotateVoteStatsDao implements DaoOperations {
     namedJdbc().update(upsert, params);
   }
 
-  public List<RotateVoteStats> listRotateVoteStatsByAccount(UUID uuid, Instant instant) {
-    final String sql = " SELECT * FROM RotateVoteStats WHERE accountId = ? AND bucket = ? ORDER BY zone";
+  public List<HonorRoll> listHonorRollByAccount(UUID uuid, Instant instant) {
+    final String sql = " SELECT * FROM HonorRoll WHERE accountId = ? AND bucket = ? ORDER BY zone";
     return jdbc().query(sql,
-        rotateVoteStatsMapper,
+        honorRollRowMapper,
         uuid,
         monthlyBucket(instant).toString());
   }
 
-  public List<RotateVoteStats> listRotateVoteStatsByZone(Zone zone, Instant instant, int limit) {
-    final String sql = " SELECT * FROM RotateVoteStats WHERE zone = ? AND bucket = ? ORDER BY articleUpVoted + debateUpVoted - debateDownVoted DESC, username ASC LIMIT ? ";
+  public List<HonorRoll> listHonorRollByZone(Zone zone, Instant instant, int limit) {
+    final String sql = " SELECT * FROM HonorRoll WHERE zone = ? AND bucket = ? ORDER BY articleUpVoted + debateUpVoted - debateDownVoted DESC, username ASC LIMIT ? ";
     return jdbc().query(sql,
-        rotateVoteStatsMapper,
+        honorRollRowMapper,
         zone.value(),
         monthlyBucket(instant).toString(), limit);
   }

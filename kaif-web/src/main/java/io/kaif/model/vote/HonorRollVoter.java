@@ -30,39 +30,18 @@ public class HonorRollVoter {
         .build();
   }
 
-  public static HonorRollVoter create(Debate debate) {
-    return new HonorRollVoterBuilder(debate.getDebaterId(),
-        debate.getDebateId(),
-        debate.getZone(),
-        debate.getDebaterName())
-        .withDeltaDebateCount(1)
-        .build();
-  }
-
-  public static HonorRollVoter create(Article article) {
-    return new HonorRollVoterBuilder(article.getAuthorId(),
-        article.getArticleId(),
-        article.getZone(),
-        article.getAuthorName())
-        .withDeltaArticleCount(1)
-        .build();
-  }
-
   @VisibleForTesting
   HonorRollVoter(UUID accountId,
       FlakeId flakeId,
       Zone zone,
       String username,
-      long deltaDebateCount,
-      long deltaArticleCount,
       long deltaArticleUpVoted,
-      long deltaDebateUpVoted, long deltaDebateDownVoted) {
+      long deltaDebateUpVoted,
+      long deltaDebateDownVoted) {
     this.accountId = accountId;
     this.flakeId = flakeId;
     this.zone = zone;
     this.username = username;
-    this.deltaDebateCount = deltaDebateCount;
-    this.deltaArticleCount = deltaArticleCount;
     this.deltaArticleUpVoted = deltaArticleUpVoted;
     this.deltaDebateUpVoted = deltaDebateUpVoted;
     this.deltaDebateDownVoted = deltaDebateDownVoted;
@@ -75,10 +54,6 @@ public class HonorRollVoter {
   private final Zone zone;
 
   private final String username;
-
-  private final long deltaDebateCount;
-
-  private final long deltaArticleCount;
 
   private final long deltaArticleUpVoted;
 
@@ -102,14 +77,6 @@ public class HonorRollVoter {
     return username;
   }
 
-  public long getDeltaDebateCount() {
-    return deltaDebateCount;
-  }
-
-  public long getDeltaArticleCount() {
-    return deltaArticleCount;
-  }
-
   public long getDeltaArticleUpVoted() {
     return deltaArticleUpVoted;
   }
@@ -128,8 +95,6 @@ public class HonorRollVoter {
     private FlakeId flakeId;
     private Zone zone;
     private String username;
-    private long deltaDebateCount;
-    private long deltaArticleCount;
     private long deltaArticleUpVoted;
     private long deltaDebateUpVoted;
     private long deltaDebateDownVoted;
@@ -142,16 +107,6 @@ public class HonorRollVoter {
       this.flakeId = flakeId;
       this.zone = zone;
       this.username = username;
-    }
-
-    public HonorRollVoterBuilder withDeltaDebateCount(long deltaDebateCount) {
-      this.deltaDebateCount = deltaDebateCount;
-      return this;
-    }
-
-    public HonorRollVoterBuilder withDeltaArticleCount(long deltaArticleCount) {
-      this.deltaArticleCount = deltaArticleCount;
-      return this;
     }
 
     public HonorRollVoterBuilder withDeltaArticleUpVoted(long deltaArticleUpVoted) {
@@ -174,8 +129,6 @@ public class HonorRollVoter {
           flakeId,
           zone,
           username,
-          deltaDebateCount,
-          deltaArticleCount,
           deltaArticleUpVoted,
           deltaDebateUpVoted,
           deltaDebateDownVoted);
