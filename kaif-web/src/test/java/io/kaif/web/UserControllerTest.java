@@ -5,6 +5,8 @@ import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Test;
 
@@ -28,6 +30,14 @@ public class UserControllerTest extends MvcIntegrationTests {
         .andExpect(content().string(containsString("關於 foo-user")))
         .andExpect(content().string(containsString(
             "<link rel=\"canonical\" href=\"https://kaif.io/u/foo-user\"/>")));
+  }
+
+  @Test
+  public void userProfile_redirect() throws Exception {
+    when(accountService.loadAccount("Foo-User")).thenReturn(account);
+    mockMvc.perform(get("/u/Foo-User"))
+        .andExpect(redirectedUrl("/u/foo-user"))
+        .andExpect(status().isMovedPermanently());
   }
 
   @Test
