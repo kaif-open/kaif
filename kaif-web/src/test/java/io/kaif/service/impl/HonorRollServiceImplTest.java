@@ -73,7 +73,7 @@ public class HonorRollServiceImplTest extends DbIntegrationTests {
 
     service.setClock(clock);
 
-    List<RotateVoteStats> rotateVoteStatses = service.listRotateVoteStats(citizen);
+    List<RotateVoteStats> rotateVoteStatses = service.listRotateVoteStats(citizen.getUsername());
     assertEquals(3, rotateVoteStatses.size());
     RotateVoteStats firstStats = rotateVoteStatses.get(0);
     assertEquals("abc", firstStats.getZone().value());
@@ -91,7 +91,7 @@ public class HonorRollServiceImplTest extends DbIntegrationTests {
     service.setClock(Clock.fixed(LocalDate.of(2015, 2, 12)
         .atStartOfDay(BUCKET_ZONE)
         .toInstant(), BUCKET_ZONE));
-    assertEquals(0, service.listRotateVoteStats(citizen).size());
+    assertEquals(0, service.listRotateVoteStats(citizen.getUsername()).size());
   }
 
   @Test

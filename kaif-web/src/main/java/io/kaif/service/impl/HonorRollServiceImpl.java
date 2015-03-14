@@ -10,7 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import io.kaif.model.account.Authorization;
+import io.kaif.model.account.Account;
+import io.kaif.model.account.AccountDao;
 import io.kaif.model.vote.RotateVoteStats;
 import io.kaif.model.vote.RotateVoteStatsDao;
 import io.kaif.model.zone.Zone;
@@ -27,14 +28,18 @@ public class HonorRollServiceImpl implements HonorRollService {
   @Autowired
   RotateVoteStatsDao rotateVoteStatsDao;
 
+  @Autowired
+  AccountDao accountDao;
+
   @VisibleForTesting
   void setClock(Clock clock) {
     this.clock = clock;
   }
 
   @Override
-  public List<RotateVoteStats> listRotateVoteStats(Authorization authorization) {
-    return rotateVoteStatsDao.listRotateVoteStatsByAccount(authorization.authenticatedId(),
+  public List<RotateVoteStats> listRotateVoteStats(String username) {
+    Account account = accountDao.loadByUsername(username);
+    return rotateVoteStatsDao.listRotateVoteStatsByAccount(account.getAccountId(),
         Instant.now(clock));
   }
 

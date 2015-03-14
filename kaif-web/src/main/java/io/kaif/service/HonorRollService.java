@@ -8,7 +8,7 @@ import io.kaif.model.zone.Zone;
 
 public interface HonorRollService {
 
-  List<RotateVoteStats> listRotateVoteStats(Authorization authorization);
+  List<RotateVoteStats> listRotateVoteStats(String username);
 
   List<RotateVoteStats> listHonorRoll(Zone zone);
 
