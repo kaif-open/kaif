@@ -24,7 +24,7 @@
 }
 
 .article-list-pager {
-  padding-top: @padding-lg-vertical;
+  margin-top: @padding-lg-vertical;
 }
 
 .article {
@@ -123,7 +123,7 @@
 
 .user-profile {
   border: 2px solid @gray-light;
-  margin-top: 30px;
+  margin-top: 20px;
   padding: 30px;
   .user-info-list {
     margin-top: 30px;
@@ -322,6 +322,7 @@
     color: @gray-light;
     padding-top: @padding-lg-vertical;
     padding-bottom: @padding-lg-vertical;
+    //note that news-feed-unread override this
     border-bottom: 1px solid @gray-lighter;
     & > * {
       padding-right: @padding-horizontal;
@@ -345,6 +346,14 @@
 
   .news-feed-pager {
     margin-top: @padding-lg-vertical;
+  }
+
+  .news-feed-unread {
+    // TODO this is hack, we should find better UI for unread
+    .debate-navigation {
+      border-bottom: 1px solid @brand-triangle-color;
+      // box-shadow: 2px 8px 11px -10px #ff5619;
+    }
   }
 }
 

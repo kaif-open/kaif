@@ -13,7 +13,7 @@
 
     <div class="article-list-pager grid-center-row">
         <#if data.articles?size == 0 >
-            沒有文章
+            <p>沒有文章</p>
         <#else>
             <#if ajaxPager>
                 <a href="#" ajax-pager class="pure-button">

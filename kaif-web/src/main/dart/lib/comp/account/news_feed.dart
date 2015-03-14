@@ -17,11 +17,20 @@ class NewsFeedComp {
       return new FeedAssetComp(el);
     }).toList();
 
-    new PartLoaderPager(elem, serverPartLoader, assets.isEmpty ? null : assets.last.assetId);
 
     if (isFirstPage && assets.isNotEmpty) {
+      //mark un-read for first page only
+      _markUnread(assets);
+
+      //acknowledge only meaningful for first page
       notification.acknowledge(assets.first.assetId);
     }
+
+    new PartLoaderPager(elem, serverPartLoader, assets.isEmpty ? null : assets.last.assetId);
+  }
+
+  void _markUnread(List<FeedAssetComp> assets) {
+    assets.takeWhile((asset) => !asset.acked).forEach((asset) => asset.markAsUnread());
   }
 
 }
@@ -29,8 +38,14 @@ class NewsFeedComp {
 class FeedAssetComp {
   final Element elem;
   String assetId;
+  bool acked;
 
   FeedAssetComp(this.elem) {
     assetId = elem.dataset['asset-id'] ;
+    acked = elem.dataset['asset-acked'] == 'true';
+  }
+
+  void markAsUnread() {
+    elem.classes.add('news-feed-unread');
   }
 }
