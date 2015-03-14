@@ -6,7 +6,7 @@
 
 <#assign headContent>
 <title>關於 ${account.username} | kaif.io</title>
-<link rel="canonical" href="https://kaif.io/<@url.account data=account/>"/>
+<link rel="canonical" href="https://kaif.io<@url.account data=account/>"/>
 </#assign>
 
 <@template.page
