@@ -4,18 +4,18 @@
 
 <#-- Article components -->
 
+<#-- data is ArticleList.java -->
 <#macro articleList data showZone=false>
-    <#local articlePage=data />
 <div class="article-list" article-list>
-    <#list articlePage.articles as article>
+    <#list data.articles as article>
         <@comp.article data=article showZone=showZone/>
     </#list>
     <div class="article-list-pager grid-center-row">
-        <#if articlePage.articles?size == 0 >
+        <#if data.articles?size == 0 >
             沒有文章
         </#if>
-        <#if articlePage.hasNext()>
-            <a href="<@url.current start=articlePage.lastArticleId />"
+        <#if data.hasNext()>
+            <a href="<@url.current start=data.lastArticleId />"
                class="pure-button"><i class="fa fa-caret-right"></i> 下一頁</a>
         </#if>
     </div>

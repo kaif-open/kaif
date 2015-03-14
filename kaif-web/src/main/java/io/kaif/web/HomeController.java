@@ -13,7 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.article.Article;
-import io.kaif.model.article.ArticlePage;
+import io.kaif.model.article.ArticleList;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateList;
 import io.kaif.service.ArticleService;
@@ -33,12 +33,12 @@ public class HomeController {
     FlakeId startArticleId = Optional.ofNullable(start).map(FlakeId::fromString).orElse(null);
     return new ModelAndView("index")//
         .addObject("recommendZones", zoneService.listRecommendZones())
-        .addObject("articlePage", new ArticlePage(articleService.listTopArticles(startArticleId)));
+        .addObject("articleList", new ArticleList(articleService.listTopArticles(startArticleId)));
   }
 
   @RequestMapping("/hot.rss")
   public Object rssFeed() {
-    ModelAndView modelAndView = new ModelAndView().addObject("articlePage",
+    ModelAndView modelAndView = new ModelAndView().addObject("articles",
         articleService.listCachedTopArticles());
     modelAndView.setView(new HotArticleRssContentView());
     return modelAndView;
@@ -50,8 +50,8 @@ public class HomeController {
     FlakeId startArticleId = Optional.ofNullable(start).map(FlakeId::fromString).orElse(null);
     return new ModelAndView("index") //
         .addObject("recommendZones", zoneService.listRecommendZones())
-        .addObject("articlePage",
-            new ArticlePage(articleService.listLatestArticles(startArticleId)));
+        .addObject("articleList",
+            new ArticleList(articleService.listLatestArticles(startArticleId)));
   }
 
   @RequestMapping("/new-debate")

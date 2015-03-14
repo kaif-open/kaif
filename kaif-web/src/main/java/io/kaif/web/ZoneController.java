@@ -20,7 +20,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.article.Article;
-import io.kaif.model.article.ArticlePage;
+import io.kaif.model.article.ArticleList;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateList;
 import io.kaif.model.zone.Zone;
@@ -46,8 +46,8 @@ public class ZoneController {
       return new ModelAndView("zone/zone-page")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("recommendZones", zoneService.listRecommendZones())
-          .addObject("articlePage",
-              new ArticlePage(articleService.listHotZoneArticles(zoneInfo.getZone(),
+          .addObject("articleList",
+              new ArticleList(articleService.listHotZoneArticles(zoneInfo.getZone(),
                   startArticleId)));
     });
   }
@@ -57,7 +57,7 @@ public class ZoneController {
     return resolveZone(request, rawZone, zoneInfo -> {
       request.getRequestURL();
       ModelAndView modelAndView = new ModelAndView().addObject("zoneInfo", zoneInfo)
-          .addObject("articlePage", articleService.listCachedHotZoneArticles(zoneInfo.getZone()));
+          .addObject("articles", articleService.listCachedHotZoneArticles(zoneInfo.getZone()));
       modelAndView.setView(new HotArticleRssContentView());
       return modelAndView;
     });
@@ -101,8 +101,8 @@ public class ZoneController {
       return new ModelAndView("zone/zone-page")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("recommendZones", zoneService.listRecommendZones())
-          .addObject("articlePage",
-              new ArticlePage(articleService.listLatestZoneArticles(zoneInfo.getZone(),
+          .addObject("articleList",
+              new ArticleList(articleService.listLatestZoneArticles(zoneInfo.getZone(),
                   startArticleId)));
     });
   }

@@ -18,7 +18,7 @@ import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountStats;
 import io.kaif.model.article.Article;
-import io.kaif.model.article.ArticlePage;
+import io.kaif.model.article.ArticleList;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateList;
 import io.kaif.service.AccountService;
@@ -50,7 +50,7 @@ public class UserController {
         .orElse(null);
     List<Article> articles = articleService.listArticlesByAuthor(username, startArticleId);
     return new ModelAndView("account/user-articles")//
-        .addObject("articlePage", new ArticlePage(articles)).addObject("username", username);
+        .addObject("articleList", new ArticleList(articles)).addObject("username", username);
   }
 
   @RequestMapping("/u/{username}/debates")

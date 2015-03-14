@@ -12,6 +12,6 @@
 layout='full'
 head=headContent>
     <@template.user username=username>
-        <@comp.articleList data=articlePage showZone=true/>
+        <@comp.articleList data=articleList showZone=true/>
     </@template.user>
 </@template.page>

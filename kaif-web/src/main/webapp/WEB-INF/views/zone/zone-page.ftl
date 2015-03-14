@@ -26,8 +26,8 @@ applyZoneTheme=true
 
     <div class="grid">
         <div class="grid-body">
-            <#if articlePage??>
-                <@comp.articleList data=articlePage></@comp.articleList>
+            <#if articleList??>
+                <@comp.articleList data=articleList></@comp.articleList>
             </#if>
 
         <#if debateList??>
