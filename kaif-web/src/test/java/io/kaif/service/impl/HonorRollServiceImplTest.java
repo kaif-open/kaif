@@ -1,12 +1,16 @@
 package io.kaif.service.impl;
 
+import static java.util.stream.Collectors.*;
 import static org.junit.Assert.*;
 
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
+import java.util.stream.IntStream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -128,4 +132,66 @@ public class HonorRollServiceImplTest extends DbIntegrationTests {
     assertEquals(0, service.listHonorRoll(zoneInfo.getZone()).size());
   }
 
+  @Test
+  public void listHonorRoll_top_20() {
+    Instant instant = LocalDate.of(2015, 3, 12)
+        .atStartOfDay(BUCKET_ZONE)
+        .toInstant();
+    Clock clock = Clock.fixed(instant, BUCKET_ZONE);
+
+    Random random = new Random();
+    Comparator<HonorRollVoter> comparator = Comparator.comparing(voter -> voter.getDeltaArticleUpVoted()
+        + voter.getDeltaDebateUpVoted()
+        - voter.getDeltaDebateDownVoted());
+    List<HonorRollVoter> allStats = IntStream.rangeClosed(1, 100)
+        .mapToObj(index -> {
+          Account account = savedAccountCitizen("user-" + index);
+          HonorRollVoter voter = new HonorRollVoter.HonorRollVoterBuilder(account.getAccountId(),
+              FlakeId.endOf(instant.toEpochMilli()),
+              zoneInfo.getZone(),
+              account.getUsername()).withDeltaArticleUpVoted(random.nextInt(100))
+              .withDeltaDebateUpVoted(random.nextInt(100))
+              .withDeltaDebateDownVoted(random.nextInt(100))
+              .build();
+          rotateVoteStatsDao.updateRotateVoteStats(voter);
+          return voter;
+        })
+        .sorted(comparator.reversed().thenComparing(HonorRollVoter::getUsername))
+        .collect(toList());
+
+    service.setClock(clock);
+    List<RotateVoteStats> honorRoll = service.listHonorRoll(zoneInfo.getZone());
+    assertEquals(allStats.stream().limit(20).map(HonorRollVoter::getUsername).collect(toList()),
+        honorRoll.stream().map(RotateVoteStats::getUsername).collect(toList()));
+  }
+
+  @Test
+  public void listHonorRoll_same_score_order_by_name() {
+    Instant instant = LocalDate.of(2015, 3, 12)
+        .atStartOfDay(BUCKET_ZONE)
+        .toInstant();
+    Clock clock = Clock.fixed(instant, BUCKET_ZONE);
+
+    Comparator<HonorRollVoter> comparator = Comparator.comparing(voter -> voter.getDeltaArticleUpVoted()
+        + voter.getDeltaDebateUpVoted()
+        - voter.getDeltaDebateDownVoted());
+    List<HonorRollVoter> allStats = IntStream.rangeClosed(1, 25)
+        .mapToObj(index -> {
+          Account account = savedAccountCitizen("user-" + index);
+          HonorRollVoter voter = new HonorRollVoter.HonorRollVoterBuilder(account.getAccountId(),
+              FlakeId.endOf(instant.toEpochMilli()),
+              zoneInfo.getZone(),
+              account.getUsername()).withDeltaArticleUpVoted(10)
+              .build();
+          rotateVoteStatsDao.updateRotateVoteStats(voter);
+          return voter;
+        })
+        .sorted(comparator.reversed().thenComparing(HonorRollVoter::getUsername))
+        .collect(toList());
+
+    service.setClock(clock);
+    List<RotateVoteStats> honorRoll = service.listHonorRoll(zoneInfo.getZone());
+    assertEquals(allStats.stream().limit(20).map(HonorRollVoter::getUsername).collect(toList()),
+        honorRoll.stream().map(RotateVoteStats::getUsername).collect(toList()));
+  }
 }

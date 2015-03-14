@@ -11,6 +11,15 @@ import io.kaif.model.zone.Zone;
 
 public class HonorRollVoter {
 
+  public static HonorRollVoter create(Article article, int upVoteDelta, int downVoteDelta) {
+    return new HonorRollVoterBuilder(article.getAuthorId(),
+        article.getArticleId(),
+        article.getZone(),
+        article.getAuthorName())
+        .withDeltaArticleUpVoted(upVoteDelta - downVoteDelta)
+        .build();
+  }
+
   public static HonorRollVoter create(Debate debate) {
     return new HonorRollVoterBuilder(debate.getDebaterId(),
         debate.getDebateId(),
@@ -162,4 +171,5 @@ public class HonorRollVoter {
           deltaDebateDownVoted);
     }
   }
+
 }

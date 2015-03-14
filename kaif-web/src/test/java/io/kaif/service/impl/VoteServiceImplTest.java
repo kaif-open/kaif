@@ -6,6 +6,7 @@ import static io.kaif.model.vote.VoteState.UP;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +29,8 @@ import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateDao;
 import io.kaif.model.vote.ArticleVoter;
 import io.kaif.model.vote.DebateVoter;
+import io.kaif.model.vote.RotateVoteStats;
+import io.kaif.model.vote.RotateVoteStatsDao;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.test.DbIntegrationTests;
@@ -46,6 +49,9 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
   @Autowired
   private DebateDao debateDao;
+
+  @Autowired
+  private RotateVoteStatsDao rotateVoteStatsDao;
 
   private Zone zone;
   private FlakeId articleId;
@@ -115,6 +121,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
 
     assertArticleTotalVote(1);
+    assertArticleRotateVoteStats(1);
 
     List<ArticleVoter> votes = service.listArticleVoters(voter, asList(articleId));
     assertEquals(1, votes.size());
@@ -124,6 +131,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     assertEquals(100, vote.getPreviousCount());
     assertEquals(UP, vote.getVoteState());
     assertNotNull(vote.getUpdateTime());
+
   }
 
   @Test
@@ -131,12 +139,14 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
     service.voteArticle(UP, zone, articleId, voter, UP, 100);
     assertArticleTotalVote(1);
+    assertArticleRotateVoteStats(1);
   }
 
   @Test
   public void cancelVoteArticle_no_effect_if_not_exist() throws Exception {
     service.voteArticle(EMPTY, zone, articleId, voter, EMPTY, 10);
     assertArticleTotalVote(0);
+    assertArticleRotateVoteStats(0);
 
     List<ArticleVoter> votes = service.listArticleVoters(voter, asList(articleId));
     assertEquals(EMPTY, votes.get(0).getVoteState());
@@ -149,6 +159,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     service.voteArticle(UP, zone, articleId, voter, EMPTY, 102);
 
     assertArticleTotalVote(1);
+    assertArticleRotateVoteStats(1);
 
     List<ArticleVoter> votes = service.listArticleVoters(voter, asList(articleId));
     assertEquals(1, votes.size());
@@ -347,5 +358,20 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   private void assertArticleTotalVote(long upVote) {
     Article changed = articleDao.findArticle(articleId).get();
     assertEquals(upVote, changed.getUpVote());
+  }
+
+  private void assertDebateRotateVoteStats(long upVoteDebate, long downVoteDebate) {
+    RotateVoteStats stats = rotateVoteStatsDao.findRotateVoteStats(debater.getAccountId(),
+        zone,
+        Instant.ofEpochMilli(debateId.epochMilli())).get();
+    assertEquals(upVoteDebate, stats.getDebateUpVoted());
+    assertEquals(downVoteDebate, stats.getDebateDownVoted());
+  }
+
+  private void assertArticleRotateVoteStats(long upVoteArticle) {
+    RotateVoteStats stats = rotateVoteStatsDao.findRotateVoteStats(author.getAccountId(),
+        zone,
+        Instant.ofEpochMilli(article.getArticleId().epochMilli())).get();
+    assertEquals(upVoteArticle, stats.getArticleUpVoted());
   }
 }

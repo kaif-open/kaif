@@ -18,6 +18,8 @@ import io.kaif.model.article.ArticleDao;
 import io.kaif.model.debate.DebateDao;
 import io.kaif.model.vote.ArticleVoter;
 import io.kaif.model.vote.DebateVoter;
+import io.kaif.model.vote.HonorRollVoter;
+import io.kaif.model.vote.RotateVoteStatsDao;
 import io.kaif.model.vote.VoteDao;
 import io.kaif.model.vote.VoteState;
 import io.kaif.model.zone.Zone;
@@ -44,6 +46,9 @@ public class VoteServiceImpl implements VoteService {
 
   @Autowired
   private AccountDao accountDao;
+
+  @Autowired
+  private RotateVoteStatsDao rotateVoteStatsDao;
 
   private ZoneInfo checkVoteAuthority(Zone zone, Authorization authorization) {
     // relax verification when voting, no check zone and account in Database because voting
@@ -83,6 +88,11 @@ public class VoteServiceImpl implements VoteService {
     int upVoteDelta = newState.upVoteDeltaFrom(previousState);
     int downVoteDelta = newState.downVoteDeltaFrom(previousState);
     articleDao.changeTotalVote(articleId, upVoteDelta, downVoteDelta);
+
+    articleDao.findArticle(articleId)
+        .ifPresent(article -> rotateVoteStatsDao.updateRotateVoteStats(HonorRollVoter.create(article,
+            upVoteDelta,
+            downVoteDelta)));
   }
 
   @Override

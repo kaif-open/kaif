@@ -96,7 +96,7 @@ public class RotateVoteStatsDao implements DaoOperations {
   }
 
   public List<RotateVoteStats> listRotateVoteStatsByZone(Zone zone, Instant instant, int limit) {
-    final String sql = " SELECT * FROM RotateVoteStats WHERE zone = ? AND bucket = ? ORDER BY articleUpVoted + debateUpVoted - debateDownVoted DESC LIMIT ? ";
+    final String sql = " SELECT * FROM RotateVoteStats WHERE zone = ? AND bucket = ? ORDER BY articleUpVoted + debateUpVoted - debateDownVoted DESC, username ASC LIMIT ? ";
     return jdbc().query(sql,
         rotateVoteStatsMapper,
         zone.value(),
