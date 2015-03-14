@@ -3,9 +3,10 @@ library model_dao;
 import 'account.dart';
 import 'dart:html';
 import 'dart:convert';
+import 'dart:math' as Math;
 
 class AccountDao {
-  static const String KEY = 'ACCOUNT_AUTH';
+  static const String _KEY = 'ACCOUNT_AUTH';
   bool _useLocalStorage = false;
 
   void save(AccountAuth auth, {bool permanent}) {
@@ -15,22 +16,22 @@ class AccountDao {
     }
 
     var storage = _useLocalStorage ? window.localStorage : window.sessionStorage;
-    storage[KEY] = JSON.encode(auth);
+    storage[_KEY] = JSON.encode(auth);
   }
 
   void remove() {
-    window.localStorage.remove(KEY);
-    window.sessionStorage.remove(KEY);
+    window.localStorage.remove(_KEY);
+    window.sessionStorage.remove(_KEY);
   }
 
-  //nullable
-  AccountAuth load() {
+  // return null if not found
+  AccountAuth find() {
     AccountAuth loadFromStorage(Storage storage) {
-      if (!storage.containsKey(KEY)) {
+      if (!storage.containsKey(_KEY)) {
         return null;
       }
       try {
-        return new AccountAuth.decode(JSON.decode(storage[KEY]));
+        return new AccountAuth.decode(JSON.decode(storage[_KEY]));
       } catch (error) {
         // possible cause of decode error:
         //
@@ -57,5 +58,46 @@ class AccountDao {
     }
 
     return auth;
+  }
+}
+
+class NewsFeedDao {
+  static const String _KEY = 'NEWS_FEED';
+  static const Duration _EXPIRE = const Duration(minutes:1);
+
+  void saveCounter(int value) {
+    window.localStorage[_KEY] = JSON.encode({
+        'counter': value,
+        'updateTime': new DateTime.now().millisecondsSinceEpoch
+    });
+  }
+
+  // return null if not exist
+  int findCounter() {
+    if (!window.localStorage.containsKey(_KEY)) {
+      return null;
+    }
+    try {
+      var saved = JSON.decode(window.localStorage[_KEY]);
+      var updateTime = new DateTime.fromMillisecondsSinceEpoch(saved['updateTime']);
+      if (updateTime.add(_EXPIRE).isBefore(new DateTime.now())) {
+        //expired
+        return null;
+      }
+      //extra validate here because user may corrupt localStorage
+      int counter = saved['counter'];
+      if (counter > 11 || counter < 0) {
+        return null;
+      }
+      return counter;
+    } catch (e) {
+      // someone corrupt localStorage, abort
+      clear();
+      return null;
+    }
+  }
+
+  void clear() {
+    window.localStorage.remove(_KEY);
   }
 }

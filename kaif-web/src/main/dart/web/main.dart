@@ -32,6 +32,7 @@ customizeDev() {
 
 class AppModule {
   AccountDao accountDao;
+  NewsFeedDao newsFeedDao;
   AccountSession accountSession;
   AccountService accountService;
   ArticleService articleService;
@@ -42,6 +43,7 @@ class AppModule {
 
   AppModule() {
     accountDao = new AccountDao();
+    newsFeedDao = new NewsFeedDao();
     accountSession = new AccountSession(accountDao);
 
     var accessTokenProvider = accountSession.provideAccessToken;
@@ -49,7 +51,7 @@ class AppModule {
     articleService = new ArticleService(serverType, accessTokenProvider);
     voteService = new VoteService(serverType, accessTokenProvider);
     partService = new PartService(serverType, accessTokenProvider);
-    newsFeedNotification = new NewsFeedNotification(accountService, accountSession);
+    newsFeedNotification = new NewsFeedNotification(accountService, accountSession, newsFeedDao);
     serverPartLoader = new ServerPartLoader(partService, _initializeComponents);
   }
 
@@ -88,7 +90,7 @@ class AppModule {
       new ArticleList(el, articleService, voteService, accountSession);
     });
     parent.querySelectorAll('[news-feed]').forEach((el) {
-      new NewsFeed(el, serverPartLoader, newsFeedNotification);
+      new NewsFeedComp(el, serverPartLoader, newsFeedNotification);
     });
     parent.querySelectorAll('[short-url-input]').forEach((el) {
       new ShortUrlInput(el);

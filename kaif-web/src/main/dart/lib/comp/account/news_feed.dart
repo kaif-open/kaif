@@ -5,13 +5,13 @@ import '../server_part_loader.dart';
 import 'package:kaif_web/util.dart';
 import 'package:kaif_web/model.dart';
 
-class NewsFeed {
+class NewsFeedComp {
 
   final Element elem;
   final ServerPartLoader serverPartLoader;
   final NewsFeedNotification notification;
 
-  NewsFeed(this.elem, this.serverPartLoader, this.notification) {
+  NewsFeedComp(this.elem, this.serverPartLoader, this.notification) {
     bool isFirstPage = elem.dataset['first-page'].toLowerCase() == 'true';
     List<FeedAssetComp> assets = elem.querySelectorAll('[feed-asset]').map((el) {
       return new FeedAssetComp(el);

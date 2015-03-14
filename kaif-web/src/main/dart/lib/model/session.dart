@@ -13,7 +13,7 @@ class AccountSession {
   AccountAuth _current;
 
   AccountSession(this.accountDao) {
-    _current = accountDao.load();
+    _current = accountDao.find();
     _detectForceLogout();
   }
 
@@ -28,7 +28,7 @@ class AccountSession {
 
   void save(AccountAuth auth, {bool rememberMe}) {
     accountDao.save(auth, permanent:rememberMe);
-    _current = accountDao.load();
+    _current = accountDao.find();
   }
 
   /**

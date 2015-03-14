@@ -13,21 +13,30 @@ class NewsFeedNotification {
   final AccountService accountService;
   final AccountSession accountSession;
   final StreamController<int> _onUnreadChanged = new StreamController.broadcast();
+  final NewsFeedDao newsFeedDao;
 
-  NewsFeedNotification(this.accountService, this.accountSession) {
+  NewsFeedNotification(this.accountService, this.accountSession, this.newsFeedDao) {
   }
 
   Future<int> getUnread() {
     if (!accountSession.isSignIn) {
       return new Future.value(0);
     }
-    return accountService.newsFeedUnread();
+    var cached = newsFeedDao.findCounter();
+    if (cached != null) {
+      return new Future.value(cached);
+    }
+    return accountService.newsFeedUnread().then((value) {
+      newsFeedDao.saveCounter(value);
+      return value;
+    });
   }
 
   Stream get onUnreadChanged => _onUnreadChanged.stream;
 
   Future acknowledge(String assetId) {
     return accountService.newsFeedAcknowledge(assetId).then((v) {
+      newsFeedDao.saveCounter(0);
       _onUnreadChanged.add(0);
       return v;
     });
