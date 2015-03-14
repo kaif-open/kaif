@@ -1,7 +1,7 @@
 package io.kaif.model.vote;
 
 import java.time.Instant;
-import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,8 +14,6 @@ import org.springframework.stereotype.Repository;
 import com.google.common.collect.ImmutableMap;
 
 import io.kaif.database.DaoOperations;
-import io.kaif.model.article.Article;
-import io.kaif.model.debate.Debate;
 import io.kaif.model.zone.Zone;
 
 @Repository
@@ -23,18 +21,17 @@ public class RotateVoteStatsDao implements DaoOperations {
   @Autowired
   private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-  private RowMapper<RotateVoteStats> rotateVoteStatsMapper = (rs, rowNum) -> {
-    return new RotateVoteStats(UUID.fromString(rs.getString("accountId")),
-        Zone.valueOf(rs.getString("zone")),
-        rs.getString("bucket"),
-        rs.getString("username"),
-        rs.getLong("debateCount"),
-        rs.getLong("articleCount"),
-        rs.getLong("articleUpVoted"),
-        rs.getLong("debateUpVoted"),
-        rs.getLong("debateDownVoted")
-    );
-  };
+  private RowMapper<RotateVoteStats> rotateVoteStatsMapper = (rs, rowNum) -> new RotateVoteStats(
+      UUID.fromString(rs.getString("accountId")),
+      Zone.valueOf(rs.getString("zone")),
+      rs.getString("bucket"),
+      rs.getString("username"),
+      rs.getLong("debateCount"),
+      rs.getLong("articleCount"),
+      rs.getLong("articleUpVoted"),
+      rs.getLong("debateUpVoted"),
+      rs.getLong("debateDownVoted")
+  );
 
   @Override
   public NamedParameterJdbcTemplate namedJdbc() {
@@ -52,15 +49,7 @@ public class RotateVoteStatsDao implements DaoOperations {
         .findAny();
   }
 
-  public void updateRotateVoteStats(UUID accountId,
-      Zone zone,
-      LocalDate bucket,
-      String username,
-      int debateCount,
-      int articleCount,
-      int articleUpVoted,
-      int debateUpVoted,
-      int debateDownVoted) {
+  public void updateRotateVoteStats(HonorRollVoter voter) {
     String upsert = ""
         + "   WITH UpsertStats "
         + "     AS ("
@@ -84,41 +73,33 @@ public class RotateVoteStatsDao implements DaoOperations {
         + "  WHERE NOT EXISTS (SELECT * FROM UpsertStats) ";
 
     Map<String, Object> params = ImmutableMap.<String, Object>builder()
-        .put("accountId", accountId)
-        .put("zone", zone.value())
-        .put("bucket", bucket.toString())
-        .put("username", username)
-        .put("deltaDebateCount", debateCount)
-        .put("deltaArticleCount", articleCount)
-        .put("deltaArticleUpVoted", articleUpVoted)
-        .put("deltaDebateUpVoted", debateUpVoted)
-        .put("deltaDebateDownVoted", debateDownVoted)
+        .put("accountId", voter.getAccountId())
+        .put("zone", voter.getZone().value())
+        .put("bucket", monthlyBucket(voter.getFlakeId()).toString())
+        .put("username", voter.getUsername())
+        .put("deltaDebateCount", voter.getDeltaDebateCount())
+        .put("deltaArticleCount", voter.getDeltaArticleCount())
+        .put("deltaArticleUpVoted", voter.getDeltaArticleUpVoted())
+        .put("deltaDebateUpVoted", voter.getDeltaDebateUpVoted())
+        .put("deltaDebateDownVoted", voter.getDeltaDebateDownVoted())
         .build();
 
     namedJdbc().update(upsert, params);
   }
 
-  public void increaseArticleCount(Article article) {
-    updateRotateVoteStats(article.getAuthorId(),
-        article.getZone(),
-        monthlyBucket(article.getArticleId()),
-        article.getAuthorName(),
-        0,
-        1,
-        0,
-        0,
-        0);
+  public List<RotateVoteStats> listRotateVoteStatsByAccount(UUID uuid, Instant instant) {
+    final String sql = " SELECT * FROM RotateVoteStats WHERE accountId = ? AND bucket = ? ";
+    return jdbc().query(sql,
+        rotateVoteStatsMapper,
+        uuid,
+        monthlyBucket(instant).toString());
   }
 
-  public void increaseDebateCount(Debate debate) {
-    updateRotateVoteStats(debate.getDebaterId(),
-        debate.getZone(),
-        monthlyBucket(debate.getDebateId()),
-        debate.getDebaterName(),
-        1,
-        0,
-        0,
-        0,
-        0);
+  public List<RotateVoteStats> listRotateVoteStatsByZone(Zone zone, Instant instant, int limit) {
+    final String sql = " SELECT * FROM RotateVoteStats WHERE zone = ? AND bucket = ? ORDER BY articleUpVoted + debateUpVoted - debateDownVoted DESC LIMIT ? ";
+    return jdbc().query(sql,
+        rotateVoteStatsMapper,
+        zone.value(),
+        monthlyBucket(instant).toString(), limit);
   }
 }

@@ -41,6 +41,7 @@ public class RotateVoteStats {
   private final long debateUpVoted;
 
   private final long debateDownVoted;
+  private String score;
 
   RotateVoteStats(UUID accountId,
       Zone zone,
@@ -146,5 +147,9 @@ public class RotateVoteStats {
 
   public long getDebateDownVoted() {
     return debateDownVoted;
+  }
+
+  public long getScore() {
+    return articleUpVoted + debateUpVoted - debateDownVoted;
   }
 }

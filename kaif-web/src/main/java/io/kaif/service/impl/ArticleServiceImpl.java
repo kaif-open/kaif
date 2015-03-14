@@ -25,6 +25,7 @@ import io.kaif.model.article.ArticleDao;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateDao;
 import io.kaif.model.debate.DebateTree;
+import io.kaif.model.vote.HonorRollVoter;
 import io.kaif.model.vote.RotateVoteStatsDao;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneDao;
@@ -82,7 +83,7 @@ public class ArticleServiceImpl implements ArticleService {
     Article article = articleCreator.apply(zoneInfo, author);
     if (zoneInfo.getWriteAuthority() == Authority.CITIZEN) {
       accountDao.increaseArticleCount(author);
-      rotateVoteStatsDao.increaseArticleCount(article);
+      rotateVoteStatsDao.updateRotateVoteStats(HonorRollVoter.create(article));
     }
     return article;
   }
@@ -171,7 +172,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     if (zoneInfo.getDebateAuthority() == Authority.CITIZEN) {
       accountDao.increaseDebateCount(debater);
-      rotateVoteStatsDao.increaseDebateCount(debate);
+      rotateVoteStatsDao.updateRotateVoteStats(HonorRollVoter.create(debate));
     }
     return debate;
   }

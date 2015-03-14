@@ -513,6 +513,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     }
   }
 
+
   @Test
   public void canCreateArticle() throws Exception {
     ZoneInfo zoneRequireCitizen = savedZoneDefault("fun");
