@@ -25,6 +25,7 @@ import io.kaif.model.debate.DebateList;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.ArticleService;
+import io.kaif.service.HonorRollService;
 import io.kaif.service.ZoneService;
 
 @Controller
@@ -36,6 +37,9 @@ public class ZoneController {
   @Autowired
   private ArticleService articleService;
 
+  @Autowired
+  private HonorRollService honorRollService;
+
   @RequestMapping("/{zone}")
   public Object hotArticles(@PathVariable("zone") String rawZone,
       @RequestParam(value = "start", required = false) FlakeId startArticleId,
@@ -44,6 +48,7 @@ public class ZoneController {
       return new ModelAndView("zone/zone-page")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("recommendZones", zoneService.listRecommendZones())
+          .addObject("honorRollList", honorRollService.listHonorRollsByZone(zoneInfo.getZone()))
           .addObject("articleList",
               new ArticleList(articleService.listHotZoneArticles(zoneInfo.getZone(),
                   startArticleId)));
@@ -98,6 +103,7 @@ public class ZoneController {
       return new ModelAndView("zone/zone-page")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("recommendZones", zoneService.listRecommendZones())
+          .addObject("honorRollList", honorRollService.listHonorRollsByZone(zoneInfo.getZone()))
           .addObject("articleList",
               new ArticleList(articleService.listLatestZoneArticles(zoneInfo.getZone(),
                   startArticleId)));
@@ -117,6 +123,7 @@ public class ZoneController {
       return new ModelAndView("zone/zone-page")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("recommendZones", zoneService.listRecommendZones())
+          .addObject("honorRollList", honorRollService.listHonorRollsByZone(zoneInfo.getZone()))
           .addObject("debateList", new DebateList(debates, articles));
     });
   }
@@ -136,6 +143,7 @@ public class ZoneController {
       return new ModelAndView("article/debates")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("recommendZones", zoneService.listRecommendZones())
+          .addObject("honorRollList", honorRollService.listHonorRollsByZone(zoneInfo.getZone()))
           .addObject("article", articleService.loadArticle(articleFlakeId))
           .addObject("debateTree", articleService.listBestDebates(articleFlakeId, null));
     });
@@ -151,6 +159,7 @@ public class ZoneController {
           .addObject("zoneInfo", zoneInfo)
           .addObject("article", articleService.loadArticle(articleFlakeId))
           .addObject("recommendZones", zoneService.listRecommendZones())
+          .addObject("honorRollList", honorRollService.listHonorRollsByZone(zoneInfo.getZone()))
           .addObject("parentDebate", articleService.loadDebate(debateFlakeId))
           .addObject("debateTree", articleService.listBestDebates(articleFlakeId, debateFlakeId));
     });

@@ -1,12 +1,16 @@
 package io.kaif.model.vote;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -23,7 +27,7 @@ public class HonorRollDao implements DaoOperations {
 
   private RowMapper<HonorRoll> honorRollRowMapper = (rs, rowNum) -> new HonorRoll(
       UUID.fromString(rs.getString("accountId")),
-      Zone.valueOf(rs.getString("zone")),
+      rs.getString("zone") == null ? null : Zone.valueOf(rs.getString("zone")), // for total
       rs.getString("bucket"),
       rs.getString("username"),
       rs.getLong("articleUpVoted"),
@@ -89,11 +93,32 @@ public class HonorRollDao implements DaoOperations {
         monthlyBucket(instant).toString());
   }
 
-  public List<HonorRoll> listHonorRollByZone(Zone zone, Instant instant, int limit) {
-    final String sql = " SELECT * FROM HonorRoll WHERE zone = ? AND bucket = ? ORDER BY articleUpVoted + debateUpVoted - debateDownVoted DESC, username ASC LIMIT ? ";
-    return jdbc().query(sql,
-        honorRollRowMapper,
-        zone.value(),
-        monthlyBucket(instant).toString(), limit);
+  public List<HonorRoll> listHonorRollByZone(@Nullable Zone zone, Instant instant, int limit) {
+    return listHonorRollByZone(zone, monthlyBucket(instant), limit);
+  }
+
+  /**
+   * for cached purpose, using bucket as part of key
+   */
+  @Cacheable(value = "listHonorRoll")
+  public List<HonorRoll> listHonorRollByZone(@Nullable Zone zone, LocalDate bucket, int limit) {
+    if (zone == null) {
+      final String sql = //
+          "      SELECT accountId, bucket, username, NULL AS zone, "
+              + "       sum(articleUpVoted) AS articleUpVoted, "
+              + "       sum(debateUpVoted) AS debateUpVoted, "
+              + "       sum(debateDownVoted) AS debateDownVoted, "
+              + "       sum(articleUpVoted) + sum(debateUpVoted) - sum(debateDownVoted) AS score "
+              + "  FROM HonorRoll WHERE bucket = ? GROUP BY accountId, bucket, username ORDER BY score DESC, username ASC LIMIT ? ";
+      return jdbc().query(sql,
+          honorRollRowMapper,
+          bucket.toString(), limit);
+    } else {
+      final String sql = " SELECT * FROM HonorRoll WHERE zone = ? AND bucket = ? ORDER BY articleUpVoted + debateUpVoted - debateDownVoted DESC, username ASC LIMIT ? ";
+      return jdbc().query(sql,
+          honorRollRowMapper,
+          zone.value(),
+          bucket.toString(), limit);
+    }
   }
 }

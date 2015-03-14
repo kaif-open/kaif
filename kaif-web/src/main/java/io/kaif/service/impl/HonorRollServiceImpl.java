@@ -4,6 +4,8 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,14 +39,14 @@ public class HonorRollServiceImpl implements HonorRollService {
   }
 
   @Override
-  public List<HonorRoll> listHonorRolls(String username) {
+  public List<HonorRoll> listHonorRollsByUsername(String username) {
     Account account = accountDao.loadByUsername(username);
     return honorRollDao.listHonorRollByAccount(account.getAccountId(),
         Instant.now(clock));
   }
 
   @Override
-  public List<HonorRoll> listHonorRolls(Zone zone) {
+  public List<HonorRoll> listHonorRollsByZone(@Nullable Zone zone) {
     return honorRollDao.listHonorRollByZone(zone, Instant.now(clock), PAGE_SIZE);
   }
 }

@@ -67,5 +67,15 @@ public class UtilConfiguration {
     cacheManager.setCacheBuilder(cacheBuilder);
     return cacheManager;
   }
+
+  @Bean
+  public CacheManager honorRollsCacheManager() {
+    CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
+        .expireAfterWrite(1, TimeUnit.HOURS)
+        .maximumSize(100);
+    GuavaCacheManager cacheManager = new GuavaCacheManager("listHonorRoll");
+    cacheManager.setCacheBuilder(cacheBuilder);
+    return cacheManager;
+  }
 }
 

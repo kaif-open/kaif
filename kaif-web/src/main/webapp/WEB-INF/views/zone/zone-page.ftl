@@ -39,6 +39,7 @@ applyZoneTheme=true
         <aside class="grid-aside">
             <@aside.createArticle />
             <@aside.recommendZones zoneInfos=recommendZones />
+            <@aside.honorRoll data=honorRollList/>
             <@aside.rss/>
         </aside>
     </div>

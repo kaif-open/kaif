@@ -31,13 +31,13 @@ head=headContent>
                 <div class="pure-u-3-24"><p>=</p></div>
                 <div class="pure-u-3-24">
                     <#if honorRoll.score gt 0>
-                    <p class="honor-positive-score">
+                        <p class="honor-positive-score">${honorRoll.score}</p>
                     <#elseif honorRoll.score lt 0>
-                    <p class="honor-negative-score">
+                        <p class="honor-negative-score">${honorRoll.score}</p>
                     <#else>
-                    <p class="honor-score">
+                        <p class="honor-score">${honorRoll.score} </p>
                     </#if>
-                ${honorRoll.score} </p></div>
+                </div>
             </div>
         </#list>
     </div>

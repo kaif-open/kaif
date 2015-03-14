@@ -41,7 +41,7 @@ public class UserControllerTest extends MvcIntegrationTests {
   public void userScores() throws Exception {
     HonorRoll h1 = honorRoll(zone);
     HonorRoll h2 = honorRoll(Zone.valueOf("java"));
-    when(honorRollService.listHonorRolls("foo-user")).thenReturn(asList(h1, h2));
+    when(honorRollService.listHonorRollsByUsername("foo-user")).thenReturn(asList(h1, h2));
     mockMvc.perform(get("/u/foo-user/scores"))
         .andExpect(content().string(containsString("/z/java")));
   }

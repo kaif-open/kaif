@@ -53,7 +53,7 @@ public class UserController {
 
   @RequestMapping("/u/{username}/scores")
   public ModelAndView userScore(@PathVariable("username") String username) {
-    List<HonorRoll> honorRolls = honorRollService.listHonorRolls(username);
+    List<HonorRoll> honorRolls = honorRollService.listHonorRollsByUsername(username);
     return new ModelAndView("account/user-scores").addObject("honorRolls", honorRolls);
   }
 
