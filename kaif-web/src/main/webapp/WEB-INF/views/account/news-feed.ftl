@@ -5,7 +5,7 @@
 <#import "../macros/util.ftl" as util>
 
 <#assign headContent>
-<title>News Feed | kaif.io</title>
+<title><@spring.messageText 'account-menu.news-feed' 'News Feed'/> | kaif.io</title>
 </#assign>
 
 <@template.page layout='full' head=headContent>
@@ -15,7 +15,6 @@
         <@spring.messageText 'account-menu.news-feed' 'News Feed'/>
     </#assign>
     <@util.menuLink '/account/news-feed' newsFeedName/>
-    <@util.menuLink '/account/debate-replies' '最近回應給我'/>
 </nav>
 
 <div class="grid">

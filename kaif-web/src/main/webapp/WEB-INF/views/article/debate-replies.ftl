@@ -11,10 +11,6 @@
 <@template.page layout='full' head=headContent>
 
 <nav class="zone-menu pure-menu pure-menu-open pure-menu-horizontal">
-    <#assign newsFeedName>
-       <@spring.messageText 'account-menu.news-feed' 'News Feed'/>
-    </#assign>
-    <@util.menuLink '/account/news-feed' newsFeedName/>
     <@util.menuLink '/account/debate-replies' '最近回應給我'/>
 </nav>
 
