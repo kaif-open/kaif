@@ -76,22 +76,6 @@ public class AccountController {
     return new ModelAndView("account/settings.part").addObject("account", account);
   }
 
-  @RequestMapping("/debate-replies")
-  public String debateReplies() {
-    return "article/debate-replies";
-  }
-
-  @RequestMapping("/debate-replies.part")
-  public ModelAndView debateRepliesPart(AccountAccessToken accountAccessToken,
-      @RequestParam(value = "start", required = false) FlakeId startDebateId) {
-    List<Debate> debates = articleService.listReplyToDebates(accountAccessToken, startDebateId);
-    List<Article> articles = articleService.listArticlesByDebates(debates.stream()
-        .map(Debate::getDebateId)
-        .collect(toList()));
-    return new ModelAndView("article/debate-replies.part").addObject("debateList",
-        new DebateList(debates, articles));
-  }
-
   @RequestMapping("/news-feed")
   public String newsFeed() {
     return "account/account";
