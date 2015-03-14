@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -211,6 +212,11 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     AccountStats stats = accountDao.loadStats(debater.getUsername());
     assertEquals(0, stats.getDebateDownVoted());
     assertEquals(0, stats.getDebateUpVoted());
+
+    assertEquals(Optional.empty(),
+        rotateVoteStatsDao.findRotateVoteStats(debater.getAccountId(),
+            zone,
+            Instant.ofEpochMilli(debateId.epochMilli())));
   }
 
   @Test
@@ -238,8 +244,10 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   public void voteDebate_ignore_duplicate() throws Exception {
     service.voteDebate(UP, zone, articleId, debateId, voter, EMPTY, 20);
     assertDebateTotalVote(1, 0);
+    assertDebateRotateVoteStats(1, 0);
     service.voteDebate(UP, zone, articleId, debateId, voter, UP, 20);
     assertDebateTotalVote(1, 0);
+    assertDebateRotateVoteStats(1, 0);
     assertEquals(UP, service.listDebateVoters(voter, articleId).get(0).getVoteState());
   }
 
@@ -263,6 +271,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     service.voteDebate(UP, zone, articleId, debateId, voter, EMPTY, 20);
 
     assertDebateTotalVote(1, 0);
+    assertDebateRotateVoteStats(1, 0);
 
     List<DebateVoter> debateVoters = service.listDebateVoters(voter, articleId);
     assertEquals(1, debateVoters.size());
@@ -279,6 +288,8 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     service.voteDebate(EMPTY, zone, articleId, debateId, voter, EMPTY, 0);
 
     assertDebateTotalVote(0, 0);
+    assertDebateRotateVoteStats(0, 0);
+
     assertEquals(EMPTY, service.listDebateVoters(voter, articleId).get(0).getVoteState());
   }
 
@@ -302,6 +313,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     service.voteDebate(EMPTY, zone, articleId, debateId, voter, UP, 0);
 
     assertDebateTotalVote(0, 0);
+    assertDebateRotateVoteStats(0, 0);
 
     DebateVoter debateVoter = service.listDebateVoters(voter, articleId).get(0);
     assertEquals(EMPTY, debateVoter.getVoteState());
@@ -312,6 +324,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   public void downVoteDebate() throws Exception {
     service.voteDebate(DOWN, zone, articleId, debateId, voter, EMPTY, 20);
     assertDebateTotalVote(0, 1);
+    assertDebateRotateVoteStats(0, 1);
 
     List<DebateVoter> debateVoters = service.listDebateVoters(voter, articleId);
     DebateVoter debateVoter = debateVoters.get(0);
@@ -326,6 +339,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
     service.voteDebate(DOWN, zone, articleId, debateId, voter, UP, 49);
     assertDebateTotalVote(0, 1);
+    assertDebateRotateVoteStats(0, 1);
 
     List<DebateVoter> debateVoters = service.listDebateVoters(voter, articleId);
     DebateVoter debateVoter = debateVoters.get(0);
@@ -339,18 +353,23 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
     service.voteDebate(UP, zone, articleId, debateId, voter, EMPTY, 20);
     assertDebateTotalVote(1, 0);
+    assertDebateRotateVoteStats(1, 0);
 
     service.voteDebate(DOWN, zone, articleId, debateId, voter, UP, 49);
     assertDebateTotalVote(0, 1);
+    assertDebateRotateVoteStats(0, 1);
 
     service.voteDebate(UP, zone, articleId, debateId, voter, DOWN, 30);
     assertDebateTotalVote(1, 0);
+    assertDebateRotateVoteStats(1, 0);
 
     service.voteDebate(EMPTY, zone, articleId, debateId, voter, UP, 0);
     assertDebateTotalVote(0, 0);
+    assertDebateRotateVoteStats(0, 0);
 
     service.voteDebate(DOWN, zone, articleId, debateId, voter, EMPTY, 90);
     assertDebateTotalVote(0, 1);
+    assertDebateRotateVoteStats(0, 1);
 
     DebateVoter debateVoter = service.listDebateVoters(voter, articleId).get(0);
     assertEquals(DOWN, debateVoter.getVoteState());

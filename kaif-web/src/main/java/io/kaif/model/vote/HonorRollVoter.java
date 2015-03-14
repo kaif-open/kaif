@@ -11,12 +11,22 @@ import io.kaif.model.zone.Zone;
 
 public class HonorRollVoter {
 
-  public static HonorRollVoter create(Article article, int upVoteDelta, int downVoteDelta) {
+  public static HonorRollVoter createByVote(Article article, int upVoteDelta, int downVoteDelta) {
     return new HonorRollVoterBuilder(article.getAuthorId(),
         article.getArticleId(),
         article.getZone(),
         article.getAuthorName())
         .withDeltaArticleUpVoted(upVoteDelta - downVoteDelta)
+        .build();
+  }
+
+  public static HonorRollVoter createByVote(Debate debate, int upVoteDelta, int downVoteDelta) {
+    return new HonorRollVoterBuilder(debate.getDebaterId(),
+        debate.getDebateId(),
+        debate.getZone(),
+        debate.getDebaterName())
+        .withDeltaDebateUpVoted(upVoteDelta)
+        .withDeltaDebateDownVoted(downVoteDelta)
         .build();
   }
 

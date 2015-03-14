@@ -93,7 +93,8 @@ public class VoteServiceImpl implements VoteService {
     articleDao.changeTotalVote(articleId, upVoteDelta, downVoteDelta);
 
     articleDao.findArticle(articleId)
-        .ifPresent(article -> rotateVoteStatsDao.updateRotateVoteStats(HonorRollVoter.create(article,
+        .ifPresent(article -> rotateVoteStatsDao.updateRotateVoteStats(HonorRollVoter.createByVote(
+            article,
             upVoteDelta,
             downVoteDelta)));
   }
@@ -128,6 +129,12 @@ public class VoteServiceImpl implements VoteService {
     if (zoneInfo.getVoteAuthority() == Authority.CITIZEN && !voter.authenticatedId()
         .equals(debaterId)) {
       accountDao.changeTotalVotedDebate(debaterId, upVoteDelta, downVoteDelta);
+
+      debateDao.findDebate(debateId)
+          .ifPresent(debate -> rotateVoteStatsDao.updateRotateVoteStats(HonorRollVoter.createByVote(
+              debate,
+              upVoteDelta,
+              downVoteDelta)));
     }
   }
 
