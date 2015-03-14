@@ -5,11 +5,13 @@ import static java.util.stream.Collectors.*;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
@@ -36,8 +38,13 @@ public class UserController {
   private HonorRollService honorRollService;
 
   @RequestMapping("/u/{username}")
-  public ModelAndView userProfile(@PathVariable("username") String username) {
+  public Object userProfile(@PathVariable("username") String username) {
     Account account = accountService.loadAccount(username);
+    if (!account.getUsername().equals(username)) {
+      RedirectView redirectView = new RedirectView("/u/" + account.getUsername());
+      redirectView.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
+      return redirectView;
+    }
     AccountStats accountStats = accountService.loadAccountStats(account.getUsername());
     return new ModelAndView("account/user-profile")//
         .addObject("account", account).addObject("accountStats", accountStats);
