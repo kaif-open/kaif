@@ -1,12 +1,9 @@
 library model_feed;
 
-import 'account.dart';
 import 'service.dart';
 import 'session.dart';
 import 'dao.dart';
 import 'dart:async';
-import 'dart:convert';
-import 'dart:html';
 
 class NewsFeedNotification {
 
@@ -14,8 +11,12 @@ class NewsFeedNotification {
   final AccountSession accountSession;
   final StreamController<int> _onUnreadChanged = new StreamController.broadcast();
   final NewsFeedDao newsFeedDao;
+  static const Duration _POLL_INTERVAL = const Duration(minutes:10);
 
   NewsFeedNotification(this.accountService, this.accountSession, this.newsFeedDao) {
+    new Timer.periodic(_POLL_INTERVAL, (timer) {
+      _reloadUnread().then((value) => _onUnreadChanged.add(value));
+    });
   }
 
   Future<int> getUnread() {
@@ -26,6 +27,10 @@ class NewsFeedNotification {
     if (cached != null) {
       return new Future.value(cached);
     }
+    return _reloadUnread();
+  }
+
+  Future<int> _reloadUnread() {
     return accountService.newsFeedUnread().then((value) {
       newsFeedDao.saveCounter(value);
       return value;

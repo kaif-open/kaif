@@ -90,10 +90,11 @@ class AccountMenu {
       route.reload();
     });
 
-    newsFeedNotification.getUnread().then((value) {
+    newsFeedNotification.onUnreadChanged.listen((value) {
       counterNotification.counter = value;
     });
-    newsFeedNotification.onUnreadChanged.listen((value) {
+
+    newsFeedNotification.getUnread().then((value) {
       counterNotification.counter = value;
     });
   }
