@@ -118,8 +118,8 @@ public class VoteResource {
 
   @RequestMapping(value = "/debate-voters", method = RequestMethod.GET)
   public List<DebateVoterDto> lisDebateVoters(AccountAccessToken token,
-      @RequestParam("articleId") String articleId) {
-    return voteService.listDebateVoters(token, FlakeId.fromString(articleId))
+      @RequestParam("articleId") FlakeId articleId) {
+    return voteService.listDebateVoters(token, articleId)
         .stream()
         .map(DebateVoter::toDto)
         .collect(toList());

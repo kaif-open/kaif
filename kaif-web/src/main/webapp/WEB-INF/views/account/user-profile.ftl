@@ -10,26 +10,28 @@
 </#assign>
 
 <@template.page
-layout='small'
+layout='full'
 head=headContent>
 
-<div class="user-profile">
-    <@util.time instant=account.createTime  maxUnit="Day" />
-    <h2>關於 ${account.username}</h2>
+    <@template.user username=account.username>
+    <div class="user-profile grid-center-row">
+        <@util.time instant=account.createTime  maxUnit="Day" />
+        <h2>關於 ${account.username}</h2>
 
-    <div class="kmark">${account.renderDescription}</div>
-    <div class="user-info-list">
-        <div>
-            文章分享 <span class="user-number">${accountStats.articleCount}</span> 篇
-        </div>
-        <div>
-            爭論激辯 <span class="user-number">${accountStats.debateCount}</span> 回
-        </div>
-        <div>
-            個人積分 <span class="user-number">${accountStats.debateUpVoted - accountStats.debateDownVoted}</span>
-            點
+        <div class="kmark">${account.renderDescription}</div>
+        <div class="user-info-list">
+            <div>
+                文章分享 <span class="user-number">${accountStats.articleCount}</span> 篇
+            </div>
+            <div>
+                爭論激辯 <span class="user-number">${accountStats.debateCount}</span> 回
+            </div>
+            <div>
+                個人積分 <span
+                    class="user-number">${accountStats.debateUpVoted - accountStats.debateDownVoted}</span>
+                點
+            </div>
         </div>
     </div>
-</div>
-
+    </@template.user>
 </@template.page>

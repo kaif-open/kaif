@@ -24,7 +24,8 @@ class DebateList {
     }).toList();
 
     _initDebateVoters(debateComps);
-    _initPager(debateComps.isEmpty ? null : debateComps.last.debateId);
+    new PartLoaderPager(elem, serverPartLoader,
+    debateComps.isEmpty ? null : debateComps.last.debateId);
   }
 
   void _initDebateVoters(List<DebateComp> debateComps) {
@@ -39,32 +40,6 @@ class DebateList {
 
     future.then((voters) {
       voteBoxes.forEach((box) => box.applyVoters(voters));
-    });
-  }
-
-  void _initPager(String startDebateId) {
-    if (startDebateId == null) {
-      return;
-    }
-    Element pagerAnchor = elem.querySelector('[debate-list-pager]');
-    if (pagerAnchor == null) {
-      return;
-    }
-
-    pagerAnchor.onClick.first.then((e) {
-      e
-        ..preventDefault()
-        ..stopPropagation();
-      pagerAnchor.remove();
-      //note this searching globally because we need it to be outside of component
-      Element nextWrapper = elem.querySelector('[next-debate-list]');
-      //move next list to outside of current debate-list
-      elementInsertAfter(elem, nextWrapper);
-
-      //load next page, this will create another DebateList
-      serverPartLoader.loadInto(nextWrapper,
-      route.currentPartTemplatePath() + "?startDebateId=${startDebateId}",
-      loading:new Loading.largeCenter());
     });
   }
 }

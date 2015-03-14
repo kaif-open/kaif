@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountAuth;
 import io.kaif.model.exception.AuthenticateFailException;
 import io.kaif.service.AccountService;
+import io.kaif.service.FeedService;
 import io.kaif.web.support.SingleWrapper;
 
 @RestController
@@ -91,8 +93,15 @@ public class AccountResource {
     public String description;
   }
 
+  static class NewsFeedAcknowledge {
+    @NotNull
+    public FlakeId assetId;
+  }
+
   @Autowired
   private AccountService accountService;
+  @Autowired
+  private FeedService feedService;
 
   @RequestMapping(value = "/", method = RequestMethod.PUT, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
@@ -133,6 +142,18 @@ public class AccountResource {
   @RequestMapping(value = "/name-available")
   public SingleWrapper<Boolean> isNameAvailable(@RequestParam("username") String username) {
     return SingleWrapper.of(accountService.isUsernameAvailable(username));
+  }
+
+  @RequestMapping(value = "/news-feed-unread")
+  public SingleWrapper<Integer> newsFeedUnreadCount(AccountAccessToken token) {
+    return SingleWrapper.of(feedService.countUnread(token));
+  }
+
+  @RequestMapping(value = "/news-feed-acknowledge", method = RequestMethod.POST, consumes = {
+      MediaType.APPLICATION_JSON_VALUE })
+  public void newsFeedAcknowledge(AccountAccessToken token,
+      @Valid @RequestBody NewsFeedAcknowledge ack) {
+    feedService.acknowledge(token, ack.assetId);
   }
 
   @RequestMapping(value = "/send-reset-password", method = RequestMethod.POST, consumes = {

@@ -3,7 +3,6 @@ package io.kaif.web;
 import static java.util.stream.Collectors.*;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,7 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.article.Article;
-import io.kaif.model.article.ArticlePage;
+import io.kaif.model.article.ArticleList;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateList;
 import io.kaif.service.ArticleService;
@@ -29,16 +28,16 @@ public class HomeController {
   private ZoneService zoneService;
 
   @RequestMapping("/")
-  public ModelAndView index(@RequestParam(value = "start", required = false) String start) {
-    FlakeId startArticleId = Optional.ofNullable(start).map(FlakeId::fromString).orElse(null);
+  public ModelAndView index(
+      @RequestParam(value = "start", required = false) FlakeId startArticleId) {
     return new ModelAndView("index")//
         .addObject("recommendZones", zoneService.listRecommendZones())
-        .addObject("articlePage", new ArticlePage(articleService.listTopArticles(startArticleId)));
+        .addObject("articleList", new ArticleList(articleService.listTopArticles(startArticleId)));
   }
 
   @RequestMapping("/hot.rss")
   public Object rssFeed() {
-    ModelAndView modelAndView = new ModelAndView().addObject("articlePage",
+    ModelAndView modelAndView = new ModelAndView().addObject("articles",
         articleService.listCachedTopArticles());
     modelAndView.setView(new HotArticleRssContentView());
     return modelAndView;
@@ -46,18 +45,16 @@ public class HomeController {
 
   @RequestMapping("/new")
   public ModelAndView listLatestArticles(
-      @RequestParam(value = "start", required = false) String start) {
-    FlakeId startArticleId = Optional.ofNullable(start).map(FlakeId::fromString).orElse(null);
+      @RequestParam(value = "start", required = false) FlakeId startArticleId) {
     return new ModelAndView("index") //
         .addObject("recommendZones", zoneService.listRecommendZones())
-        .addObject("articlePage",
-            new ArticlePage(articleService.listLatestArticles(startArticleId)));
+        .addObject("articleList",
+            new ArticleList(articleService.listLatestArticles(startArticleId)));
   }
 
   @RequestMapping("/new-debate")
   public ModelAndView listLatestDebates(
-      @RequestParam(value = "start", required = false) String start) {
-    FlakeId startDebateId = Optional.ofNullable(start).map(FlakeId::fromString).orElse(null);
+      @RequestParam(value = "start", required = false) FlakeId startDebateId) {
     List<Debate> debates = articleService.listLatestDebates(startDebateId);
     List<Article> articles = articleService.listArticlesByDebates(debates.stream()
         .map(Debate::getDebateId)

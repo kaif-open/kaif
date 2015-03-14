@@ -130,8 +130,8 @@ public class ArticleResource {
 
   @RequestMapping(value = "/debate/content", method = RequestMethod.GET)
   public String loadEditableDebate(AccountAccessToken token,
-      @RequestParam("debateId") String debateId) {
-    return articleService.loadEditableDebateContent(FlakeId.fromString(debateId), token);
+      @RequestParam("debateId") FlakeId debateId) {
+    return articleService.loadEditableDebateContent(debateId, token);
   }
 
   @RequestMapping(value = "/can-create", method = RequestMethod.GET)

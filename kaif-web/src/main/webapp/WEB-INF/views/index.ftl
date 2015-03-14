@@ -20,8 +20,8 @@ head=headContent
     <@template.home>
     <div class="grid">
         <div class="grid-body">
-            <#if articlePage??>
-                <@comp.articleList data=articlePage showZone=true></@comp.articleList>
+            <#if articleList??>
+                <@comp.articleList data=articleList showZone=true></@comp.articleList>
             </#if>
         <#if debateList??>
             <@comp.debateList data=debateList></@comp.debateList>

@@ -29,6 +29,7 @@ import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.ArticleService;
+import io.kaif.service.FeedService;
 import io.kaif.web.support.AccessDeniedException;
 
 @Service
@@ -37,7 +38,7 @@ public class ArticleServiceImpl implements ArticleService {
 
   private static final Logger log = LoggerFactory.getLogger(ArticleServiceImpl.class);
 
-  private static final int PAGE_SIZE = 25;
+  static final int PAGE_SIZE = 25;
 
   @Autowired
   private AccountDao accountDao;
@@ -50,6 +51,8 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Autowired
   private DebateDao debateDao;
+  @Autowired
+  private FeedService feedService;
 
   @Override
   public Article createExternalLink(Authorization authorization,
@@ -127,7 +130,6 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public String updateDebateContent(FlakeId debateId, Authorization editorAuth, String content) {
-
     Debate debate = debateDao.loadDebate(debateId);
     accountDao.strongVerifyAccount(editorAuth)
         .filter(debate::canEdit)
@@ -166,6 +168,10 @@ public class ArticleServiceImpl implements ArticleService {
 
     if (zoneInfo.getDebateAuthority() == Authority.CITIZEN) {
       accountDao.increaseDebateCount(debater);
+    }
+
+    if (!debate.getReplyToAccountId().equals(debater.getAccountId())) {
+      feedService.createReplyFeed(debate.getDebateId(), debate.getReplyToAccountId());
     }
     return debate;
   }
@@ -232,5 +238,24 @@ public class ArticleServiceImpl implements ArticleService {
   @Override
   public List<Article> listArticlesByDebates(List<FlakeId> debateIds) {
     return articleDao.listArticlesByDebates(debateIds);
+  }
+
+  @Override
+  public List<Debate> listDebatesById(List<FlakeId> debateIds) {
+    return debateDao.listDebatesById(debateIds);
+  }
+
+  @Override
+  public List<Article> listArticlesByAuthor(String username, @Nullable FlakeId startArticleId) {
+    // we don't use join because we may use cache to optimize later
+    Account author = accountDao.loadByUsername(username);
+    return articleDao.listArticlesByAuthor(author.getAccountId(), startArticleId, PAGE_SIZE);
+  }
+
+  @Override
+  public List<Debate> listDebatesByDebater(String username, @Nullable FlakeId startDebateId) {
+    // we don't use join because we may use cache to optimize later
+    Account debater = accountDao.loadByUsername(username);
+    return debateDao.listDebatesByDebater(debater.getAccountId(), startDebateId, PAGE_SIZE);
   }
 }

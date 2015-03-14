@@ -17,6 +17,8 @@ class Router {
 
   String get debateReplies => '/account/debate-replies';
 
+  String get newsFeed => '/account/news-feed';
+
   String get home => '/' ;
 
   String user(String username) => '/u/$username';

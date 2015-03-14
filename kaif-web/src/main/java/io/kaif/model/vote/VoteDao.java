@@ -7,7 +7,10 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+
+import javax.annotation.Nullable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -19,6 +22,8 @@ import com.google.common.collect.ImmutableMap;
 
 import io.kaif.database.DaoOperations;
 import io.kaif.flake.FlakeId;
+import io.kaif.model.article.Article;
+import io.kaif.model.article.ArticleDao;
 
 @Repository
 public class VoteDao implements DaoOperations {
@@ -195,5 +200,25 @@ public class VoteDao implements DaoOperations {
         + "  WHERE voterId = :voterId "
         + "    AND debateId IN (:debateIds) ", params, debateVoterMapper);
 
+  }
+
+  public List<Article> listUpVotedArticles(UUID voterId,
+      @Nullable FlakeId startArticleId,
+      int size) {
+    FlakeId start = Optional.ofNullable(startArticleId).orElse(FlakeId.MAX);
+    return jdbc().query(""
+            + " SELECT a.* "
+            + "   FROM ArticleVoter v "
+            + "   JOIN Article a ON (v.articleId = a.articleId) "
+            + "  WHERE v.voterId = ? "
+            + "    AND v.articleId < ? "
+            + "    AND v.voteState = ? "
+            + "  ORDER BY v.articleId DESC "
+            + "  LIMIT ? ",
+        ArticleDao.ARTICLE_ROW_MAPPER,
+        voterId,
+        start.value(),
+        VoteState.UP.name(),
+        size);
   }
 }
