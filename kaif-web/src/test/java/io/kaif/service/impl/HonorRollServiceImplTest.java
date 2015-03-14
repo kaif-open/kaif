@@ -134,7 +134,7 @@ public class HonorRollServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
-  public void listHonorRoll_top_20() {
+  public void listHonorRoll_top_15() {
     Instant instant = LocalDate.of(2015, 3, 12)
         .atStartOfDay(BUCKET_ZONE)
         .toInstant();
@@ -162,11 +162,8 @@ public class HonorRollServiceImplTest extends DbIntegrationTests {
 
     service.setClock(clock);
     List<HonorRoll> honorRoll = service.listHonorRollsByZone(zoneInfo.getZone());
-    assertEquals(allStats.stream().limit(20).map(HonorRollVoter::getUsername).collect(toList()),
+    assertEquals(allStats.stream().limit(15).map(HonorRollVoter::getUsername).collect(toList()),
         honorRoll.stream().map(HonorRoll::getUsername).collect(toList()));
-
-    List<HonorRoll> cached = service.listHonorRollsByZone(zoneInfo.getZone());
-    assertSame(honorRoll, cached);
   }
 
   @Test
@@ -231,9 +228,6 @@ public class HonorRollServiceImplTest extends DbIntegrationTests {
     assertEquals(-1, third.getScore());
     assertEquals("user-2", third.getUsername());
     assertNull(third.getZone());
-
-    List<HonorRoll> cached = service.listHonorRollsByZone(null);
-    assertSame(honorRoll, cached);
   }
 
   @Test
@@ -262,7 +256,7 @@ public class HonorRollServiceImplTest extends DbIntegrationTests {
 
     service.setClock(clock);
     List<HonorRoll> honorRoll = service.listHonorRollsByZone(zoneInfo.getZone());
-    assertEquals(allStats.stream().limit(20).map(HonorRollVoter::getUsername).collect(toList()),
+    assertEquals(allStats.stream().limit(15).map(HonorRollVoter::getUsername).collect(toList()),
         honorRoll.stream().map(HonorRoll::getUsername).collect(toList()));
   }
 }

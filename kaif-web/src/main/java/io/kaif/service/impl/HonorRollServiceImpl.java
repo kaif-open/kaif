@@ -1,7 +1,10 @@
 package io.kaif.service.impl;
 
+import static java.util.stream.Collectors.*;
+
 import java.time.Clock;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -25,7 +28,9 @@ public class HonorRollServiceImpl implements HonorRollService {
 
   private Clock clock = Clock.systemDefaultZone();
 
-  private static final int PAGE_SIZE = 20;
+  private static final List<String> EXCLUDES_USER_NAME = Arrays.asList("koji", "IngramChen");
+
+  private static final int PAGE_SIZE = 15;
 
   @Autowired
   HonorRollDao honorRollDao;
@@ -47,6 +52,19 @@ public class HonorRollServiceImpl implements HonorRollService {
 
   @Override
   public List<HonorRoll> listHonorRollsByZone(@Nullable Zone zone) {
-    return honorRollDao.listHonorRollByZone(zone, Instant.now(clock), PAGE_SIZE);
+    final List<HonorRoll> result;
+    int pageSize = PAGE_SIZE + EXCLUDES_USER_NAME.size();
+    if (zone == null) {
+      result = honorRollDao.listHonorRoll(honorRollDao.monthlyBucket(Instant.now(clock)),
+          pageSize);
+    } else {
+      result = honorRollDao.listHonorRollByZone(zone,
+          honorRollDao.monthlyBucket(Instant.now(clock)),
+          pageSize);
+    }
+    return result.stream()
+        .filter(honorRoll -> !EXCLUDES_USER_NAME.contains(honorRoll.getUsername()))
+        .limit(PAGE_SIZE)
+        .collect(toList());
   }
 }

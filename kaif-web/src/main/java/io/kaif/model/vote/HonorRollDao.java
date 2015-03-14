@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -43,7 +41,8 @@ public class HonorRollDao implements DaoOperations {
   }
 
   public Optional<HonorRoll> findHonorRoll(UUID accountId, Zone zone, Instant instant) {
-    final String sql = " SELECT * FROM HonorRoll WHERE accountId = ? AND zone = ? AND bucket = ? LIMIT 1 ";
+    final String sql = " SELECT * FROM HonorRoll WHERE accountId = ? AND zone = ? AND bucket = ? "
+        + "               LIMIT 1 ";
     return jdbc().query(sql,
         honorRollRowMapper,
         accountId,
@@ -96,29 +95,26 @@ public class HonorRollDao implements DaoOperations {
   }
 
   @Cacheable(value = "listHonorRoll")
-  public List<HonorRoll> listHonorRollByZone(@Nullable Zone zone, Instant instant, int limit) {
-    if (zone == null) {
-      return listHonorRoll(monthlyBucket(instant), limit);
-    }
-    return listHonorRollByZone(zone, monthlyBucket(instant), limit);
-  }
-
-  private List<HonorRoll> listHonorRollByZone(Zone zone, LocalDate bucket, int limit) {
-    final String sql = " SELECT * FROM HonorRoll WHERE zone = ? AND bucket = ? ORDER BY articleUpVoted + debateUpVoted - debateDownVoted DESC, username ASC LIMIT ? ";
+  public List<HonorRoll> listHonorRollByZone(Zone zone, LocalDate bucket, int limit) {
+    final String sql = " SELECT * FROM HonorRoll WHERE zone = ? AND bucket = ? "
+        + "            ORDER BY articleUpVoted + debateUpVoted - debateDownVoted DESC "
+        + "                     , username ASC LIMIT ? ";
     return jdbc().query(sql,
         honorRollRowMapper,
         zone.value(),
         bucket.toString(), limit);
   }
 
-  private List<HonorRoll> listHonorRoll(LocalDate bucket, int limit) {
+  @Cacheable(value = "listHonorRoll")
+  public List<HonorRoll> listHonorRoll(LocalDate bucket, int limit) {
     final String sql = //
-        "      SELECT accountId, bucket, username, NULL AS zone, "
-            + "       sum(articleUpVoted) AS articleUpVoted, "
-            + "       sum(debateUpVoted) AS debateUpVoted, "
-            + "       sum(debateDownVoted) AS debateDownVoted, "
-            + "       sum(articleUpVoted) + sum(debateUpVoted) - sum(debateDownVoted) AS score "
-            + "  FROM HonorRoll WHERE bucket = ? GROUP BY accountId, bucket, username ORDER BY score DESC, username ASC LIMIT ? ";
+        "          SELECT accountId, bucket, username, NULL AS zone, "
+            + "           sum(articleUpVoted) AS articleUpVoted, "
+            + "           sum(debateUpVoted) AS debateUpVoted, "
+            + "           sum(debateDownVoted) AS debateDownVoted, "
+            + "           sum(articleUpVoted) + sum(debateUpVoted) - sum(debateDownVoted) AS score "
+            + "      FROM HonorRoll WHERE bucket = ? GROUP BY accountId, bucket, username "
+            + "  ORDER BY score DESC, username ASC LIMIT ? ";
     return jdbc().query(sql,
         honorRollRowMapper,
         bucket.toString(), limit);
