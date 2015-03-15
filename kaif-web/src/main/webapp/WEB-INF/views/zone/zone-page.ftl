@@ -15,6 +15,9 @@
     <link rel="alternate" type="application/rss+xml" title="RSS"
           href="https://kaif.io/z/${zoneInfo.name}/hot.rss"/>
     </#if>
+    <#if debateList??>
+    <meta name="robots" content="noindex, follow">
+    </#if>
 </#assign>
 
 <@template.page

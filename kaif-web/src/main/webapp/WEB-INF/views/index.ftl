@@ -11,6 +11,9 @@
     <#if url.isCurrentPath('/')>
     <link rel="alternate" type="application/rss+xml" title="RSS" href="https://kaif.io/hot.rss"/>
     </#if>
+    <#if debateList??>
+    <meta name="robots" content="noindex, follow">
+    </#if>
 </#assign>
 
 <@template.page
