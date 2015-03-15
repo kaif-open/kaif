@@ -31,7 +31,10 @@ public class VoteDao implements DaoOperations {
   @Autowired
   private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-  private RowMapper<ArticleVoter> articleVoterMapper = (rs, rowNum) -> {
+  @Autowired
+  private ArticleDao articleDao;
+
+  private final RowMapper<ArticleVoter> articleVoterMapper = (rs, rowNum) -> {
     return new ArticleVoter(UUID.fromString(rs.getString("voterId")),
         FlakeId.valueOf(rs.getLong("articleId")),
         VoteState.valueOf(rs.getString("voteState")),
@@ -39,7 +42,7 @@ public class VoteDao implements DaoOperations {
         rs.getTimestamp("updateTime").toInstant());
   };
 
-  private RowMapper<DebateVoter> debateVoterMapper = (rs, rowNum) -> {
+  private final RowMapper<DebateVoter> debateVoterMapper = (rs, rowNum) -> {
     return new DebateVoter(UUID.fromString(rs.getString("voterId")),
         FlakeId.valueOf(rs.getLong("articleId")),
         FlakeId.valueOf(rs.getLong("debateId")),
@@ -215,7 +218,7 @@ public class VoteDao implements DaoOperations {
             + "    AND v.voteState = ? "
             + "  ORDER BY v.articleId DESC "
             + "  LIMIT ? ",
-        ArticleDao.ARTICLE_ROW_MAPPER,
+        articleDao.getArticleMapper(),
         voterId,
         start.value(),
         VoteState.UP.name(),

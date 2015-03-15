@@ -12,7 +12,7 @@
 layout='full'
 head=headContent>
     <@template.user username=username>
-    <div class="honor-roll-list grid-center-row" honor-roll-list>
+    <div class="honor-roll-list grid-center-row">
         <#list honorRolls as honorRoll>
             <h3 class="honor-roll-title">
                 <a href="<@url.zone data=honorRoll/>">

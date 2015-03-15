@@ -47,7 +47,7 @@ public class HonorRollServiceImplTest extends DbIntegrationTests {
   }
 
   HonorRollVoter increaseArticleVoter(FlakeId flakeId, Zone zone) {
-    return new HonorRollVoter.HonorRollVoterBuilder(citizen.getAccountId(),
+    return new HonorRollVoter.Builder(citizen.getAccountId(),
         flakeId,
         zone,
         citizen.getUsername()).withDeltaArticleUpVoted(1).build();
@@ -55,22 +55,17 @@ public class HonorRollServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void listRotateVoteStats() {
-    Instant instant = LocalDate.of(2015, 3, 12)
-        .atStartOfDay(BUCKET_ZONE)
-        .toInstant();
+    Instant instant = LocalDate.of(2015, 3, 12).atStartOfDay(BUCKET_ZONE).toInstant();
     Clock clock = Clock.fixed(instant, BUCKET_ZONE);
 
     honorRollDao.updateRotateVoteStats(increaseArticleVoter(FlakeId.endOf(instant.toEpochMilli()),
         zoneInfo.getZone()));
     honorRollDao.updateRotateVoteStats(increaseArticleVoter(FlakeId.endOf(instant.toEpochMilli()
-            + 1),
-        zoneInfo.getZone()));
+            + 1), zoneInfo.getZone()));
     honorRollDao.updateRotateVoteStats(increaseArticleVoter(FlakeId.endOf(instant.toEpochMilli()
-            + 2),
-        savedZoneDefault("pro").getZone()));
+            + 2), savedZoneDefault("pro").getZone()));
     honorRollDao.updateRotateVoteStats(increaseArticleVoter(FlakeId.endOf(instant.toEpochMilli()
-            + 3),
-        savedZoneDefault("abc").getZone()));
+            + 3), savedZoneDefault("abc").getZone()));
 
     service.setClock(clock);
 
@@ -89,20 +84,17 @@ public class HonorRollServiceImplTest extends DbIntegrationTests {
     assertEquals(1, thirdStats.getArticleUpVoted());
     assertEquals("pro", thirdStats.getZone().value());
 
-    service.setClock(Clock.fixed(LocalDate.of(2015, 2, 12)
-        .atStartOfDay(BUCKET_ZONE)
-        .toInstant(), BUCKET_ZONE));
+    service.setClock(Clock.fixed(LocalDate.of(2015, 2, 12).atStartOfDay(BUCKET_ZONE).toInstant(),
+        BUCKET_ZONE));
     assertEquals(0, service.listHonorRollsByUsername(citizen.getUsername()).size());
   }
 
   @Test
   public void listHonorRoll() {
-    Instant instant = LocalDate.of(2015, 3, 12)
-        .atStartOfDay(BUCKET_ZONE)
-        .toInstant();
+    Instant instant = LocalDate.of(2015, 3, 12).atStartOfDay(BUCKET_ZONE).toInstant();
     Clock clock = Clock.fixed(instant, BUCKET_ZONE);
 
-    honorRollDao.updateRotateVoteStats(new HonorRollVoter.HonorRollVoterBuilder(citizen.getAccountId(),
+    honorRollDao.updateRotateVoteStats(new HonorRollVoter.Builder(citizen.getAccountId(),
         FlakeId.endOf(instant.toEpochMilli()),
         zoneInfo.getZone(),
         citizen.getUsername()).withDeltaArticleUpVoted(10)
@@ -111,7 +103,7 @@ public class HonorRollServiceImplTest extends DbIntegrationTests {
         .build());
 
     Account citizen2 = savedAccountCitizen("king");
-    honorRollDao.updateRotateVoteStats(new HonorRollVoter.HonorRollVoterBuilder(citizen2.getAccountId(),
+    honorRollDao.updateRotateVoteStats(new HonorRollVoter.Builder(citizen2.getAccountId(),
         FlakeId.endOf(instant.toEpochMilli()),
         zoneInfo.getZone(),
         citizen2.getUsername()).withDeltaArticleUpVoted(3)
@@ -127,38 +119,31 @@ public class HonorRollServiceImplTest extends DbIntegrationTests {
     assertEquals("king", honorRoll.get(1).getUsername());
     assertEquals(2, honorRoll.get(1).getScore());
 
-    service.setClock(Clock.fixed(LocalDate.of(2015, 4, 1)
-        .atStartOfDay(BUCKET_ZONE)
-        .toInstant(), BUCKET_ZONE));
+    service.setClock(Clock.fixed(LocalDate.of(2015, 4, 1).atStartOfDay(BUCKET_ZONE).toInstant(),
+        BUCKET_ZONE));
     assertEquals(0, service.listHonorRollsByZone(zoneInfo.getZone()).size());
   }
 
   @Test
   public void listHonorRoll_top_15() {
-    Instant instant = LocalDate.of(2015, 3, 12)
-        .atStartOfDay(BUCKET_ZONE)
-        .toInstant();
+    Instant instant = LocalDate.of(2015, 3, 12).atStartOfDay(BUCKET_ZONE).toInstant();
     Clock clock = Clock.fixed(instant, BUCKET_ZONE);
 
     Random random = new Random();
     Comparator<HonorRollVoter> comparator = Comparator.comparing(voter -> voter.getDeltaArticleUpVoted()
-        + voter.getDeltaDebateUpVoted()
-        - voter.getDeltaDebateDownVoted());
-    List<HonorRollVoter> allStats = IntStream.rangeClosed(1, 100)
-        .mapToObj(index -> {
-          Account account = savedAccountCitizen("user-" + index);
-          HonorRollVoter voter = new HonorRollVoter.HonorRollVoterBuilder(account.getAccountId(),
-              FlakeId.endOf(instant.toEpochMilli()),
-              zoneInfo.getZone(),
-              account.getUsername()).withDeltaArticleUpVoted(random.nextInt(100))
-              .withDeltaDebateUpVoted(random.nextInt(100))
-              .withDeltaDebateDownVoted(random.nextInt(100))
-              .build();
-          honorRollDao.updateRotateVoteStats(voter);
-          return voter;
-        })
-        .sorted(comparator.reversed().thenComparing(HonorRollVoter::getUsername))
-        .collect(toList());
+        + voter.getDeltaDebateUpVoted() - voter.getDeltaDebateDownVoted());
+    List<HonorRollVoter> allStats = IntStream.rangeClosed(1, 100).mapToObj(index -> {
+      Account account = savedAccountCitizen("user-" + index);
+      HonorRollVoter voter = new HonorRollVoter.Builder(account.getAccountId(),
+          FlakeId.endOf(instant.toEpochMilli()),
+          zoneInfo.getZone(),
+          account.getUsername()).withDeltaArticleUpVoted(random.nextInt(100))
+          .withDeltaDebateUpVoted(random.nextInt(100))
+          .withDeltaDebateDownVoted(random.nextInt(100))
+          .build();
+      honorRollDao.updateRotateVoteStats(voter);
+      return voter;
+    }).sorted(comparator.reversed().thenComparing(HonorRollVoter::getUsername)).collect(toList());
 
     service.setClock(clock);
     List<HonorRoll> honorRoll = service.listHonorRollsByZone(zoneInfo.getZone());
@@ -168,9 +153,7 @@ public class HonorRollServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void listHonorRoll_all() {
-    Instant instant = LocalDate.of(2015, 3, 12)
-        .atStartOfDay(BUCKET_ZONE)
-        .toInstant();
+    Instant instant = LocalDate.of(2015, 3, 12).atStartOfDay(BUCKET_ZONE).toInstant();
     Clock clock = Clock.fixed(instant, BUCKET_ZONE);
 
     Account a1 = savedAccountCitizen("user-1");
@@ -181,39 +164,30 @@ public class HonorRollServiceImplTest extends DbIntegrationTests {
     ZoneInfo z2 = savedZoneDefault("rails");
     ZoneInfo z3 = savedZoneDefault("pypypy");
 
-    honorRollDao.updateRotateVoteStats(new HonorRollVoter.HonorRollVoterBuilder(a1.getAccountId(),
+    honorRollDao.updateRotateVoteStats(new HonorRollVoter.Builder(a1.getAccountId(),
         FlakeId.endOf(instant.toEpochMilli()),
         z1.getZone(),
-        a1.getUsername()).withDeltaArticleUpVoted(3)
-        .withDeltaDebateUpVoted(2)
-        .build());
+        a1.getUsername()).withDeltaArticleUpVoted(3).withDeltaDebateUpVoted(2).build());
 
-    honorRollDao.updateRotateVoteStats(new HonorRollVoter.HonorRollVoterBuilder(a1.getAccountId(),
+    honorRollDao.updateRotateVoteStats(new HonorRollVoter.Builder(a1.getAccountId(),
         FlakeId.endOf(instant.toEpochMilli()),
         z2.getZone(),
-        a1.getUsername()).withDeltaArticleUpVoted(1)
-        .withDeltaDebateUpVoted(3)
-        .build());
+        a1.getUsername()).withDeltaArticleUpVoted(1).withDeltaDebateUpVoted(3).build());
 
-    honorRollDao.updateRotateVoteStats(new HonorRollVoter.HonorRollVoterBuilder(a2.getAccountId(),
+    honorRollDao.updateRotateVoteStats(new HonorRollVoter.Builder(a2.getAccountId(),
         FlakeId.endOf(instant.toEpochMilli()),
         z2.getZone(),
-        a2.getUsername()).withDeltaArticleUpVoted(1)
-        .withDeltaDebateUpVoted(1)
-        .build());
+        a2.getUsername()).withDeltaArticleUpVoted(1).withDeltaDebateUpVoted(1).build());
 
-    honorRollDao.updateRotateVoteStats(new HonorRollVoter.HonorRollVoterBuilder(a2.getAccountId(),
+    honorRollDao.updateRotateVoteStats(new HonorRollVoter.Builder(a2.getAccountId(),
         FlakeId.endOf(instant.toEpochMilli()),
         z3.getZone(),
-        a2.getUsername()).withDeltaDebateDownVoted(3)
-        .build());
+        a2.getUsername()).withDeltaDebateDownVoted(3).build());
 
-    honorRollDao.updateRotateVoteStats(new HonorRollVoter.HonorRollVoterBuilder(a3.getAccountId(),
+    honorRollDao.updateRotateVoteStats(new HonorRollVoter.Builder(a3.getAccountId(),
         FlakeId.endOf(instant.toEpochMilli()),
         z3.getZone(),
-        a3.getUsername()).withDeltaArticleUpVoted(3)
-        .withDeltaDebateUpVoted(200)
-        .build());
+        a3.getUsername()).withDeltaArticleUpVoted(3).withDeltaDebateUpVoted(200).build());
 
     service.setClock(clock);
     List<HonorRoll> honorRoll = service.listHonorRollsByZone(null);
@@ -232,27 +206,20 @@ public class HonorRollServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void listHonorRoll_same_score_order_by_name() {
-    Instant instant = LocalDate.of(2015, 3, 12)
-        .atStartOfDay(BUCKET_ZONE)
-        .toInstant();
+    Instant instant = LocalDate.of(2015, 3, 12).atStartOfDay(BUCKET_ZONE).toInstant();
     Clock clock = Clock.fixed(instant, BUCKET_ZONE);
 
     Comparator<HonorRollVoter> comparator = Comparator.comparing(voter -> voter.getDeltaArticleUpVoted()
-        + voter.getDeltaDebateUpVoted()
-        - voter.getDeltaDebateDownVoted());
-    List<HonorRollVoter> allStats = IntStream.rangeClosed(1, 25)
-        .mapToObj(index -> {
-          Account account = savedAccountCitizen("user-" + index);
-          HonorRollVoter voter = new HonorRollVoter.HonorRollVoterBuilder(account.getAccountId(),
-              FlakeId.endOf(instant.toEpochMilli()),
-              zoneInfo.getZone(),
-              account.getUsername()).withDeltaArticleUpVoted(10)
-              .build();
-          honorRollDao.updateRotateVoteStats(voter);
-          return voter;
-        })
-        .sorted(comparator.reversed().thenComparing(HonorRollVoter::getUsername))
-        .collect(toList());
+        + voter.getDeltaDebateUpVoted() - voter.getDeltaDebateDownVoted());
+    List<HonorRollVoter> allStats = IntStream.rangeClosed(1, 25).mapToObj(index -> {
+      Account account = savedAccountCitizen("user-" + index);
+      HonorRollVoter voter = new HonorRollVoter.Builder(account.getAccountId(),
+          FlakeId.endOf(instant.toEpochMilli()),
+          zoneInfo.getZone(),
+          account.getUsername()).withDeltaArticleUpVoted(10).build();
+      honorRollDao.updateRotateVoteStats(voter);
+      return voter;
+    }).sorted(comparator.reversed().thenComparing(HonorRollVoter::getUsername)).collect(toList());
 
     service.setClock(clock);
     List<HonorRoll> honorRoll = service.listHonorRollsByZone(zoneInfo.getZone());

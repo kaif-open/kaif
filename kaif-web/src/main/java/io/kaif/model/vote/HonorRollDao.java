@@ -25,15 +25,15 @@ public class HonorRollDao implements DaoOperations {
   @Autowired
   private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-  private RowMapper<HonorRoll> honorRollRowMapper = (rs, rowNum) -> new HonorRoll(
-      UUID.fromString(rs.getString("accountId")),
-      rs.getString("zone") == null ? null : Zone.valueOf(rs.getString("zone")), // for total
+  private final RowMapper<HonorRoll> honorRollRowMapper = (rs,
+      rowNum) -> new HonorRoll(UUID.fromString(rs.getString("accountId")),
+      rs.getString("zone") == null ? null : Zone.valueOf(rs.getString("zone")),
+      // for total
       rs.getString("bucket"),
       rs.getString("username"),
       rs.getLong("articleUpVoted"),
       rs.getLong("debateUpVoted"),
-      rs.getLong("debateDownVoted")
-  );
+      rs.getLong("debateDownVoted"));
 
   @Override
   public NamedParameterJdbcTemplate namedJdbc() {
@@ -41,15 +41,18 @@ public class HonorRollDao implements DaoOperations {
   }
 
   public Optional<HonorRoll> findHonorRoll(UUID accountId, Zone zone, Instant instant) {
-    final String sql = " SELECT * FROM HonorRoll WHERE accountId = ? AND zone = ? AND bucket = ? "
-        + "               LIMIT 1 ";
+    final String sql = ""
+        + " SELECT * "
+        + "   FROM HonorRoll "
+        + "  WHERE accountId = ? "
+        + "    AND zone = ? "
+        + "    AND bucket = ? "
+        + "  LIMIT 1 ";
     return jdbc().query(sql,
         honorRollRowMapper,
         accountId,
         zone.value(),
-        monthlyBucket(instant).toString())
-        .stream()
-        .findAny();
+        monthlyBucket(instant).toString()).stream().findAny();
   }
 
   public void updateRotateVoteStats(HonorRollVoter voter) {
@@ -58,7 +61,7 @@ public class HonorRollDao implements DaoOperations {
         + "     AS ("
         + "             UPDATE HonorRoll "
         + "                SET articleUpVoted = articleUpVoted + :deltaArticleUpVoted "
-        + "                  , debateUpVoted = debateUpVoted+ :deltaDebateUpVoted "
+        + "                  , debateUpVoted = debateUpVoted + :deltaDebateUpVoted "
         + "                  , debateDownVoted = debateDownVoted + :deltaDebateDownVoted "
         + "              WHERE accountId = :accountId "
         + "                AND zone = :zone "
@@ -87,37 +90,44 @@ public class HonorRollDao implements DaoOperations {
   }
 
   public List<HonorRoll> listHonorRollByAccount(UUID uuid, Instant instant) {
-    final String sql = " SELECT * FROM HonorRoll WHERE accountId = ? AND bucket = ? ORDER BY zone";
-    return jdbc().query(sql,
-        honorRollRowMapper,
-        uuid,
-        monthlyBucket(instant).toString());
+    final String sql = " SELECT * FROM HonorRoll WHERE accountId = ? AND bucket = ? ORDER BY zone ";
+    return jdbc().query(sql, honorRollRowMapper, uuid, monthlyBucket(instant).toString());
   }
 
+  /**
+   * see {@link #listHonorRoll(java.time.LocalDate, int)} for why leak bucket to outside
+   */
   @Cacheable(value = "listHonorRoll")
   public List<HonorRoll> listHonorRollByZone(Zone zone, LocalDate bucket, int limit) {
-    final String sql = " SELECT * FROM HonorRoll WHERE zone = ? AND bucket = ? "
-        + "            ORDER BY articleUpVoted + debateUpVoted - debateDownVoted DESC "
-        + "                     , username ASC LIMIT ? ";
-    return jdbc().query(sql,
-        honorRollRowMapper,
-        zone.value(),
-        bucket.toString(), limit);
+    final String sql = ""
+        + " SELECT * "
+        + "   FROM HonorRoll "
+        + "  WHERE zone = ? "
+        + "    AND bucket = ? "
+        + "  ORDER BY (articleUpVoted + debateUpVoted - debateDownVoted) DESC, username ASC "
+        + "  LIMIT ? ";
+    return jdbc().query(sql, honorRollRowMapper, zone.value(), bucket.toString(), limit);
   }
 
+  /**
+   * argument using `LocalDate bucket` leak rotation logic outside of Dao,
+   * But to make @Cacheable work properly. we have to do so.
+   */
   @Cacheable(value = "listHonorRoll")
   public List<HonorRoll> listHonorRoll(LocalDate bucket, int limit) {
-    final String sql = //
-        "          SELECT accountId, bucket, username, NULL AS zone, "
-            + "           sum(articleUpVoted) AS articleUpVoted, "
-            + "           sum(debateUpVoted) AS debateUpVoted, "
-            + "           sum(debateDownVoted) AS debateDownVoted, "
-            + "           sum(articleUpVoted) + sum(debateUpVoted) - sum(debateDownVoted) AS score "
-            + "      FROM HonorRoll WHERE bucket = ? GROUP BY accountId, bucket, username "
-            + "  ORDER BY score DESC, username ASC LIMIT ? ";
-    return jdbc().query(sql,
-        honorRollRowMapper,
-        bucket.toString(), limit);
+    final String sql = ""
+        + " SELECT accountId, bucket, username, "
+        + "        NULL AS zone, "
+        + "        sum(articleUpVoted) AS articleUpVoted, "
+        + "        sum(debateUpVoted) AS debateUpVoted, "
+        + "        sum(debateDownVoted) AS debateDownVoted, "
+        + "        sum(articleUpVoted) + sum(debateUpVoted) - sum(debateDownVoted) AS score "
+        + "   FROM HonorRoll "
+        + "  WHERE bucket = ? "
+        + "  GROUP BY accountId, bucket, username "
+        + "  ORDER BY score DESC, username ASC "
+        + "  LIMIT ? ";
+    return jdbc().query(sql, honorRollRowMapper, bucket.toString(), limit);
   }
 
   @VisibleForTesting

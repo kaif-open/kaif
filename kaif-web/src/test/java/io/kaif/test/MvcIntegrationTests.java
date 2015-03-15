@@ -115,7 +115,12 @@ public abstract class MvcIntegrationTests implements ModelFixture {
   @Before
   public final void setUpMvc() {
     mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
-    Mockito.reset(accountService, zoneService, articleService, voteService, feedService);
+    Mockito.reset(accountService,
+        zoneService,
+        articleService,
+        voteService,
+        feedService,
+        honorRollService);
   }
 
   protected final String prepareAccessToken(Account account) {
