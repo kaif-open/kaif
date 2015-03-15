@@ -13,4 +13,5 @@ public interface HonorRollService {
 
   List<HonorRoll> listHonorRollsByZone(@Nullable Zone zone);
 
+  List<HonorRoll> listHonorAllByUsername(String username);
 }

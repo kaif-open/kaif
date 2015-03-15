@@ -90,6 +90,33 @@ public class HonorRollServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
+  public void listHonorAllByUsername() {
+    Instant instant = LocalDate.of(2015, 3, 12).atStartOfDay(BUCKET_ZONE).toInstant();
+    Clock clock = Clock.fixed(instant, BUCKET_ZONE);
+    service.setClock(clock);
+
+    honorRollDao.updateRotateVoteStats(increaseArticleVoter(FlakeId.endOf(instant.toEpochMilli()),
+        zoneInfo.getZone()));
+    Zone zoneAbc = savedZoneDefault("abc").getZone();
+    honorRollDao.updateRotateVoteStats(increaseArticleVoter(FlakeId.endOf(instant.toEpochMilli()
+        + 3), zoneAbc));
+
+    Instant nextMonth = LocalDate.of(2015, 4, 9).atStartOfDay(BUCKET_ZONE).toInstant();
+    honorRollDao.updateRotateVoteStats(increaseArticleVoter(FlakeId.endOf(nextMonth.toEpochMilli()
+        + 4), zoneAbc));
+
+    List<HonorRoll> honorRolls = service.listHonorAllByUsername(citizen.getUsername());
+    assertEquals(2, honorRolls.size());
+    HonorRoll firstStats = honorRolls.get(0);
+    assertEquals(2, firstStats.getArticleUpVoted());
+    assertEquals("abc", firstStats.getZone().value());
+
+    HonorRoll secondStats = honorRolls.get(1);
+    assertEquals(1, secondStats.getArticleUpVoted());
+    assertEquals("citizen1", secondStats.getUsername());
+  }
+
+  @Test
   public void listHonorRoll() {
     Instant instant = LocalDate.of(2015, 3, 12).atStartOfDay(BUCKET_ZONE).toInstant();
     Clock clock = Clock.fixed(instant, BUCKET_ZONE);

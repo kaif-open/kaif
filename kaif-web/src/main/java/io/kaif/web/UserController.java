@@ -60,7 +60,7 @@ public class UserController {
 
   @RequestMapping("/u/{username}/honors")
   public ModelAndView userHonors(@PathVariable("username") String username) {
-    List<HonorRoll> honorRolls = honorRollService.listHonorRollsByUsername(username);
+    List<HonorRoll> honorRolls = honorRollService.listHonorAllByUsername(username);
     return new ModelAndView("account/user-honors").addObject("honorRolls", honorRolls);
   }
 

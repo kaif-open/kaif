@@ -62,4 +62,10 @@ public class HonorRollServiceImpl implements HonorRollService {
         .limit(PAGE_SIZE)
         .collect(toList());
   }
+
+  @Override
+  public List<HonorRoll> listHonorAllByUsername(String username) {
+    Account account = accountDao.loadByUsername(username);
+    return honorRollDao.listHonorAllByAccount(account.getAccountId());
+  }
 }

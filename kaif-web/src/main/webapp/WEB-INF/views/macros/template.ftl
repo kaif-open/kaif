@@ -181,7 +181,7 @@ sample configs:
             <@util.menuLink '/z/${zoneInfo.name}' '熱門'/>
             <@util.menuLink '/z/${zoneInfo.name}/new' '最新'/>
             <@util.menuLink '/z/${zoneInfo.name}/new-debate' '最新討論'/>
-            <@util.menuLink '/z/${zoneInfo.name}/honor' '英雄榜'/>
+            <@util.menuLink '/z/${zoneInfo.name}/honor' '每月英雄榜'/>
         </nav>
     </#if>
     <#nested/>
@@ -209,7 +209,7 @@ sample configs:
         <@util.menuLink '/' '綜合熱門'/>
         <@util.menuLink '/new' '綜合最新'/>
         <@util.menuLink '/new-debate' '最新討論'/>
-        <@util.menuLink '/honor' '英雄榜'/>
+        <@util.menuLink '/honor' '每月英雄榜'/>
         <@util.menuLink '/zone/a-z' '所有討論區'/>
     </nav>
     <#nested/>

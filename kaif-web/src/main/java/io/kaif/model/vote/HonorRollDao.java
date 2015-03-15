@@ -89,9 +89,23 @@ public class HonorRollDao implements DaoOperations {
     namedJdbc().update(upsert, params);
   }
 
-  public List<HonorRoll> listHonorRollByAccount(UUID uuid, Instant instant) {
+  public List<HonorRoll> listHonorRollByAccount(UUID accountId, Instant instant) {
     final String sql = " SELECT * FROM HonorRoll WHERE accountId = ? AND bucket = ? ORDER BY zone ";
-    return jdbc().query(sql, honorRollRowMapper, uuid, monthlyBucket(instant).toString());
+    return jdbc().query(sql, honorRollRowMapper, accountId, monthlyBucket(instant).toString());
+  }
+
+  public List<HonorRoll> listHonorAllByAccount(UUID accountId) {
+    final String sql = ""
+        + " SELECT accountId, username, zone, "
+        + "        '2015-01-01' AS bucket, "
+        + "        sum(articleUpVoted) AS articleUpVoted, "
+        + "        sum(debateUpVoted) AS debateUpVoted, "
+        + "        sum(debateDownVoted) AS debateDownVoted "
+        + "   FROM HonorRoll "
+        + "  WHERE accountId = ? "
+        + "  GROUP BY accountId, username, zone "
+        + "  ORDER BY zone ";
+    return jdbc().query(sql, honorRollRowMapper, accountId);
   }
 
   /**
@@ -134,4 +148,5 @@ public class HonorRollDao implements DaoOperations {
   @CacheEvict(value = "listHonorRoll", allEntries = true)
   public void evictAllCaches() {
   }
+
 }
