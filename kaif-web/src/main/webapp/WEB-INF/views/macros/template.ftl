@@ -208,6 +208,7 @@ sample configs:
         <@util.menuLink '/' '綜合熱門'/>
         <@util.menuLink '/new' '綜合最新'/>
         <@util.menuLink '/new-debate' '最新討論'/>
+        <@util.menuLink '/honor' '英雄榜'/>
         <@util.menuLink '/zone/a-z' '所有討論區'/>
     </nav>
     <#nested/>
@@ -225,7 +226,7 @@ sample configs:
                 <@util.menuLink '/u/${username}' '關於'/>
                 <@util.menuLink '/u/${username}/articles' '分享的文章'/>
                 <@util.menuLink '/u/${username}/debates' '參與的討論'/>
-                <@util.menuLink '/u/${username}/scores' '積分'/>
+                <@util.menuLink '/u/${username}/honors' '聲望'/>
             </nav>
             <#nested/>
         </div>

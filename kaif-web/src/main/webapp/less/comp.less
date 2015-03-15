@@ -511,22 +511,36 @@
 
 .honor-roll-table {
   width: 100%;
+  margin-top: @padding-lg-vertical;
+  thead {
+    border-bottom: 1px solid @gray-lighter;
+    color: @gray-light;
+  }
+  td {
+    .padding-v(@padding-vertical);
+  }
   .fa-trophy-0 {
     color: #DAA520;
+    font-size: @font-size-lg;
   }
   .fa-trophy-1 {
     color: silver;
+    font-size: @font-size-lg;
   }
   .fa-trophy-2 {
     color: #CD7F32;
-  }
-  thead {
-    text-align: left;
+    font-size: @font-size-lg;
   }
   .honor-rank {
-    width: 20%;
+    width: @convex-row-width;
+    text-align: right;
   }
   .honor-score {
-    width: 20%;
+    width: @convex-row-width;
+    text-align: right;
+  }
+  .honor-user {
+    padding-left: @padding-lg-horizontal * 2;
+    text-align: left;
   }
 }

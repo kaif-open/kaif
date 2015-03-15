@@ -133,6 +133,10 @@ public abstract class MvcIntegrationTests implements ModelFixture {
   }
 
   protected final ResultMatcher containsDebateFormTemplate() {
-    return content().string(containsString("comp-template=\"debate-form\""));
+    return containsText("comp-template=\"debate-form\"");
+  }
+
+  protected final ResultMatcher containsText(String expectPartialString) {
+    return content().string(containsString(expectPartialString));
   }
 }

@@ -56,12 +56,21 @@ public interface ModelFixture extends TimeFixture {
     return FeedAsset.createReply(debate.getDebateId(), debate.getReplyToAccountId(), Instant.now());
   }
 
-  default HonorRoll honorRoll(Zone zone){
+  default HonorRoll honorRoll(Zone zone) {
     Random random = new Random();
     Account account = accountCitizen("user" + random.nextInt(100));
-    return new HonorRoll(account.getAccountId(), zone, "", account.getUsername(), random.nextInt(
-        100), random
-        .nextInt(100), random.nextInt(100));
+    return honorRoll(zone, account);
+  }
+
+  default HonorRoll honorRoll(Zone zone, Account account) {
+    Random random = new Random();
+    return new HonorRoll(account.getAccountId(),
+        zone,
+        "",
+        account.getUsername(),
+        random.nextInt(100),
+        random.nextInt(100),
+        random.nextInt(100));
   }
 
   default Article article(Zone zone, String title) {

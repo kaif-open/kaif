@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.*;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -48,15 +49,13 @@ public class HonorRollServiceImpl implements HonorRollService {
 
   @Override
   public List<HonorRoll> listHonorRollsByZone(@Nullable Zone zone) {
-    final List<HonorRoll> result;
     int pageSize = PAGE_SIZE + EXCLUDES_USER_NAME.size();
+    LocalDate bucket = honorRollDao.monthlyBucket(Instant.now(clock));
+    final List<HonorRoll> result;
     if (zone == null) {
-      result = honorRollDao.listHonorRollWithCache(honorRollDao.monthlyBucket(Instant.now(clock)),
-          pageSize);
+      result = honorRollDao.listHonorRollWithCache(bucket, pageSize);
     } else {
-      result = honorRollDao.listHonorRollByZoneWithCache(zone,
-          honorRollDao.monthlyBucket(Instant.now(clock)),
-          pageSize);
+      result = honorRollDao.listHonorRollByZoneWithCache(zone, bucket, pageSize);
     }
     return result.stream()
         .filter(honorRoll -> !EXCLUDES_USER_NAME.contains(honorRoll.getUsername()))

@@ -34,12 +34,15 @@ applyZoneTheme=true
             <@comp.debateList data=debateList showZone=false></@comp.debateList>
             <@comp.debateForm />
         </#if>
+
+        <#if honorRolls??>
+            <@comp.honorRollList data=honorRolls/>
+        </#if>
         </div>
 
         <aside class="grid-aside">
             <@aside.createArticle />
             <@aside.recommendZones zoneInfos=recommendZones />
-            <@aside.honorRoll data=honorRollList/>
             <@aside.rss/>
         </aside>
     </div>

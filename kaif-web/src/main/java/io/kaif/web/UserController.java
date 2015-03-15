@@ -58,10 +58,10 @@ public class UserController {
         .addObject("articleList", new ArticleList(articles)).addObject("username", username);
   }
 
-  @RequestMapping("/u/{username}/scores")
-  public ModelAndView userScore(@PathVariable("username") String username) {
+  @RequestMapping("/u/{username}/honors")
+  public ModelAndView userHonors(@PathVariable("username") String username) {
     List<HonorRoll> honorRolls = honorRollService.listHonorRollsByUsername(username);
-    return new ModelAndView("account/user-scores").addObject("honorRolls", honorRolls);
+    return new ModelAndView("account/user-honors").addObject("honorRolls", honorRolls);
   }
 
   @RequestMapping("/u/{username}/debates")

@@ -5,7 +5,7 @@
 <#import "../macros/template.ftl" as template>
 
 <#assign headContent>
-<title>${username} 發表的文章| kaif.io</title>
+<title>${username} 分享的文章| kaif.io</title>
 </#assign>
 
 <@template.page

@@ -19,8 +19,10 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 
+import io.kaif.model.account.Account;
 import io.kaif.model.article.Article;
 import io.kaif.model.debate.Debate;
+import io.kaif.model.vote.HonorRoll;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.test.MvcIntegrationTests;
 
@@ -99,5 +101,17 @@ public class HomeControllerTest extends MvcIntegrationTests {
         .andExpect(model().attributeExists("recommendZones"))
         .andExpect(content().string(containsString("123456")))
         .andExpect(containsDebateFormTemplate());
+  }
+
+  @Test
+  public void listTopHonorRoll() throws Exception {
+    Account c1 = accountCitizen("champ_1");
+    Account c2 = accountCitizen("champ_2");
+    HonorRoll honor1 = honorRoll(funZone.getZone(), c1);
+    HonorRoll honor2 = honorRoll(funZone.getZone(), c2);
+    when(honorRollService.listHonorRollsByZone(null)).thenReturn(asList(honor1, honor2));
+    mockMvc.perform(get("/honor"))
+        .andExpect(containsText("champ_1"))
+        .andExpect(containsText("champ_2"));
   }
 }

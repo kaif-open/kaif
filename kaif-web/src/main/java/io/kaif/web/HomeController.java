@@ -15,6 +15,7 @@ import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleList;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateList;
+import io.kaif.model.vote.HonorRoll;
 import io.kaif.service.ArticleService;
 import io.kaif.service.HonorRollService;
 import io.kaif.service.ZoneService;
@@ -22,22 +23,25 @@ import io.kaif.service.ZoneService;
 @Controller
 public class HomeController {
 
+  static class IndexModelAndView extends ModelAndView {
+    public IndexModelAndView(ZoneService zoneService) {
+      super("index");
+      addObject("recommendZones", zoneService.listRecommendZones());
+    }
+  }
+
   @Autowired
   private ArticleService articleService;
-
   @Autowired
   private HonorRollService honorRollService;
-
   @Autowired
   private ZoneService zoneService;
 
   @RequestMapping("/")
   public ModelAndView index(
       @RequestParam(value = "start", required = false) FlakeId startArticleId) {
-    return new ModelAndView("index")//
-        .addObject("recommendZones", zoneService.listRecommendZones())
-        .addObject("honorRollList", honorRollService.listHonorRollsByZone(null))
-        .addObject("articleList", new ArticleList(articleService.listTopArticles(startArticleId)));
+    return new IndexModelAndView(zoneService).addObject("articleList",
+        new ArticleList(articleService.listTopArticles(startArticleId)));
   }
 
   @RequestMapping("/hot.rss")
@@ -51,11 +55,8 @@ public class HomeController {
   @RequestMapping("/new")
   public ModelAndView listLatestArticles(
       @RequestParam(value = "start", required = false) FlakeId startArticleId) {
-    return new ModelAndView("index") //
-        .addObject("recommendZones", zoneService.listRecommendZones())
-        .addObject("honorRollList", honorRollService.listHonorRollsByZone(null))
-        .addObject("articleList",
-            new ArticleList(articleService.listLatestArticles(startArticleId)));
+    return new IndexModelAndView(zoneService).addObject("articleList",
+        new ArticleList(articleService.listLatestArticles(startArticleId)));
   }
 
   @RequestMapping("/new-debate")
@@ -65,14 +66,28 @@ public class HomeController {
     List<Article> articles = articleService.listArticlesByDebatesWithCache(debates.stream()
         .map(Debate::getDebateId)
         .collect(toList()));
-    return new ModelAndView("index") //
-        .addObject("recommendZones", zoneService.listRecommendZones())
-        .addObject("honorRollList", honorRollService.listHonorRollsByZone(null))
-        .addObject("debateList", new DebateList(debates, articles));
+    return new IndexModelAndView(zoneService).addObject("debateList",
+        new DebateList(debates, articles));
   }
 
   @RequestMapping("/zone/a-z")
   public ModelAndView zoneAtoZ() {
     return new ModelAndView("zone/zone-a-z").addObject("zoneAtoZ", zoneService.listZoneAtoZ());
+  }
+
+  @RequestMapping("/honor")
+  public ModelAndView listTopHonor() {
+    List<HonorRoll> honorRolls = honorRollService.listHonorRollsByZone(null);
+    // for testing
+    //    honorRolls = IntStream.range(1, 25)
+    //        .mapToObj(i -> new HonorRoll(UUID.randomUUID(),
+    //            Zone.valueOf("foo"),
+    //            "2014-01-01",
+    //            UUID.randomUUID().toString().substring(0, 5),
+    //            new Random().nextInt(100),
+    //            new Random().nextInt(100),
+    //            new Random().nextInt(100)))
+    //        .collect(toList());
+    return new IndexModelAndView(zoneService).addObject("honorRolls", honorRolls);
   }
 }

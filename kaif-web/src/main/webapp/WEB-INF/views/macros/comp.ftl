@@ -243,6 +243,47 @@
 </form>
 </#macro>
 
+<#-- data is List<HonorRoll> -->
+<#macro honorRollList data>
+<div class="grid-center-row">
+    <table class="honor-roll-table">
+        <thead>
+            <tr>
+                <th class="honor-rank">排行</th>
+                <th class="honor-score">聲望</th>
+                <th class="honor-user">英雄</th>
+            </tr>
+        </thead>
+        <tbody>
+            <#list data as honorRoll>
+            <tr>
+                <td class="honor-rank">
+                    <#if honorRoll_index lt 3>
+                        <i class="fa fa-trophy fa-trophy-${honorRoll_index}"></i>
+                    <#else>
+                    ${honorRoll_index+1}
+                    </#if>
+                </td>
+                <td class="honor-score">
+                    <#if honorRoll.score gt 0>
+                        <span class="honor-positive-score">${honorRoll.score}</span>
+                    <#elseif honorRoll.score lt 0>
+                        <span class="honor-negative-score">${honorRoll.score}</span>
+                    <#else>
+                        <span class="honor-score">${honorRoll.score} </span>
+                    </#if>
+                </td>
+                <td class="honor-user">
+                    <a href="<@url.account data=honorRoll/>"><@url.account data=honorRoll/></a>
+                </td>
+            </tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+
+</#macro>
+
 <#macro kmarkHelp>
 <div class="kmark-help hidden" kmark-help>
     <h4>Kmark 語法說明</h4>

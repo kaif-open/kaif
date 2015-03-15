@@ -48,7 +48,6 @@ public class ZoneController {
       return new ModelAndView("zone/zone-page")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("recommendZones", zoneService.listRecommendZones())
-          .addObject("honorRollList", honorRollService.listHonorRollsByZone(zoneInfo.getZone()))
           .addObject("articleList",
               new ArticleList(articleService.listHotZoneArticles(zoneInfo.getZone(),
                   startArticleId)));
@@ -104,7 +103,6 @@ public class ZoneController {
       return new ModelAndView("zone/zone-page")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("recommendZones", zoneService.listRecommendZones())
-          .addObject("honorRollList", honorRollService.listHonorRollsByZone(zoneInfo.getZone()))
           .addObject("articleList",
               new ArticleList(articleService.listLatestZoneArticles(zoneInfo.getZone(),
                   startArticleId)));
@@ -124,7 +122,6 @@ public class ZoneController {
       return new ModelAndView("zone/zone-page")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("recommendZones", zoneService.listRecommendZones())
-          .addObject("honorRollList", honorRollService.listHonorRollsByZone(zoneInfo.getZone()))
           .addObject("debateList", new DebateList(debates, articles));
     });
   }
@@ -136,6 +133,15 @@ public class ZoneController {
         zoneInfo -> new CreateArticleModelAndView(zoneService, zoneInfo));
   }
 
+  @RequestMapping("/{zone}/honor")
+  public Object zoneHonors(@PathVariable("zone") String rawZone, HttpServletRequest request) {
+    return resolveZone(request,
+        rawZone,
+        zoneInfo -> new ModelAndView("/zone/zone-page").addObject("zoneInfo", zoneInfo)
+            .addObject("recommendZones", zoneService.listRecommendZones())
+            .addObject("honorRolls", honorRollService.listHonorRollsByZone(zoneInfo.getZone())));
+  }
+
   @RequestMapping("/{zone}/debates/{articleId}")
   public Object articleDebates(@PathVariable("zone") String rawZone,
       @PathVariable("articleId") FlakeId articleFlakeId,
@@ -144,7 +150,6 @@ public class ZoneController {
       return new ModelAndView("article/debates")//
           .addObject("zoneInfo", zoneInfo)
           .addObject("recommendZones", zoneService.listRecommendZones())
-          .addObject("honorRollList", honorRollService.listHonorRollsByZone(zoneInfo.getZone()))
           .addObject("article", articleService.loadArticle(articleFlakeId))
           .addObject("debateTree", articleService.listBestDebates(articleFlakeId, null));
     });
@@ -160,7 +165,6 @@ public class ZoneController {
           .addObject("zoneInfo", zoneInfo)
           .addObject("article", articleService.loadArticle(articleFlakeId))
           .addObject("recommendZones", zoneService.listRecommendZones())
-          .addObject("honorRollList", honorRollService.listHonorRollsByZone(zoneInfo.getZone()))
           .addObject("parentDebate", articleService.loadDebateWithoutCache(debateFlakeId))
           .addObject("debateTree", articleService.listBestDebates(articleFlakeId, debateFlakeId));
     });

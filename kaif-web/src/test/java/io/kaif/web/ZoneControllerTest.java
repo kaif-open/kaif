@@ -23,9 +23,11 @@ import org.junit.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import io.kaif.flake.FlakeId;
+import io.kaif.model.account.Account;
 import io.kaif.model.article.Article;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateTree;
+import io.kaif.model.vote.HonorRoll;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.test.MvcIntegrationTests;
@@ -267,5 +269,19 @@ public class ZoneControllerTest extends MvcIntegrationTests {
         .andExpect(model().attribute("candidateZoneInfos", hasItem(another)))
         .andExpect(model().attribute("candidateZoneInfos", not(hasItem(zoneInfo))))
         .andExpect(content().string(containsString("id=\"contentInput\"")));
+  }
+
+  @Test
+  public void listZoneHonorRoll() throws Exception {
+    when(zoneService.loadZone(Zone.valueOf("programming"))).thenReturn(zoneInfo);
+    Account c1 = accountCitizen("champ_1");
+    Account c2 = accountCitizen("champ_2");
+    HonorRoll honor1 = honorRoll(zoneInfo.getZone(), c1);
+    HonorRoll honor2 = honorRoll(zoneInfo.getZone(), c2);
+    when(honorRollService.listHonorRollsByZone(zoneInfo.getZone())).thenReturn(asList(honor1,
+        honor2));
+    mockMvc.perform(get("/z/programming/honor"))
+        .andExpect(containsText("champ_1"))
+        .andExpect(containsText("champ_2"));
   }
 }
