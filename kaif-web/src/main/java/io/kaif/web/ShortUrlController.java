@@ -29,7 +29,7 @@ public class ShortUrlController {
       return redirectView;
     }).orElseGet(() -> {
       // if not found will throw exception and go to 404
-      Debate debate = articleService.loadDebate(flakeId);
+      Debate debate = articleService.loadDebateWithCache(flakeId);
       RedirectView redirectView = new RedirectView(String.format("/z/%s/debates/%s/%s",
           debate.getZone().value(),
           debate.getArticleId(),

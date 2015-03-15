@@ -44,11 +44,13 @@ public interface ArticleService {
 
   String updateDebateContent(FlakeId debateId, Authorization editor, String content);
 
-  Debate loadDebate(FlakeId debateId);
+  Debate loadDebateWithoutCache(FlakeId debateId);
 
   boolean canCreateArticle(Zone zone, Authorization author);
 
   Article createSpeak(Authorization authorization, Zone zone, String title, String content);
+
+  Debate loadDebateWithCache(FlakeId debateId);
 
   List<Debate> listReplyToDebates(Authorization authorization, @Nullable FlakeId startDebateId);
 
@@ -56,9 +58,9 @@ public interface ArticleService {
 
   List<Debate> listLatestZoneDebates(Zone zone, @Nullable FlakeId startDebateId);
 
-  List<Article> listArticlesByDebates(List<FlakeId> debateIds);
+  List<Article> listArticlesByDebatesWithCache(List<FlakeId> debateIds);
 
-  List<Debate> listDebatesById(List<FlakeId> debateIds);
+  List<Debate> listDebatesByIdWithCache(List<FlakeId> debateIds);
 
   List<Article> listArticlesByAuthor(String username, @Nullable FlakeId startArticleId);
 

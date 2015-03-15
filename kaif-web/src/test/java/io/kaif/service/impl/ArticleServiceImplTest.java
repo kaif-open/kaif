@@ -15,6 +15,7 @@ import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
@@ -69,7 +70,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         debater,
         "pixel art is *better*");
 
-    Debate debate = service.loadDebate(created.getDebateId());
+    Debate debate = service.loadDebateWithoutCache(created.getDebateId());
     assertEquals(DebateContentType.MARK_DOWN, debate.getContentType());
     assertEquals(citizen.getAccountId(), debate.getReplyToAccountId());
     assertEquals("debater1", debate.getDebaterName());
@@ -134,15 +135,15 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
-  public void listArticlesByDebates() throws Exception {
-    assertEquals(0, service.listArticlesByDebates(Collections.emptyList()).size());
+  public void listArticlesByDebatesWithCache_paging() throws Exception {
+    assertEquals(0, service.listArticlesByDebatesWithCache(Collections.emptyList()).size());
 
     Article a2 = savedArticle(zoneInfo, citizen, "another article");
     Debate d1 = savedDebate(article, "foo-12345", null);
     Debate d2 = savedDebate(a2, "foo-about", null);
     Debate d3 = savedDebate(a2, "foo-duplicate", null);
 
-    List<Article> articles = service.listArticlesByDebates(asList(d1.getDebateId(),
+    List<Article> articles = service.listArticlesByDebatesWithCache(asList(d1.getDebateId(),
         d2.getDebateId(),
         d3.getDebateId()));
     assertEquals(2, articles.size());
@@ -150,52 +151,52 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
-  public void listArticlesByDebates_cache() throws Exception {
-    assertEquals(0, service.listArticlesByDebates(Collections.emptyList()).size());
+  public void listArticlesByDebatesWithCache_caching() throws Exception {
+    assertEquals(0, service.listArticlesByDebatesWithCache(Collections.emptyList()).size());
 
     Article a2 = savedArticle(zoneInfo, citizen, "another article");
     Debate d1 = savedDebate(article, "foo-12345", null);
     Debate d2 = savedDebate(a2, "foo-about", null);
 
-    List<Article> articles = service.listArticlesByDebates(asList(d1.getDebateId(),
+    List<Article> articles = service.listArticlesByDebatesWithCache(asList(d1.getDebateId(),
         d2.getDebateId()));
-    List<Article> articles2 = service.listArticlesByDebates(asList(d1.getDebateId(),
+    List<Article> articles2 = service.listArticlesByDebatesWithCache(asList(d1.getDebateId(),
         d2.getDebateId()));
     assertSame(articles2.get(0), articles.get(0));
     assertSame(articles2.get(1), articles.get(1));
 
     articleDao.evictAllCaches();
-    List<Article> refreshed = service.listArticlesByDebates(asList(d2.getDebateId()));
+    List<Article> refreshed = service.listArticlesByDebatesWithCache(asList(d2.getDebateId()));
     assertNotSame(refreshed.get(0), articles2.get(1));
   }
 
   @Test
-  public void listDebatesByIds() throws Exception {
-    assertEquals(0, service.listDebatesById(Collections.emptyList()).size());
+  public void listDebatesByIdWithCache_paging() throws Exception {
+    assertEquals(0, service.listDebatesByIdWithCache(Collections.emptyList()).size());
 
     Debate d1 = savedDebate(article, "foo-12345", null);
     Debate d2 = savedDebate(article, "foo-about", null);
     Debate d3 = savedDebate(article, "foo-duplicate", null);
 
-    assertThat(service.listDebatesById(asList(d1.getDebateId(), d2.getDebateId())),
+    assertThat(service.listDebatesByIdWithCache(asList(d1.getDebateId(), d2.getDebateId())),
         Matchers.hasItems(d1, d2));
-    assertThat(service.listDebatesById(asList(d3.getDebateId(), d2.getDebateId())),
+    assertThat(service.listDebatesByIdWithCache(asList(d3.getDebateId(), d2.getDebateId())),
         Matchers.hasItems(d3, d2));
   }
 
   @Test
-  public void listDebatesByIds_cached() throws Exception {
-    assertEquals(0, service.listDebatesById(Collections.emptyList()).size());
+  public void listDebatesByIdWithCache_caching() throws Exception {
+    assertEquals(0, service.listDebatesByIdWithCache(Collections.emptyList()).size());
 
     Debate d1 = debateDao.create(article, null, "foo-12345", citizen, Instant.now());
 
-    List<Debate> loaded = service.listDebatesById(asList(d1.getDebateId()));
+    List<Debate> loaded = service.listDebatesByIdWithCache(asList(d1.getDebateId()));
     assertEquals(asList(d1), loaded);
-    assertSame(loaded.get(0), service.listDebatesById(asList(d1.getDebateId())).get(0));
+    assertSame(loaded.get(0), service.listDebatesByIdWithCache(asList(d1.getDebateId())).get(0));
 
     service.updateDebateContent(d1.getDebateId(), citizen, "new content");
     assertEquals("new content",
-        service.listDebatesById(asList(d1.getDebateId())).get(0).getContent());
+        service.listDebatesByIdWithCache(asList(d1.getDebateId())).get(0).getContent());
   }
 
   @Test
@@ -209,7 +210,13 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
-  public void loadDebate_cache() throws Exception {
+  public void loadDebateWithCache() throws Exception {
+    try {
+      service.loadDebateWithCache(nextFlakeId());
+      fail("EmptyResultDataAccessException expected");
+    } catch (EmptyResultDataAccessException expected) {
+    }
+
     Account debater = savedAccountCitizen("debater1");
     Debate created = service.debate(zoneInfo.getZone(),
         article.getArticleId(),
@@ -217,16 +224,16 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         debater,
         "pixel art is better");
 
-    Debate cached = debateDao.loadDebateWithCache(created.getDebateId());
+    Debate cached = service.loadDebateWithCache(created.getDebateId());
     assertEquals(created, cached);
     assertSame("cached should be same instance",
         cached,
-        debateDao.loadDebateWithCache(created.getDebateId()));
+        service.loadDebateWithCache(created.getDebateId()));
 
     service.updateDebateContent(created.getDebateId(), debater, "updated content");
 
     assertEquals("updated content",
-        debateDao.loadDebateWithCache(created.getDebateId()).getContent());
+        service.loadDebateWithCache(created.getDebateId()).getContent());
   }
 
   @Test
@@ -618,7 +625,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         citizen,
         "pixel art is better<evil>hi</evil>*hi*");
     assertEquals("<p>pixel art is better&lt;evil&gt;hi&lt;/evil&gt;<em>hi</em></p>\n", result);
-    Debate updated = service.loadDebate(d1.getDebateId());
+    Debate updated = service.loadDebateWithoutCache(d1.getDebateId());
     assertTrue(updated.isEdited());
     assertTrue(updated.getLastUpdateTime().isAfter(d1.getLastUpdateTime()));
   }

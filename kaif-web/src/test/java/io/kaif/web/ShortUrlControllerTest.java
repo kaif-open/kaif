@@ -35,7 +35,7 @@ public class ShortUrlControllerTest extends MvcIntegrationTests {
     Debate debate = debate(article, "my reply", null);
 
     when(articleService.findArticle(flakeId)).thenReturn(Optional.empty());
-    when(articleService.loadDebate(flakeId)).thenReturn(debate);
+    when(articleService.loadDebateWithCache(flakeId)).thenReturn(debate);
 
     mockMvc.perform(get("/d/foobar123"))
         .andExpect(redirectedUrl("/z/programming/debates/foobar123/" + debate.getDebateId()))
@@ -47,7 +47,9 @@ public class ShortUrlControllerTest extends MvcIntegrationTests {
     FlakeId flakeId = FlakeId.fromString("notExist");
 
     when(articleService.findArticle(flakeId)).thenReturn(Optional.empty());
-    when(articleService.loadDebate(flakeId)).thenThrow(new EmptyResultDataAccessException("", 1));
+    when(articleService.loadDebateWithCache(flakeId)).thenThrow(new EmptyResultDataAccessException(
+        "",
+        1));
 
     mockMvc.perform(get("/d/notExist")).andExpect(status().isNotFound());
   }

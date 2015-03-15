@@ -109,7 +109,7 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public Optional<Article> findArticle(FlakeId articleId) {
-    return articleDao.findArticleWithoutCache(articleId);
+    return articleDao.findArticle(articleId);
   }
 
   @Override
@@ -218,8 +218,13 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public Debate loadDebate(FlakeId debateId) {
+  public Debate loadDebateWithoutCache(FlakeId debateId) {
     return debateDao.loadDebateWithoutCache(debateId);
+  }
+
+  @Override
+  public Debate loadDebateWithCache(FlakeId debateId) {
+    return debateDao.loadDebateWithCache(debateId);
   }
 
   @Override
@@ -241,12 +246,12 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public List<Article> listArticlesByDebates(List<FlakeId> debateIds) {
+  public List<Article> listArticlesByDebatesWithCache(List<FlakeId> debateIds) {
     return articleDao.listArticlesByDebatesWithCache(debateIds);
   }
 
   @Override
-  public List<Debate> listDebatesById(List<FlakeId> debateIds) {
+  public List<Debate> listDebatesByIdWithCache(List<FlakeId> debateIds) {
     return debateDao.listDebatesByIdWithCache(debateIds);
   }
 

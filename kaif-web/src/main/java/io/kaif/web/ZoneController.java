@@ -118,7 +118,7 @@ public class ZoneController {
     return resolveZone(request, rawZone, zoneInfo -> {
       List<Debate> debates = articleService.listLatestZoneDebates(zoneInfo.getZone(),
           startDebateId);
-      List<Article> articles = articleService.listArticlesByDebates(debates.stream()
+      List<Article> articles = articleService.listArticlesByDebatesWithCache(debates.stream()
           .map(Debate::getDebateId)
           .collect(Collectors.toList()));
       return new ModelAndView("zone/zone-page")//
@@ -161,7 +161,7 @@ public class ZoneController {
           .addObject("article", articleService.loadArticle(articleFlakeId))
           .addObject("recommendZones", zoneService.listRecommendZones())
           .addObject("honorRollList", honorRollService.listHonorRollsByZone(zoneInfo.getZone()))
-          .addObject("parentDebate", articleService.loadDebate(debateFlakeId))
+          .addObject("parentDebate", articleService.loadDebateWithoutCache(debateFlakeId))
           .addObject("debateTree", articleService.listBestDebates(articleFlakeId, debateFlakeId));
     });
   }

@@ -70,10 +70,10 @@ public class AccountControllerTest extends MvcIntegrationTests {
         f1,
         f2));
 
-    when(articleService.listDebatesById(asList(d1.getDebateId(), d2.getDebateId()))).thenReturn(
-        asList(d1, d2));
+    when(articleService.listDebatesByIdWithCache(asList(d1.getDebateId(),
+        d2.getDebateId()))).thenReturn(asList(d1, d2));
 
-    when(articleService.listArticlesByDebates(asList(d1.getDebateId(),
+    when(articleService.listArticlesByDebatesWithCache(asList(d1.getDebateId(),
         d2.getDebateId()))).thenReturn(asList(article));
     mockMvc.perform(get("/account/news-feed.part").header(AccountAccessToken.HEADER_KEY, token))
         .andExpect(view().name("account/news-feed.part"))
@@ -106,9 +106,10 @@ public class AccountControllerTest extends MvcIntegrationTests {
     FlakeId start = FlakeId.fromString("goodId");
     when(feedService.listFeeds(isA(Authorization.class), eq(start))).thenReturn(asList(f1));
 
-    when(articleService.listDebatesById(asList(d1.getDebateId()))).thenReturn(asList(d1));
+    when(articleService.listDebatesByIdWithCache(asList(d1.getDebateId()))).thenReturn(asList(d1));
 
-    when(articleService.listArticlesByDebates(asList(d1.getDebateId()))).thenReturn(asList(article));
+    when(articleService.listArticlesByDebatesWithCache(asList(d1.getDebateId()))).thenReturn(asList(
+        article));
     mockMvc.perform(get("/account/news-feed.part").param("start", "goodId")
         .header(AccountAccessToken.HEADER_KEY, token))
         .andExpect(view().name("account/news-feed.part"))

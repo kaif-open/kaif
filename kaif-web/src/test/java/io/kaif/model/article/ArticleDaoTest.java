@@ -47,7 +47,7 @@ public class ArticleDaoTest extends DbIntegrationTests {
   }
 
   @Test
-  public void loadArticle_cache() throws Exception {
+  public void loadArticleWithCache() throws Exception {
     ZoneInfo z1 = savedZoneDefault("zone1");
     Article article = savedArticle(z1, account, "foo-title");
     Article cached = dao.loadArticleWithCache(article.getArticleId());
@@ -60,7 +60,7 @@ public class ArticleDaoTest extends DbIntegrationTests {
   }
 
   @Test
-  public void listHotZones() throws Exception {
+  public void listHotZonesWithCache() throws Exception {
     assertEquals(0, dao.listHotZonesWithCache(999, Instant.now()).size());
     ZoneInfo z1 = savedZoneDefault("zone1");
     ZoneInfo z2 = savedZoneDefault("zone2");

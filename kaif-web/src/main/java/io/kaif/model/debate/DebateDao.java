@@ -29,6 +29,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 import io.kaif.database.DaoOperations;
 import io.kaif.flake.FlakeId;
@@ -185,7 +186,8 @@ public class DebateDao implements DaoOperations {
   public Debate loadDebateWithCache(FlakeId debateId) throws EmptyResultDataAccessException {
     try {
       return debatesCache.get(debateId);
-    } catch (ExecutionException e) {
+    } catch (ExecutionException | UncheckedExecutionException e) {
+      logger.warn("loadDebateWithCache by id cache failed", e);
       return loadDebateWithoutCache(debateId);
     }
   }
@@ -254,7 +256,7 @@ public class DebateDao implements DaoOperations {
     Map<FlakeId, Debate> results;
     try {
       results = debatesCache.getAll(debateIds);
-    } catch (ExecutionException e) {
+    } catch (ExecutionException | UncheckedExecutionException e) {
       logger.warn("list debates by id cache failed", e);
       results = listDebatesByIdWithoutCache(debateIds);
     }

@@ -34,6 +34,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 import io.kaif.database.DaoOperations;
 import io.kaif.flake.FlakeId;
@@ -128,7 +129,7 @@ public class ArticleDao implements DaoOperations {
     return article;
   }
 
-  public Optional<Article> findArticleWithoutCache(FlakeId articleId) {
+  public Optional<Article> findArticle(FlakeId articleId) {
     final String sql = " SELECT * FROM Article WHERE articleId = ? LIMIT 1 ";
     return jdbc().query(sql, articleMapper, articleId.value()).stream().findAny();
   }
@@ -339,7 +340,7 @@ public class ArticleDao implements DaoOperations {
     Map<FlakeId, Article> articles;
     try {
       articles = articleByDebatesCache.getAll(debateIds);
-    } catch (ExecutionException e) {
+    } catch (ExecutionException | UncheckedExecutionException e) {
       logger.warn("list article by debates cache failed", e);
       articles = listArticlesByDebatesWithoutCache(debateIds);
     }

@@ -68,7 +68,7 @@ public class UserController {
   public ModelAndView createdDebates(@PathVariable("username") String username,
       @RequestParam(value = "start", required = false) FlakeId startDebateId) {
     List<Debate> debates = articleService.listDebatesByDebater(username, startDebateId);
-    List<Article> articles = articleService.listArticlesByDebates(debates.stream()
+    List<Article> articles = articleService.listArticlesByDebatesWithCache(debates.stream()
         .map(Debate::getDebateId)
         .collect(toList()));
     return new ModelAndView("account/user-debates")//

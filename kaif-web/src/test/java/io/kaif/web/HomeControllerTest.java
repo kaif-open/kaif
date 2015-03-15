@@ -93,7 +93,7 @@ public class HomeControllerTest extends MvcIntegrationTests {
     Debate debate = debate(article, "123456", null);
     when(articleService.listLatestDebates(null)).thenReturn(//
         singletonList(debate));
-    when(articleService.listArticlesByDebates(singletonList(debate.getDebateId()))).thenReturn(
+    when(articleService.listArticlesByDebatesWithCache(singletonList(debate.getDebateId()))).thenReturn(
         singletonList(article));
     mockMvc.perform(get("/new-debate"))
         .andExpect(model().attributeExists("recommendZones"))

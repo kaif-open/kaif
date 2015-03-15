@@ -64,7 +64,8 @@ public class UserControllerTest extends MvcIntegrationTests {
     Article a1 = article(zone, "ruby is great");
     Debate debate = debate(a1, "i think so", null);
     when(articleService.listDebatesByDebater("foo-user", null)).thenReturn(asList(debate));
-    when(articleService.listArticlesByDebates(asList(debate.getDebateId()))).thenReturn(asList(a1));
+    when(articleService.listArticlesByDebatesWithCache(asList(debate.getDebateId()))).thenReturn(
+        asList(a1));
     mockMvc.perform(get("/u/foo-user/debates"))
         .andExpect(content().string(containsString("i think so")))
         .andExpect(containsDebateFormTemplate());

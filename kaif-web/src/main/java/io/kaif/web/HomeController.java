@@ -62,7 +62,7 @@ public class HomeController {
   public ModelAndView listLatestDebates(
       @RequestParam(value = "start", required = false) FlakeId startDebateId) {
     List<Debate> debates = articleService.listLatestDebates(startDebateId);
-    List<Article> articles = articleService.listArticlesByDebates(debates.stream()
+    List<Article> articles = articleService.listArticlesByDebatesWithCache(debates.stream()
         .map(Debate::getDebateId)
         .collect(toList()));
     return new ModelAndView("index") //

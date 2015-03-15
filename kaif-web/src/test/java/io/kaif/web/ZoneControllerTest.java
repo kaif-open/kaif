@@ -114,7 +114,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
     Debate d2 = debate(a, "it's too simple.", null);
     when(articleService.listLatestZoneDebates(z, null)).thenReturn(//
         asList(d1, d2));
-    when(articleService.listArticlesByDebates(asList(d1.getDebateId(),
+    when(articleService.listArticlesByDebatesWithCache(asList(d1.getDebateId(),
         d2.getDebateId()))).thenReturn(asList(a));
     mockMvc.perform(get("/z/programming/new-debate"))
         .andExpect(content().string(containsString("python is serious")))
@@ -132,7 +132,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
     Debate d2 = debate(a, "poor", null);
     when(articleService.listLatestZoneDebates(z, FlakeId.fromString("abcdefghi"))).thenReturn(//
         asList(d1, d2));
-    when(articleService.listArticlesByDebates(asList(d1.getDebateId(),
+    when(articleService.listArticlesByDebatesWithCache(asList(d1.getDebateId(),
         d2.getDebateId()))).thenReturn(asList(a));
     mockMvc.perform(get("/z/programming/new-debate").param("start", "abcdefghi"))
         .andExpect(content().string(containsString("cool")))
@@ -210,7 +210,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
 
     when(zoneService.loadZone(z)).thenReturn(zoneInfo);
     when(articleService.loadArticle(articleId)).thenReturn(article);
-    when(articleService.loadDebate(parentDebate.getDebateId())).thenReturn(parentDebate);
+    when(articleService.loadDebateWithoutCache(parentDebate.getDebateId())).thenReturn(parentDebate);
     when(articleService.listBestDebates(articleId, parentDebate.getDebateId())).thenReturn(
         DebateTree.fromDepthFirst(debates));
 

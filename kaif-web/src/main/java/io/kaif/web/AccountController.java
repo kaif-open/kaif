@@ -21,7 +21,6 @@ import io.kaif.model.account.AccountOnceToken;
 import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleList;
 import io.kaif.model.debate.Debate;
-import io.kaif.model.debate.DebateList;
 import io.kaif.model.feed.FeedAsset;
 import io.kaif.model.feed.NewsFeed;
 import io.kaif.service.AccountService;
@@ -90,11 +89,11 @@ public class AccountController {
   public ModelAndView newsFeedPart(AccountAccessToken accountAccessToken,
       @RequestParam(value = "start", required = false) FlakeId startAssetId) {
     List<FeedAsset> feedAssets = feedService.listFeeds(accountAccessToken, startAssetId);
-    List<Debate> debates = articleService.listDebatesById(feedAssets.stream()
+    List<Debate> debates = articleService.listDebatesByIdWithCache(feedAssets.stream()
         .filter(f -> f.getAssetType().isDebate())
         .map(FeedAsset::getAssetId)
         .collect(toList()));
-    List<Article> articles = articleService.listArticlesByDebates(debates.stream()
+    List<Article> articles = articleService.listArticlesByDebatesWithCache(debates.stream()
         .map(Debate::getDebateId)
         .collect(toList()));
 
