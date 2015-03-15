@@ -31,7 +31,8 @@ public class UtilConfiguration {
     return new CompositeCacheManager(zoneInfoCacheManager(),
         listHotZonesCacheManager(),
         rssHotArticlesCacheManager(),
-        honorRollsCacheManager());
+        honorRollsCacheManager(),
+        articleCacheManager());
   }
 
   @Bean
@@ -47,9 +48,19 @@ public class UtilConfiguration {
   @Bean
   public CacheManager zoneInfoCacheManager() {
     CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
-        .expireAfterWrite(1, TimeUnit.MINUTES)
+        .expireAfterWrite(10, TimeUnit.MINUTES)
         .maximumSize(2000);
     GuavaCacheManager cacheManager = new GuavaCacheManager("ZoneInfo");
+    cacheManager.setCacheBuilder(cacheBuilder);
+    return cacheManager;
+  }
+
+  @Bean
+  public CacheManager articleCacheManager() {
+    CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
+        .expireAfterWrite(10, TimeUnit.MINUTES)
+        .maximumSize(2000);
+    GuavaCacheManager cacheManager = new GuavaCacheManager("Article");
     cacheManager.setCacheBuilder(cacheBuilder);
     return cacheManager;
   }

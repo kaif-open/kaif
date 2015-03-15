@@ -182,18 +182,12 @@ public class DebateDao implements DaoOperations {
     //should we evict debatesCache ?
   }
 
-  public UUID loadDebaterIdWithCache(FlakeId debateId) throws EmptyResultDataAccessException {
+  public Debate loadDebateWithCache(FlakeId debateId) throws EmptyResultDataAccessException {
     try {
-      return debatesCache.get(debateId).getDebaterId();
+      return debatesCache.get(debateId);
     } catch (ExecutionException e) {
-      return loadDebaterIdWithoutCache(debateId);
+      return loadDebateWithoutCache(debateId);
     }
-  }
-
-  private UUID loadDebaterIdWithoutCache(FlakeId debateId) throws EmptyResultDataAccessException {
-    return UUID.fromString(jdbc().queryForObject(" SELECT debaterId FROM Debate WHERE debateId = ? ",
-        String.class,
-        debateId.value()));
   }
 
   public Debate loadDebateWithoutCache(FlakeId debateId) {

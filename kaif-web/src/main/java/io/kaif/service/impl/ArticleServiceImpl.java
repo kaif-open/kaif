@@ -109,7 +109,7 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public Optional<Article> findArticle(FlakeId articleId) {
-    return articleDao.findArticle(articleId);
+    return articleDao.findArticleWithoutCache(articleId);
   }
 
   @Override
@@ -119,7 +119,7 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public Article loadArticle(FlakeId articleId) throws EmptyResultDataAccessException {
-    return articleDao.loadArticle(articleId);
+    return articleDao.loadArticleWithoutCache(articleId);
   }
 
   @Override
@@ -158,7 +158,7 @@ public class ArticleServiceImpl implements ArticleService {
       String content) {
     //creating debate should not use cache
     ZoneInfo zoneInfo = zoneDao.loadZoneWithoutCache(zone);
-    Article article = articleDao.loadArticle(articleId);
+    Article article = articleDao.loadArticleWithoutCache(articleId);
 
     Account debater = accountDao.strongVerifyAccount(debaterAuth)
         .filter(zoneInfo::canDebate)

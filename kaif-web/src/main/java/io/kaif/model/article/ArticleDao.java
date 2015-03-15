@@ -128,7 +128,7 @@ public class ArticleDao implements DaoOperations {
     return article;
   }
 
-  public Optional<Article> findArticle(FlakeId articleId) {
+  public Optional<Article> findArticleWithoutCache(FlakeId articleId) {
     final String sql = " SELECT * FROM Article WHERE articleId = ? LIMIT 1 ";
     return jdbc().query(sql, articleMapper, articleId.value()).stream().findAny();
   }
@@ -182,9 +182,14 @@ public class ArticleDao implements DaoOperations {
    * @throws EmptyResultDataAccessException
    *     if not found
    */
-  public Article loadArticle(FlakeId articleId) throws EmptyResultDataAccessException {
+  public Article loadArticleWithoutCache(FlakeId articleId) throws EmptyResultDataAccessException {
     final String sql = " SELECT * FROM Article WHERE articleId = ? ";
     return jdbc().queryForObject(sql, articleMapper, articleId.value());
+  }
+
+  @Cacheable("Article")
+  public Article loadArticleWithCache(FlakeId articleId) throws EmptyResultDataAccessException {
+    return loadArticleWithoutCache(articleId);
   }
 
   public void increaseDebateCount(Article article) {
@@ -283,7 +288,7 @@ public class ArticleDao implements DaoOperations {
     return jdbc().query(sql, articleMapper, upperTimeBound.value(), startArticleId.value(), limit);
   }
 
-  //TODO evict any related cache
+  @CacheEvict(value = "Article", key = "#a0.articleId")
   public void markAsDeleted(Article article) {
     jdbc().update(" UPDATE Article SET deleted = TRUE WHERE articleId = ? ",
         article.getArticleId().value());
@@ -304,7 +309,7 @@ public class ArticleDao implements DaoOperations {
   }
 
   @VisibleForTesting
-  @CacheEvict(value = "listHotZones", allEntries = true)
+  @CacheEvict(value = { "listHotZones", "Article" }, allEntries = true)
   public void evictAllCaches() {
     articleByDebatesCache.invalidateAll();
   }

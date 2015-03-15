@@ -9,7 +9,6 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.IntStream;
 
 import org.hamcrest.Matchers;
@@ -210,7 +209,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
-  public void loadDebaterId_cache() throws Exception {
+  public void loadDebate_cache() throws Exception {
     Account debater = savedAccountCitizen("debater1");
     Debate created = service.debate(zoneInfo.getZone(),
         article.getArticleId(),
@@ -218,11 +217,16 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         debater,
         "pixel art is better");
 
-    UUID debaterId = debateDao.loadDebaterIdWithCache(created.getDebateId());
-    assertEquals(debater.getAccountId(), debaterId);
+    Debate cached = debateDao.loadDebateWithCache(created.getDebateId());
+    assertEquals(created, cached);
     assertSame("cached should be same instance",
-        debaterId,
-        debateDao.loadDebaterIdWithCache(created.getDebateId()));
+        cached,
+        debateDao.loadDebateWithCache(created.getDebateId()));
+
+    service.updateDebateContent(created.getDebateId(), debater, "updated content");
+
+    assertEquals("updated content",
+        debateDao.loadDebateWithCache(created.getDebateId()).getContent());
   }
 
   @Test

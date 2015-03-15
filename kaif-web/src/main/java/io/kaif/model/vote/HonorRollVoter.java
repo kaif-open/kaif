@@ -69,8 +69,10 @@ public class HonorRollVoter {
         .withDeltaDebateDownVoted(downVoteDelta)
         .build();
   }
+
   private final UUID accountId;
 
+  //flakeId can be debateId or articleId
   private final FlakeId flakeId;
 
   private final Zone zone;

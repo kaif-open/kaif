@@ -273,6 +273,10 @@ public class ZoneInfo {
     return auth.containsAuthority(writeAuthority);
   }
 
+  public boolean canContributeVoteStats() {
+    return voteAuthority == Authority.CITIZEN;
+  }
+
   public boolean isHideFromTop() {
     return hideFromTop;
   }
@@ -300,5 +304,6 @@ public class ZoneInfo {
   public String toString() {
     return "/z/" + zone;
   }
+
 }
 

@@ -2,7 +2,6 @@ package io.kaif.service.impl;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -14,10 +13,10 @@ import com.google.common.base.Preconditions;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.AccountDao;
-import io.kaif.model.account.Authority;
 import io.kaif.model.account.Authorization;
 import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleDao;
+import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateDao;
 import io.kaif.model.vote.ArticleVoter;
 import io.kaif.model.vote.DebateVoter;
@@ -92,13 +91,16 @@ public class VoteServiceImpl implements VoteService {
     int downVoteDelta = newState.downVoteDeltaFrom(previousState);
 
     articleDao.changeTotalVote(articleId, upVoteDelta, downVoteDelta);
-    articleDao.findArticle(articleId)
-        .filter(article -> zoneInfo.getVoteAuthority() == Authority.CITIZEN
-            && !authorization.authenticatedId().equals(article.getAuthorId()))
-        .ifPresent(article -> honorRollDao.updateRotateVoteStats(HonorRollVoter.createByVote(article,
-            upVoteDelta,
-            downVoteDelta)));
 
+    // note that cached article may have stale data (such as not yet change total vote yet),
+    // despite above code already change it.
+    Article cachedArticle = articleDao.loadArticleWithCache(articleId);
+    if (zoneInfo.canContributeVoteStats() && !authorization.authenticatedId()
+        .equals(cachedArticle.getAuthorId())) {
+      honorRollDao.updateRotateVoteStats(HonorRollVoter.createByVote(cachedArticle,
+          upVoteDelta,
+          downVoteDelta));
+    }
   }
 
   @Override
@@ -125,17 +127,17 @@ public class VoteServiceImpl implements VoteService {
 
     debateDao.changeTotalVote(debateId, upVoteDelta, downVoteDelta);
 
-    UUID debaterId = debateDao.loadDebaterIdWithCache(debateId);
+    // note: cached debate may have stale data, such total vote not change yet
+    Debate cachedDebate = debateDao.loadDebateWithCache(debateId);
+
     // total debate vote score only count citizen zone. (tourist zone like /z/test
     // or kVoting will not count)
-    if (zoneInfo.getVoteAuthority() == Authority.CITIZEN && !voter.authenticatedId()
-        .equals(debaterId)) {
-      accountDao.changeTotalVotedDebate(debaterId, upVoteDelta, downVoteDelta);
-
-      debateDao.findDebate(debateId)
-          .ifPresent(debate -> honorRollDao.updateRotateVoteStats(HonorRollVoter.createByVote(debate,
-              upVoteDelta,
-              downVoteDelta)));
+    if (zoneInfo.canContributeVoteStats() && !voter.authenticatedId()
+        .equals(cachedDebate.getDebaterId())) {
+      accountDao.changeTotalVotedDebate(cachedDebate.getDebaterId(), upVoteDelta, downVoteDelta);
+      honorRollDao.updateRotateVoteStats(HonorRollVoter.createByVote(cachedDebate,
+          upVoteDelta,
+          downVoteDelta));
     }
   }
 
