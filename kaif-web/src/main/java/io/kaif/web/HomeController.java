@@ -16,6 +16,7 @@ import io.kaif.model.article.ArticleList;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateList;
 import io.kaif.service.ArticleService;
+import io.kaif.service.HonorRollService;
 import io.kaif.service.ZoneService;
 
 @Controller
@@ -25,6 +26,9 @@ public class HomeController {
   private ArticleService articleService;
 
   @Autowired
+  private HonorRollService honorRollService;
+
+  @Autowired
   private ZoneService zoneService;
 
   @RequestMapping("/")
@@ -32,6 +36,7 @@ public class HomeController {
       @RequestParam(value = "start", required = false) FlakeId startArticleId) {
     return new ModelAndView("index")//
         .addObject("recommendZones", zoneService.listRecommendZones())
+        .addObject("honorRollList", honorRollService.listHonorRollsByZone(null))
         .addObject("articleList", new ArticleList(articleService.listTopArticles(startArticleId)));
   }
 
@@ -48,6 +53,7 @@ public class HomeController {
       @RequestParam(value = "start", required = false) FlakeId startArticleId) {
     return new ModelAndView("index") //
         .addObject("recommendZones", zoneService.listRecommendZones())
+        .addObject("honorRollList", honorRollService.listHonorRollsByZone(null))
         .addObject("articleList",
             new ArticleList(articleService.listLatestArticles(startArticleId)));
   }
@@ -61,6 +67,7 @@ public class HomeController {
         .collect(toList()));
     return new ModelAndView("index") //
         .addObject("recommendZones", zoneService.listRecommendZones())
+        .addObject("honorRollList", honorRollService.listHonorRollsByZone(null))
         .addObject("debateList", new DebateList(debates, articles));
   }
 

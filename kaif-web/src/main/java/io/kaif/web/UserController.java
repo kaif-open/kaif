@@ -20,8 +20,10 @@ import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleList;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateList;
+import io.kaif.model.vote.HonorRoll;
 import io.kaif.service.AccountService;
 import io.kaif.service.ArticleService;
+import io.kaif.service.HonorRollService;
 
 @Controller
 public class UserController {
@@ -31,6 +33,9 @@ public class UserController {
 
   @Autowired
   private ArticleService articleService;
+
+  @Autowired
+  private HonorRollService honorRollService;
 
   @RequestMapping("/u/{username}")
   public Object userProfile(@PathVariable("username") String username) {
@@ -51,6 +56,12 @@ public class UserController {
     List<Article> articles = articleService.listArticlesByAuthor(username, startArticleId);
     return new ModelAndView("account/user-articles")//
         .addObject("articleList", new ArticleList(articles)).addObject("username", username);
+  }
+
+  @RequestMapping("/u/{username}/scores")
+  public ModelAndView userScore(@PathVariable("username") String username) {
+    List<HonorRoll> honorRolls = honorRollService.listHonorRollsByUsername(username);
+    return new ModelAndView("account/user-scores").addObject("honorRolls", honorRolls);
   }
 
   @RequestMapping("/u/{username}/debates")

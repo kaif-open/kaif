@@ -71,6 +71,7 @@ applyZoneTheme=true
             </#if>
             <@aside.createArticle />
             <@aside.recommendZones zoneInfos=recommendZones />
+            <@aside.honorRoll data=honorRollList/>
         </aside>
     </div>
     </@template.zone>

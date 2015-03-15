@@ -21,6 +21,8 @@ import io.kaif.model.article.ArticleDao;
 import io.kaif.model.debate.DebateDao;
 import io.kaif.model.vote.ArticleVoter;
 import io.kaif.model.vote.DebateVoter;
+import io.kaif.model.vote.HonorRollVoter;
+import io.kaif.model.vote.HonorRollDao;
 import io.kaif.model.vote.VoteDao;
 import io.kaif.model.vote.VoteState;
 import io.kaif.model.zone.Zone;
@@ -48,6 +50,9 @@ public class VoteServiceImpl implements VoteService {
   @Autowired
   private AccountDao accountDao;
 
+  @Autowired
+  private HonorRollDao honorRollDao;
+
   private ZoneInfo checkVoteAuthority(Zone zone, Authorization authorization) {
     // relax verification when voting, no check zone and account in Database because voting
     // is not critical
@@ -74,7 +79,7 @@ public class VoteServiceImpl implements VoteService {
     //no support down vote yet
     Preconditions.checkArgument(newState != VoteState.DOWN);
 
-    checkVoteAuthority(zone, authorization);
+    ZoneInfo zoneInfo = checkVoteAuthority(zone, authorization);
 
     voteDao.voteArticle(newState,
         articleId,
@@ -85,7 +90,16 @@ public class VoteServiceImpl implements VoteService {
 
     int upVoteDelta = newState.upVoteDeltaFrom(previousState);
     int downVoteDelta = newState.downVoteDeltaFrom(previousState);
+
     articleDao.changeTotalVote(articleId, upVoteDelta, downVoteDelta);
+    articleDao.findArticle(articleId)
+        .filter(article -> zoneInfo.getVoteAuthority() == Authority.CITIZEN
+            && !authorization.authenticatedId().equals(article.getAuthorId()))
+        .ifPresent(article -> honorRollDao.updateRotateVoteStats(HonorRollVoter.createByVote(
+            article,
+            upVoteDelta,
+            downVoteDelta)));
+
   }
 
   @Override
@@ -118,6 +132,12 @@ public class VoteServiceImpl implements VoteService {
     if (zoneInfo.getVoteAuthority() == Authority.CITIZEN && !voter.authenticatedId()
         .equals(debaterId)) {
       accountDao.changeTotalVotedDebate(debaterId, upVoteDelta, downVoteDelta);
+
+      debateDao.findDebate(debateId)
+          .ifPresent(debate -> honorRollDao.updateRotateVoteStats(HonorRollVoter.createByVote(
+              debate,
+              upVoteDelta,
+              downVoteDelta)));
     }
   }
 

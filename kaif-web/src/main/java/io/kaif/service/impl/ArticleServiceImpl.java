@@ -25,6 +25,8 @@ import io.kaif.model.article.ArticleDao;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateDao;
 import io.kaif.model.debate.DebateTree;
+import io.kaif.model.vote.HonorRollVoter;
+import io.kaif.model.vote.HonorRollDao;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
@@ -51,8 +53,12 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Autowired
   private DebateDao debateDao;
+
   @Autowired
   private FeedService feedService;
+
+  @Autowired
+  private HonorRollDao honorRollDao;
 
   @Override
   public Article createExternalLink(Authorization authorization,

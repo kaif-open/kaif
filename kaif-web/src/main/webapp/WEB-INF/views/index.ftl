@@ -32,6 +32,7 @@ head=headContent
             <@aside.createArticle />
             <@aside.search />
             <@aside.recommendZones zoneInfos=recommendZones />
+            <@aside.honorRoll data=honorRollList/>
             <@aside.rss/>
         </aside>
     </div>

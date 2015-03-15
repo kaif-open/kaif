@@ -14,6 +14,7 @@ import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountStats;
 import io.kaif.model.article.Article;
 import io.kaif.model.debate.Debate;
+import io.kaif.model.vote.HonorRoll;
 import io.kaif.model.zone.Zone;
 import io.kaif.test.MvcIntegrationTests;
 
@@ -47,6 +48,15 @@ public class UserControllerTest extends MvcIntegrationTests {
     when(articleService.listArticlesByAuthor("foo-user", null)).thenReturn(asList(a1, a2));
     mockMvc.perform(get("/u/foo-user/articles"))
         .andExpect(content().string(containsString("I like rails")));
+  }
+
+  @Test
+  public void userScores() throws Exception {
+    HonorRoll h1 = honorRoll(zone);
+    HonorRoll h2 = honorRoll(Zone.valueOf("java"));
+    when(honorRollService.listHonorRollsByUsername("foo-user")).thenReturn(asList(h1, h2));
+    mockMvc.perform(get("/u/foo-user/scores"))
+        .andExpect(content().string(containsString("/z/java")));
   }
 
   @Test

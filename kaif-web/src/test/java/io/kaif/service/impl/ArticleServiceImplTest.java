@@ -26,6 +26,8 @@ import io.kaif.model.article.ArticleDao;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateContentType;
 import io.kaif.model.debate.DebateDao;
+import io.kaif.model.vote.HonorRoll;
+import io.kaif.model.vote.HonorRollDao;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.AccountService;
@@ -598,6 +600,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     } catch (AccessDeniedException expected) {
     }
   }
+
 
   @Test
   public void canCreateArticle() throws Exception {
