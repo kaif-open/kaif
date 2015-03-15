@@ -100,7 +100,8 @@ public class HomeControllerTest extends MvcIntegrationTests {
     mockMvc.perform(get("/new-debate"))
         .andExpect(model().attributeExists("recommendZones"))
         .andExpect(content().string(containsString("123456")))
-        .andExpect(containsDebateFormTemplate());
+        .andExpect(containsDebateFormTemplate())
+        .andExpect(containsText("<meta name=\"robots\" content=\"noindex, follow\">"));
   }
 
   @Test

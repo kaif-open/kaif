@@ -122,7 +122,8 @@ public class ZoneControllerTest extends MvcIntegrationTests {
         .andExpect(content().string(containsString("python is serious")))
         .andExpect(content().string(containsString("agree, good.")))
         .andExpect(content().string(containsString("it&#39;s too simple")))
-        .andExpect(containsDebateFormTemplate());
+        .andExpect(containsDebateFormTemplate())
+        .andExpect(containsText("<meta name=\"robots\" content=\"noindex, follow\">"));
   }
 
   @Test
