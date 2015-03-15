@@ -102,6 +102,7 @@ CREATE TABLE AccountStats (
   accountId       UUID   NOT NULL REFERENCES Account (accountId),
   debateCount     BIGINT NOT NULL DEFAULT 0,
   articleCount    BIGINT NOT NULL DEFAULT 0,
+  articleUpVoted  BIGINT NOT NULL DEFAULT 0,
   debateUpVoted   BIGINT NOT NULL DEFAULT 0,
   debateDownVoted BIGINT NOT NULL DEFAULT 0,
   PRIMARY KEY (accountId)

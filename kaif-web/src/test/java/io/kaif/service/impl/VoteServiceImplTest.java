@@ -208,8 +208,11 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   @Test
   public void articleSelfVoteDoNotCountInRotateScore() throws Exception {
     service.voteArticle(UP, zone, articleId, author, EMPTY, 100);
-    assertArticleTotalVote(1);
-    assertEquals(Optional.empty(),
+    Article changed = articleDao.findArticle(articleId).get();
+    assertEquals(1, changed.getUpVote());
+    AccountStats stats = accountDao.loadStats(author.getUsername());
+    assertEquals(0, stats.getArticleUpVoted());
+    assertEquals(Optional.<HonorRoll>empty(),
         honorRollDao.findHonorRoll(author.getAccountId(),
             zone,
             Instant.ofEpochMilli(article.getArticleId().epochMilli())));
@@ -399,6 +402,8 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   private void assertArticleTotalVote(long upVote) {
     Article changed = articleDao.findArticle(articleId).get();
     assertEquals(upVote, changed.getUpVote());
+    AccountStats stats = accountDao.loadStats(author.getUsername());
+    assertEquals(upVote, stats.getArticleUpVoted());
   }
 
   private void assertDebateRotateVoteStats(long upVoteDebate, long downVoteDebate) {

@@ -5,7 +5,7 @@ import java.util.UUID;
 public class AccountStats {
 
   public static AccountStats zero(UUID accountId) {
-    return new AccountStats(accountId, 0, 0, 0, 0);
+    return new AccountStats(accountId, 0, 0, 0, 0, 0);
   }
 
   private final UUID accountId;
@@ -16,6 +16,9 @@ public class AccountStats {
   //total count of created article (exclude any zone that hide from top)
   private final long articleCount;
 
+  //total count of article up voted
+  private final long articleUpVoted;
+
   //total count of debate up voted
   private final long debateUpVoted;
 
@@ -25,11 +28,13 @@ public class AccountStats {
   AccountStats(UUID accountId,
       long debateCount,
       long articleCount,
+      long articleUpVoted,
       long debateUpVoted,
       long debateDownVoted) {
     this.accountId = accountId;
     this.debateCount = debateCount;
     this.articleCount = articleCount;
+    this.articleUpVoted = articleUpVoted;
     this.debateUpVoted = debateUpVoted;
     this.debateDownVoted = debateDownVoted;
   }
@@ -40,6 +45,7 @@ public class AccountStats {
         "accountId=" + accountId +
         ", debateCount=" + debateCount +
         ", articleCount=" + articleCount +
+        ", articleUpVoted=" + articleUpVoted +
         ", debateUpVoted=" + debateUpVoted +
         ", debateDownVoted=" + debateDownVoted +
         '}';
@@ -57,6 +63,9 @@ public class AccountStats {
     AccountStats that = (AccountStats) o;
 
     if (articleCount != that.articleCount) {
+      return false;
+    }
+    if (articleUpVoted != that.articleUpVoted) {
       return false;
     }
     if (debateCount != that.debateCount) {
@@ -80,6 +89,7 @@ public class AccountStats {
     int result = accountId != null ? accountId.hashCode() : 0;
     result = 31 * result + (int) (debateCount ^ (debateCount >>> 32));
     result = 31 * result + (int) (articleCount ^ (articleCount >>> 32));
+    result = 31 * result + (int) (articleUpVoted ^ (articleUpVoted >>> 32));
     result = 31 * result + (int) (debateUpVoted ^ (debateUpVoted >>> 32));
     result = 31 * result + (int) (debateDownVoted ^ (debateDownVoted >>> 32));
     return result;
@@ -105,4 +115,17 @@ public class AccountStats {
     return debateDownVoted;
   }
 
+  public long getArticleUpVoted() {
+    return articleUpVoted;
+  }
+
+  //聲望
+  public long getHonorScore() {
+    return articleUpVoted + debateUpVoted - debateDownVoted;
+  }
+
+  //積分
+  public long getDebateTotalVoted() {
+    return debateUpVoted - debateDownVoted;
+  }
 }

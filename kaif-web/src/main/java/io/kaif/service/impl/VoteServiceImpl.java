@@ -97,6 +97,7 @@ public class VoteServiceImpl implements VoteService {
     Article cachedArticle = articleDao.loadArticleWithCache(articleId);
     if (zoneInfo.canContributeVoteStats() && !authorization.authenticatedId()
         .equals(cachedArticle.getAuthorId())) {
+      accountDao.changeTotalVotedArticle(cachedArticle.getAuthorId(), upVoteDelta, downVoteDelta);
       honorRollDao.updateRotateVoteStats(HonorRollVoter.createByVote(cachedArticle,
           upVoteDelta,
           downVoteDelta));

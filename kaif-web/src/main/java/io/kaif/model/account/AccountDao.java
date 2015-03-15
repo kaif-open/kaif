@@ -51,6 +51,7 @@ public class AccountDao implements DaoOperations {
         UUID.fromString(rs.getString("accountId")),
         rs.getLong("debateCount"),
         rs.getLong("articleCount"),
+        rs.getLong("articleUpVoted"),
         rs.getLong("debateUpVoted"),
         rs.getLong("debateDownVoted"));
   };
@@ -91,13 +92,14 @@ public class AccountDao implements DaoOperations {
     jdbc().update(""
             + " INSERT "
             + "   INTO AccountStats "
-            + "        (accountId, debateCount, articleCount, debateUpVoted, "
-            + "         debateDownVoted) "
+            + "        (accountId, debateCount, articleCount, articleUpVoted, "
+            + "         debateUpVoted, debateDownVoted) "
             + " VALUES "
-            + questions(5),
+            + questions(6),
         stats.getAccountId(),
         stats.getDebateCount(),
         stats.getArticleCount(),
+        stats.getArticleUpVoted(),
         stats.getDebateUpVoted(),
         stats.getDebateDownVoted());
   }
@@ -208,6 +210,16 @@ public class AccountDao implements DaoOperations {
         + "    SET debateUpVoted = debateUpVoted + (?) "
         + "      , debateDownVoted = debateDownVoted + (?) "
         + "  WHERE accountId = ? ", upVoteDelta, downVoteDelta, accountId);
+  }
+
+  public void changeTotalVotedArticle(UUID accountId, long upVoteDelta, long downVoteDelta) {
+    if (upVoteDelta == 0 && downVoteDelta == 0) {
+      return;
+    }
+    jdbc().update(""
+        + " UPDATE AccountStats "
+        + "    SET articleUpVoted = articleUpVoted + (?) "
+        + "  WHERE accountId = ? ", upVoteDelta, accountId);
   }
 
   public void updateDescription(UUID accountId, String description) {

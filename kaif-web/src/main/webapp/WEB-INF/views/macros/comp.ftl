@@ -265,12 +265,12 @@
                     </#if>
                 </td>
                 <td class="honor-score">
-                    <#if honorRoll.score gt 0>
-                        <span class="honor-positive-score">${honorRoll.score}</span>
-                    <#elseif honorRoll.score lt 0>
-                        <span class="honor-negative-score">${honorRoll.score}</span>
+                    <#if honorRoll.honorScore gt 0>
+                        <span class="honor-positive-score">${honorRoll.honorScore}</span>
+                    <#elseif honorRoll.honorScore lt 0>
+                        <span class="honor-negative-score">${honorRoll.honorScore}</span>
                     <#else>
-                        <span class="honor-score">${honorRoll.score} </span>
+                        <span class="honor-zero-score">${honorRoll.honorScore} </span>
                     </#if>
                 </td>
                 <td class="honor-user">

@@ -27,8 +27,8 @@ head=headContent>
                 爭論激辯 <span class="user-number">${accountStats.debateCount}</span> 回
             </div>
             <div>
-                個人積分 <span
-                    class="user-number">${accountStats.debateUpVoted - accountStats.debateDownVoted}</span>
+                個人聲望 <span
+                    class="user-number">${accountStats.honorScore}</span>
                 點
             </div>
         </div>

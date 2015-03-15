@@ -9,17 +9,8 @@ public class HonorRoll {
   /**
    * create monthly ranking now
    */
-  public static HonorRoll zero(UUID accountId,
-      Zone zone,
-      YearMonth yearMonth,
-      String username) {
-    return new HonorRoll(accountId,
-        zone,
-        yearMonth.atDay(1).toString(),
-        username,
-        0,
-        0,
-        0);
+  public static HonorRoll zero(UUID accountId, Zone zone, YearMonth yearMonth, String username) {
+    return new HonorRoll(accountId, zone, yearMonth.atDay(1).toString(), username, 0, 0, 0);
   }
 
   private final UUID accountId;
@@ -125,7 +116,8 @@ public class HonorRoll {
     return debateDownVoted;
   }
 
-  public long getScore() {
+  //聲望
+  public long getHonorScore() {
     return articleUpVoted + debateUpVoted - debateDownVoted;
   }
 }

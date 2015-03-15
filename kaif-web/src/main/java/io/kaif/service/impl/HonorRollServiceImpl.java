@@ -28,7 +28,7 @@ import io.kaif.service.HonorRollService;
 public class HonorRollServiceImpl implements HonorRollService {
 
   private static final List<String> EXCLUDES_USER_NAME = Arrays.asList("koji", "IngramChen");
-  private static final int PAGE_SIZE = 15;
+  private static final int PAGE_SIZE = 25;
   private Clock clock = Clock.systemDefaultZone();
   @Autowired
   HonorRollDao honorRollDao;

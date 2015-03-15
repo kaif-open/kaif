@@ -11,4 +11,7 @@ CREATE TABLE HonorRoll (
 
 CREATE INDEX HonorRollZoneBucketIndex ON HonorRoll (zone, bucket);
 
+ALTER TABLE AccountStats ADD COLUMN articleUpVoted BIGINT NOT NULL DEFAULT 0;
+
+
 -- TODO patch HonorRoll for old data

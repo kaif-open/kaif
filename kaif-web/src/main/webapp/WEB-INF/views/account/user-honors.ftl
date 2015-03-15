@@ -16,7 +16,7 @@ head=headContent>
         <#list honorRolls as honorRoll>
             <h3 class="honor-roll-title">
                 <a href="<@url.zone data=honorRoll/>">
-                    <i class="fa fa-caret-right"></i>/z/${honorRoll.zone}
+                    <i class="fa fa-caret-right"></i> /z/${honorRoll.zone}
                 </a>
             </h3>
 
@@ -26,16 +26,16 @@ head=headContent>
                 </p>
                 </div>
                 <div class="pure-u-3-24"><p>-</p></div>
-                <div class="pure-u-3-24 honor-negative-score"><p>${honorRoll.debateUpVoted} <span
+                <div class="pure-u-3-24 honor-negative-score"><p>${honorRoll.debateDownVoted} <span
                         class="down-vote"></span></p></div>
                 <div class="pure-u-3-24"><p>=</p></div>
                 <div class="pure-u-3-24">
-                    <#if honorRoll.score gt 0>
-                        <p class="honor-positive-score">${honorRoll.score}</p>
-                    <#elseif honorRoll.score lt 0>
-                        <p class="honor-negative-score">${honorRoll.score}</p>
+                    <#if honorRoll.honorScore gt 0>
+                        <p class="honor-positive-score">${honorRoll.honorScore}</p>
+                    <#elseif honorRoll.honorScore lt 0>
+                        <p class="honor-negative-score">${honorRoll.honorScore}</p>
                     <#else>
-                        <p class="honor-score">${honorRoll.score} </p>
+                        <p class="honor-zero-score">${honorRoll.honorScore} </p>
                     </#if>
                 </div>
             </div>
