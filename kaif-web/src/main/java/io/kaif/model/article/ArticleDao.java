@@ -315,7 +315,7 @@ public class ArticleDao implements DaoOperations {
    * note that the result are cached for same size (argument Instant is not part of cache key)
    */
   @Cacheable(value = "listHotZones", key = "#a0")
-  public List<ZoneInfo> listHotZones(int size, Instant articleSince) {
+  public List<ZoneInfo> listHotZonesWithCache(int size, Instant articleSince) {
     FlakeId startArticleId = FlakeId.startOf(articleSince.toEpochMilli());
     List<ZoneInfo> results = jdbc().query(""
         + " SELECT z.*, count(z.zone) AS zoneHotness "
@@ -330,7 +330,7 @@ public class ArticleDao implements DaoOperations {
     return ImmutableList.copyOf(results);
   }
 
-  public List<Article> listArticlesByDebates(List<FlakeId> debateIds) {
+  public List<Article> listArticlesByDebatesWithCache(List<FlakeId> debateIds) {
     Map<FlakeId, Article> articles;
     try {
       articles = articleByDebatesCache.getAll(debateIds);

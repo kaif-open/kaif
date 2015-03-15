@@ -26,8 +26,6 @@ import io.kaif.model.article.ArticleDao;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateContentType;
 import io.kaif.model.debate.DebateDao;
-import io.kaif.model.vote.HonorRoll;
-import io.kaif.model.vote.HonorRollDao;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.AccountService;
@@ -202,14 +200,13 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
-  public void listCachedHotZoneArticles() throws Exception {
-    List<Article> articleList = service.listCachedHotZoneArticles(zoneInfo.getZone());
-    assertSame(articleList, service.listCachedHotZoneArticles(zoneInfo.getZone()));
+  public void listRssWithCache() throws Exception {
+    List<Article> articleList = service.listRssHotZoneArticlesWithCache(zoneInfo.getZone());
+    assertSame(articleList, service.listRssHotZoneArticlesWithCache(zoneInfo.getZone()));
 
     Zone otherZone = savedZoneDefault("others").getZone();
-    assertNotSame(articleList, service.listCachedHotZoneArticles(otherZone));
-    assertNotSame(articleList, service.listCachedTopArticles());
-
+    assertNotSame(articleList, service.listRssHotZoneArticlesWithCache(otherZone));
+    assertNotSame(articleList, service.listRssTopArticlesWithCache());
   }
 
   @Test
@@ -221,11 +218,11 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         debater,
         "pixel art is better");
 
-    UUID debaterId = debateDao.loadDebaterId(created.getDebateId());
+    UUID debaterId = debateDao.loadDebaterIdWithCache(created.getDebateId());
     assertEquals(debater.getAccountId(), debaterId);
     assertSame("cached should be same instance",
         debaterId,
-        debateDao.loadDebaterId(created.getDebateId()));
+        debateDao.loadDebaterIdWithCache(created.getDebateId()));
   }
 
   @Test
@@ -490,8 +487,8 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void listCachedTopArticles() throws Exception {
-    List<Article> articles = service.listCachedTopArticles();
-    assertSame(articles, service.listCachedTopArticles());
+    List<Article> articles = service.listRssTopArticlesWithCache();
+    assertSame(articles, service.listRssTopArticlesWithCache());
   }
 
   @Test
@@ -600,7 +597,6 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     } catch (AccessDeniedException expected) {
     }
   }
-
 
   @Test
   public void canCreateArticle() throws Exception {

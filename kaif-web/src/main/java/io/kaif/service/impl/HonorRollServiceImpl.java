@@ -26,12 +26,9 @@ import io.kaif.service.HonorRollService;
 @Transactional
 public class HonorRollServiceImpl implements HonorRollService {
 
-  private Clock clock = Clock.systemDefaultZone();
-
   private static final List<String> EXCLUDES_USER_NAME = Arrays.asList("koji", "IngramChen");
-
   private static final int PAGE_SIZE = 15;
-
+  private Clock clock = Clock.systemDefaultZone();
   @Autowired
   HonorRollDao honorRollDao;
 
@@ -46,8 +43,7 @@ public class HonorRollServiceImpl implements HonorRollService {
   @Override
   public List<HonorRoll> listHonorRollsByUsername(String username) {
     Account account = accountDao.loadByUsername(username);
-    return honorRollDao.listHonorRollByAccount(account.getAccountId(),
-        Instant.now(clock));
+    return honorRollDao.listHonorRollByAccount(account.getAccountId(), Instant.now(clock));
   }
 
   @Override
@@ -55,10 +51,10 @@ public class HonorRollServiceImpl implements HonorRollService {
     final List<HonorRoll> result;
     int pageSize = PAGE_SIZE + EXCLUDES_USER_NAME.size();
     if (zone == null) {
-      result = honorRollDao.listHonorRoll(honorRollDao.monthlyBucket(Instant.now(clock)),
+      result = honorRollDao.listHonorRollWithCache(honorRollDao.monthlyBucket(Instant.now(clock)),
           pageSize);
     } else {
-      result = honorRollDao.listHonorRollByZone(zone,
+      result = honorRollDao.listHonorRollByZoneWithCache(zone,
           honorRollDao.monthlyBucket(Instant.now(clock)),
           pageSize);
     }

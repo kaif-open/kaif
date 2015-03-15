@@ -32,11 +32,9 @@ import io.kaif.test.MvcIntegrationTests;
 
 public class ZoneControllerTest extends MvcIntegrationTests {
 
-  ZoneInfo zoneInfo = zoneDefault("programming");
-
   public static final DateTimeFormatter RFC1123_FORMATTER = DateTimeFormatter.ofPattern(
-      "EEE, dd MMM yyyy HH:mm:ss zzz")
-      .withZone(ZoneId.of("GMT")).withLocale(Locale.US);
+      "EEE, dd MMM yyyy HH:mm:ss zzz").withZone(ZoneId.of("GMT")).withLocale(Locale.US);
+  ZoneInfo zoneInfo = zoneDefault("programming");
 
   @Test
   public void hotArticlesWithPaging() throws Exception {
@@ -65,7 +63,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
     Article article1 = article(z, "javascript discussion");
     Article article2 = article(z, FlakeId.fromString("phpone"), "php-lang discussion");
 
-    when(articleService.listCachedHotZoneArticles(z)).thenReturn(//
+    when(articleService.listRssHotZoneArticlesWithCache(z)).thenReturn(//
         asList(article1, article2));
 
     //java.time's RFC1123's dd allow 1 digit, not compatible with rss view
@@ -86,7 +84,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
 
     String pubDateStr = RFC1123_FORMATTER.format(zoneInfo.getCreateTime());
 
-    when(articleService.listCachedHotZoneArticles(z)).thenReturn(Collections.emptyList());
+    when(articleService.listRssHotZoneArticlesWithCache(z)).thenReturn(Collections.emptyList());
     mockMvc.perform(get("/z/programming/hot.rss"))
         .andExpect(xpath("/rss/channel/title").string("programming kaif.io"))
         .andExpect(xpath("/rss/channel/description").string("programming-alias 熱門"))

@@ -60,7 +60,8 @@ public class ZoneController {
     return resolveZone(request, rawZone, zoneInfo -> {
       request.getRequestURL();
       ModelAndView modelAndView = new ModelAndView().addObject("zoneInfo", zoneInfo)
-          .addObject("articles", articleService.listCachedHotZoneArticles(zoneInfo.getZone()));
+          .addObject("articles",
+              articleService.listRssHotZoneArticlesWithCache(zoneInfo.getZone()));
       modelAndView.setView(new HotArticleRssContentView());
       return modelAndView;
     });

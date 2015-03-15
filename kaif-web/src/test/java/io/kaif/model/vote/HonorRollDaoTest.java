@@ -26,13 +26,17 @@ public class HonorRollDaoTest extends DbIntegrationTests {
   @Test
   public void listHonorRoll_cached() {
     LocalDate bucket = dao.monthlyBucket(Instant.now());
-    List<HonorRoll> zoneHonorRollList = dao.listHonorRollByZone(Zone.valueOf("qoo"), bucket, 15);
-    assertSame(zoneHonorRollList, dao.listHonorRollByZone(Zone.valueOf("qoo"), bucket, 15));
-    assertNotSame(zoneHonorRollList, dao.listHonorRollByZone(Zone.valueOf("other-z"), bucket, 15));
+    List<HonorRoll> zoneHonorRollList = dao.listHonorRollByZoneWithCache(Zone.valueOf("qoo"),
+        bucket,
+        15);
+    assertSame(zoneHonorRollList,
+        dao.listHonorRollByZoneWithCache(Zone.valueOf("qoo"), bucket, 15));
+    assertNotSame(zoneHonorRollList,
+        dao.listHonorRollByZoneWithCache(Zone.valueOf("other-z"), bucket, 15));
 
-    List<HonorRoll> all = dao.listHonorRoll(bucket, 15);
+    List<HonorRoll> all = dao.listHonorRollWithCache(bucket, 15);
     assertNotSame(zoneHonorRollList, all);
-    assertSame(all, dao.listHonorRoll(bucket, 15));
+    assertSame(all, dao.listHonorRollWithCache(bucket, 15));
   }
 
 }

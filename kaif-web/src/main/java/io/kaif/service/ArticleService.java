@@ -34,9 +34,9 @@ public interface ArticleService {
 
   List<Article> listLatestArticles(@Nullable FlakeId startArticleId);
 
-  List<Article> listCachedHotZoneArticles(Zone zone);
+  List<Article> listRssHotZoneArticlesWithCache(Zone zone);
 
-  List<Article> listCachedTopArticles();
+  List<Article> listRssTopArticlesWithCache();
 
   List<Article> listTopArticles(@Nullable FlakeId startArticleId);
 

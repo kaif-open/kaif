@@ -41,14 +41,14 @@ public class ArticleDaoTest extends DbIntegrationTests {
     ZoneInfo z1 = savedZoneDefault("zone1");
     savedArticle(z1, account, "foo-title");
     Instant articleSince = Instant.now().minus(Duration.ofDays(20));
-    List<ZoneInfo> cachedForSize10 = dao.listHotZones(10, articleSince);
-    assertSame(cachedForSize10, dao.listHotZones(10, articleSince));
-    assertNotSame(cachedForSize10, dao.listHotZones(20, articleSince));
+    List<ZoneInfo> cachedForSize10 = dao.listHotZonesWithCache(10, articleSince);
+    assertSame(cachedForSize10, dao.listHotZonesWithCache(10, articleSince));
+    assertNotSame(cachedForSize10, dao.listHotZonesWithCache(20, articleSince));
   }
 
   @Test
   public void listHotZones() throws Exception {
-    assertEquals(0, dao.listHotZones(999, Instant.now()).size());
+    assertEquals(0, dao.listHotZonesWithCache(999, Instant.now()).size());
     ZoneInfo z1 = savedZoneDefault("zone1");
     ZoneInfo z2 = savedZoneDefault("zone2");
     ZoneInfo z3 = savedZoneDefault("zone3");
@@ -72,9 +72,9 @@ public class ArticleDaoTest extends DbIntegrationTests {
 
     savedArticleWithId(k, yesterday.plusSeconds(3));
 
-    assertEquals(asList(z1, z3, z2), dao.listHotZones(10, yesterday));
-    assertEquals(asList(z1, z3), dao.listHotZones(2, yesterday));
-    assertEquals(asList(z3, z1, z2), dao.listHotZones(20, today));
+    assertEquals(asList(z1, z3, z2), dao.listHotZonesWithCache(10, yesterday));
+    assertEquals(asList(z1, z3), dao.listHotZonesWithCache(2, yesterday));
+    assertEquals(asList(z3, z1, z2), dao.listHotZonesWithCache(20, today));
   }
 
   @Before

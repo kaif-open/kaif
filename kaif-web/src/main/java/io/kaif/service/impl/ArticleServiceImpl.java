@@ -25,7 +25,6 @@ import io.kaif.model.article.ArticleDao;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateDao;
 import io.kaif.model.debate.DebateTree;
-import io.kaif.model.vote.HonorRollVoter;
 import io.kaif.model.vote.HonorRollDao;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneDao;
@@ -93,7 +92,7 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public boolean canCreateArticle(Zone zone, Authorization auth) {
-    ZoneInfo zoneInfo = zoneDao.loadZone(zone);
+    ZoneInfo zoneInfo = zoneDao.loadZoneWithCache(zone);
     return accountDao.strongVerifyAccount(auth).filter(zoneInfo::canWriteArticle).isPresent();
   }
 
@@ -125,7 +124,7 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public String loadEditableDebateContent(FlakeId debateId, Authorization editor) {
-    Debate debate = debateDao.loadDebate(debateId);
+    Debate debate = debateDao.loadDebateWithoutCache(debateId);
     accountDao.strongVerifyAccount(editor)
         .filter(debate::canEdit)
         .orElseThrow(() -> new AccessDeniedException("no permission to edit debate:"
@@ -136,7 +135,7 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public String updateDebateContent(FlakeId debateId, Authorization editorAuth, String content) {
-    Debate debate = debateDao.loadDebate(debateId);
+    Debate debate = debateDao.loadDebateWithoutCache(debateId);
     accountDao.strongVerifyAccount(editorAuth)
         .filter(debate::canEdit)
         .orElseThrow(() -> new AccessDeniedException("no permission to edit debate:" + debateId));
@@ -148,7 +147,7 @@ public class ArticleServiceImpl implements ArticleService {
         debateId.value(),
         debate.getContent());
 
-    return debateDao.loadDebate(debateId).getRenderContent();
+    return debateDao.loadDebateWithoutCache(debateId).getRenderContent();
   }
 
   @Override
@@ -197,13 +196,13 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   @Cacheable(value = "rssHotArticles")
-  public List<Article> listCachedHotZoneArticles(Zone zone) {
+  public List<Article> listRssHotZoneArticlesWithCache(Zone zone) {
     return listHotZoneArticles(zone, null);
   }
 
   @Override
   @Cacheable(value = "rssHotArticles")
-  public List<Article> listCachedTopArticles() {
+  public List<Article> listRssTopArticlesWithCache() {
     return listTopArticles(null);
   }
 
@@ -220,7 +219,7 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public Debate loadDebate(FlakeId debateId) {
-    return debateDao.loadDebate(debateId);
+    return debateDao.loadDebateWithoutCache(debateId);
   }
 
   @Override
@@ -243,12 +242,12 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public List<Article> listArticlesByDebates(List<FlakeId> debateIds) {
-    return articleDao.listArticlesByDebates(debateIds);
+    return articleDao.listArticlesByDebatesWithCache(debateIds);
   }
 
   @Override
   public List<Debate> listDebatesById(List<FlakeId> debateIds) {
-    return debateDao.listDebatesById(debateIds);
+    return debateDao.listDebatesByIdWithCache(debateIds);
   }
 
   @Override

@@ -78,7 +78,7 @@ public class DebateDao implements DaoOperations {
       .build(new CacheLoader<FlakeId, Debate>() {
         @Override
         public Debate load(FlakeId key) throws Exception {
-          return loadDebate(key);
+          return loadDebateWithoutCache(key);
         }
 
         @Override
@@ -182,7 +182,7 @@ public class DebateDao implements DaoOperations {
     //should we evict debatesCache ?
   }
 
-  public UUID loadDebaterId(FlakeId debateId) throws EmptyResultDataAccessException {
+  public UUID loadDebaterIdWithCache(FlakeId debateId) throws EmptyResultDataAccessException {
     try {
       return debatesCache.get(debateId).getDebaterId();
     } catch (ExecutionException e) {
@@ -196,7 +196,7 @@ public class DebateDao implements DaoOperations {
         debateId.value()));
   }
 
-  public Debate loadDebate(FlakeId debateId) {
+  public Debate loadDebateWithoutCache(FlakeId debateId) {
     return jdbc().queryForObject(" SELECT * FROM Debate WHERE debateId = ? ",
         debateMapper,
         debateId.value());
@@ -253,7 +253,7 @@ public class DebateDao implements DaoOperations {
         + "  LIMIT ? ", debateMapper, start.value(), zone.value(), size);
   }
 
-  public List<Debate> listDebatesById(List<FlakeId> debateIds) {
+  public List<Debate> listDebatesByIdWithCache(List<FlakeId> debateIds) {
     if (debateIds.isEmpty()) {
       return Collections.emptyList();
     }

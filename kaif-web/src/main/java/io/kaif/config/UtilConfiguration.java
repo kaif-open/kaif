@@ -30,7 +30,8 @@ public class UtilConfiguration {
   public CacheManager compositeCacheManager() {
     return new CompositeCacheManager(zoneInfoCacheManager(),
         listHotZonesCacheManager(),
-        rssHotArticlesCacheManager(), honorRollsCacheManager());
+        rssHotArticlesCacheManager(),
+        honorRollsCacheManager());
   }
 
   @Bean
@@ -56,7 +57,7 @@ public class UtilConfiguration {
   /**
    * hot zones cache, refresh every one hour. no need to distribute if we have multiple web servers
    *
-   * @see {@link io.kaif.model.article.ArticleDao#listHotZones(int, java.time.Instant)}
+   * @see {@link io.kaif.model.article.ArticleDao#listHotZonesWithCache(int, java.time.Instant)}
    */
   @Bean
   public CacheManager listHotZonesCacheManager() {

@@ -51,11 +51,10 @@ public class HomeControllerTest extends MvcIntegrationTests {
   @Test
   public void rssFeed() throws Exception {
     Article article = article(funZone.getZone(), "joke xyz 1");
-    when(articleService.listCachedTopArticles()).thenReturn(singletonList(article));
+    when(articleService.listRssTopArticlesWithCache()).thenReturn(singletonList(article));
 
     final DateTimeFormatter RFC1123_FORMATTER = DateTimeFormatter.ofPattern(
-        "EEE, dd MMM yyyy HH:mm:ss zzz")
-        .withZone(ZoneId.of("GMT")).withLocale(Locale.US);
+        "EEE, dd MMM yyyy HH:mm:ss zzz").withZone(ZoneId.of("GMT")).withLocale(Locale.US);
 
     mockMvc.perform(get("/hot.rss"))
         .andExpect(content().encoding("UTF-8"))
@@ -68,7 +67,9 @@ public class HomeControllerTest extends MvcIntegrationTests {
   @Test
   public void zones() throws Exception {
     ImmutableMap<String, List<ZoneInfo>> zones = ImmutableMap.of("F",
-        asList(funZone, zoneDefault("fortran")), "T", asList(toyZone, zoneDefault("tcl")));
+        asList(funZone, zoneDefault("fortran")),
+        "T",
+        asList(toyZone, zoneDefault("tcl")));
     when(zoneService.listZoneAtoZ()).thenReturn(zones);
 
     mockMvc.perform(get("/zone/a-z"))

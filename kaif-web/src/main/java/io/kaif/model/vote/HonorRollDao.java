@@ -95,10 +95,10 @@ public class HonorRollDao implements DaoOperations {
   }
 
   /**
-   * see {@link #listHonorRoll(java.time.LocalDate, int)} for why leak bucket to outside
+   * see {@link #listHonorRollWithCache(java.time.LocalDate, int)} for why leak bucket to outside
    */
   @Cacheable(value = "listHonorRoll")
-  public List<HonorRoll> listHonorRollByZone(Zone zone, LocalDate bucket, int limit) {
+  public List<HonorRoll> listHonorRollByZoneWithCache(Zone zone, LocalDate bucket, int limit) {
     final String sql = ""
         + " SELECT * "
         + "   FROM HonorRoll "
@@ -114,7 +114,7 @@ public class HonorRollDao implements DaoOperations {
    * But to make @Cacheable work properly. we have to do so.
    */
   @Cacheable(value = "listHonorRoll")
-  public List<HonorRoll> listHonorRoll(LocalDate bucket, int limit) {
+  public List<HonorRoll> listHonorRollWithCache(LocalDate bucket, int limit) {
     final String sql = ""
         + " SELECT accountId, bucket, username, "
         + "        NULL AS zone, "

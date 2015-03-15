@@ -33,7 +33,7 @@ public class ZoneServiceImpl implements ZoneService {
 
   @Override
   public ZoneInfo loadZone(Zone zone) {
-    return zoneDao.loadZone(zone);
+    return zoneDao.loadZoneWithCache(zone);
   }
 
   @Override
@@ -65,7 +65,7 @@ public class ZoneServiceImpl implements ZoneService {
   @Override
   public List<ZoneInfo> listRecommendZones() {
     int recommendSize = 10;
-    List<ZoneInfo> results = articleDao.listHotZones(recommendSize,
+    List<ZoneInfo> results = articleDao.listHotZonesWithCache(recommendSize,
         Instant.now().minus(Duration.ofHours(24)));
     if (results.size() >= recommendSize) {
       return results;

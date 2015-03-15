@@ -79,7 +79,7 @@ public class ZoneDao implements DaoOperations {
 
   //use argument `zone` as cache key
   @Cacheable
-  public ZoneInfo loadZone(Zone zone) throws EmptyResultDataAccessException {
+  public ZoneInfo loadZoneWithCache(Zone zone) throws EmptyResultDataAccessException {
     return loadZoneWithoutCache(zone);
   }
 
