@@ -85,6 +85,15 @@ public class ZoneServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
+  public void listCitizenZones() throws Exception {
+    ZoneInfo about = service.createDefault("about", "about-alias");
+    ZoneInfo abc = service.createDefault("abc", "abc-alias");
+    service.createKaif("kaif-java", "java-alias");
+    ZoneInfo groovy = service.createDefault("groovy", "groovy-alias");
+    assertEquals(asList(abc, about, groovy), service.listCitizenZones());
+  }
+
+  @Test
   public void listZoneAtoZ() throws Exception {
     ZoneInfo about = service.createDefault("about", "about-alias");
     ZoneInfo abc = service.createDefault("abc", "abc-alias");

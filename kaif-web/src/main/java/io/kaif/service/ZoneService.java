@@ -19,4 +19,6 @@ public interface ZoneService {
   Map<String, List<ZoneInfo>> listZoneAtoZ();
 
   List<ZoneInfo> listRecommendZones();
+
+  List<ZoneInfo> listCitizenZones();
 }

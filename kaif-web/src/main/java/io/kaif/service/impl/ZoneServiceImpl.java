@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.kaif.model.account.Authority;
 import io.kaif.model.article.ArticleDao;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneDao;
@@ -77,5 +78,13 @@ public class ZoneServiceImpl implements ZoneService {
         .collect(toList());
     Collections.shuffle(all);
     return all.stream().limit(recommendSize).collect(toList());
+  }
+
+  @Override
+  public List<ZoneInfo> listCitizenZones() {
+    return zoneDao.listOrderByName()
+        .stream()
+        .filter(zoneInfo -> zoneInfo.getWriteAuthority() == Authority.CITIZEN)
+        .collect(toList());
   }
 }
