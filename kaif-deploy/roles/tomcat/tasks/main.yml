@@ -30,6 +30,12 @@
             mode=755
   sudo: yes
 
+- name: install tomcat catalina.out rotate for {{ tomcat.name }}
+  template: src=tomcat-rotate.j2
+            dest=/etc/logrotate.d/{{tomcat.name}}
+            mode=644
+  sudo: yes
+
 - name: enable tomcat service for {{ tomcat.name }}
   service: name={{tomcat.name}} enabled=true
   sudo: yes
