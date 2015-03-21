@@ -54,3 +54,15 @@
   notify:
     - restart postgresql
   sudo: yes
+
+- name: enable daily cron for vacuum
+  cron: name="daily vacuum" minute="0" hour="5"
+        user="postgres"
+        job="/usr/lib/postgresql/{{ postgresql.version }}/bin/vacuumdb -a -z"
+  sudo: yes
+
+- name: enable weekly cron for full vacuum
+  cron: name="weekly vacuum full" minute="0" hour="6" weekday="0"
+        user="postgres"
+        job="/usr/lib/postgresql/{{ postgresql.version }}/bin/vacuumdb -a -z -f"
+  sudo: yes
