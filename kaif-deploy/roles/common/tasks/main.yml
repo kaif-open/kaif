@@ -63,16 +63,18 @@
   # configure misc utils
   #
   - name: install common utils
-    apt: pkg=netcat state=present
-    apt: pkg=git state=present
-    apt: pkg=zsh state=present
-    apt: pkg=iotop state=present
-    apt: pkg=telnet state=present
-    apt: pkg=bonnie++ state=present
-    apt: pkg=iftop state=present
-    apt: pkg=tree state=present
-    apt: pkg=vim state=present
-    sudo: yes
+    apt: name={{item}} state=present update_cache=yes cache_valid_time=86400
+    with_items:
+    - netcat
+    - git
+    - zsh
+    - iotop
+    - telnet
+    - bonnie++
+    - iftop
+    - tree
+    - vim
+    sudo: True
 
   ###
   #
