@@ -1,5 +1,6 @@
 package io.kaif.service.impl;
 
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.*;
 
 import java.time.Duration;
@@ -15,8 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.kaif.model.account.Account;
+import io.kaif.model.account.AccountDao;
 import io.kaif.model.account.Authority;
+import io.kaif.model.account.Authorization;
 import io.kaif.model.article.ArticleDao;
+import io.kaif.model.exception.CreditNotEnoughException;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
@@ -26,11 +31,17 @@ import io.kaif.service.ZoneService;
 @Transactional
 public class ZoneServiceImpl implements ZoneService {
 
+  private static final int HONOR_SCORE_PER_SZONE = 10;
+  private static final int MAX_AVAILABLE_ZONE = 5;
+
   @Autowired
   private ZoneDao zoneDao;
 
   @Autowired
   private ArticleDao articleDao;
+
+  @Autowired
+  private AccountDao accountDao;
 
   @Override
   public ZoneInfo loadZone(Zone zone) {
@@ -87,4 +98,37 @@ public class ZoneServiceImpl implements ZoneService {
         .filter(zoneInfo -> zoneInfo.getWriteAuthority() == Authority.CITIZEN)
         .collect(toList());
   }
+
+  @Override
+  public ZoneInfo createByUser(String zone, String aliasName, Authorization creator) throws
+      CreditNotEnoughException {
+    Account account = accountDao.strongVerifyAccount(creator)
+        .filter(this::canCreateZone)
+        .orElseThrow(CreditNotEnoughException::new);
+
+    ZoneInfo zoneInfo = ZoneInfo.createDefault(zone, aliasName, Instant.now())
+        .withAdmins(singletonList(account.getAccountId()));
+
+    zoneDao.create(zoneInfo);
+    return zoneInfo;
+  }
+
+  @Override
+  public boolean isZoneAvailable(String zone) {
+    return !zoneDao.findZoneWithoutCache(Zone.valueOf(zone)).isPresent();
+  }
+
+  private boolean canCreateZone(Account account) {
+    if (!account.containsAuthority(Authority.CITIZEN)) {
+      return false;
+    }
+    int zones = zoneDao.listZoneAdmins(account.getAccountId()).size();
+    if (zones >= MAX_AVAILABLE_ZONE) {
+      return false;
+    }
+    int requireScore = (zones + 1)
+        * HONOR_SCORE_PER_SZONE;
+    return accountDao.loadStats(account.getUsername()).getHonorScore() >= requireScore;
+  }
+
 }
