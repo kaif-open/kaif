@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.kaif.model.account.AccountAccessToken;
+import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.ZoneService;
 import io.kaif.web.support.SingleWrapper;
@@ -46,6 +48,7 @@ public class ZoneResource {
   public static class CreateZone {
 
     @NotNull
+    @Pattern(regexp = Zone.ZONE_PATTERN_STR)
     private final String zone;
 
     @Size(max = ZoneInfo.ALIAS_NAME_MAX)

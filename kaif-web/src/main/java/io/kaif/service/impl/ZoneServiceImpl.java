@@ -31,7 +31,8 @@ import io.kaif.service.ZoneService;
 @Transactional
 public class ZoneServiceImpl implements ZoneService {
 
-  private static final int HONOR_SCORE_PER_SZONE = 10;
+  private static final int HONOR_SCORE_PER_ZONE = 10;
+
   private static final int MAX_AVAILABLE_ZONE = 5;
 
   @Autowired
@@ -126,8 +127,7 @@ public class ZoneServiceImpl implements ZoneService {
     if (zones >= MAX_AVAILABLE_ZONE) {
       return false;
     }
-    int requireScore = (zones + 1)
-        * HONOR_SCORE_PER_SZONE;
+    int requireScore = (zones + 1) * HONOR_SCORE_PER_ZONE;
     return accountDao.loadStats(account.getUsername()).getHonorScore() >= requireScore;
   }
 

@@ -19,6 +19,8 @@ import com.google.common.base.Strings;
 @JsonSerialize(using = ZoneSerializer.class)
 @JsonDeserialize(using = ZoneDeserializer.class)
 public class Zone {
+
+  public static final String ZONE_PATTERN_STR = "^[a-z0-9][a-z0-9\\-]{1,18}[a-z0-9]$";
   /**
    * - must start with az09, end with az09, no dash
    * - must use dash to separate
@@ -27,7 +29,7 @@ public class Zone {
    * <p>
    * change pattern should review route.dart and ZoneController.java and Emitter.java
    */
-  private static final Pattern ZONE_PATTERN = Pattern.compile("^[a-z0-9][a-z0-9\\-]{1,18}[a-z0-9]$");
+  private static final Pattern ZONE_PATTERN = Pattern.compile(ZONE_PATTERN_STR);
 
   private static String valueFallback(String rawValue) {
     if (Strings.isNullOrEmpty(rawValue)) {

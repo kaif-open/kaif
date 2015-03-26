@@ -29,7 +29,7 @@ import io.kaif.model.account.Authorization;
  */
 public class ZoneInfo {
 
-  public static final int ALIAS_NAME_MAX = 10;
+  public static final int ALIAS_NAME_MAX = 15;
 
   public static final String THEME_DEFAULT = "z-theme-default";
 
