@@ -56,9 +56,6 @@ public class ArticleServiceImpl implements ArticleService {
   @Autowired
   private FeedService feedService;
 
-  @Autowired
-  private HonorRollDao honorRollDao;
-
   @Override
   public Article createExternalLink(Authorization authorization,
       Zone zone,
