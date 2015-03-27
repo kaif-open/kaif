@@ -21,6 +21,7 @@ import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.ZoneService;
 import io.kaif.test.DbIntegrationTests;
+import io.kaif.web.support.AccessDeniedException;
 
 public class ZoneServiceImplTest extends DbIntegrationTests {
 
@@ -183,8 +184,8 @@ public class ZoneServiceImplTest extends DbIntegrationTests {
       Account tourist = savedAccountTourist("tourist");
       accountDao.changeTotalVotedDebate(tourist.getAccountId(), 10, 0);
       service.createByUser("aaa", "this is aaa", tourist);
-      fail("CreditNotEnoughException expected");
-    } catch (CreditNotEnoughException expected) {
+      fail("AccessDeniedException expected");
+    } catch (AccessDeniedException expected) {
     }
   }
 
