@@ -19,7 +19,7 @@ class Router {
 
   String get newsFeed => '/account/news-feed';
 
-  String get home => '/' ;
+  String get home => '/';
 
   String user(String username) => '/u/$username';
 
@@ -63,5 +63,9 @@ class Router {
     //see Zone.java for pattern
     return new RegExp(r'/z/([a-z0-9][a-z0-9\-]{1,28}[a-z0-9])')
     .allMatches(window.location.pathname).first.group(1);
+  }
+
+  void redirect(String location) {
+    window.location.href = location;
   }
 }

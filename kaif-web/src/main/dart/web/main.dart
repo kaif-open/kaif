@@ -9,6 +9,7 @@ import 'package:kaif_web/comp/account/account_menu.dart';
 import 'package:kaif_web/comp/account/account_settings.dart';
 import 'package:kaif_web/comp/article/article_form.dart';
 import 'package:kaif_web/comp/article/article-list.dart';
+import 'package:kaif_web/comp/v1/oauth_authorize_form.dart';
 import 'package:kaif_web/comp/debate/debate_tree.dart';
 import 'package:kaif_web/comp/debate/debate_list.dart';
 import 'package:kaif_web/comp/server_part_loader.dart';
@@ -36,6 +37,7 @@ class AppModule {
   AccountSession accountSession;
   AccountService accountService;
   ArticleService articleService;
+  V1OauthService v1OauthService;
   VoteService voteService;
   PartService partService;
   ServerPartLoader serverPartLoader;
@@ -50,6 +52,7 @@ class AppModule {
     accountService = new AccountService(serverType, accessTokenProvider);
     articleService = new ArticleService(serverType, accessTokenProvider);
     voteService = new VoteService(serverType, accessTokenProvider);
+    v1OauthService = new V1OauthService(serverType, accessTokenProvider);
     partService = new PartService(serverType, accessTokenProvider);
     newsFeedNotification = new NewsFeedNotification(accountService, accountSession, newsFeedDao);
     serverPartLoader = new ServerPartLoader(partService, _initializeComponents);
@@ -94,6 +97,9 @@ class AppModule {
     });
     parent.querySelectorAll('[short-url-input]').forEach((el) {
       new ShortUrlInput(el);
+    });
+    parent.querySelectorAll('[oauth-authorize-form]').forEach((el) {
+      new OauthAuthorizeForm(el, accountSession, v1OauthService);
     });
   }
 
