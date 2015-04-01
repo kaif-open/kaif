@@ -7,7 +7,8 @@ import java.util.UUID;
 public class AccountOnceToken {
 
   public enum Type {
-    ACTIVATION(Duration.ofDays(1)), FORGET_PASSWORD(Duration.ofDays(1));
+    ACTIVATION(Duration.ofDays(1)), FORGET_PASSWORD(Duration.ofDays(1)),
+    OAUTH_DIRECT_AUTHORIZE(Duration.ofHours(1));
 
     private final Duration duration;
 

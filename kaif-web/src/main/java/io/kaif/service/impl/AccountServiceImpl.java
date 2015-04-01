@@ -248,4 +248,24 @@ public class AccountServiceImpl implements AccountService {
   public void muteEmail(List<String> emails) {
     //TODO handle AWS permanent Bounced Emails
   }
+
+  @Override
+  public AccountOnceToken createOauthDirectAuthorizeToken(Authorization authorization) {
+    return accountDao.strongVerifyAccount(authorization)
+        .map(account -> accountDao.createOnceToken(account,
+            AccountOnceToken.Type.OAUTH_DIRECT_AUTHORIZE,
+            Instant.now(clock)))
+        .orElseThrow(() -> new AccessDeniedException("invalid access token"));
+  }
+
+  @Override
+  public boolean oauthDirectAuthorize(String inputOnceToken) {
+    return accountDao.findOnceToken(inputOnceToken, AccountOnceToken.Type.OAUTH_DIRECT_AUTHORIZE)
+        .filter(token -> token.isValid(Instant.now(clock)))
+        .map(onceToken -> {
+          accountDao.completeOnceToken(onceToken);
+          return true;
+        })
+        .orElse(false);
+  }
 }

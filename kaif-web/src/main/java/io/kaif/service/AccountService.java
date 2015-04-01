@@ -60,4 +60,8 @@ public interface AccountService {
   void complaintEmail(List<String> emails);
 
   void muteEmail(List<String> emails);
+
+  AccountOnceToken createOauthDirectAuthorizeToken(Authorization authorization);
+
+  boolean oauthDirectAuthorize(String inputOnceToken);
 }
