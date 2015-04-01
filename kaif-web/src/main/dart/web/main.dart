@@ -40,6 +40,7 @@ class AppModule {
   ArticleService articleService;
   V1OauthService v1OauthService;
   VoteService voteService;
+  ClientAppService clientAppService;
   PartService partService;
   ServerPartLoader serverPartLoader;
   NewsFeedNotification newsFeedNotification;
@@ -54,6 +55,7 @@ class AppModule {
     articleService = new ArticleService(serverType, accessTokenProvider);
     voteService = new VoteService(serverType, accessTokenProvider);
     v1OauthService = new V1OauthService(serverType, accessTokenProvider);
+    clientAppService = new ClientAppService(serverType, accessTokenProvider);
     partService = new PartService(serverType, accessTokenProvider);
     newsFeedNotification = new NewsFeedNotification(accountService, accountSession, newsFeedDao);
     serverPartLoader = new ServerPartLoader(partService, _initializeComponents);
@@ -103,7 +105,7 @@ class AppModule {
       new OauthAuthorizeForm(el, accountSession, v1OauthService);
     });
     parent.querySelectorAll('[developer-client-app]').forEach((el) {
-      new DeveloperClientApp(el, serverPartLoader);
+      new DeveloperClientApp(el, clientAppService);
     });
   }
 

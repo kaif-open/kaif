@@ -40,20 +40,6 @@ abstract class EditKmarkForm {
     KmarkHelper.enableIfExist(_elem);
   }
 
-  void _initHelp() {
-    Element toggleElem = _elem.querySelector('[kmark-help-toggle]');
-    Element helpElem = _elem.querySelector('[kmark-help]');
-    if (toggleElem == null || helpElem == null) {
-      return;
-    }
-    toggleElem.onClick.listen((e) {
-      e
-        ..stopPropagation()
-        ..preventDefault();
-      helpElem.classes.toggle('hidden');
-    });
-  }
-
   void _onCancel(Event e) {
     e
       ..preventDefault()

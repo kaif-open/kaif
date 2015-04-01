@@ -35,6 +35,7 @@ import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.service.AccountService;
 import io.kaif.service.ArticleService;
+import io.kaif.service.ClientAppService;
 import io.kaif.service.FeedService;
 import io.kaif.service.HonorRollService;
 import io.kaif.service.VoteService;
@@ -87,6 +88,11 @@ public abstract class MvcIntegrationTests implements ModelFixture, ToolFixture {
     public VoteService voteService() {
       return Mockito.mock(VoteService.class);
     }
+
+    @Bean
+    public ClientAppService clientAppService() {
+      return Mockito.mock(ClientAppService.class);
+    }
   }
 
   @Autowired
@@ -108,6 +114,9 @@ public abstract class MvcIntegrationTests implements ModelFixture, ToolFixture {
   protected FeedService feedService;
 
   @Autowired
+  protected ClientAppService clientAppService;
+
+  @Autowired
   private WebApplicationContext wac;
 
   protected MockMvc mockMvc;
@@ -120,7 +129,8 @@ public abstract class MvcIntegrationTests implements ModelFixture, ToolFixture {
         articleService,
         voteService,
         feedService,
-        honorRollService);
+        honorRollService,
+        clientAppService);
   }
 
   protected final String prepareAccessToken(Account account) {

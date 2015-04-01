@@ -411,3 +411,22 @@ class V1OauthService extends _AbstractService {
     .then(_mapToSingleWrapper);
   }
 }
+
+class ClientAppService extends _AbstractService {
+
+  ClientAppService(ServerType serverType,
+                   accessTokenProvider accessTokenProvider)
+  : super(serverType, accessTokenProvider);
+
+  String _getUrl(String path) => '/api/client-app$path';
+
+  Future create(String name, String description, String callbackUri) {
+    var json = {
+      'name':name,
+      'description':description,
+      'callbackUri':callbackUri
+    };
+    return _putJson(_getUrl('/create'), json)
+    .then((_) => null);
+  }
+}

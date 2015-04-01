@@ -3,7 +3,6 @@ library model_dao;
 import 'account.dart';
 import 'dart:html';
 import 'dart:convert';
-import 'dart:math' as Math;
 
 class AccountDao {
   static const String _KEY = 'ACCOUNT_AUTH';
@@ -12,7 +11,7 @@ class AccountDao {
   void save(AccountAuth auth, {bool permanent}) {
 
     if (permanent != null) {
-      _useLocalStorage = permanent ;
+      _useLocalStorage = permanent;
     }
 
     var storage = _useLocalStorage ? window.localStorage : window.sessionStorage;
@@ -67,8 +66,8 @@ class NewsFeedDao {
 
   void saveCounter(int value) {
     window.localStorage[_KEY] = JSON.encode({
-        'counter': value,
-        'updateTime': new DateTime.now().millisecondsSinceEpoch
+      'counter': value,
+      'updateTime': new DateTime.now().millisecondsSinceEpoch
     });
   }
 
