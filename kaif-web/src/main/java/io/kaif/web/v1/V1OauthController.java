@@ -32,10 +32,12 @@ public class V1OauthController {
 
   @RequestMapping(value = "/authorize", method = RequestMethod.GET)
   public ModelAndView authorize(@RequestParam("client_id") String clientId,
-      @RequestParam(value = "state", required = false) String state,
-      @RequestParam(value = "scope", required = false) List<String> scopes,
-      @RequestParam(value = "redirect_uri", required = false) String redirectUri) {
+      @RequestParam(value = "state") String state,
+      @RequestParam(value = "scope") List<String> scopes,
+      @RequestParam(value = "redirect_uri") String redirectUri) {
     //validate clientId, scope, redirectUri
+
+    //TODO scope use space to separate
     return new ModelAndView("v1/authorize").addObject("clientId", clientId)
         .addObject("state", state)
         .addObject("redirectUri", redirectUri)
@@ -84,7 +86,7 @@ public class V1OauthController {
     // https://developer.github.com/v3/oauth/#redirect-urls
   }
 
-  @RequestMapping(value = "/access-token", method = RequestMethod.POST)
+  @RequestMapping(value = "/xxxaccess-token", method = RequestMethod.POST)
   public void tokenEndpoint(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException, OAuthSystemException {
 

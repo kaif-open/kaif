@@ -21,6 +21,8 @@ class Router {
 
   String get home => '/';
 
+  String get currentHash => window.location.hash;
+
   String user(String username) => '/u/$username';
 
   void reload() {

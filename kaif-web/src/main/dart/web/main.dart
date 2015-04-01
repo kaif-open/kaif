@@ -16,6 +16,7 @@ import 'package:kaif_web/comp/server_part_loader.dart';
 import 'package:kaif_web/comp/short_url.dart';
 import 'dart:html';
 import 'dart:async';
+import 'package:kaif_web/comp/developer/developer_client_app.dart';
 
 final ServerType serverType = new ServerType();
 
@@ -100,6 +101,9 @@ class AppModule {
     });
     parent.querySelectorAll('[oauth-authorize-form]').forEach((el) {
       new OauthAuthorizeForm(el, accountSession, v1OauthService);
+    });
+    parent.querySelectorAll('[developer-client-app]').forEach((el) {
+      new DeveloperClientApp(el, serverPartLoader);
     });
   }
 
