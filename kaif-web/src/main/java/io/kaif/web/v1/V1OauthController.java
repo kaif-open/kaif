@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
@@ -24,7 +25,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.google.common.base.Preconditions;
 
 @Controller
 @RequestMapping("/v1/oauth")
@@ -46,6 +50,23 @@ public class V1OauthController {
                 .orElse(Collections.emptyList())
                 .stream()
                 .collect(Collectors.joining(",")));
+  }
+
+  /**
+   * spec is POST with application/x-www-form-urlencoded and return JSON
+   */
+  @RequestMapping(value = "/access-token", method = RequestMethod.POST)
+  @ResponseBody
+  public OAuthAccessTokenDto accessToken(@RequestParam("client_id") String clientId,
+      @RequestParam("grant_type") String grantType,
+      @RequestParam("code") String code,
+      @RequestParam("redirect_uri") String redirectUri) {
+
+    Preconditions.checkArgument(grantType.equals("authorization_code"));
+
+    //TODO check clientId and code on ClientAppUser
+    //TODO check redirectUri match
+    return new OAuthAccessTokenDto(UUID.randomUUID().toString(), "user,feed", "bearer");
   }
 
   @RequestMapping(value = "/xxxauthorize", method = RequestMethod.GET)
@@ -97,7 +118,6 @@ public class V1OauthController {
     try {
       oauthRequest = new OAuthTokenRequest(request);
 
-      validateClient(oauthRequest);
 
       String authzCode = oauthRequest.getCode();
 
@@ -132,10 +152,6 @@ public class V1OauthController {
       response.sendError(401);
     }
 
-  }
-
-  private void validateClient(OAuthTokenRequest oauthRequest) {
-    //TODO validate `code` in db
   }
 
 }

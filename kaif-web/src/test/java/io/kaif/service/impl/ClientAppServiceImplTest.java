@@ -19,11 +19,12 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
     Account dev = savedAccountCitizen("dev1");
     ClientApp clientApp = service.create(dev, "myapp", "ya ~ good", "http://myapp.com/callback");
     ClientApp loaded = service.loadClientAppWithoutCache(clientApp.getClientId());
-    assertEquals("myapp", clientApp.getAppName());
-    assertEquals("ya ~ good", clientApp.getDescription());
-    assertEquals("http://myapp.com/callback", clientApp.getCallbackUri());
-    assertNotNull(clientApp.getClientSecret());
-    assertEquals(dev.getAccountId(), clientApp.getOwnerAccountId());
-    assertNotNull(clientApp.getCreateTime());
+    assertEquals("myapp", loaded.getAppName());
+    assertEquals("ya ~ good", loaded.getDescription());
+    assertEquals("http://myapp.com/callback", loaded.getCallbackUri());
+    assertEquals(32, loaded.getClientSecret().length());
+    assertEquals(16, loaded.getClientId().length());
+    assertEquals(dev.getAccountId(), loaded.getOwnerAccountId());
+    assertNotNull(loaded.getCreateTime());
   }
 }

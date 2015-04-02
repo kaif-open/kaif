@@ -34,13 +34,15 @@
                             <div class="pure-control-group">
                                 <label>名稱*</label>
                                 <input name="nameInput" type="text"
-                                       maxlength="15" required
+                                       pattern=".{3,15}"
+                                       maxlength="15" required title="3 ~ 15 字"
                                        class="pure-input-1">
                             </div>
 
                             <div class="pure-control-group">
                                 <label>說明*</label>
                                 <input name="descriptionInput" type="text"
+                                       pattern=".{5,100}" title="5 ~ 100 字"
                                        maxlength="100" required class="pure-input-1">
                             </div>
 

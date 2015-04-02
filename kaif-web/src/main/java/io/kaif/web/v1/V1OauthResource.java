@@ -52,20 +52,6 @@ public class V1OauthResource {
     public String redirectUri;
   }
 
-  /**
-   * 因為要給手機打，所以不能像 github web flow 一樣付 clientSecret
-   */
-  static class AccessTokenRequest {
-    @NotNull
-    public String clientId;
-    @NotNull
-    public String code;
-
-    //TODO redirectUri should same as authorized redirectUri
-    @NotNull
-    public String redirectUri;
-  }
-
   //TODO move to controller because need to use server side redirect
   //TODO AccountAccessToken should be submit via form body, not header, but the token still
   //     append by js, not hard-coded in html
@@ -97,10 +83,4 @@ public class V1OauthResource {
     return SingleWrapper.of(redirectLocation);
   }
 
-  @RequestMapping(value = "/access-token", method = RequestMethod.POST)
-  public OAuthAccessTokenDto accessToken(@RequestBody @Valid AccessTokenRequest request) {
-    //TODO check code on ClientAppUser
-    //TODO check client secret
-    return new OAuthAccessTokenDto(UUID.randomUUID().toString(), "user,feed", "bearer");
-  }
 }

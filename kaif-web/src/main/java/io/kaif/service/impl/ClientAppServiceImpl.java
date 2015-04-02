@@ -29,7 +29,8 @@ public class ClientAppServiceImpl implements ClientAppService {
       String name,
       String description,
       String callbackUri) {
-    //TODO check account is citezen
+    //TODO check account is citizen
+    //TODO max non-revoked 5 apps for one account
     Account account = accountDao.strongVerifyAccount(creator)
         .orElseThrow(() -> new AccessDeniedException("not allow create app."));
     return clientAppDao.createClientApp(account, name, description, callbackUri, Instant.now());
