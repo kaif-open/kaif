@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import io.kaif.model.account.Account;
 import io.kaif.model.clientapp.ClientApp;
+import io.kaif.model.exception.CallbackUriReservedException;
+import io.kaif.model.exception.ClientAppNamedReservedException;
 import io.kaif.test.DbIntegrationTests;
 
 public class ClientAppServiceImplTest extends DbIntegrationTests {
@@ -27,6 +29,26 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
     assertEquals(16, loaded.getClientId().length());
     assertEquals(dev.getAccountId(), loaded.getOwnerAccountId());
     assertNotNull(loaded.getCreateTime());
+  }
+
+  @Test
+  public void create_not_allow_reserved_word() throws Exception {
+    Account dev = savedAccountCitizen("dev1");
+    try {
+      service.create(dev, "myapp", "ya ~ good", "http://myapp.com/kaif");
+      fail("CallbackUriReservedException expected");
+    } catch (CallbackUriReservedException expected) {
+    }
+    try {
+      service.create(dev, "myapp", "ya ~ good", "Kaif-demo://myapp.com/");
+      fail("CallbackUriReservedException expected");
+    } catch (CallbackUriReservedException expected) {
+    }
+    try {
+      service.create(dev, "Kaif", "ya ~ good", "demo://myapp.com/");
+      fail("ClientAppNamedReservedException expected");
+    } catch (ClientAppNamedReservedException expected) {
+    }
   }
 
   @Test

@@ -25,6 +25,7 @@ public class ClientAppResource {
     @Size(min = ClientApp.NAME_MIN, max = ClientApp.NAME_MAX)
     @NotNull
     public String name;
+
     @Size(min = ClientApp.DESCRIPTION_MIN, max = ClientApp.DESCRIPTION_MAX)
     @NotNull
     public String description;
@@ -42,9 +43,9 @@ public class ClientAppResource {
   public SingleWrapper<String> create(AccountAccessToken accountAccessToken,
       @RequestBody @Valid CreateClientApp create) {
     String clientId = clientAppService.create(accountAccessToken,
-        create.name,
-        create.description,
-        create.callbackUri).getClientId();
+        create.name.trim(),
+        create.description.trim(),
+        create.callbackUri.trim()).getClientId();
     return SingleWrapper.of(clientId);
   }
 

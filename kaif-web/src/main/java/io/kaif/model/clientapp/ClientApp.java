@@ -3,6 +3,9 @@ package io.kaif.model.clientapp;
 import java.time.Instant;
 import java.util.UUID;
 
+import io.kaif.model.exception.CallbackUriReservedException;
+import io.kaif.model.exception.ClientAppNamedReservedException;
+
 public class ClientApp {
 
   public static final int NAME_MAX = 15;
@@ -14,9 +17,15 @@ public class ClientApp {
       String name,
       String description,
       String callbackUri,
-      Instant now) {
+      Instant now) throws CallbackUriReservedException, ClientAppNamedReservedException {
     String clientId = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 16);
     String secret = UUID.randomUUID().toString().replaceAll("-", "");
+    if (callbackUri.toLowerCase().contains("kaif")) {
+      throw new CallbackUriReservedException();
+    }
+    if (name.equalsIgnoreCase("kaif")) {
+      throw new ClientAppNamedReservedException();
+    }
     return new ClientApp(clientId,
         secret,
         name,
@@ -26,6 +35,7 @@ public class ClientApp {
         false,
         callbackUri);
   }
+
   private final String clientId;
   private final String clientSecret;
   private final String appName;
