@@ -37,6 +37,7 @@ import com.google.common.base.Strings;
 import io.kaif.model.clientapp.ClientApp;
 import io.kaif.model.clientapp.ClientAppScope;
 import io.kaif.service.ClientAppService;
+import io.kaif.web.support.AccessDeniedException;
 
 @Controller
 @RequestMapping("/v1/oauth")
@@ -83,16 +84,41 @@ public class V1OauthController {
         .addObject("scope", scope);
   }
 
+  @RequestMapping(value = "/authorize", method = RequestMethod.POST)
+  public Object grantCode(
+      @RequestParam(value = "OAUTH_DIRECT_AUTHORIZE") String oauthDirectAuthorize,
+      @RequestParam(value = "client_id") String clientId,
+      @RequestParam(value = "state") String state,
+      @RequestParam(value = "scope") String scope,
+      @RequestParam(value = "redirect_uri") String redirectUri) {
+    try {
+      final String code = clientAppService.directGrantCode(oauthDirectAuthorize,
+          clientId,
+          scope,
+          redirectUri);
+      return redirectViewWithQuery(redirectUri, state, "code=" + code);
+    } catch (AccessDeniedException e) {
+      return redirectViewWithError(redirectUri,
+          OAuthError.CodeResponse.ACCESS_DENIED,
+          "access denied",
+          state);
+    }
+  }
+
   private RedirectView redirectViewWithError(String redirectUri,
       String error,
       String errorDescription,
       String state) {
+    String query = String.format("%s=%s&%s=%s",
+        OAuthError.OAUTH_ERROR,
+        error,
+        OAuthError.OAUTH_ERROR_DESCRIPTION,
+        errorDescription);
+    return redirectViewWithQuery(redirectUri, state, query);
+  }
+
+  private RedirectView redirectViewWithQuery(String redirectUri, String state, String query) {
     try {
-      String query = String.format("%s=%s&%s=%s",
-          OAuthError.OAUTH_ERROR,
-          error,
-          OAuthError.OAUTH_ERROR_DESCRIPTION,
-          errorDescription);
       if (!Strings.isNullOrEmpty(state)) {
         query += "&state=" + state;
       }

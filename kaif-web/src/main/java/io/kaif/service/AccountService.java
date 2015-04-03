@@ -63,5 +63,5 @@ public interface AccountService {
 
   AccountOnceToken createOauthDirectAuthorizeToken(Authorization authorization);
 
-  boolean oauthDirectAuthorize(String inputOnceToken);
+  Optional<Account> oauthDirectAuthorize(String inputOnceToken);
 }

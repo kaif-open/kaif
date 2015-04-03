@@ -1,8 +1,10 @@
 package io.kaif.service.impl;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +16,10 @@ import io.kaif.model.account.Authority;
 import io.kaif.model.account.Authorization;
 import io.kaif.model.clientapp.ClientApp;
 import io.kaif.model.clientapp.ClientAppDao;
+import io.kaif.model.clientapp.GrantCode;
+import io.kaif.model.clientapp.OauthSecret;
 import io.kaif.model.exception.ClientAppMaxException;
+import io.kaif.service.AccountService;
 import io.kaif.service.ClientAppService;
 import io.kaif.web.support.AccessDeniedException;
 
@@ -22,11 +27,16 @@ import io.kaif.web.support.AccessDeniedException;
 @Transactional
 public class ClientAppServiceImpl implements ClientAppService {
 
+  public static final Duration GRANT_CODE_DURATION = Duration.ofHours(1);
   @Autowired
   private AccountDao accountDao;
 
   @Autowired
   private ClientAppDao clientAppDao;
+  @Autowired
+  private AccountService accountService;
+  @Autowired
+  private OauthSecret oauthSecret;
 
   @Override
   public ClientApp create(Authorization creator,
@@ -75,5 +85,42 @@ public class ClientAppServiceImpl implements ClientAppService {
   @Override
   public Optional<ClientApp> verifyRedirectUri(String clientId, String redirectUri) {
     return clientAppDao.find(clientId).filter(app -> app.validateRedirectUri(redirectUri));
+  }
+
+  @Override
+  public String directGrantCode(String oauthDirectAuthorize,
+      String clientId,
+      String scope,
+      String redirectUri) throws AccessDeniedException {
+    //before grant code step, redirect uri should be verified
+    ClientApp clientApp = verifyRedirectUri(clientId,
+        redirectUri).orElseThrow(() -> new IllegalStateException("invalid clientId and redirectUri"));
+
+    Account account = accountService.oauthDirectAuthorize(oauthDirectAuthorize)
+        .orElseThrow(() -> new AccessDeniedException("direct authorize failed"));
+
+    return new GrantCode(account.getAccountId(),
+        clientApp.getClientId(),
+        clientApp.getClientSecret(),
+        redirectUri,
+        scope).encode(Instant.now().plus(GRANT_CODE_DURATION), oauthSecret);
+  }
+
+  /**
+   * if failed to create access token, mostly cause by grant code validation failed
+   * the server should response error=invalid_grant
+   */
+  @Override
+  public Optional<String> createOauthAccessTokenByGrantCode(String code,
+      String clientId,
+      String redirectUri) {
+    return verifyRedirectUri(clientId, redirectUri).flatMap(clientApp -> {
+      return GrantCode.tryDecode(code, oauthSecret)
+          .filter(grantCode -> grantCode.matches(clientApp, redirectUri))
+          .map(validCode -> {
+            //TODO generate oauthAccessToken
+            return UUID.randomUUID().toString();
+          });
+    });
   }
 }

@@ -259,13 +259,12 @@ public class AccountServiceImpl implements AccountService {
   }
 
   @Override
-  public boolean oauthDirectAuthorize(String inputOnceToken) {
+  public Optional<Account> oauthDirectAuthorize(String inputOnceToken) {
     return accountDao.findOnceToken(inputOnceToken, AccountOnceToken.Type.OAUTH_DIRECT_AUTHORIZE)
         .filter(token -> token.isValid(Instant.now(clock)))
-        .map(onceToken -> {
+        .flatMap(onceToken -> {
           accountDao.completeOnceToken(onceToken);
-          return true;
-        })
-        .orElse(false);
+          return accountDao.findById(onceToken.getAccountId());
+        });
   }
 }

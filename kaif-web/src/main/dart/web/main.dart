@@ -38,7 +38,6 @@ class AppModule {
   AccountSession accountSession;
   AccountService accountService;
   ArticleService articleService;
-  V1OauthService v1OauthService;
   VoteService voteService;
   ClientAppService clientAppService;
   PartService partService;
@@ -54,7 +53,6 @@ class AppModule {
     accountService = new AccountService(serverType, accessTokenProvider);
     articleService = new ArticleService(serverType, accessTokenProvider);
     voteService = new VoteService(serverType, accessTokenProvider);
-    v1OauthService = new V1OauthService(serverType, accessTokenProvider);
     clientAppService = new ClientAppService(serverType, accessTokenProvider);
     partService = new PartService(serverType, accessTokenProvider);
     newsFeedNotification = new NewsFeedNotification(accountService, accountSession, newsFeedDao);
@@ -102,7 +100,7 @@ class AppModule {
       new ShortUrlInput(el);
     });
     parent.querySelectorAll('[oauth-authorize-form]').forEach((el) {
-      new OauthAuthorizeForm(el, accountSession, v1OauthService);
+      new OauthAuthorizeForm(el, accountSession, accountService);
     });
     parent.querySelectorAll('[developer-client-app]').forEach((el) {
       new DeveloperClientApp(el, clientAppService);

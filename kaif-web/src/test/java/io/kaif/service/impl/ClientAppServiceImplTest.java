@@ -3,16 +3,19 @@ package io.kaif.service.impl;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.kaif.model.account.Account;
+import io.kaif.model.account.AccountOnceToken;
 import io.kaif.model.clientapp.ClientApp;
 import io.kaif.model.exception.CallbackUriReservedException;
 import io.kaif.model.exception.ClientAppMaxException;
 import io.kaif.model.exception.ClientAppNameReservedException;
+import io.kaif.service.AccountService;
 import io.kaif.test.DbIntegrationTests;
 import io.kaif.web.support.AccessDeniedException;
 
@@ -20,6 +23,8 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
 
   @Autowired
   private ClientAppServiceImpl service;
+  @Autowired
+  private AccountService accountService;
 
   @Test
   public void create() throws Exception {
@@ -132,5 +137,24 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
     ClientApp clientApp1 = service.create(dev, "myapp1", "ya ~ good", "http://myapp1.com/callback");
     ClientApp clientApp2 = service.create(dev, "myapp2", "ya ~ good", "http://myapp2.com/callback");
     assertEquals(asList(clientApp1, clientApp2), service.listClientApps(dev));
+  }
+
+  @Test
+  public void directGrantCode() throws Exception {
+    Account user = savedAccountCitizen("user1");
+    AccountOnceToken oauthDirectAuthorizeToken = accountService.createOauthDirectAuthorizeToken(user);
+    Account dev = savedAccountCitizen("dev1");
+    ClientApp clientApp = service.create(dev, "myapp", "ya ~ good", "http://myapp.com/callback");
+
+    String code = service.directGrantCode(oauthDirectAuthorizeToken.getToken(),
+        clientApp.getClientId(),
+        "feed public",
+        "http://myapp.com/callback/foo");
+
+    assertTrue(code.length() > 100);
+    Optional<String> token = service.createOauthAccessTokenByGrantCode(code,
+        clientApp.getClientId(),
+        "http://myapp.com/callback/foo");
+    assertTrue(token.isPresent());
   }
 }

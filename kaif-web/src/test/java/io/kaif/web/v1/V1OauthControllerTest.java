@@ -2,20 +2,30 @@ package io.kaif.web.v1;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import java.util.Optional;
 
+import org.junit.Before;
 import org.junit.Test;
 
+import io.kaif.model.account.AccountAuth;
 import io.kaif.model.clientapp.ClientApp;
 import io.kaif.test.MvcIntegrationTests;
+import io.kaif.web.support.AccessDeniedException;
 
 public class V1OauthControllerTest extends MvcIntegrationTests {
 
   private ClientApp clientApp = clientApp(accountCitizen("dev1"), "app1");
+  private AccountAuth accountAuth;
+
+  @Before
+  public void setUp() throws Exception {
+    accountAuth = new AccountAuth("name1", "fooToken", 10000, 1000);
+  }
 
   @Test
   public void authorize() throws Exception {
@@ -31,7 +41,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
   }
 
   @Test
-  public void authorize_wrong_redirectUri() throws Exception {
+  public void authorize_wrong_redirect_uri() throws Exception {
     when(clientAppService.verifyRedirectUri(clientApp.getClientId(), "foo://callback")).thenReturn(
         Optional.empty());
     mockMvc.perform(get("/v1/oauth/authorize").param("client_id", clientApp.getClientId())
@@ -80,6 +90,33 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
         .param("redirect_uri", "foo://callback"))
         .andExpect(redirectedUrl(
             "foo://callback?error=invalid_scope&error_description=wrong%20scope&state=123"))
+        .andExpect(status().isMovedPermanently());
+  }
+
+  @Test
+  public void directGrantCode() throws Exception {
+    when(clientAppService.directGrantCode("foo", "client-id-foo", "feed article", "foo://callback"))
+        .thenReturn("auth code");
+    mockMvc.perform(post("/v1/oauth/authorize").param("OAUTH_DIRECT_AUTHORIZE", "foo")
+        .param("client_id", "client-id-foo")
+        .param("redirect_uri", "foo://callback")
+        .param("scope", "feed article")
+        .param("state", "123 456"))
+        .andExpect(redirectedUrl("foo://callback?code=auth%20code&state=123%20456"))
+        .andExpect(status().isMovedPermanently());
+  }
+
+  @Test
+  public void directGrantCode_access_denied() throws Exception {
+    when(clientAppService.directGrantCode("foo", "client-id-foo", "feed article", "foo://callback"))
+        .thenThrow(new AccessDeniedException());
+    mockMvc.perform(post("/v1/oauth/authorize").param("OAUTH_DIRECT_AUTHORIZE", "foo")
+        .param("client_id", "client-id-foo")
+        .param("scope", "feed article")
+        .param("state", "123 456")
+        .param("redirect_uri", "foo://callback"))
+        .andExpect(redirectedUrl(
+            "foo://callback?error=access_denied&error_description=access%20denied&state=123%20456"))
         .andExpect(status().isMovedPermanently());
   }
 }

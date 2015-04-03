@@ -252,6 +252,12 @@ class AccountService extends _AbstractService {
     return _putJson(_getUrl('/description/preview'), json)
     .then((req) => req.responseText);
   }
+
+  Future<String> createOauthDirectAuthorizeToken() async {
+    var json = {
+    };
+    return _mapToSingleWrapper(await _putJson(_getUrl('/oauth-direct-authorize-token'), json));
+  }
 }
 
 class ArticleService extends _AbstractService {
@@ -375,40 +381,6 @@ class VoteService extends _AbstractService {
     return _get(_getUrl('/debate-voters'), params:params)
     .then((req) => JSON.decode(req.responseText))
     .then((List<Map> list) => list.map((raw) => new DebateVoter.decode(raw)).toList());
-  }
-}
-
-class V1OauthService extends _AbstractService {
-
-  V1OauthService(ServerType serverType, accessTokenProvider accessTokenProvider) : super(serverType,
-  accessTokenProvider);
-
-  String _getUrl(String path) => '/v1/oauth$path';
-
-  Future<String> directAuthorize(String clientId, String scope, String redirectUri, String state) {
-    var json = {
-      'state':state,
-      'scopes':scope.split(','),
-      'redirectUri':redirectUri,
-      'clientId':clientId
-    };
-    return _postJson(_getUrl('/direct-authorize'), json)
-    .then(_mapToSingleWrapper);
-  }
-
-  Future<String> signInAuthorize(String username, String password, String clientId, String scope,
-                                 String redirectUri,
-                                 String state) {
-    var json = {
-      'username':username,
-      'password':password,
-      'state':state,
-      'scopes':scope.split(','),
-      'redirectUri':redirectUri,
-      'clientId':clientId
-    };
-    return _postJson(_getUrl('/sign-in-authorize'), json)
-    .then(_mapToSingleWrapper);
   }
 }
 

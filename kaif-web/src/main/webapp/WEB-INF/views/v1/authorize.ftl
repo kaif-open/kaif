@@ -3,13 +3,10 @@
 
 <@template.page layout='small'>
 
-<form class="pure-form pure-form-aligned" oauth-authorize-form>
-
-    <input type="hidden" name="clientId" value="${clientApp.clientId}">
-    <input type="hidden" name="state" value="${state}">
-    <input type="hidden" name="redirectUri" value="${redirectUri}">
-    <input type="hidden" name="scope" value="${scope}">
-    <input type="hidden" name="responseType" value="${responseType}">
+<form class="pure-form pure-form-aligned" oauth-authorize-form
+      method="POST"
+      enctype="application/x-www-form-urlencoded">
+    <input type="hidden" name="OAUTH_DIRECT_AUTHORIZE" value="">
 
     <fieldset>
         <legend>授權應用程式 ${clientApp.appName}</legend>

@@ -43,6 +43,10 @@ account:
     mac: n7LOo9kKqSqM-fshf_T3xw
     key: dnXAz2u6mn4L_vZyiW0hHA
 
+## oauth, see OauthSecret.java
+oauth:
+    mac: n7LOo9kKqSqM-fshf_T3xw
+    key: dnXAz2u6mn4L_vZyiW0hHA
 
 ## flake node id
 flake.node-id: 99

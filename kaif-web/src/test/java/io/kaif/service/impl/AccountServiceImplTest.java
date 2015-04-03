@@ -177,8 +177,9 @@ public class AccountServiceImplTest extends DbIntegrationTests {
   public void oauthDirectAuthorizeToken() throws Exception {
     Account account = savedAccountCitizen("oauthTest");
     AccountOnceToken token = service.createOauthDirectAuthorizeToken(account);
-    assertTrue(service.oauthDirectAuthorize(token.getToken()));
-    assertFalse("consumed token should be invalid", service.oauthDirectAuthorize(token.getToken()));
+    assertTrue(service.oauthDirectAuthorize(token.getToken()).isPresent());
+    assertFalse("consumed token should be invalid",
+        service.oauthDirectAuthorize(token.getToken()).isPresent());
   }
 
   @Test
@@ -187,7 +188,8 @@ public class AccountServiceImplTest extends DbIntegrationTests {
     service.setClock(Clock.offset(Clock.systemDefaultZone(), Duration.ofHours(-2)));
     AccountOnceToken token = service.createOauthDirectAuthorizeToken(account);
     service.setClock(Clock.systemDefaultZone());
-    assertFalse("expired token should be invalid", service.oauthDirectAuthorize(token.getToken()));
+    assertFalse("expired token should be invalid",
+        service.oauthDirectAuthorize(token.getToken()).isPresent());
   }
 
   @Test
