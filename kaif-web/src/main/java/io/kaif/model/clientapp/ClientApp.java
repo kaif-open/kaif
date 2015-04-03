@@ -1,6 +1,7 @@
 package io.kaif.model.clientapp;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 import io.kaif.model.exception.CallbackUriReservedException;
@@ -159,5 +160,11 @@ public class ClientApp {
         ownerAccountId,
         revoked,
         newCallback);
+  }
+
+  public boolean validateRedirectUri(String targetRedirectUri) {
+    return Optional.ofNullable(targetRedirectUri)
+        .filter(target -> target.startsWith(callbackUri))
+        .isPresent();
   }
 }

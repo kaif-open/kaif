@@ -1,12 +1,10 @@
-package io.kaif.web.v1;
+package io.kaif.web.v1.oauth;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collections;
-import java.util.List;
+import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,35 +19,98 @@ import org.apache.oltu.oauth2.as.response.OAuthASResponse;
 import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.apache.oltu.oauth2.common.message.OAuthResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.util.UriUtils;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+
+import io.kaif.model.clientapp.ClientApp;
+import io.kaif.model.clientapp.ClientAppScope;
+import io.kaif.service.ClientAppService;
 
 @Controller
 @RequestMapping("/v1/oauth")
 public class V1OauthController {
 
-  @RequestMapping(value = "/authorize", method = RequestMethod.GET)
-  public ModelAndView authorize(@RequestParam("client_id") String clientId,
-      @RequestParam(value = "state") String state,
-      @RequestParam(value = "scope") List<String> scopes,
-      @RequestParam(value = "redirect_uri") String redirectUri) {
-    //validate clientId, scope, redirectUri
+  @Autowired
+  private ClientAppService clientAppService;
 
-    //TODO scope use space to separate
-    return new ModelAndView("v1/authorize").addObject("clientId", clientId)
+  @RequestMapping(value = "/authorize", method = RequestMethod.GET)
+  public Object authorize(HttpServletResponse response,
+      @RequestParam(value = "client_id", required = false) String clientId,
+      @RequestParam(value = "state", required = false) String state,
+      @RequestParam(value = "scope", required = false) String scope,
+      @RequestParam(value = "response_type", required = false) String responseType,
+      @RequestParam(value = "redirect_uri", required = false) String redirectUri) {
+    Optional<ClientApp> clientApp = clientAppService.verifyRedirectUri(clientId, redirectUri);
+    if (!clientApp.isPresent()) {
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      return new ModelAndView("error");
+    }
+    if (!"code".equals(responseType)) {
+      return redirectViewWithError(redirectUri,
+          OAuthError.CodeResponse.UNSUPPORTED_RESPONSE_TYPE,
+          "response_type must be code",
+          state);
+    }
+    if (Strings.isNullOrEmpty(state)) {
+      return redirectViewWithError(redirectUri,
+          OAuthError.CodeResponse.INVALID_REQUEST,
+          "missing state",
+          state);
+    }
+    if (ClientAppScope.tryParse(scope).isEmpty()) {
+      return redirectViewWithError(redirectUri,
+          OAuthError.CodeResponse.INVALID_SCOPE,
+          "wrong scope",
+          state);
+    }
+    //TODO handle error=server_error and error=temporary_unavailable
+    return new ModelAndView("v1/authorize").addObject("clientApp", clientApp.get())
         .addObject("state", state)
+        .addObject("responseType", responseType)
         .addObject("redirectUri", redirectUri)
-        .addObject("scope",
-            Optional.ofNullable(scopes)
-                .orElse(Collections.emptyList())
-                .stream()
-                .collect(Collectors.joining(",")));
+        .addObject("scope", scope);
+  }
+
+  private RedirectView redirectViewWithError(String redirectUri,
+      String error,
+      String errorDescription,
+      String state) {
+    try {
+      String query = String.format("%s=%s&%s=%s",
+          OAuthError.OAUTH_ERROR,
+          error,
+          OAuthError.OAUTH_ERROR_DESCRIPTION,
+          errorDescription);
+      if (!Strings.isNullOrEmpty(state)) {
+        query += "&state=" + state;
+      }
+      String encoded = UriUtils.encodeQuery(query, Charsets.UTF_8.name());
+      String locationUri = redirectUri;
+      if (redirectUri.contains("?")) {
+        locationUri += "&" + encoded;
+      } else {
+        locationUri += "?" + encoded;
+      }
+      RedirectView redirectView = new RedirectView(locationUri);
+      redirectView.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
+      redirectView.setExposeModelAttributes(false);
+      redirectView.setPropagateQueryParams(false);
+      return redirectView;
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /**
@@ -117,7 +178,6 @@ public class V1OauthController {
 
     try {
       oauthRequest = new OAuthTokenRequest(request);
-
 
       String authzCode = oauthRequest.getCode();
 

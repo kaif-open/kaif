@@ -3,6 +3,7 @@ package io.kaif.model.clientapp;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class ClientAppDao implements DaoOperations {
     return namedParameterJdbcTemplate;
   }
 
-  public ClientApp createClientApp(Account creator,
+  public ClientApp create(Account creator,
       String name,
       String description,
       String callbackUri,
@@ -62,13 +63,13 @@ public class ClientAppDao implements DaoOperations {
     return app;
   }
 
-  public ClientApp loadClientAppWithoutCache(String clientId) {
+  public ClientApp loadWithoutCache(String clientId) {
     return jdbc().queryForObject(" SELECT * FROM ClientApp WHERE clientId = ? ",
         clientAppMapper,
         clientId);
   }
 
-  public List<ClientApp> listClientAppsOrderByTime(UUID ownerAccountId) {
+  public List<ClientApp> listOrderByTime(UUID ownerAccountId) {
     return jdbc().query(" SELECT * FROM ClientApp WHERE ownerAccountId = ? ORDER BY createTime ",
         clientAppMapper,
         ownerAccountId);
@@ -89,5 +90,11 @@ public class ClientAppDao implements DaoOperations {
         updated.isRevoked(),
         updated.getCallbackUri(),
         updated.getClientId());
+  }
+
+  public Optional<ClientApp> find(String clientId) {
+    return jdbc().query(" SELECT * FROM ClientApp WHERE clientId = ? LIMIT 1",
+        clientAppMapper,
+        clientId).stream().findAny();
   }
 }

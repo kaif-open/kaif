@@ -1,4 +1,4 @@
-package io.kaif.web.v1;
+package io.kaif.web.v1.oauth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

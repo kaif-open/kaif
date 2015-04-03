@@ -1,6 +1,7 @@
 package io.kaif.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import io.kaif.model.account.Authorization;
 import io.kaif.model.clientapp.ClientApp;
@@ -20,4 +21,6 @@ public interface ClientAppService {
       String name,
       String description,
       String callbackUri);
+
+  Optional<ClientApp> verifyRedirectUri(String clientId, String redirectUri);
 }

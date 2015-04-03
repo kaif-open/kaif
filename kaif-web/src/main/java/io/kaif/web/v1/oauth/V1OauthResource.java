@@ -1,6 +1,5 @@
-package io.kaif.web.v1;
+package io.kaif.web.v1.oauth;
 
-import java.util.List;
 import java.util.UUID;
 
 import javax.validation.Valid;
@@ -26,7 +25,7 @@ public class V1OauthResource {
     public String state;
 
     @NotNull
-    public List<String> scopes;
+    public String scope;
 
     @NotNull
     public String redirectUri;
@@ -46,7 +45,7 @@ public class V1OauthResource {
     public String state;
 
     @NotNull
-    public List<String> scopes;
+    public String scope;
 
     @NotNull
     public String redirectUri;
@@ -58,7 +57,7 @@ public class V1OauthResource {
   @RequestMapping(value = "/direct-authorize", method = RequestMethod.POST)
   public SingleWrapper<String> directAuthorize(AccountAccessToken token,
       @RequestBody @Valid DirectAuthorize directAuthorize) {
-    //TODO create ClientAppUser
+    //TODO check citizen
     //TODO state needs encode component uri ?
     //TODO redirectUri
     String redirectLocation = directAuthorize.redirectUri
@@ -72,7 +71,7 @@ public class V1OauthResource {
   @RequestMapping(value = "/sign-in-authorize", method = RequestMethod.POST)
   public SingleWrapper<String> signInAuthorize(
       @RequestBody @Valid SignInAuthorize signInAuthorize) {
-    //TODO create ClientAppUser
+    //TODO check citizen
     //TODO state needs encode component uri ?
     //TODO redirectUri
     String redirectLocation = signInAuthorize.redirectUri

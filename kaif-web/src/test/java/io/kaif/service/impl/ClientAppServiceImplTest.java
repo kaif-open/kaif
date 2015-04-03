@@ -36,6 +36,21 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
+  public void verifyRedirectUri() throws Exception {
+    assertFalse(service.verifyRedirectUri("notExist", "foo://com").isPresent());
+    Account dev = savedAccountCitizen("dev1");
+    ClientApp clientApp = service.create(dev, "myapp", "ya ~ good", "http://myapp.com/callback");
+    String id = clientApp.getClientId();
+    assertEquals(clientApp, service.verifyRedirectUri(id, "http://myapp.com/callback").get());
+    assertTrue(service.verifyRedirectUri(id, "http://myapp.com/callback/").isPresent());
+    assertTrue(service.verifyRedirectUri(id, "http://myapp.com/callback/bar").isPresent());
+    assertFalse(service.verifyRedirectUri(id, "http://myapp.com/wrong").isPresent());
+    assertFalse(service.verifyRedirectUri(id, "https://myapp.com/callback/foo").isPresent());
+    assertFalse(service.verifyRedirectUri(id, "myapp://callback/foo").isPresent());
+    assertFalse(service.verifyRedirectUri(id, null).isPresent());
+  }
+
+  @Test
   public void create_maxApps() throws Exception {
     Account dev = savedAccountCitizen("dev1");
     IntStream.rangeClosed(1, 5).forEach(i -> {

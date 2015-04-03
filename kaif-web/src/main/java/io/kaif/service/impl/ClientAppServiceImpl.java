@@ -2,6 +2,7 @@ package io.kaif.service.impl;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class ClientAppServiceImpl implements ClientAppService {
     if (listClientApps(account).size() >= ClientApp.MAX_NO_OF_APPS) {
       throw new ClientAppMaxException(ClientApp.MAX_NO_OF_APPS);
     }
-    return clientAppDao.createClientApp(account, name, description, callbackUri, Instant.now());
+    return clientAppDao.create(account, name, description, callbackUri, Instant.now());
   }
 
   private Account verifyDeveloper(Authorization creator) {
@@ -47,12 +48,12 @@ public class ClientAppServiceImpl implements ClientAppService {
 
   @Override
   public ClientApp loadClientAppWithoutCache(String clientId) {
-    return clientAppDao.loadClientAppWithoutCache(clientId);
+    return clientAppDao.loadWithoutCache(clientId);
   }
 
   @Override
   public List<ClientApp> listClientApps(Authorization creator) {
-    return clientAppDao.listClientAppsOrderByTime(creator.authenticatedId());
+    return clientAppDao.listOrderByTime(creator.authenticatedId());
   }
 
   @Override
@@ -62,12 +63,17 @@ public class ClientAppServiceImpl implements ClientAppService {
       String description,
       String callbackUri) {
     Account account = verifyDeveloper(creator);
-    ClientApp clientApp = clientAppDao.loadClientAppWithoutCache(clientId);
+    ClientApp clientApp = clientAppDao.loadWithoutCache(clientId);
     if (!account.belongToAccount(clientApp.getOwnerAccountId())) {
       throw new AccessDeniedException("not client app owner");
     }
     clientAppDao.update(clientApp.withName(name)
         .withDescription(description)
         .withCallbackUri(callbackUri));
+  }
+
+  @Override
+  public Optional<ClientApp> verifyRedirectUri(String clientId, String redirectUri) {
+    return clientAppDao.find(clientId).filter(app -> app.validateRedirectUri(redirectUri));
   }
 }

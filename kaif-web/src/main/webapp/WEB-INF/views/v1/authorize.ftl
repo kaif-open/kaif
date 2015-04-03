@@ -5,13 +5,14 @@
 
 <form class="pure-form pure-form-aligned" oauth-authorize-form>
 
-    <input type="hidden" name="clientId" value="${clientId}">
-    <input type="hidden" name="state" value="${state!''}">
-    <input type="hidden" name="redirectUri" value="${redirectUri!''}">
-    <input type="hidden" name="scope" value="${scope!''}">
+    <input type="hidden" name="clientId" value="${clientApp.clientId}">
+    <input type="hidden" name="state" value="${state}">
+    <input type="hidden" name="redirectUri" value="${redirectUri}">
+    <input type="hidden" name="scope" value="${scope}">
+    <input type="hidden" name="responseType" value="${responseType}">
 
     <fieldset>
-        <legend>授權應用程式 --foo--</legend>
+        <legend>授權應用程式 ${clientApp.appName}</legend>
         <div class="pure-control-group">
             <label for="nameInput">帳號</label>
             <input id="nameInput" type="text" required class="pure-input-1-2">
