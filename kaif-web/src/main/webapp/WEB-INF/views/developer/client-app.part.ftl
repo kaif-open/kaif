@@ -16,9 +16,11 @@
                     </li>
                     <li class="pure-menu-separator"></li>
                     <li>
-                        <a href="#edit-client-app_foo" data-toggle="tab">
-                            <i class="fa fa-cube"></i> Foo App1
+                    <#list clientApps as clientApp>
+                        <a href="#edit-client-app_${clientApp.clientId}" data-toggle="tab">
+                            <i class="fa fa-cube"></i> ${clientApp.appName}
                         </a>
+                    </#list>
                     </li>
                 </ul>
             </nav>
@@ -62,8 +64,56 @@
                         </fieldset>
                     </form>
                 </div>
-                <div id="edit-client-app_foo" class="tab-pane">Foo App1
+            <#list clientApps as clientApp >
+                <div id="edit-client-app_${clientApp.clientId}" class="tab-pane">
+                    <form class="pure-form pure-form-stacked client-app-form"
+                          edit-client-app-form>
+                        <fieldset>
+                            <legend>應用程式 ${clientApp.appName}</legend>
+                            <div class="pure-control-group">
+                                <label><b>client_id</b></label>
+                                <input name="clientIdInput" type="text"
+                                       value="${clientApp.clientId}" readonly
+                                       class="pure-input-1">
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <legend>編輯資訊</legend>
+                            <div class="pure-control-group">
+                                <label>名稱*</label>
+                                <input name="nameInput" type="text"
+                                       pattern=".{3,15}"
+                                       value="${clientApp.appName}"
+                                       maxlength="15" required title="3 ~ 15 字"
+                                       class="pure-input-1">
+                            </div>
+
+                            <div class="pure-control-group">
+                                <label>說明*</label>
+                                <input name="descriptionInput" type="text"
+                                       value="${clientApp.description}"
+                                       pattern=".{5,100}" title="5 ~ 100 字"
+                                       maxlength="100" required class="pure-input-1">
+                            </div>
+
+                            <div class="pure-control-group">
+                                <label>Callback Uri*</label>
+                                <input name="callbackUriInput" type="url" placeholder="http://..."
+                                       value="${clientApp.callbackUri}"
+                                       required
+                                       class="pure-input-1">
+                            </div>
+
+                            <div class="pure-controls">
+                                <button type="submit" class="pure-button pure-button-primary">
+                                    TODO 變更
+                                </button>
+                            </div>
+
+                        </fieldset>
+                    </form>
                 </div>
+            </#list>
             </div>
         </div>
     </div>

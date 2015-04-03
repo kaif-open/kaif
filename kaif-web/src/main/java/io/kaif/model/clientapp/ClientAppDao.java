@@ -2,6 +2,7 @@ package io.kaif.model.clientapp;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,5 +66,11 @@ public class ClientAppDao implements DaoOperations {
     return jdbc().queryForObject(" SELECT * FROM ClientApp WHERE clientId = ? ",
         clientAppMapper,
         clientId);
+  }
+
+  public List<ClientApp> listClientAppsOrderByTime(UUID ownerAccountId) {
+    return jdbc().query(" SELECT * FROM ClientApp WHERE ownerAccountId = ? ORDER BY createTime ",
+        clientAppMapper,
+        ownerAccountId);
   }
 }

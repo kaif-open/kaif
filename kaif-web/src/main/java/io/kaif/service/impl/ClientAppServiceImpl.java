@@ -1,6 +1,7 @@
 package io.kaif.service.impl;
 
 import java.time.Instant;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,5 +40,10 @@ public class ClientAppServiceImpl implements ClientAppService {
   @Override
   public ClientApp loadClientAppWithoutCache(String clientId) {
     return clientAppDao.loadClientAppWithoutCache(clientId);
+  }
+
+  @Override
+  public List<ClientApp> listClientApps(Authorization creator) {
+    return clientAppDao.listClientAppsOrderByTime(creator.authenticatedId());
   }
 }
