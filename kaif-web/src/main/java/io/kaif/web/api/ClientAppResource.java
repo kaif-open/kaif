@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.clientapp.ClientApp;
 import io.kaif.service.ClientAppService;
+import io.kaif.web.support.SingleWrapper;
 
 @RestController
 @RequestMapping("/api/client-app")
@@ -38,12 +39,13 @@ public class ClientAppResource {
   private ClientAppService clientAppService;
 
   @RequestMapping(value = "/create", method = RequestMethod.PUT)
-  public void create(AccountAccessToken accountAccessToken,
+  public SingleWrapper<String> create(AccountAccessToken accountAccessToken,
       @RequestBody @Valid CreateClientApp create) {
-    clientAppService.create(accountAccessToken,
+    String clientId = clientAppService.create(accountAccessToken,
         create.name,
         create.description,
-        create.callbackUri);
+        create.callbackUri).getClientId();
+    return SingleWrapper.of(clientId);
   }
 
 }

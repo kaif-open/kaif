@@ -420,13 +420,13 @@ class ClientAppService extends _AbstractService {
 
   String _getUrl(String path) => '/api/client-app$path';
 
-  Future create(String name, String description, String callbackUri) {
+  Future<String> create(String name, String description, String callbackUri) {
     var json = {
       'name':name,
       'description':description,
       'callbackUri':callbackUri
     };
     return _putJson(_getUrl('/create'), json)
-    .then((_) => null);
+    .then(_mapToSingleWrapper);
   }
 }

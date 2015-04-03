@@ -22,9 +22,9 @@ class CreateClientAppForm {
     var submit = elem.querySelector('[type=submit]');
     submit.disabled = true;
     try {
-      await clientAppService.create(name, description, callbackUri);
+      String clientId = await clientAppService.create(name, description, callbackUri);
       new FlashToast.success(i18n('success'), seconds:3);
-      route.reload();
+      route.reload(hash:"edit-client-app_$clientId");
     } catch (error) {
       new Toast.error("$error").render();
     } finally {
