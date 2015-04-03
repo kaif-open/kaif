@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -70,7 +71,8 @@ public class V1OauthController {
           "missing state",
           state);
     }
-    if (ClientAppScope.tryParse(scope).isEmpty()) {
+    Set<ClientAppScope> clientAppScopes = ClientAppScope.tryParse(scope);
+    if (clientAppScopes.isEmpty()) {
       return redirectViewWithError(redirectUri,
           OAuthError.CodeResponse.INVALID_SCOPE,
           "wrong scope",
@@ -78,10 +80,7 @@ public class V1OauthController {
     }
     //TODO handle error=server_error and error=temporary_unavailable
     return new ModelAndView("v1/authorize").addObject("clientApp", clientApp.get())
-        .addObject("state", state)
-        .addObject("responseType", responseType)
-        .addObject("redirectUri", redirectUri)
-        .addObject("scope", scope);
+        .addObject("clientAppScopes", clientAppScopes);
   }
 
   @RequestMapping(value = "/authorize", method = RequestMethod.POST)

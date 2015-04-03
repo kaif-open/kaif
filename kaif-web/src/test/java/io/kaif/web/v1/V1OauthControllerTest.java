@@ -34,7 +34,8 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
         .param("response_type", "code")
         .param("redirect_uri", "foo://callback"))
         .andExpect(view().name("v1/authorize"))
-        .andExpect(status().isOk());
+        .andExpect(status().isOk())
+        .andExpect(containsText("news feed"));
   }
 
   @Test

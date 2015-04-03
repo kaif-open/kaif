@@ -52,4 +52,8 @@ public enum ClientAppScope {
   public String toString() {
     return name().toLowerCase();
   }
+
+  public String getI18nKey() {
+    return "client-app-scope." + name().toLowerCase();
+  }
 }
