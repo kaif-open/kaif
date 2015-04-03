@@ -11,31 +11,43 @@ class OauthAuthorizeForm {
 
   TextInputElement nameInput;
   PasswordInputElement passwordInput;
-  ButtonElement submit;
-  StreamSubscription onSubmitSubscription;
+  ButtonElement grantSubmit;
+  ButtonElement denySubmit;
+  StreamSubscription onGrantSubmitSubscription;
   Alert alert;
 
   OauthAuthorizeForm(this.elem, this.accountSession, this.accountService) {
     alert = new Alert.append(elem);
     nameInput = elem.querySelector('#nameInput');
     passwordInput = elem.querySelector('#passwordInput');
-    submit = elem.querySelector('[type=submit]');
+    grantSubmit = elem.querySelector('#grantSubmit');
     if (accountSession.isSignIn) {
       nameInput
         ..readOnly = true
         ..value = accountSession.current.username;
       passwordInput.remove();
-      submit.disabled = true;
+      grantSubmit.disabled = true;
       _prepareToken();
-      submit.disabled = false;
+      grantSubmit.disabled = false;
       elem.onSubmit.listen((e) {
-        submit.disabled = true;
-        new Loading.small().renderAfter(submit);
+        grantSubmit.disabled = true;
+        denySubmit.disabled = true;
+        new Loading.small().renderAfter(grantSubmit);
       });
     } else {
       elem.querySelector('[password-group]').classes.remove('hidden');
-      onSubmitSubscription = elem.onSubmit.listen(_authenticateSubmit);
+      onGrantSubmitSubscription = elem.onSubmit.listen(_authenticateSubmit);
     }
+
+    denySubmit = elem.querySelector('#denySubmit')
+      ..onClick.listen(_onDeny);
+  }
+
+  Future _onDeny(Event e) async {
+    grantSubmit.disabled = true;
+    denySubmit.disabled = true;
+    (elem.querySelector('[name=grantDeny]') as HiddenInputElement).value = "true";
+    elem.submit();
   }
 
   Future _authenticateSubmit(Event e) async {
@@ -43,27 +55,29 @@ class OauthAuthorizeForm {
       ..preventDefault()
       ..stopPropagation();
     alert.hide();
-    submit.disabled = true;
+    grantSubmit.disabled = true;
+    denySubmit.disabled = true;
     var loading = new Loading.small()
-      ..renderAfter(submit);
+      ..renderAfter(grantSubmit);
     AccountAuth auth = null;
     try {
       auth = await accountService.authenticate(nameInput.value, passwordInput.value);
     } catch (error) {
       alert.renderError("$error");
-      submit.disabled = false;
+      grantSubmit.disabled = false;
+      denySubmit.disabled = false;
       loading.remove();
       return;
     }
     accountSession.save(auth, rememberMe:false);
-    onSubmitSubscription.cancel();
+    onGrantSubmitSubscription.cancel();
     await _prepareToken();
     elem.submit();
   }
 
   Future _prepareToken() async {
     String token = await accountService.createOauthDirectAuthorizeToken();
-    (elem.querySelector('[name=OAUTH_DIRECT_AUTHORIZE]') as HiddenInputElement).value = token;
+    (elem.querySelector('[name=oauthDirectAuthorize]') as HiddenInputElement).value = token;
   }
 
 }

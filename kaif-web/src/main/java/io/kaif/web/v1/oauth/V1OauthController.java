@@ -85,13 +85,16 @@ public class V1OauthController {
   }
 
   @RequestMapping(value = "/authorize", method = RequestMethod.POST)
-  public Object grantCode(
-      @RequestParam(value = "OAUTH_DIRECT_AUTHORIZE") String oauthDirectAuthorize,
+  public Object grantCode(@RequestParam(value = "grantDeny", required = false) Boolean grantDeny,
+      @RequestParam(value = "oauthDirectAuthorize") String oauthDirectAuthorize,
       @RequestParam(value = "client_id") String clientId,
       @RequestParam(value = "state") String state,
       @RequestParam(value = "scope") String scope,
       @RequestParam(value = "redirect_uri") String redirectUri) {
     try {
+      if (Optional.ofNullable(grantDeny).filter(deny -> deny).isPresent()) {
+        throw new AccessDeniedException("user cancel");
+      }
       final String code = clientAppService.directGrantCode(oauthDirectAuthorize,
           clientId,
           scope,

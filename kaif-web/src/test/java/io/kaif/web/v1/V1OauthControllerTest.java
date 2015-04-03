@@ -12,7 +12,6 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.kaif.model.account.AccountAuth;
 import io.kaif.model.clientapp.ClientApp;
 import io.kaif.test.MvcIntegrationTests;
 import io.kaif.web.support.AccessDeniedException;
@@ -20,11 +19,9 @@ import io.kaif.web.support.AccessDeniedException;
 public class V1OauthControllerTest extends MvcIntegrationTests {
 
   private ClientApp clientApp = clientApp(accountCitizen("dev1"), "app1");
-  private AccountAuth accountAuth;
 
   @Before
   public void setUp() throws Exception {
-    accountAuth = new AccountAuth("name1", "fooToken", 10000, 1000);
   }
 
   @Test
@@ -97,7 +94,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
   public void directGrantCode() throws Exception {
     when(clientAppService.directGrantCode("foo", "client-id-foo", "feed article", "foo://callback"))
         .thenReturn("auth code");
-    mockMvc.perform(post("/v1/oauth/authorize").param("OAUTH_DIRECT_AUTHORIZE", "foo")
+    mockMvc.perform(post("/v1/oauth/authorize").param("oauthDirectAuthorize", "foo")
         .param("client_id", "client-id-foo")
         .param("redirect_uri", "foo://callback")
         .param("scope", "feed article")
@@ -110,7 +107,20 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
   public void directGrantCode_access_denied() throws Exception {
     when(clientAppService.directGrantCode("foo", "client-id-foo", "feed article", "foo://callback"))
         .thenThrow(new AccessDeniedException());
-    mockMvc.perform(post("/v1/oauth/authorize").param("OAUTH_DIRECT_AUTHORIZE", "foo")
+    mockMvc.perform(post("/v1/oauth/authorize").param("oauthDirectAuthorize", "foo")
+        .param("client_id", "client-id-foo")
+        .param("scope", "feed article")
+        .param("state", "123 456")
+        .param("redirect_uri", "foo://callback"))
+        .andExpect(redirectedUrl(
+            "foo://callback?error=access_denied&error_description=access%20denied&state=123%20456"))
+        .andExpect(status().isMovedPermanently());
+  }
+
+  @Test
+  public void directGrantCode_grantDeny() throws Exception {
+    mockMvc.perform(post("/v1/oauth/authorize").param("oauthDirectAuthorize", "foo")
+        .param("grantDeny", "true")
         .param("client_id", "client-id-foo")
         .param("scope", "feed article")
         .param("state", "123 456")

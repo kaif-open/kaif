@@ -6,8 +6,8 @@
 <form class="pure-form pure-form-aligned" oauth-authorize-form
       method="POST"
       enctype="application/x-www-form-urlencoded">
-    <input type="hidden" name="OAUTH_DIRECT_AUTHORIZE" value="">
-
+    <input type="hidden" name="oauthDirectAuthorize" value="">
+    <input type="hidden" name="grantDeny" value="">
     <fieldset>
         <legend>授權應用程式 ${clientApp.appName}</legend>
         <div class="pure-control-group">
@@ -20,8 +20,12 @@
                    class="pure-input-1-2">
         </div>
         <div class="pure-controls">
-            <button type="submit" class="pure-button pure-button-primary">
+            <button id="grantSubmit" type="submit" class="pure-button pure-button-primary">
                 授權
+            </button>
+            <button id="denySubmit"
+                    type="button" class="pure-button">
+                取消
             </button>
         </div>
     </fieldset>
