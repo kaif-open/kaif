@@ -2,9 +2,9 @@ package io.kaif.web.api;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import org.hibernate.validator.constraints.URL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +30,32 @@ public class ClientAppResource {
     @NotNull
     public String description;
 
-    @URL
+    /**
+     * do not use `@URL` to validate because it does not allow custom scheme other than http
+     */
+    @Pattern(regexp = ClientApp.CALLBACK_URI_PATTERN)
+    @NotNull
+    public String callbackUri;
+
+  }
+
+  static class UpdateClientApp {
+
+    @NotNull
+    public String clientId;
+
+    @Size(min = ClientApp.NAME_MIN, max = ClientApp.NAME_MAX)
+    @NotNull
+    public String name;
+
+    @Size(min = ClientApp.DESCRIPTION_MIN, max = ClientApp.DESCRIPTION_MAX)
+    @NotNull
+    public String description;
+
+    /**
+     * do not use `@URL` to validate because it does not allow custom scheme other than http
+     */
+    @Pattern(regexp = ClientApp.CALLBACK_URI_PATTERN)
     @NotNull
     public String callbackUri;
 
@@ -49,4 +74,13 @@ public class ClientAppResource {
     return SingleWrapper.of(clientId);
   }
 
+  @RequestMapping(value = "/update", method = RequestMethod.POST)
+  public void update(AccountAccessToken accountAccessToken,
+      @RequestBody @Valid UpdateClientApp update) {
+    clientAppService.update(accountAccessToken,
+        update.clientId,
+        update.name.trim(),
+        update.description.trim(),
+        update.callbackUri.trim());
+  }
 }

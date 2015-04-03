@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 import io.kaif.model.exception.CallbackUriReservedException;
-import io.kaif.model.exception.ClientAppNamedReservedException;
+import io.kaif.model.exception.ClientAppNameReservedException;
 
 public class ClientApp {
 
@@ -12,20 +12,16 @@ public class ClientApp {
   public static final int NAME_MIN = 3;
   public static final int DESCRIPTION_MAX = 100;
   public static final int DESCRIPTION_MIN = 5;
+  public static final String CALLBACK_URI_PATTERN = ".+://.+";
+  public static final int MAX_NO_OF_APPS = 5;
 
   public static ClientApp create(UUID ownerAccountId,
       String name,
       String description,
       String callbackUri,
-      Instant now) throws CallbackUriReservedException, ClientAppNamedReservedException {
+      Instant now) throws CallbackUriReservedException, ClientAppNameReservedException {
     String clientId = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 16);
     String secret = UUID.randomUUID().toString().replaceAll("-", "");
-    if (callbackUri.toLowerCase().contains("kaif")) {
-      throw new CallbackUriReservedException();
-    }
-    if (name.equalsIgnoreCase("kaif")) {
-      throw new ClientAppNamedReservedException();
-    }
     return new ClientApp(clientId,
         secret,
         name,
@@ -53,6 +49,12 @@ public class ClientApp {
       UUID ownerAccountId,
       boolean revoked,
       String callbackUri) {
+    if (callbackUri.toLowerCase().contains("kaif")) {
+      throw new CallbackUriReservedException();
+    }
+    if (appName.equalsIgnoreCase("kaif")) {
+      throw new ClientAppNameReservedException();
+    }
     this.clientId = clientId;
     this.clientSecret = clientSecret;
     this.appName = appName;
@@ -124,5 +126,38 @@ public class ClientApp {
 
   public String getCallbackUri() {
     return callbackUri;
+  }
+
+  public ClientApp withName(String newName) {
+    return new ClientApp(clientId,
+        clientSecret,
+        newName,
+        description,
+        createTime,
+        ownerAccountId,
+        revoked,
+        callbackUri);
+  }
+
+  public ClientApp withDescription(String newDesc) {
+    return new ClientApp(clientId,
+        clientSecret,
+        appName,
+        newDesc,
+        createTime,
+        ownerAccountId,
+        revoked,
+        callbackUri);
+  }
+
+  public ClientApp withCallbackUri(String newCallback) {
+    return new ClientApp(clientId,
+        clientSecret,
+        appName,
+        description,
+        createTime,
+        ownerAccountId,
+        revoked,
+        newCallback);
   }
 }

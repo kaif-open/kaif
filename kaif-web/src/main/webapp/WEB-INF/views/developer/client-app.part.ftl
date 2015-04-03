@@ -49,8 +49,9 @@
                             </div>
 
                             <div class="pure-control-group">
-                                <label>Callback Uri*</label>
-                                <input name="callbackUriInput" type="url" placeholder="http://..."
+                                <label>Callback Uri* (不能包含 kaif 保留字)</label>
+                                <input name="callbackUriInput" type="url"
+                                       placeholder="http://... or foo://..."
                                        required
                                        class="pure-input-1">
                             </div>
@@ -60,7 +61,9 @@
                                     建立
                                 </button>
                             </div>
-
+                            <p class="pure-form-message">
+                                * 最多五個應用程式
+                            </p>
                         </fieldset>
                     </form>
                 </div>
@@ -97,8 +100,9 @@
                             </div>
 
                             <div class="pure-control-group">
-                                <label>Callback Uri*</label>
-                                <input name="callbackUriInput" type="url" placeholder="http://..."
+                                <label>Callback Uri* (不能包含 kaif 保留字)</label>
+                                <input name="callbackUriInput" type="url"
+                                       placeholder="http://... or foo://..."
                                        value="${clientApp.callbackUri}"
                                        required
                                        class="pure-input-1">
@@ -106,7 +110,7 @@
 
                             <div class="pure-controls">
                                 <button type="submit" class="pure-button pure-button-primary">
-                                    TODO 變更
+                                    變更
                                 </button>
                             </div>
 

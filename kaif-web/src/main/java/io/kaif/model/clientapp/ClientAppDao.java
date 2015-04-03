@@ -73,4 +73,21 @@ public class ClientAppDao implements DaoOperations {
         clientAppMapper,
         ownerAccountId);
   }
+
+  public void update(ClientApp updated) {
+    jdbc().update(""
+            + " UPDATE ClientApp "
+            + "    SET clientSecret = ? "
+            + "      , appName = ? "
+            + "      , description = ? "
+            + "      , revoked = ? "
+            + "      , callbackUri = ? "
+            + "  WHERE clientId = ? ",
+        updated.getClientSecret(),
+        updated.getAppName(),
+        updated.getDescription(),
+        updated.isRevoked(),
+        updated.getCallbackUri(),
+        updated.getClientId());
+  }
 }

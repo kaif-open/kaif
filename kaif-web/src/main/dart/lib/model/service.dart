@@ -420,13 +420,24 @@ class ClientAppService extends _AbstractService {
 
   String _getUrl(String path) => '/api/client-app$path';
 
-  Future<String> create(String name, String description, String callbackUri) {
+  Future<String> create(String name, String description, String callbackUri) async {
     var json = {
       'name':name,
       'description':description,
       'callbackUri':callbackUri
     };
-    return _putJson(_getUrl('/create'), json)
-    .then(_mapToSingleWrapper);
+    return _mapToSingleWrapper(await _putJson(_getUrl('/create'), json));
+  }
+
+  Future<String> update(String clientId, String name, String description,
+                        String callbackUri) async {
+    var json = {
+      'clientId':clientId,
+      'name':name,
+      'description':description,
+      'callbackUri':callbackUri
+    };
+    await _postJson(_getUrl('/update'), json);
+    return null;
   }
 }

@@ -14,4 +14,10 @@ public interface ClientAppService {
   ClientApp loadClientAppWithoutCache(String clientId);
 
   List<ClientApp> listClientApps(Authorization creator);
+
+  void update(Authorization creator,
+      String clientId,
+      String name,
+      String description,
+      String callbackUri);
 }
