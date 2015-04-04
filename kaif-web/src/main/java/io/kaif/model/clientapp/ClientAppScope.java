@@ -1,7 +1,6 @@
 package io.kaif.model.clientapp;
 
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -41,7 +40,7 @@ public enum ClientAppScope {
         .orElse(Collections.emptySet());
   }
 
-  public static String toCanonicalString(EnumSet<ClientAppScope> nonEmptyScopes) {
+  public static String toCanonicalString(Set<ClientAppScope> nonEmptyScopes) {
     return nonEmptyScopes.stream()
         .map(ClientAppScope::toString)
         .sorted()

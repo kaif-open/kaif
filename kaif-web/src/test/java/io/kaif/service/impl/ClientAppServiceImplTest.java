@@ -14,10 +14,10 @@ import io.kaif.model.clientapp.ClientApp;
 import io.kaif.model.exception.CallbackUriReservedException;
 import io.kaif.model.exception.ClientAppMaxException;
 import io.kaif.model.exception.ClientAppNameReservedException;
+import io.kaif.oauth.OauthAccessTokenDto;
 import io.kaif.service.AccountService;
 import io.kaif.test.DbIntegrationTests;
 import io.kaif.web.support.AccessDeniedException;
-import io.kaif.oauth.OauthAccessTokenDto;
 
 public class ClientAppServiceImplTest extends DbIntegrationTests {
 

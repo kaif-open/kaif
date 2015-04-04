@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import org.junit.Before;
@@ -24,7 +25,11 @@ public class GrantCodeTest implements ModelFixture {
 
   @Test
   public void codec() throws Exception {
-    GrantCode code = new GrantCode(UUID.randomUUID(), "cli-id", "sec", "foo://bar", "public feed");
+    GrantCode code = new GrantCode(UUID.randomUUID(),
+        "cli-id",
+        "sec",
+        "foo://bar",
+        EnumSet.of(ClientAppScope.FEED, ClientAppScope.PUBLIC));
 
     String token = code.encode(Instant.now().plus(Duration.ofHours(1)), secret);
     assertTrue(token.length() > 100);
@@ -42,7 +47,7 @@ public class GrantCodeTest implements ModelFixture {
         app1.getClientId(),
         app1.getClientSecret(),
         "redirect://foo",
-        "public article");
+        EnumSet.of(ClientAppScope.ARTICLE));
 
     assertTrue(code.matches(app1, "redirect://foo"));
     assertFalse(code.matches(app1, "redirect://wrong"));

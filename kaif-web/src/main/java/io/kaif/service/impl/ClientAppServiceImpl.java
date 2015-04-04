@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +17,15 @@ import io.kaif.model.account.Authority;
 import io.kaif.model.account.Authorization;
 import io.kaif.model.clientapp.ClientApp;
 import io.kaif.model.clientapp.ClientAppDao;
+import io.kaif.model.clientapp.ClientAppScope;
 import io.kaif.model.clientapp.GrantCode;
 import io.kaif.model.clientapp.OauthSecret;
 import io.kaif.model.exception.ClientAppMaxException;
+import io.kaif.oauth.OauthAccessTokenDto;
+import io.kaif.oauth.Oauths;
 import io.kaif.service.AccountService;
 import io.kaif.service.ClientAppService;
 import io.kaif.web.support.AccessDeniedException;
-import io.kaif.oauth.Oauths;
-import io.kaif.oauth.OauthAccessTokenDto;
 
 @Service
 @Transactional
@@ -94,9 +96,16 @@ public class ClientAppServiceImpl implements ClientAppService {
       String clientId,
       String scope,
       String redirectUri) throws AccessDeniedException {
-    //before grant code step, redirect uri should be verified
+
+    //before grant code step, redirect uri, client id, scope all should be verified
+
     ClientApp clientApp = verifyRedirectUri(clientId,
         redirectUri).orElseThrow(() -> new IllegalStateException("invalid clientId and redirectUri"));
+
+    Set<ClientAppScope> clientAppScopes = ClientAppScope.tryParse(scope);
+    if (clientAppScopes.isEmpty()) {
+      throw new IllegalStateException("invalid scope");
+    }
 
     Account account = accountService.oauthDirectAuthorize(oauthDirectAuthorize)
         .orElseThrow(() -> new AccessDeniedException("direct authorize failed"));
@@ -105,7 +114,7 @@ public class ClientAppServiceImpl implements ClientAppService {
         clientApp.getClientId(),
         clientApp.getClientSecret(),
         redirectUri,
-        scope).encode(Instant.now().plus(GRANT_CODE_DURATION), oauthSecret);
+        clientAppScopes).encode(Instant.now().plus(GRANT_CODE_DURATION), oauthSecret);
   }
 
   /**
@@ -122,7 +131,7 @@ public class ClientAppServiceImpl implements ClientAppService {
           .map(validCode -> {
             //TODO generate oauthAccessToken
             return new OauthAccessTokenDto(UUID.randomUUID().toString(),
-                validCode.getScope(),
+                validCode.getCanonicalScope(),
                 Oauths.DEFAULT_TOKEN_TYPE);
           });
     }).orElseThrow(() -> new AccessDeniedException("invalid grant for oauth access token"));

@@ -2,8 +2,10 @@ package io.kaif.model.clientapp;
 
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import com.google.common.base.Charsets;
@@ -22,7 +24,7 @@ public class GrantCode {
           new String(fields.get(1)),
           new String(fields.get(2)),
           new String(fields.get(3)),
-          new String(fields.get(4))));
+          ClientAppScope.tryParse(new String(fields.get(4)))));
     } catch (RuntimeException e) {
       return Optional.empty();
     }
@@ -32,18 +34,18 @@ public class GrantCode {
   private final String clientId;
   private final String clientSecret;
   private final String redirectUri;
-  private final String scope;
+  private final Set<ClientAppScope> scopes;
 
   public GrantCode(UUID accountId,
       String clientId,
       String clientSecret,
       String redirectUri,
-      String scope) {
+      Set<ClientAppScope> scopes) {
     this.accountId = accountId;
     this.clientId = clientId;
     this.clientSecret = clientSecret;
     this.redirectUri = redirectUri;
-    this.scope = scope;
+    this.scopes = EnumSet.copyOf(scopes);
   }
 
   public String encode(Instant expireTime, OauthSecret secret) {
@@ -51,7 +53,7 @@ public class GrantCode {
         clientId.getBytes(Charsets.UTF_8),
         clientSecret.getBytes(Charsets.UTF_8),
         redirectUri.getBytes(Charsets.UTF_8),
-        scope.getBytes(Charsets.UTF_8));
+        getCanonicalScope().getBytes(Charsets.UTF_8));
     return secret.getCodec().encode(expireTime.toEpochMilli(), fields);
   }
 
@@ -82,7 +84,7 @@ public class GrantCode {
         : grantCode.redirectUri != null) {
       return false;
     }
-    return !(scope != null ? !scope.equals(grantCode.scope) : grantCode.scope != null);
+    return !(scopes != null ? !scopes.equals(grantCode.scopes) : grantCode.scopes != null);
 
   }
 
@@ -92,7 +94,7 @@ public class GrantCode {
     result = 31 * result + (clientId != null ? clientId.hashCode() : 0);
     result = 31 * result + (clientSecret != null ? clientSecret.hashCode() : 0);
     result = 31 * result + (redirectUri != null ? redirectUri.hashCode() : 0);
-    result = 31 * result + (scope != null ? scope.hashCode() : 0);
+    result = 31 * result + (scopes != null ? scopes.hashCode() : 0);
     return result;
   }
 
@@ -102,7 +104,11 @@ public class GrantCode {
         && clientSecret.equals(clientApp.getClientSecret());
   }
 
-  public String getScope() {
-    return scope;
+  public Set<ClientAppScope> getScopes() {
+    return scopes;
+  }
+
+  public String getCanonicalScope() {
+    return ClientAppScope.toCanonicalString(scopes);
   }
 }
