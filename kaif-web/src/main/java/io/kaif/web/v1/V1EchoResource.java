@@ -16,9 +16,9 @@ import io.kaif.model.clientapp.ClientAppUserAccessToken;
 @RequestMapping("/v1/echo")
 public class V1EchoResource {
 
-  static class EchoData {
+  static class EchoMessage {
     @NotNull
-    public String data;
+    public String message;
   }
 
   @RequiredScope(PUBLIC)
@@ -30,7 +30,7 @@ public class V1EchoResource {
   @RequiredScope(PUBLIC)
   @RequestMapping(value = "/data", method = RequestMethod.POST)
   public String postData(ClientAppUserAccessToken accessToken,
-      @Valid @RequestBody EchoData echoData) {
-    return echoData.data;
+      @Valid @RequestBody EchoMessage echoMessage) {
+    return echoMessage.message;
   }
 }
