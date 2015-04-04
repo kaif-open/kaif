@@ -120,9 +120,6 @@ war {
 }
 
 dependencies {
-  // compile("org.springframework.boot:spring-boot-starter-data-elasticsearch")
-  // compile("org.springframework.boot:spring-boot-starter-websocket")
-
   compile("org.springframework.boot:spring-boot-starter-aop")
 
   compile("org.springframework.boot:spring-boot-starter-jdbc") {
@@ -143,6 +140,9 @@ dependencies {
   compile("org.springframework.boot:spring-boot-starter-actuator")
   compile("org.springframework.boot:spring-boot-starter-remote-shell")
   testCompile("org.springframework.boot:spring-boot-starter-test")
+
+  //upgrade spring should bound json-path version too
+  testCompile('com.jayway.jsonpath:json-path:1.1.0')
 
   compile 'org.springframework.security:spring-security-crypto:3.2.5.RELEASE';
 

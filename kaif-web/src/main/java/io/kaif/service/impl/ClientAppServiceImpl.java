@@ -22,6 +22,8 @@ import io.kaif.model.exception.ClientAppMaxException;
 import io.kaif.service.AccountService;
 import io.kaif.service.ClientAppService;
 import io.kaif.web.support.AccessDeniedException;
+import io.kaif.oauth.Oauths;
+import io.kaif.oauth.OauthAccessTokenDto;
 
 @Service
 @Transactional
@@ -111,16 +113,18 @@ public class ClientAppServiceImpl implements ClientAppService {
    * the server should response error=invalid_grant
    */
   @Override
-  public Optional<String> createOauthAccessTokenByGrantCode(String code,
+  public OauthAccessTokenDto createOauthAccessTokenByGrantCode(String code,
       String clientId,
-      String redirectUri) {
+      String redirectUri) throws AccessDeniedException {
     return verifyRedirectUri(clientId, redirectUri).flatMap(clientApp -> {
       return GrantCode.tryDecode(code, oauthSecret)
           .filter(grantCode -> grantCode.matches(clientApp, redirectUri))
           .map(validCode -> {
             //TODO generate oauthAccessToken
-            return UUID.randomUUID().toString();
+            return new OauthAccessTokenDto(UUID.randomUUID().toString(),
+                validCode.getScope(),
+                Oauths.DEFAULT_TOKEN_TYPE);
           });
-    });
+    }).orElseThrow(() -> new AccessDeniedException("invalid grant for oauth access token"));
   }
 }

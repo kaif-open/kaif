@@ -19,9 +19,9 @@
  * limitations under the License.
  */
 
-package io.kaif.web.v1.oauth;
+package io.kaif.oauth;
 
-public abstract class OAuthError {
+public class OauthErrors {
 
   public static final class CodeResponse {
     /**
@@ -143,9 +143,12 @@ public abstract class OAuthError {
      */
     public static final String INVALID_TOKEN = "invalid_token";
   }
+
   //error response params
   public static final String OAUTH_ERROR = "error";
   public static final String OAUTH_ERROR_DESCRIPTION = "error_description";
   public static final String OAUTH_ERROR_URI = "error_uri";
 
+  OauthErrors() {
+  }
 }

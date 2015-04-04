@@ -19,9 +19,9 @@
  * limitations under the License.
  */
 
-package io.kaif.web.v1.oauth;
+package io.kaif.oauth;
 
-public final class OAuth {
+public class Oauths {
 
   public static final class HeaderType {
     public static final String CONTENT_TYPE = "Content-Type";
@@ -69,4 +69,7 @@ public final class OAuth {
   public static final String DEFAULT_TOKEN_TYPE = "Bearer";
 
   public static final String OAUTH_VERSION_DIFFER = "oauth_signature_method";
+
+  private Oauths() {
+  }
 }

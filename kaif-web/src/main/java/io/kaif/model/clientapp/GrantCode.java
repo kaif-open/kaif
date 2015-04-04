@@ -101,4 +101,8 @@ public class GrantCode {
         && clientId.equals(clientApp.getClientId())
         && clientSecret.equals(clientApp.getClientSecret());
   }
+
+  public String getScope() {
+    return scope;
+  }
 }

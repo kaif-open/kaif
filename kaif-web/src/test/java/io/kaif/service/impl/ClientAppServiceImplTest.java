@@ -3,7 +3,6 @@ package io.kaif.service.impl;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 import org.junit.Test;
@@ -18,6 +17,7 @@ import io.kaif.model.exception.ClientAppNameReservedException;
 import io.kaif.service.AccountService;
 import io.kaif.test.DbIntegrationTests;
 import io.kaif.web.support.AccessDeniedException;
+import io.kaif.oauth.OauthAccessTokenDto;
 
 public class ClientAppServiceImplTest extends DbIntegrationTests {
 
@@ -152,9 +152,10 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
         "http://myapp.com/callback/foo");
 
     assertTrue(code.length() > 100);
-    Optional<String> token = service.createOauthAccessTokenByGrantCode(code,
+    OauthAccessTokenDto token = service.createOauthAccessTokenByGrantCode(code,
         clientApp.getClientId(),
         "http://myapp.com/callback/foo");
-    assertTrue(token.isPresent());
+    assertNotNull(token.getAccessToken());
+    assertEquals("feed public", token.getScope());
   }
 }

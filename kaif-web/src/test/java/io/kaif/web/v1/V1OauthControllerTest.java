@@ -1,8 +1,10 @@
 package io.kaif.web.v1;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -13,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.kaif.model.clientapp.ClientApp;
+import io.kaif.oauth.OauthAccessTokenDto;
 import io.kaif.test.MvcIntegrationTests;
 import io.kaif.web.support.AccessDeniedException;
 
@@ -103,6 +106,78 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
         .andExpect(redirectedUrl(
             "foo://callback?error=invalid_scope&error_description=wrong%20scope&error_uri=https://kaif.io&state=123"))
         .andExpect(status().isMovedPermanently());
+  }
+
+  @Test
+  public void accessToken() throws Exception {
+    when(clientAppService.createOauthAccessTokenByGrantCode("code1234",
+        "client-id-foo",
+        "foo://callback")).thenReturn(new OauthAccessTokenDto("oauth-token",
+        "public feed",
+        "Bearer"));
+    mockMvc.perform(post("/v1/oauth/access-token").param("client_id", "client-id-foo")
+        .param("redirect_uri", "foo://callback")
+        .param("grant_type", "authorization_code")
+        .param("code", "code1234"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.access_token", is("oauth-token")))
+        .andExpect(jsonPath("$.token_type", is("Bearer")))
+        .andExpect(jsonPath("$.scope", is("public feed")));
+  }
+
+  @Test
+  public void accessToken_access_denied() throws Exception {
+    when(clientAppService.createOauthAccessTokenByGrantCode("code1234",
+        "client-id-foo",
+        "foo://callback")).thenThrow(new AccessDeniedException());
+    mockMvc.perform(post("/v1/oauth/access-token").param("client_id", "client-id-foo")
+        .param("redirect_uri", "foo://callback")
+        .param("grant_type", "authorization_code")
+        .param("code", "code1234"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error", is("invalid_grant")))
+        .andExpect(jsonPath("$.error_description", is("code is invalid")));
+  }
+
+  @Test
+  public void accessToken_wrong_grant_type() throws Exception {
+    mockMvc.perform(post("/v1/oauth/access-token").param("client_id", "client-id-foo")
+        .param("redirect_uri", "foo://callback")
+        .param("grant_type", "wrong----type")
+        .param("code", "code1234"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error", is("unsupported_grant_type")))
+        .andExpect(jsonPath("$.error_description", is("grant_type must be authorization_code")));
+  }
+
+  @Test
+  public void accessToken_missing_client_id() throws Exception {
+    mockMvc.perform(post("/v1/oauth/access-token").param("redirect_uri", "foo://callback")
+        .param("grant_type", "authorization_code")
+        .param("code", "code1234"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error", is("invalid_request")))
+        .andExpect(jsonPath("$.error_description", is("missing client_id")));
+  }
+
+  @Test
+  public void accessToken_missing_redirect_uri() throws Exception {
+    mockMvc.perform(post("/v1/oauth/access-token").param("client_id", "client-id-foo")
+        .param("grant_type", "authorization_code")
+        .param("code", "code1234"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error", is("invalid_request")))
+        .andExpect(jsonPath("$.error_description", is("missing redirect_uri")));
+  }
+
+  @Test
+  public void accessToken_missing_code() throws Exception {
+    mockMvc.perform(post("/v1/oauth/access-token").param("client_id", "client-id-foo")
+        .param("redirect_uri", "foo://callback")
+        .param("grant_type", "authorization_code"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error", is("invalid_request")))
+        .andExpect(jsonPath("$.error_description", is("missing code")));
   }
 
   @Test

@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -34,18 +33,24 @@ import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriUtils;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
 import io.kaif.model.clientapp.ClientApp;
 import io.kaif.model.clientapp.ClientAppScope;
+import io.kaif.oauth.GrantType;
+import io.kaif.oauth.OauthErrorDto;
+import io.kaif.oauth.OauthErrors;
 import io.kaif.service.ClientAppService;
 import io.kaif.web.support.AccessDeniedException;
 
 @Controller
 @RequestMapping("/v1/oauth")
 public class V1OauthController {
+
   private static final Logger logger = LoggerFactory.getLogger(V1OauthController.class);
+  //TODO use right oauth error uri
+  private static final String DEFAULT_ERROR_URI = "https://kaif.io";
+
   @Autowired
   private ClientAppService clientAppService;
 
@@ -65,20 +70,20 @@ public class V1OauthController {
       }
       if (!"code".equals(responseType)) {
         return redirectViewWithError(redirectUri,
-            OAuthError.CodeResponse.UNSUPPORTED_RESPONSE_TYPE,
+            OauthErrors.CodeResponse.UNSUPPORTED_RESPONSE_TYPE,
             "response_type must be code",
             state);
       }
       if (Strings.isNullOrEmpty(state)) {
         return redirectViewWithError(redirectUri,
-            OAuthError.CodeResponse.INVALID_REQUEST,
+            OauthErrors.CodeResponse.INVALID_REQUEST,
             "missing state",
             state);
       }
       Set<ClientAppScope> clientAppScopes = ClientAppScope.tryParse(scope);
       if (clientAppScopes.isEmpty()) {
         return redirectViewWithError(redirectUri,
-            OAuthError.CodeResponse.INVALID_SCOPE,
+            OauthErrors.CodeResponse.INVALID_SCOPE,
             "wrong scope",
             state);
       }
@@ -88,7 +93,7 @@ public class V1OauthController {
     } catch (RuntimeException e) {
       logger.warn("unexpected error while GET /authorize", e);
       return redirectViewWithError(redirectUri,
-          OAuthError.CodeResponse.SERVER_ERROR,
+          OauthErrors.CodeResponse.SERVER_ERROR,
           "unknown server error",
           state);
     }
@@ -112,13 +117,13 @@ public class V1OauthController {
       return redirectViewWithQuery(redirectUri, state, "code=" + code);
     } catch (AccessDeniedException e) {
       return redirectViewWithError(redirectUri,
-          OAuthError.CodeResponse.ACCESS_DENIED,
+          OauthErrors.CodeResponse.ACCESS_DENIED,
           "access denied",
           state);
     } catch (RuntimeException e) {
       logger.warn("unexpected error while PUT /authorize", e);
       return redirectViewWithError(redirectUri,
-          OAuthError.CodeResponse.SERVER_ERROR,
+          OauthErrors.CodeResponse.SERVER_ERROR,
           "unknown server error",
           state);
     }
@@ -128,14 +133,13 @@ public class V1OauthController {
       String error,
       String errorDescription,
       String state) {
-    //TODO use right oauth error uri
     String query = String.format("%s=%s&%s=%s&%s=%s",
-        OAuthError.OAUTH_ERROR,
+        OauthErrors.OAUTH_ERROR,
         error,
-        OAuthError.OAUTH_ERROR_DESCRIPTION,
+        OauthErrors.OAUTH_ERROR_DESCRIPTION,
         errorDescription,
-        OAuthError.OAUTH_ERROR_URI,
-        "https://kaif.io");
+        OauthErrors.OAUTH_ERROR_URI,
+        DEFAULT_ERROR_URI);
     return redirectViewWithQuery(redirectUri, state, query);
   }
 
@@ -163,19 +167,49 @@ public class V1OauthController {
 
   /**
    * spec is POST with application/x-www-form-urlencoded and return JSON
+   * <p>
+   * we allow other `accept` for friendly usage, but may be this is insecure ?
    */
   @RequestMapping(value = "/access-token", method = RequestMethod.POST)
   @ResponseBody
-  public OAuthAccessTokenDto accessToken(@RequestParam("client_id") String clientId,
-      @RequestParam("grant_type") String grantType,
-      @RequestParam("code") String code,
-      @RequestParam("redirect_uri") String redirectUri) {
+  public Object accessToken(HttpServletResponse response,
+      @RequestParam(value = "client_id", required = false) String clientId,
+      @RequestParam(value = "grant_type", required = false) String grantType,
+      @RequestParam(value = "code", required = false) String code,
+      @RequestParam(value = "redirect_uri", required = false) String redirectUri) {
 
-    Preconditions.checkArgument(grantType.equals("authorization_code"));
-
-    //TODO check clientId and code on ClientAppUser
-    //TODO check redirectUri match
-    return new OAuthAccessTokenDto(UUID.randomUUID().toString(), "user,feed", "bearer");
+    if (!GrantType.AUTHORIZATION_CODE.toString().equals(grantType)) {
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      return new OauthErrorDto(OauthErrors.TokenResponse.UNSUPPORTED_GRANT_TYPE,
+          "grant_type must be authorization_code",
+          DEFAULT_ERROR_URI);
+    }
+    if (Strings.isNullOrEmpty(code)) {
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      return new OauthErrorDto(OauthErrors.TokenResponse.INVALID_REQUEST,
+          "missing code",
+          DEFAULT_ERROR_URI);
+    }
+    if (Strings.isNullOrEmpty(clientId)) {
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      return new OauthErrorDto(OauthErrors.TokenResponse.INVALID_REQUEST,
+          "missing client_id",
+          DEFAULT_ERROR_URI);
+    }
+    if (Strings.isNullOrEmpty(redirectUri)) {
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      return new OauthErrorDto(OauthErrors.TokenResponse.INVALID_REQUEST,
+          "missing redirect_uri",
+          DEFAULT_ERROR_URI);
+    }
+    try {
+      return clientAppService.createOauthAccessTokenByGrantCode(code, clientId, redirectUri);
+    } catch (AccessDeniedException e) {
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      return new OauthErrorDto(OauthErrors.TokenResponse.INVALID_GRANT,
+          "code is invalid",
+          DEFAULT_ERROR_URI);
+    }
   }
 
   @RequestMapping(value = "/xxxauthorize", method = RequestMethod.GET)
