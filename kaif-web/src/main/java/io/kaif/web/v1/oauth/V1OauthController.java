@@ -1,24 +1,11 @@
 package io.kaif.web.v1.oauth;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.oltu.oauth2.as.issuer.MD5Generator;
-import org.apache.oltu.oauth2.as.issuer.OAuthIssuer;
-import org.apache.oltu.oauth2.as.issuer.OAuthIssuerImpl;
-import org.apache.oltu.oauth2.as.request.OAuthAuthzRequest;
-import org.apache.oltu.oauth2.as.request.OAuthTokenRequest;
-import org.apache.oltu.oauth2.as.response.OAuthASResponse;
-import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
-import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
-import org.apache.oltu.oauth2.common.message.OAuthResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -210,83 +197,6 @@ public class V1OauthController {
           "code is invalid",
           DEFAULT_ERROR_URI);
     }
-  }
-
-  @RequestMapping(value = "/xxxauthorize", method = RequestMethod.GET)
-  public void endUserAuthorizationEndpoint(HttpServletRequest request, HttpServletResponse response)
-      throws OAuthSystemException, IOException {
-
-    String appDefaultRedirectUri = "http://google.com";
-    try {
-      OAuthAuthzRequest oauthRequest = new OAuthAuthzRequest(request);
-      //dynamically recognize an OAuth profile based on request characteristic (params,
-      // method, content type etc.), perform validation
-      OAuthIssuer oauthIssuerImpl = new OAuthIssuerImpl(new MD5Generator());
-
-      //build OAuth response
-      OAuthResponse resp = OAuthASResponse.authorizationResponse(request,
-          HttpServletResponse.SC_FOUND)
-          .setCode(oauthIssuerImpl.authorizationCode())
-          .location(oauthRequest.getRedirectURI())
-          .buildQueryMessage();
-
-      response.sendRedirect(resp.getLocationUri());
-
-      //if something goes wrong
-    } catch (OAuthProblemException ex) {
-      final OAuthResponse resp = OAuthASResponse.errorResponse(HttpServletResponse.SC_FOUND)
-          .error(ex)
-          .location(appDefaultRedirectUri)
-          .buildQueryMessage();
-
-      response.sendRedirect(resp.getLocationUri());
-    }
-  }
-
-  @RequestMapping(value = "/xxxaccess-token", method = RequestMethod.POST)
-  public void tokenEndpoint(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException, OAuthSystemException {
-
-    OAuthTokenRequest oauthRequest = null;
-
-    OAuthIssuer oauthIssuerImpl = new OAuthIssuerImpl(new MD5Generator());
-
-    try {
-      oauthRequest = new OAuthTokenRequest(request);
-
-      String authzCode = oauthRequest.getCode();
-
-      // some code
-      String accessToken = oauthIssuerImpl.accessToken();
-      String refreshToken = oauthIssuerImpl.refreshToken();
-
-      // some code
-      OAuthResponse r = OAuthASResponse.tokenResponse(HttpServletResponse.SC_OK)
-          .setAccessToken(accessToken)
-          .setExpiresIn("3600")
-          .setRefreshToken(refreshToken)
-          .buildJSONMessage();
-
-      response.setStatus(r.getResponseStatus());
-      PrintWriter pw = response.getWriter();
-      pw.print(r.getBody());
-      pw.flush();
-      pw.close();
-      //if something goes wrong
-    } catch (OAuthProblemException ex) {
-
-      OAuthResponse r = OAuthResponse.errorResponse(401).error(ex).buildJSONMessage();
-
-      response.setStatus(r.getResponseStatus());
-
-      PrintWriter pw = response.getWriter();
-      pw.print(r.getBody());
-      pw.flush();
-      pw.close();
-
-      response.sendError(401);
-    }
-
   }
 
 }
