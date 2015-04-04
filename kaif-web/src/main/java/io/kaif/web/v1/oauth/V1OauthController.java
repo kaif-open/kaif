@@ -20,6 +20,8 @@ import org.apache.oltu.oauth2.as.response.OAuthASResponse;
 import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.apache.oltu.oauth2.common.message.OAuthResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -43,7 +45,7 @@ import io.kaif.web.support.AccessDeniedException;
 @Controller
 @RequestMapping("/v1/oauth")
 public class V1OauthController {
-
+  private static final Logger logger = LoggerFactory.getLogger(V1OauthController.class);
   @Autowired
   private ClientAppService clientAppService;
 
@@ -54,33 +56,42 @@ public class V1OauthController {
       @RequestParam(value = "scope", required = false) String scope,
       @RequestParam(value = "response_type", required = false) String responseType,
       @RequestParam(value = "redirect_uri", required = false) String redirectUri) {
-    Optional<ClientApp> clientApp = clientAppService.verifyRedirectUri(clientId, redirectUri);
-    if (!clientApp.isPresent()) {
-      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-      return new ModelAndView("error");
-    }
-    if (!"code".equals(responseType)) {
+    try {
+      Optional<ClientApp> clientApp = clientAppService.verifyRedirectUri(clientId, redirectUri);
+      if (!clientApp.isPresent()) {
+        logger.warn("invalid redirect uri, may be attack: {}, {}", clientId, redirectUri);
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        return new ModelAndView("error");
+      }
+      if (!"code".equals(responseType)) {
+        return redirectViewWithError(redirectUri,
+            OAuthError.CodeResponse.UNSUPPORTED_RESPONSE_TYPE,
+            "response_type must be code",
+            state);
+      }
+      if (Strings.isNullOrEmpty(state)) {
+        return redirectViewWithError(redirectUri,
+            OAuthError.CodeResponse.INVALID_REQUEST,
+            "missing state",
+            state);
+      }
+      Set<ClientAppScope> clientAppScopes = ClientAppScope.tryParse(scope);
+      if (clientAppScopes.isEmpty()) {
+        return redirectViewWithError(redirectUri,
+            OAuthError.CodeResponse.INVALID_SCOPE,
+            "wrong scope",
+            state);
+      }
+      //TODO handle error=temporary_unavailable
+      return new ModelAndView("v1/authorize").addObject("clientApp", clientApp.get())
+          .addObject("clientAppScopes", clientAppScopes);
+    } catch (RuntimeException e) {
+      logger.warn("unexpected error while GET /authorize", e);
       return redirectViewWithError(redirectUri,
-          OAuthError.CodeResponse.UNSUPPORTED_RESPONSE_TYPE,
-          "response_type must be code",
+          OAuthError.CodeResponse.SERVER_ERROR,
+          "unknown server error",
           state);
     }
-    if (Strings.isNullOrEmpty(state)) {
-      return redirectViewWithError(redirectUri,
-          OAuthError.CodeResponse.INVALID_REQUEST,
-          "missing state",
-          state);
-    }
-    Set<ClientAppScope> clientAppScopes = ClientAppScope.tryParse(scope);
-    if (clientAppScopes.isEmpty()) {
-      return redirectViewWithError(redirectUri,
-          OAuthError.CodeResponse.INVALID_SCOPE,
-          "wrong scope",
-          state);
-    }
-    //TODO handle error=server_error and error=temporary_unavailable
-    return new ModelAndView("v1/authorize").addObject("clientApp", clientApp.get())
-        .addObject("clientAppScopes", clientAppScopes);
   }
 
   @RequestMapping(value = "/authorize", method = RequestMethod.POST)
@@ -104,6 +115,12 @@ public class V1OauthController {
           OAuthError.CodeResponse.ACCESS_DENIED,
           "access denied",
           state);
+    } catch (RuntimeException e) {
+      logger.warn("unexpected error while PUT /authorize", e);
+      return redirectViewWithError(redirectUri,
+          OAuthError.CodeResponse.SERVER_ERROR,
+          "unknown server error",
+          state);
     }
   }
 
@@ -111,11 +128,14 @@ public class V1OauthController {
       String error,
       String errorDescription,
       String state) {
-    String query = String.format("%s=%s&%s=%s",
+    //TODO use right oauth error uri
+    String query = String.format("%s=%s&%s=%s&%s=%s",
         OAuthError.OAUTH_ERROR,
         error,
         OAuthError.OAUTH_ERROR_DESCRIPTION,
-        errorDescription);
+        errorDescription,
+        OAuthError.OAUTH_ERROR_URI,
+        "https://kaif.io");
     return redirectViewWithQuery(redirectUri, state, query);
   }
 
@@ -167,7 +187,6 @@ public class V1OauthController {
       OAuthAuthzRequest oauthRequest = new OAuthAuthzRequest(request);
       //dynamically recognize an OAuth profile based on request characteristic (params,
       // method, content type etc.), perform validation
-      validateRedirectionURI(oauthRequest);
       OAuthIssuer oauthIssuerImpl = new OAuthIssuerImpl(new MD5Generator());
 
       //build OAuth response
@@ -188,12 +207,6 @@ public class V1OauthController {
 
       response.sendRedirect(resp.getLocationUri());
     }
-  }
-
-  private void validateRedirectionURI(OAuthAuthzRequest oauthRequest) {
-    //TODO
-    // see github rule
-    // https://developer.github.com/v3/oauth/#redirect-urls
   }
 
   @RequestMapping(value = "/xxxaccess-token", method = RequestMethod.POST)

@@ -60,7 +60,21 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
         .param("state", "123")
         .param("redirect_uri", "foo://callback"))
         .andExpect(redirectedUrl(
-            "foo://callback?error=unsupported_response_type&error_description=response_type%20must%20be%20code&state=123"))
+            "foo://callback?error=unsupported_response_type&error_description=response_type%20must%20be%20code&error_uri=https://kaif.io&state=123"))
+        .andExpect(status().isMovedPermanently());
+  }
+
+  @Test
+  public void authorize_unexpected_server_error() throws Exception {
+    when(clientAppService.verifyRedirectUri(clientApp.getClientId(), "foo://callback")).thenThrow(
+        new RuntimeException("unexpected"));
+    mockMvc.perform(get("/v1/oauth/authorize").param("client_id", clientApp.getClientId())
+        .param("scope", "feed article")
+        .param("state", "123")
+        .param("response_type", "code")
+        .param("redirect_uri", "foo://callback"))
+        .andExpect(redirectedUrl(
+            "foo://callback?error=server_error&error_description=unknown%20server%20error&error_uri=https://kaif.io&state=123"))
         .andExpect(status().isMovedPermanently());
   }
 
@@ -73,7 +87,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
         .param("response_type", "code")
         .param("redirect_uri", "foo://callback"))
         .andExpect(redirectedUrl(
-            "foo://callback?error=invalid_request&error_description=missing%20state"))
+            "foo://callback?error=invalid_request&error_description=missing%20state&error_uri=https://kaif.io"))
         .andExpect(status().isMovedPermanently());
   }
 
@@ -87,7 +101,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
         .param("response_type", "code")
         .param("redirect_uri", "foo://callback"))
         .andExpect(redirectedUrl(
-            "foo://callback?error=invalid_scope&error_description=wrong%20scope&state=123"))
+            "foo://callback?error=invalid_scope&error_description=wrong%20scope&error_uri=https://kaif.io&state=123"))
         .andExpect(status().isMovedPermanently());
   }
 
@@ -99,8 +113,22 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
         .param("client_id", "client-id-foo")
         .param("redirect_uri", "foo://callback")
         .param("scope", "feed article")
+        .param("state", "123"))
+        .andExpect(redirectedUrl("foo://callback?code=auth%20code&state=123"))
+        .andExpect(status().isMovedPermanently());
+  }
+
+  @Test
+  public void directGrantCode_unexpected_server_error() throws Exception {
+    when(clientAppService.directGrantCode("foo", "client-id-foo", "feed article", "foo://callback"))
+        .thenThrow(new RuntimeException("unexpected"));
+    mockMvc.perform(post("/v1/oauth/authorize").param("oauthDirectAuthorize", "foo")
+        .param("client_id", "client-id-foo")
+        .param("redirect_uri", "foo://callback")
+        .param("scope", "feed article")
         .param("state", "123 456"))
-        .andExpect(redirectedUrl("foo://callback?code=auth%20code&state=123%20456"))
+        .andExpect(redirectedUrl(
+            "foo://callback?error=server_error&error_description=unknown%20server%20error&error_uri=https://kaif.io&state=123%20456"))
         .andExpect(status().isMovedPermanently());
   }
 
@@ -114,7 +142,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
         .param("state", "123 456")
         .param("redirect_uri", "foo://callback"))
         .andExpect(redirectedUrl(
-            "foo://callback?error=access_denied&error_description=access%20denied&state=123%20456"))
+            "foo://callback?error=access_denied&error_description=access%20denied&error_uri=https://kaif.io&state=123%20456"))
         .andExpect(status().isMovedPermanently());
   }
 
@@ -127,7 +155,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
         .param("state", "123 456")
         .param("redirect_uri", "foo://callback"))
         .andExpect(redirectedUrl(
-            "foo://callback?error=access_denied&error_description=access%20denied&state=123%20456"))
+            "foo://callback?error=access_denied&error_description=access%20denied&error_uri=https://kaif.io&state=123%20456"))
         .andExpect(status().isMovedPermanently());
   }
 }
