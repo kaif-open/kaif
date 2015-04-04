@@ -9,7 +9,6 @@ import 'package:kaif_web/comp/account/account_menu.dart';
 import 'package:kaif_web/comp/account/account_settings.dart';
 import 'package:kaif_web/comp/article/article_form.dart';
 import 'package:kaif_web/comp/article/article-list.dart';
-import 'package:kaif_web/comp/v1/oauth_authorize_form.dart';
 import 'package:kaif_web/comp/debate/debate_tree.dart';
 import 'package:kaif_web/comp/debate/debate_list.dart';
 import 'package:kaif_web/comp/server_part_loader.dart';
@@ -17,6 +16,7 @@ import 'package:kaif_web/comp/short_url.dart';
 import 'dart:html';
 import 'dart:async';
 import 'package:kaif_web/comp/developer/developer_client_app.dart';
+import 'package:kaif_web/comp/oauth/oauth_authorize_form.dart';
 
 final ServerType serverType = new ServerType();
 

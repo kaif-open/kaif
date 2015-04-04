@@ -22,18 +22,7 @@ class OauthAuthorizeForm {
     passwordInput = elem.querySelector('#passwordInput');
     grantSubmit = elem.querySelector('#grantSubmit');
     if (accountSession.isSignIn) {
-      nameInput
-        ..readOnly = true
-        ..value = accountSession.current.username;
-      passwordInput.remove();
-      grantSubmit.disabled = true;
-      _prepareToken();
-      grantSubmit.disabled = false;
-      elem.onSubmit.listen((e) {
-        grantSubmit.disabled = true;
-        denySubmit.disabled = true;
-        new Loading.small().renderAfter(grantSubmit);
-      });
+      _initSignedIn();
     } else {
       elem.querySelector('[password-group]').classes.remove('hidden');
       onGrantSubmitSubscription = elem.onSubmit.listen(_authenticateSubmit);
@@ -41,6 +30,26 @@ class OauthAuthorizeForm {
 
     denySubmit = elem.querySelector('#denySubmit')
       ..onClick.listen(_onDeny);
+  }
+
+  _initSignedIn() async {
+    nameInput
+      ..readOnly = true
+      ..value = accountSession.current.username;
+    passwordInput.remove();
+    grantSubmit.disabled = true;
+    try {
+      await _prepareToken();
+    } catch (requireCitizenException) {
+      alert.renderError("$requireCitizenException");
+      return;
+    }
+    grantSubmit.disabled = false;
+    elem.onSubmit.listen((e) {
+      grantSubmit.disabled = true;
+      denySubmit.disabled = true;
+      new Loading.small().renderAfter(grantSubmit);
+    });
   }
 
   Future _onDeny(Event e) async {
@@ -71,7 +80,14 @@ class OauthAuthorizeForm {
     }
     accountSession.save(auth, rememberMe:false);
     onGrantSubmitSubscription.cancel();
-    await _prepareToken();
+    try {
+      await _prepareToken();
+    } catch (requireCitizenException) {
+      alert.renderError("$requireCitizenException");
+      denySubmit.disabled = false;
+      loading.remove();
+      return;
+    }
     elem.submit();
   }
 

@@ -31,6 +31,8 @@
                     </button>
                 </div>
             </fieldset>
+        </form>
+        <form class="pure-form pure-form-stacked">
             <fieldset>
                 <legend>
                     您將授權 ${clientApp.appName} 的權限：

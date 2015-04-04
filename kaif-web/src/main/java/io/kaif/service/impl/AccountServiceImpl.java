@@ -30,6 +30,7 @@ import io.kaif.model.account.AccountStats;
 import io.kaif.model.account.Authority;
 import io.kaif.model.account.Authorization;
 import io.kaif.model.exception.OldPasswordNotMatchException;
+import io.kaif.model.exception.RequireCitizenException;
 import io.kaif.service.AccountService;
 import io.kaif.web.support.AccessDeniedException;
 
@@ -250,12 +251,18 @@ public class AccountServiceImpl implements AccountService {
   }
 
   @Override
-  public AccountOnceToken createOauthDirectAuthorizeToken(Authorization authorization) {
-    return accountDao.strongVerifyAccount(authorization)
-        .map(account -> accountDao.createOnceToken(account,
-            AccountOnceToken.Type.OAUTH_DIRECT_AUTHORIZE,
-            Instant.now(clock)))
-        .orElseThrow(() -> new AccessDeniedException("invalid access token"));
+  public AccountOnceToken createOauthDirectAuthorizeToken(Authorization authorization)
+      throws RequireCitizenException {
+    Optional<Account> verifiedAccount = accountDao.strongVerifyAccount(authorization);
+    if (!verifiedAccount.isPresent()) {
+      throw new AccessDeniedException("invalid access token");
+    }
+    if (!verifiedAccount.get().containsAuthority(Authority.CITIZEN)) {
+      throw new RequireCitizenException();
+    }
+    return verifiedAccount.map(account -> accountDao.createOnceToken(account,
+        AccountOnceToken.Type.OAUTH_DIRECT_AUTHORIZE,
+        Instant.now(clock))).get();
   }
 
   @Override
