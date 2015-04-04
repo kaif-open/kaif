@@ -17,8 +17,6 @@ import java.util.UUID;
  * <p>
  * <ul>
  * <li>User revoke the app</li>
- * <li>User re-authorized (delete then create)</li>
- * <li>App owner reset client secret (cause delete all users)</li>
  * <li>App owner delete app (revoke) (cause delete all users)</li>
  * </ul>
  */

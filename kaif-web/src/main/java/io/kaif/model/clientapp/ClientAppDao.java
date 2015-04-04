@@ -9,6 +9,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -18,8 +20,12 @@ import io.kaif.model.account.Account;
 
 @Repository
 public class ClientAppDao implements DaoOperations {
+
+  private static final String FIND_CLIENT_APP_USER_CACHE_NAME = "findClientAppUser";
+
   @Autowired
   private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
   private final RowMapper<ClientApp> clientAppMapper = (rs, num) -> {
     return new ClientApp(rs.getString("clientId"),
         rs.getString("clientSecret"),
@@ -90,20 +96,28 @@ public class ClientAppDao implements DaoOperations {
         ownerAccountId);
   }
 
-  public void updateApp(ClientApp updated) {
+  public void updateAppInformation(ClientApp updated) {
     jdbc().update(""
             + " UPDATE ClientApp "
-            + "    SET clientSecret = ? "
-            + "      , appName = ? "
+            + "    SET appName = ? "
             + "      , description = ? "
             + "      , revoked = ? "
             + "      , callbackUri = ? "
             + "  WHERE clientId = ? ",
-        updated.getClientSecret(),
         updated.getAppName(),
         updated.getDescription(),
         updated.isRevoked(),
         updated.getCallbackUri(),
+        updated.getClientId());
+  }
+
+  /*
+ * there is no way to evict app's all users, so we have to evict all entries
+ */
+  @CacheEvict(value = FIND_CLIENT_APP_USER_CACHE_NAME, allEntries = true)
+  public void updateAppSecret(ClientApp updated) {
+    jdbc().update("" + " UPDATE ClientApp " + "    SET clientSecret = ? " + "  WHERE clientId = ? ",
+        updated.getClientSecret(),
         updated.getClientId());
   }
 
@@ -113,11 +127,11 @@ public class ClientAppDao implements DaoOperations {
         clientId).stream().findAny();
   }
 
+  @CacheEvict(value = FIND_CLIENT_APP_USER_CACHE_NAME, key = "#a0.accountId + #a1.clientId")
   public ClientAppUser mergeClientAppUser(Account account,
       ClientApp clientApp,
       Set<ClientAppScope> scopes,
       Instant now) {
-    //TODO evict cache
     Optional<ClientAppUser> exist = findClientAppUserWithoutCache(account.getAccountId(),
         clientApp.getClientId());
 
@@ -156,6 +170,11 @@ public class ClientAppDao implements DaoOperations {
     }
   }
 
+  @Cacheable(value = FIND_CLIENT_APP_USER_CACHE_NAME, key = "#a0 + #a1")
+  public Optional<ClientAppUser> findClientAppUserWithCache(UUID accountId, String clientId) {
+    return findClientAppUserWithoutCache(accountId, clientId);
+  }
+
   public Optional<ClientAppUser> findClientAppUserWithoutCache(UUID accountId, String clientId) {
     return jdbc().query(""
         + " SELECT cau.*, ClientApp.clientSecret "
@@ -174,8 +193,8 @@ public class ClientAppDao implements DaoOperations {
         + "  WHERE cau.accountId = ? ", clientAppUserMapper, accountId);
   }
 
+  @CacheEvict(value = FIND_CLIENT_APP_USER_CACHE_NAME, key = "#a0 + #a1")
   public void deleteClientAppUser(UUID accountId, String clientId) {
-    //TODO evict cache
     jdbc().update(""
         + " DELETE "
         + "   FROM ClientAppUser "

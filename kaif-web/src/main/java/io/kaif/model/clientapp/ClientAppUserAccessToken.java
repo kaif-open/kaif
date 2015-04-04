@@ -27,6 +27,13 @@ import io.kaif.token.Bytes;
  * <li>account's authorities changed should treat invalid (hard to implement)</li>
  * <li>account password changed do not affect this token</li>
  * </ul>
+ * <p>
+ * because multiple tokens allow to exist, there are some limitations:
+ * <ul>
+ * <li>scopes are serialized to token only, it does not persist in database for validation and
+ * synchronization. If user in his phone grant AppFoo to use two new scopes, in his previous
+ * tablet, he has to grant again to obtain new scopes </li>
+ * </ul>
  */
 public class ClientAppUserAccessToken implements Authorization, ClientAppAuthorization {
 

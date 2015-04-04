@@ -86,7 +86,7 @@ public class ClientAppServiceImpl implements ClientAppService {
       String description,
       String callbackUri) {
     ClientApp clientApp = verifyClientAppForOwner(creator, clientId);
-    clientAppDao.updateApp(clientApp.withName(name)
+    clientAppDao.updateAppInformation(clientApp.withName(name)
         .withDescription(description)
         .withCallbackUri(callbackUri));
   }
@@ -160,13 +160,18 @@ public class ClientAppServiceImpl implements ClientAppService {
         Oauths.DEFAULT_TOKEN_TYPE);
   }
 
+  /**
+   * unlike AccountAccessToken, which have two variations (one is in memory verify, the other is
+   * hit db for strong verify). ClientAppAccessToken are always check against db, but with one
+   * minute local caching window. So in worst cases, user or app revoke, the token require wait up
+   * to one minute to take effect when kaif deploy to multiple servers.
+   */
   @Override
   public Optional<ClientAppUserAccessToken> verifyAccessToken(@Nullable String rawAccessToken) {
-    //TODO validate against db once per minute
     return ClientAppUserAccessToken.tryDecode(rawAccessToken, oauthSecret).filter(token -> {
-      Optional<ClientAppUser> clientAppUser = clientAppDao.findClientAppUserWithoutCache(token.authenticatedId(),
+      Optional<ClientAppUser> clientAppUser = clientAppDao.findClientAppUserWithCache(token.authenticatedId(),
           token.clientId());
-      return clientAppUser.isPresent() && token.validate(clientAppUser.get());
+      return token.validate(clientAppUser.orElse(null));
     });
   }
 
@@ -178,7 +183,7 @@ public class ClientAppServiceImpl implements ClientAppService {
   @Override
   public void resetClientAppSecret(Authorization creator, String clientId) {
     ClientApp clientApp = verifyClientAppForOwner(creator, clientId);
-    clientAppDao.updateApp(clientApp.withResetSecret());
+    clientAppDao.updateAppSecret(clientApp.withResetSecret());
   }
 
   private ClientApp verifyClientAppForOwner(Authorization creator, String clientId) {
