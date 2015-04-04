@@ -22,15 +22,18 @@ public class ClientApp {
       String callbackUri,
       Instant now) throws CallbackUriReservedException, ClientAppNameReservedException {
     String clientId = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 16);
-    String secret = UUID.randomUUID().toString().replaceAll("-", "");
     return new ClientApp(clientId,
-        secret,
+        createNewSecret(),
         name,
         description,
         now,
         ownerAccountId,
         false,
         callbackUri);
+  }
+
+  static String createNewSecret() {
+    return UUID.randomUUID().toString().replaceAll("-", "");
   }
 
   private final String clientId;
@@ -166,5 +169,16 @@ public class ClientApp {
     return Optional.ofNullable(targetRedirectUri)
         .filter(target -> target.startsWith(callbackUri))
         .isPresent();
+  }
+
+  public ClientApp withResetSecret() {
+    return new ClientApp(clientId,
+        createNewSecret(),
+        appName,
+        description,
+        createTime,
+        ownerAccountId,
+        revoked,
+        callbackUri);
   }
 }

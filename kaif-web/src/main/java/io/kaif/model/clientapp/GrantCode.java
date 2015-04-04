@@ -49,12 +49,16 @@ public class GrantCode {
     this.scopes = EnumSet.copyOf(scopes);
   }
 
+  public UUID getAccountId() {
+    return accountId;
+  }
+
   public String encode(Instant expireTime, OauthSecret secret) {
     List<byte[]> fields = Arrays.asList(Bytes.uuidToBytes(accountId),
         clientId.getBytes(Charsets.UTF_8),
         clientSecret.getBytes(Charsets.UTF_8),
         redirectUri.getBytes(Charsets.UTF_8),
-        getCanonicalScope().getBytes(Charsets.UTF_8));
+        ClientAppScope.toCanonicalString(scopes).getBytes(Charsets.UTF_8));
     return secret.getCodec().encode(expireTime.toEpochMilli(), fields);
   }
 
@@ -105,7 +109,7 @@ public class GrantCode {
         && clientSecret.equals(clientApp.getClientSecret());
   }
 
-  public String getCanonicalScope() {
-    return ClientAppScope.toCanonicalString(scopes);
+  public Set<ClientAppScope> getScopes() {
+    return scopes;
   }
 }

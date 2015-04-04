@@ -10,6 +10,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Preconditions;
 
 import io.kaif.model.account.Account;
 import io.kaif.model.account.Authority;
@@ -57,6 +58,7 @@ public class ClientAppUserAccessToken implements Authorization, ClientAppAuthori
   // lastGrantedScopes because multiple devices may issue different scopes
   // (different access token), but ClientAppUser only store latest issued scopes
   private final Set<ClientAppScope> tokenScopes;
+  private String canonicalScope;
 
   public ClientAppUserAccessToken(UUID accountId,
       Set<Authority> authorities,
@@ -71,6 +73,7 @@ public class ClientAppUserAccessToken implements Authorization, ClientAppAuthori
       Set<ClientAppScope> tokenScopes,
       String clientId,
       String clientSecret) {
+    Preconditions.checkArgument(!tokenScopes.isEmpty(), "token scopes should not empty");
     this.authoritiesBits = authoritiesBits;
     this.accountId = accountId;
     this.clientId = clientId;
@@ -183,5 +186,9 @@ public class ClientAppUserAccessToken implements Authorization, ClientAppAuthori
   @Override
   public String clientId() {
     return clientId;
+  }
+
+  public String getCanonicalScope() {
+    return ClientAppScope.toCanonicalString(tokenScopes);
   }
 }

@@ -3,14 +3,20 @@ package io.kaif.service.impl;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 
+import java.util.EnumSet;
+import java.util.List;
 import java.util.stream.IntStream;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountOnceToken;
 import io.kaif.model.clientapp.ClientApp;
+import io.kaif.model.clientapp.ClientAppScope;
+import io.kaif.model.clientapp.ClientAppUser;
+import io.kaif.model.clientapp.ClientAppUserAccessToken;
 import io.kaif.model.exception.CallbackUriReservedException;
 import io.kaif.model.exception.ClientAppMaxException;
 import io.kaif.model.exception.ClientAppNameReservedException;
@@ -25,10 +31,15 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
   private ClientAppServiceImpl service;
   @Autowired
   private AccountService accountService;
+  private Account dev;
+
+  @Before
+  public void setUp() throws Exception {
+    dev = savedAccountCitizen("dev1");
+  }
 
   @Test
   public void create() throws Exception {
-    Account dev = savedAccountCitizen("dev1");
     ClientApp clientApp = service.create(dev, "myapp", "ya ~ good", "http://myapp.com/callback");
     ClientApp loaded = service.loadClientAppWithoutCache(clientApp.getClientId());
     assertEquals("myapp", loaded.getAppName());
@@ -43,7 +54,6 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
   @Test
   public void verifyRedirectUri() throws Exception {
     assertFalse(service.verifyRedirectUri("notExist", "foo://com").isPresent());
-    Account dev = savedAccountCitizen("dev1");
     ClientApp clientApp = service.create(dev, "myapp", "ya ~ good", "http://myapp.com/callback");
     String id = clientApp.getClientId();
     assertEquals(clientApp, service.verifyRedirectUri(id, "http://myapp.com/callback").get());
@@ -57,7 +67,6 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void create_maxApps() throws Exception {
-    Account dev = savedAccountCitizen("dev1");
     IntStream.rangeClosed(1, 5).forEach(i -> {
       service.create(dev, "myapp", "ya ~ good", "http://myapp.com/callback");
     });
@@ -70,7 +79,6 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void update() throws Exception {
-    Account dev = savedAccountCitizen("dev1");
     ClientApp clientApp = service.create(dev, "myapp", "ya ~ good", "http://myapp.com/callback");
     service.update(dev, clientApp.getClientId(), "appU2", "poor baby", "myapp://callback");
     ClientApp loaded = service.loadClientAppWithoutCache(clientApp.getClientId());
@@ -81,7 +89,6 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void update_not_owner() throws Exception {
-    Account dev = savedAccountCitizen("dev1");
     ClientApp clientApp = service.create(dev, "myapp", "ya ~ good", "http://myapp.com/callback");
     try {
       service.update(savedAccountCitizen("otherDev"),
@@ -96,7 +103,7 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void create_not_citizen() throws Exception {
-    Account tourist = savedAccountTourist("dev1");
+    Account tourist = savedAccountTourist("tourist1");
     try {
       service.create(tourist, "myapp", "ya ~ good", "http://myapp.com/callback");
       fail("AccessDeniedException expected");
@@ -106,7 +113,6 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void client_app_not_allow_reserved_word() throws Exception {
-    Account dev = savedAccountCitizen("dev1");
     try {
       service.create(dev, "myapp", "ya ~ good", "http://myapp.com/kaif");
       fail("CallbackUriReservedException expected");
@@ -133,7 +139,6 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void listClientApps() throws Exception {
-    Account dev = savedAccountCitizen("dev1");
     ClientApp clientApp1 = service.create(dev, "myapp1", "ya ~ good", "http://myapp1.com/callback");
     ClientApp clientApp2 = service.create(dev, "myapp2", "ya ~ good", "http://myapp2.com/callback");
     assertEquals(asList(clientApp1, clientApp2), service.listClientApps(dev));
@@ -143,7 +148,6 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
   public void directGrantCode() throws Exception {
     Account user = savedAccountCitizen("user1");
     AccountOnceToken oauthDirectAuthorizeToken = accountService.createOauthDirectAuthorizeToken(user);
-    Account dev = savedAccountCitizen("dev1");
     ClientApp clientApp = service.create(dev, "myapp", "ya ~ good", "http://myapp.com/callback");
 
     String code = service.directGrantCode(oauthDirectAuthorizeToken.getToken(),
@@ -157,5 +161,64 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
         "http://myapp.com/callback/foo");
     assertNotNull(token.getAccessToken());
     assertEquals("feed public", token.getScope());
+  }
+
+  @Test
+  public void createOauthAccessTokenByGrantCode() throws Exception {
+    Account user = savedAccountCitizen("user1");
+    AccountOnceToken oauthDirectAuthorizeToken = accountService.createOauthDirectAuthorizeToken(user);
+    ClientApp clientApp = service.create(dev, "myapp", "ya ~ good", "http://myapp.com/callback");
+    String grantCode = service.directGrantCode(oauthDirectAuthorizeToken.getToken(),
+        clientApp.getClientId(),
+        "feed public",
+        "http://myapp.com/callback/foo");
+
+    OauthAccessTokenDto tokenDto = service.createOauthAccessTokenByGrantCode(grantCode,
+        clientApp.getClientId(),
+        "http://myapp.com/callback/foo");
+    ClientAppUser appUser = service.listGrantedApps(user).get(0);
+    assertEquals(user.getAccountId(), appUser.getAccountId());
+    assertEquals(clientApp.getClientId(), appUser.getClientId());
+    assertEquals(clientApp.getClientSecret(), appUser.getCurrentClientSecret());
+    assertEquals(EnumSet.of(ClientAppScope.FEED, ClientAppScope.PUBLIC),
+        appUser.getLastGrantedScopes());
+    ClientAppUserAccessToken clientAppUserAccessToken = service.verifyAccessToken(tokenDto.getAccessToken())
+        .get();
+    assertTrue(clientAppUserAccessToken.validate(appUser));
+    assertTrue(clientAppUserAccessToken.containsScope(ClientAppScope.FEED));
+    assertTrue(clientAppUserAccessToken.containsScope(ClientAppScope.PUBLIC));
+  }
+
+  @Test
+  public void createOauthAccessToken_preserve_last_creation_only() throws Exception {
+    Account user = savedAccountCitizen("user1");
+    ClientApp clientApp = service.create(dev, "myapp", "ya ~ good", "http://myapp.com/callback");
+
+    service.createOauthAccessToken(clientApp, user.getAccountId(), EnumSet.of(ClientAppScope.FEED));
+    List<ClientAppUser> clientAppUsers = service.listGrantedApps(user);
+    assertEquals(1, clientAppUsers.size());
+    ClientAppUser appUser = clientAppUsers.get(0);
+    assertEquals(user.getAccountId(), appUser.getAccountId());
+    assertEquals(clientApp.getClientId(), appUser.getClientId());
+    assertEquals(clientApp.getClientSecret(), appUser.getCurrentClientSecret());
+    assertEquals(EnumSet.of(ClientAppScope.FEED), appUser.getLastGrantedScopes());
+
+    //both clientSecret and scopes are updated
+    service.resetClientAppSecret(dev, clientApp.getClientId());
+    ClientApp resetApp = service.loadClientAppWithoutCache(clientApp.getClientId());
+    service.createOauthAccessToken(clientApp,
+        user.getAccountId(),
+        EnumSet.of(ClientAppScope.ARTICLE));
+
+    clientAppUsers = service.listGrantedApps(user);
+    assertEquals("should update exist client app user if issue new access token",
+        1,
+        clientAppUsers.size());
+
+    ClientAppUser updated = clientAppUsers.get(0);
+    assertEquals(user.getAccountId(), updated.getAccountId());
+    assertEquals(clientApp.getClientId(), updated.getClientId());
+    assertEquals(resetApp.getClientSecret(), updated.getCurrentClientSecret());
+    assertEquals(EnumSet.of(ClientAppScope.ARTICLE), updated.getLastGrantedScopes());
   }
 }

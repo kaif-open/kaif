@@ -102,4 +102,31 @@ public class ClientAppUser {
   public int hashCode() {
     return clientAppUserId != null ? clientAppUserId.hashCode() : 0;
   }
+
+  public ClientAppUser withScopes(Set<ClientAppScope> scopes) {
+    return new ClientAppUser(clientAppUserId,
+        clientId,
+        currentClientSecret,
+        accountId,
+        scopes,
+        lastUpdateTime);
+  }
+
+  public ClientAppUser withClientSecret(String clientSecret) {
+    return new ClientAppUser(clientAppUserId,
+        clientId,
+        clientSecret,
+        accountId,
+        lastGrantedScopes,
+        lastUpdateTime);
+  }
+
+  public ClientAppUser withLastUpdateTime(Instant updateTime) {
+    return new ClientAppUser(clientAppUserId,
+        clientId,
+        currentClientSecret,
+        accountId,
+        lastGrantedScopes,
+        updateTime);
+  }
 }

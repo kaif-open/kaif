@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import io.kaif.model.account.Authorization;
 import io.kaif.model.clientapp.ClientApp;
+import io.kaif.model.clientapp.ClientAppUser;
+import io.kaif.model.clientapp.ClientAppUserAccessToken;
 import io.kaif.oauth.OauthAccessTokenDto;
 import io.kaif.web.support.AccessDeniedException;
 
@@ -35,4 +37,10 @@ public interface ClientAppService {
   OauthAccessTokenDto createOauthAccessTokenByGrantCode(String code,
       String clientId,
       String redirectUri) throws AccessDeniedException;
+
+  Optional<ClientAppUserAccessToken> verifyAccessToken(String rawAccessToken);
+
+  List<ClientAppUser> listGrantedApps(Authorization authorization);
+
+  void resetClientAppSecret(Authorization creator, String clientId);
 }

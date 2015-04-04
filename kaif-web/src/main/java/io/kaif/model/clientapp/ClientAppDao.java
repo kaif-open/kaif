@@ -4,7 +4,9 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
@@ -27,6 +29,19 @@ public class ClientAppDao implements DaoOperations {
         UUID.fromString(rs.getString("ownerAccountId")),
         rs.getBoolean("revoked"),
         rs.getString("callbackUri"));
+  };
+
+  private final RowMapper<ClientAppUser> clientAppUserMapper = (rs, num) -> {
+
+    Set<ClientAppScope> lastGrantedScopes = convertVarcharArray(rs.getArray("lastGrantedScopes")).map(
+        ClientAppScope::valueOf).collect(Collectors.toSet());
+
+    return new ClientAppUser(UUID.fromString(rs.getString("clientAppUserId")),
+        rs.getString("clientId"),
+        rs.getString("clientSecret"),
+        UUID.fromString(rs.getString("accountId")),
+        lastGrantedScopes,
+        rs.getTimestamp("lastUpdateTime").toInstant());
   };
 
   @Override
@@ -96,5 +111,66 @@ public class ClientAppDao implements DaoOperations {
     return jdbc().query(" SELECT * FROM ClientApp WHERE clientId = ? LIMIT 1",
         clientAppMapper,
         clientId).stream().findAny();
+  }
+
+  public ClientAppUser mergeClientAppUser(Account account,
+      ClientApp clientApp,
+      Set<ClientAppScope> scopes,
+      Instant now) {
+    //TODO evict cache
+    Optional<ClientAppUser> exist = findClientAppUser(account.getAccountId(),
+        clientApp.getClientId());
+
+    if (exist.isPresent()) {
+      ClientAppUser updated = exist.get()
+          .withScopes(scopes)
+          .withLastUpdateTime(now)
+          .withClientSecret(clientApp.getClientSecret());
+      jdbc().update(""
+              + " UPDATE ClientAppUser "
+              + "    SET lastGrantedScopes = ? "
+              + "      , lastUpdateTime = ? "
+              + "  WHERE clientAppUserId = ? ",
+          createVarcharArray(updated.getLastGrantedScopes().stream().map(ClientAppScope::name)),
+          Timestamp.from(updated.getLastUpdateTime()),
+          updated.getClientAppUserId());
+      return updated;
+    } else {
+      ClientAppUser created = ClientAppUser.create(clientApp.getClientId(),
+          clientApp.getClientSecret(),
+          account.getAccountId(),
+          scopes,
+          now);
+      jdbc().update(""
+              + " INSERT "
+              + "   INTO ClientAppUser "
+              + "        (clientAppUserId, clientId, accountId, lastGrantedScopes, lastUpdateTime )"
+              + " VALUES "
+              + questions(5),
+          created.getClientAppUserId(),
+          created.getClientId(),
+          created.getAccountId(),
+          createVarcharArray(created.getLastGrantedScopes().stream().map(ClientAppScope::name)),
+          Timestamp.from(created.getLastUpdateTime()));
+      return created;
+    }
+  }
+
+  public Optional<ClientAppUser> findClientAppUser(UUID accountId, String clientId) {
+    return jdbc().query(""
+        + " SELECT cau.*, ClientApp.clientSecret "
+        + "  FROM ClientAppUser cau "
+        + "  JOIN ClientApp ON (cau.clientId = ClientApp.clientId ) "
+        + " WHERE cau.accountId = ? "
+        + "   AND cau.clientId = ? "
+        + " LIMIT 1 ", clientAppUserMapper, accountId, clientId).stream().findAny();
+  }
+
+  public List<ClientAppUser> listClientAppsByUser(UUID accountId) {
+    return jdbc().query(""
+        + " SELECT cau.*, ClientApp.clientSecret "
+        + "  FROM ClientAppUser cau "
+        + "  JOIN ClientApp ON (cau.clientId = ClientApp.clientId ) "
+        + " WHERE cau.accountId = ? ", clientAppUserMapper, accountId);
   }
 }

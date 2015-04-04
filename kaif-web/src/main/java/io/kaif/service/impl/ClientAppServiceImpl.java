@@ -7,9 +7,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.annotations.VisibleForTesting;
 
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountDao;
@@ -18,6 +22,8 @@ import io.kaif.model.account.Authorization;
 import io.kaif.model.clientapp.ClientApp;
 import io.kaif.model.clientapp.ClientAppDao;
 import io.kaif.model.clientapp.ClientAppScope;
+import io.kaif.model.clientapp.ClientAppUser;
+import io.kaif.model.clientapp.ClientAppUserAccessToken;
 import io.kaif.model.clientapp.GrantCode;
 import io.kaif.model.clientapp.OauthSecret;
 import io.kaif.model.exception.ClientAppMaxException;
@@ -31,10 +37,13 @@ import io.kaif.web.support.AccessDeniedException;
 @Transactional
 public class ClientAppServiceImpl implements ClientAppService {
 
-  public static final Duration GRANT_CODE_DURATION = Duration.ofHours(1);
+  private static final Duration GRANT_CODE_DURATION = Duration.ofHours(1);
+
+  //we are just follow github, grant long term access token instead of requiring refresh periodically
+  private static final Duration ACCESS_TOKEN_EXPIRE_DURATION = Duration.ofDays(20 * 365);
+
   @Autowired
   private AccountDao accountDao;
-
   @Autowired
   private ClientAppDao clientAppDao;
   @Autowired
@@ -76,11 +85,7 @@ public class ClientAppServiceImpl implements ClientAppService {
       String name,
       String description,
       String callbackUri) {
-    Account account = verifyDeveloper(creator);
-    ClientApp clientApp = clientAppDao.loadWithoutCache(clientId);
-    if (!account.belongToAccount(clientApp.getOwnerAccountId())) {
-      throw new AccessDeniedException("not client app owner");
-    }
+    ClientApp clientApp = verifyClientAppForOwner(creator, clientId);
     clientAppDao.update(clientApp.withName(name)
         .withDescription(description)
         .withCallbackUri(callbackUri));
@@ -128,13 +133,56 @@ public class ClientAppServiceImpl implements ClientAppService {
     return verifyRedirectUri(clientId, redirectUri).flatMap(clientApp -> {
       return GrantCode.tryDecode(code, oauthSecret)
           .filter(grantCode -> grantCode.matches(clientApp, redirectUri))
-          .map(validCode -> {
-            //TODO generate oauthAccessToken
-            //TODO create/update ClientAppUser
-            return new OauthAccessTokenDto(UUID.randomUUID().toString(),
-                validCode.getCanonicalScope(),
-                Oauths.DEFAULT_TOKEN_TYPE);
-          });
+          .map(grantCode -> createOauthAccessToken(clientApp,
+              grantCode.getAccountId(),
+              grantCode.getScopes()));
     }).orElseThrow(() -> new AccessDeniedException("invalid grant for oauth access token"));
+  }
+
+  /**
+   * back door to create ClientAppUser and accessToken directly, for ease of testing
+   */
+  @VisibleForTesting
+  OauthAccessTokenDto createOauthAccessToken(ClientApp clientApp,
+      UUID accountId,
+      Set<ClientAppScope> scopes) {
+    Account account = accountDao.findById(accountId).get();
+    clientAppDao.mergeClientAppUser(account, clientApp, scopes, Instant.now());
+    ClientAppUserAccessToken accessToken = new ClientAppUserAccessToken(account.getAccountId(),
+        account.getAuthorities(),
+        scopes,
+        clientApp.getClientId(),
+        clientApp.getClientSecret());
+    String encodedToken = accessToken.encode(Instant.now().plus(ACCESS_TOKEN_EXPIRE_DURATION),
+        oauthSecret);
+    return new OauthAccessTokenDto(encodedToken,
+        accessToken.getCanonicalScope(),
+        Oauths.DEFAULT_TOKEN_TYPE);
+  }
+
+  @Override
+  public Optional<ClientAppUserAccessToken> verifyAccessToken(@Nullable String rawAccessToken) {
+    //TODO validate against db once per minute
+    return ClientAppUserAccessToken.tryDecode(rawAccessToken, oauthSecret);
+  }
+
+  @Override
+  public List<ClientAppUser> listGrantedApps(Authorization authorization) {
+    return clientAppDao.listClientAppsByUser(authorization.authenticatedId());
+  }
+
+  @Override
+  public void resetClientAppSecret(Authorization creator, String clientId) {
+    ClientApp clientApp = verifyClientAppForOwner(creator, clientId);
+    clientAppDao.update(clientApp.withResetSecret());
+  }
+
+  private ClientApp verifyClientAppForOwner(Authorization creator, String clientId) {
+    Account account = verifyDeveloper(creator);
+    ClientApp clientApp = clientAppDao.loadWithoutCache(clientId);
+    if (!account.belongToAccount(clientApp.getOwnerAccountId())) {
+      throw new AccessDeniedException("not client app owner");
+    }
+    return clientApp;
   }
 }
