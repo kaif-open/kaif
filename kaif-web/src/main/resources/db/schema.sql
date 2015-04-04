@@ -160,12 +160,13 @@ CREATE TABLE ClientApp (
   PRIMARY KEY (clientId)
 );
 
+-- delete ClientApp (revoked?) will cascade delete all ClientAppUser
 CREATE TABLE ClientAppUser (
-  clientAppUserId UUID          NOT NULL,
-  clientId        VARCHAR(4096) NOT NULL REFERENCES ClientApp (clientId),
-  accountId       UUID          NOT NULL REFERENCES Account (accountId),
-  scopes          TEXT []       NOT NULL,
-  sessionKey      VARCHAR(4096) NOT NULL,
+  clientAppUserId   UUID          NOT NULL,
+  clientId          VARCHAR(4096) NOT NULL REFERENCES ClientApp (clientId) ON DELETE CASCADE,
+  accountId         UUID          NOT NULL REFERENCES Account (accountId),
+  lastGrantedScopes TEXT []       NOT NULL,
+  lastUpdateTime    TIMESTAMPTZ   NOT NULL,
   PRIMARY KEY (clientAppUserId)
 );
 

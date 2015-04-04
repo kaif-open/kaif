@@ -130,6 +130,7 @@ public class ClientAppServiceImpl implements ClientAppService {
           .filter(grantCode -> grantCode.matches(clientApp, redirectUri))
           .map(validCode -> {
             //TODO generate oauthAccessToken
+            //TODO create/update ClientAppUser
             return new OauthAccessTokenDto(UUID.randomUUID().toString(),
                 validCode.getCanonicalScope(),
                 Oauths.DEFAULT_TOKEN_TYPE);

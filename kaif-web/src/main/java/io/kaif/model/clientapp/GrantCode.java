@@ -20,11 +20,12 @@ public class GrantCode {
       return Optional.empty();
     }
     try {
-      return Optional.of(new GrantCode(Bytes.uuidFromBytes(fields.get(0)),
-          new String(fields.get(1)),
-          new String(fields.get(2)),
-          new String(fields.get(3)),
-          ClientAppScope.tryParse(new String(fields.get(4)))));
+      return Optional.of(new GrantCode(//
+          Bytes.uuidFromBytes(fields.get(0)),
+          new String(fields.get(1), Charsets.UTF_8),
+          new String(fields.get(2), Charsets.UTF_8),
+          new String(fields.get(3), Charsets.UTF_8),
+          ClientAppScope.tryParse(new String(fields.get(4), Charsets.UTF_8))));
     } catch (RuntimeException e) {
       return Optional.empty();
     }
@@ -102,10 +103,6 @@ public class GrantCode {
     return redirectUri.equals(targetRedirectUri)
         && clientId.equals(clientApp.getClientId())
         && clientSecret.equals(clientApp.getClientSecret());
-  }
-
-  public Set<ClientAppScope> getScopes() {
-    return scopes;
   }
 
   public String getCanonicalScope() {
