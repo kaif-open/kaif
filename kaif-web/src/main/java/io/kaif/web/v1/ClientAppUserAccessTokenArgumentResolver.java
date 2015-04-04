@@ -1,5 +1,7 @@
 package io.kaif.web.v1;
 
+import java.util.Optional;
+
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -10,8 +12,10 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import com.rometools.utils.Strings;
 
 import io.kaif.model.clientapp.ClientAppUserAccessToken;
+import io.kaif.oauth.InsufficientScopeException;
+import io.kaif.oauth.InvalidTokenException;
+import io.kaif.oauth.MissingBearerTokenException;
 import io.kaif.service.ClientAppService;
-import io.kaif.web.support.AccessDeniedException;
 
 public class ClientAppUserAccessTokenArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -31,12 +35,19 @@ public class ClientAppUserAccessTokenArgumentResolver implements HandlerMethodAr
       ModelAndViewContainer mavContainer,
       NativeWebRequest webRequest,
       WebDataBinderFactory binderFactory) throws Exception {
-    //TODO change AccessDeniedException to oauth specific
     String tokenStr = Strings.trimToEmpty(webRequest.getHeader(HttpHeaders.AUTHORIZATION));
-    if (tokenStr.startsWith("Bearer ")) {
-      String token = tokenStr.substring("Bearer ".length(), tokenStr.length()).trim();
-      return clientAppService.verifyAccessToken(token).orElseThrow(AccessDeniedException::new);
+    if (!tokenStr.startsWith("Bearer ")) {
+      throw new MissingBearerTokenException();
     }
-    throw new AccessDeniedException();
+    String token = tokenStr.substring("Bearer ".length(), tokenStr.length()).trim();
+    Optional<ClientAppUserAccessToken> accessToken = clientAppService.verifyAccessToken(token);
+    if (!accessToken.isPresent()) {
+      throw new InvalidTokenException();
+    }
+    RequiredScope requiredScope = parameter.getMethodAnnotation(RequiredScope.class);
+    if (!accessToken.get().containsScope(requiredScope.value())) {
+      throw new InsufficientScopeException(requiredScope.value());
+    }
+    return accessToken.get();
   }
 }
