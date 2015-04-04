@@ -60,7 +60,7 @@ public class ClientAppServiceImpl implements ClientAppService {
     if (listClientApps(account).size() >= ClientApp.MAX_NO_OF_APPS) {
       throw new ClientAppMaxException(ClientApp.MAX_NO_OF_APPS);
     }
-    return clientAppDao.create(account, name, description, callbackUri, Instant.now());
+    return clientAppDao.createApp(account, name, description, callbackUri, Instant.now());
   }
 
   private Account verifyDeveloper(Authorization creator) {
@@ -71,12 +71,12 @@ public class ClientAppServiceImpl implements ClientAppService {
 
   @Override
   public ClientApp loadClientAppWithoutCache(String clientId) {
-    return clientAppDao.loadWithoutCache(clientId);
+    return clientAppDao.loadAppWithoutCache(clientId);
   }
 
   @Override
   public List<ClientApp> listClientApps(Authorization creator) {
-    return clientAppDao.listOrderByTime(creator.authenticatedId());
+    return clientAppDao.listAppOrderByTime(creator.authenticatedId());
   }
 
   @Override
@@ -86,14 +86,14 @@ public class ClientAppServiceImpl implements ClientAppService {
       String description,
       String callbackUri) {
     ClientApp clientApp = verifyClientAppForOwner(creator, clientId);
-    clientAppDao.update(clientApp.withName(name)
+    clientAppDao.updateApp(clientApp.withName(name)
         .withDescription(description)
         .withCallbackUri(callbackUri));
   }
 
   @Override
   public Optional<ClientApp> verifyRedirectUri(String clientId, String redirectUri) {
-    return clientAppDao.find(clientId).filter(app -> app.validateRedirectUri(redirectUri));
+    return clientAppDao.findApp(clientId).filter(app -> app.validateRedirectUri(redirectUri));
   }
 
   @Override
@@ -163,26 +163,35 @@ public class ClientAppServiceImpl implements ClientAppService {
   @Override
   public Optional<ClientAppUserAccessToken> verifyAccessToken(@Nullable String rawAccessToken) {
     //TODO validate against db once per minute
-    return ClientAppUserAccessToken.tryDecode(rawAccessToken, oauthSecret);
+    return ClientAppUserAccessToken.tryDecode(rawAccessToken, oauthSecret).filter(token -> {
+      Optional<ClientAppUser> clientAppUser = clientAppDao.findClientAppUserWithoutCache(token.authenticatedId(),
+          token.clientId());
+      return clientAppUser.isPresent() && token.validate(clientAppUser.get());
+    });
   }
 
   @Override
   public List<ClientAppUser> listGrantedApps(Authorization authorization) {
-    return clientAppDao.listClientAppsByUser(authorization.authenticatedId());
+    return clientAppDao.listAppsByUser(authorization.authenticatedId());
   }
 
   @Override
   public void resetClientAppSecret(Authorization creator, String clientId) {
     ClientApp clientApp = verifyClientAppForOwner(creator, clientId);
-    clientAppDao.update(clientApp.withResetSecret());
+    clientAppDao.updateApp(clientApp.withResetSecret());
   }
 
   private ClientApp verifyClientAppForOwner(Authorization creator, String clientId) {
     Account account = verifyDeveloper(creator);
-    ClientApp clientApp = clientAppDao.loadWithoutCache(clientId);
+    ClientApp clientApp = clientAppDao.loadAppWithoutCache(clientId);
     if (!account.belongToAccount(clientApp.getOwnerAccountId())) {
       throw new AccessDeniedException("not client app owner");
     }
     return clientApp;
+  }
+
+  @Override
+  public void revokeApp(Authorization user, String clientId) {
+    clientAppDao.deleteClientAppUser(user.authenticatedId(), clientId);
   }
 }

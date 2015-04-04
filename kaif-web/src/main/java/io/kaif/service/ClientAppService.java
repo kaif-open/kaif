@@ -43,4 +43,6 @@ public interface ClientAppService {
   List<ClientAppUser> listGrantedApps(Authorization authorization);
 
   void resetClientAppSecret(Authorization creator, String clientId);
+
+  void revokeApp(Authorization user, String clientId);
 }

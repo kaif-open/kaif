@@ -49,7 +49,7 @@ public class ClientAppDao implements DaoOperations {
     return namedParameterJdbcTemplate;
   }
 
-  public ClientApp create(Account creator,
+  public ClientApp createApp(Account creator,
       String name,
       String description,
       String callbackUri,
@@ -78,19 +78,19 @@ public class ClientAppDao implements DaoOperations {
     return app;
   }
 
-  public ClientApp loadWithoutCache(String clientId) {
+  public ClientApp loadAppWithoutCache(String clientId) {
     return jdbc().queryForObject(" SELECT * FROM ClientApp WHERE clientId = ? ",
         clientAppMapper,
         clientId);
   }
 
-  public List<ClientApp> listOrderByTime(UUID ownerAccountId) {
+  public List<ClientApp> listAppOrderByTime(UUID ownerAccountId) {
     return jdbc().query(" SELECT * FROM ClientApp WHERE ownerAccountId = ? ORDER BY createTime ",
         clientAppMapper,
         ownerAccountId);
   }
 
-  public void update(ClientApp updated) {
+  public void updateApp(ClientApp updated) {
     jdbc().update(""
             + " UPDATE ClientApp "
             + "    SET clientSecret = ? "
@@ -107,7 +107,7 @@ public class ClientAppDao implements DaoOperations {
         updated.getClientId());
   }
 
-  public Optional<ClientApp> find(String clientId) {
+  public Optional<ClientApp> findApp(String clientId) {
     return jdbc().query(" SELECT * FROM ClientApp WHERE clientId = ? LIMIT 1",
         clientAppMapper,
         clientId).stream().findAny();
@@ -118,7 +118,7 @@ public class ClientAppDao implements DaoOperations {
       Set<ClientAppScope> scopes,
       Instant now) {
     //TODO evict cache
-    Optional<ClientAppUser> exist = findClientAppUser(account.getAccountId(),
+    Optional<ClientAppUser> exist = findClientAppUserWithoutCache(account.getAccountId(),
         clientApp.getClientId());
 
     if (exist.isPresent()) {
@@ -156,21 +156,30 @@ public class ClientAppDao implements DaoOperations {
     }
   }
 
-  public Optional<ClientAppUser> findClientAppUser(UUID accountId, String clientId) {
+  public Optional<ClientAppUser> findClientAppUserWithoutCache(UUID accountId, String clientId) {
     return jdbc().query(""
         + " SELECT cau.*, ClientApp.clientSecret "
-        + "  FROM ClientAppUser cau "
-        + "  JOIN ClientApp ON (cau.clientId = ClientApp.clientId ) "
-        + " WHERE cau.accountId = ? "
-        + "   AND cau.clientId = ? "
-        + " LIMIT 1 ", clientAppUserMapper, accountId, clientId).stream().findAny();
+        + "   FROM ClientAppUser cau "
+        + "   JOIN ClientApp ON (cau.clientId = ClientApp.clientId ) "
+        + "  WHERE cau.accountId = ? "
+        + "    AND cau.clientId = ? "
+        + "  LIMIT 1 ", clientAppUserMapper, accountId, clientId).stream().findAny();
   }
 
-  public List<ClientAppUser> listClientAppsByUser(UUID accountId) {
+  public List<ClientAppUser> listAppsByUser(UUID accountId) {
     return jdbc().query(""
         + " SELECT cau.*, ClientApp.clientSecret "
-        + "  FROM ClientAppUser cau "
-        + "  JOIN ClientApp ON (cau.clientId = ClientApp.clientId ) "
-        + " WHERE cau.accountId = ? ", clientAppUserMapper, accountId);
+        + "   FROM ClientAppUser cau "
+        + "   JOIN ClientApp ON (cau.clientId = ClientApp.clientId ) "
+        + "  WHERE cau.accountId = ? ", clientAppUserMapper, accountId);
+  }
+
+  public void deleteClientAppUser(UUID accountId, String clientId) {
+    //TODO evict cache
+    jdbc().update(""
+        + " DELETE "
+        + "   FROM ClientAppUser "
+        + "  WHERE accountId = ? "
+        + "    AND clientId = ? ", accountId, clientId);
   }
 }

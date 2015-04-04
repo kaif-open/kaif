@@ -190,6 +190,30 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
+  public void verifyAccessToken_failed_if_app_reset_secret() throws Exception {
+    Account user = savedAccountCitizen("user1");
+    ClientApp clientApp = service.create(dev, "myapp", "ya ~ good", "http://myapp.com/callback");
+    String accessToken = service.createOauthAccessToken(clientApp,
+        user.getAccountId(),
+        EnumSet.of(ClientAppScope.FEED)).getAccessToken();
+    assertTrue(service.verifyAccessToken(accessToken).isPresent());
+    service.resetClientAppSecret(dev, clientApp.getClientId());
+    assertFalse(service.verifyAccessToken(accessToken).isPresent());
+  }
+
+  @Test
+  public void verifyAccessToken_failed_if_user_revoked() throws Exception {
+    Account user = savedAccountCitizen("user1");
+    ClientApp clientApp = service.create(dev, "myapp", "ya ~ good", "http://myapp.com/callback");
+    String accessToken = service.createOauthAccessToken(clientApp,
+        user.getAccountId(),
+        EnumSet.of(ClientAppScope.FEED)).getAccessToken();
+    assertTrue(service.verifyAccessToken(accessToken).isPresent());
+    service.revokeApp(user, clientApp.getClientId());
+    assertFalse(service.verifyAccessToken(accessToken).isPresent());
+  }
+
+  @Test
   public void createOauthAccessToken_preserve_last_creation_only() throws Exception {
     Account user = savedAccountCitizen("user1");
     ClientApp clientApp = service.create(dev, "myapp", "ya ~ good", "http://myapp.com/callback");
