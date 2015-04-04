@@ -79,6 +79,12 @@
                                        value="${clientApp.clientId}" readonly
                                        class="pure-input-1">
                             </div>
+                            <div class="pure-control-group">
+                                <label><b>client_secret</b></label>
+                                <input name="clientSecretInput" type="text"
+                                       value="${clientApp.clientSecret}" readonly
+                                       class="pure-input-1">
+                            </div>
                         </fieldset>
                         <fieldset>
                             <legend>編輯資訊</legend>

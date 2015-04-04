@@ -45,4 +45,6 @@ public interface ClientAppService {
   void resetClientAppSecret(Authorization creator, String clientId);
 
   void revokeApp(Authorization user, String clientId);
+
+  boolean validateApp(String clientId, String clientSecret);
 }

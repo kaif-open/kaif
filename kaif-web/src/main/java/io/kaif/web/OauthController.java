@@ -161,10 +161,10 @@ public class OauthController {
   @ResponseBody
   public Object accessToken(HttpServletResponse response,
       @RequestParam(value = "client_id", required = false) String clientId,
+      @RequestParam(value = "client_secret", required = false) String clientSecret,
       @RequestParam(value = "grant_type", required = false) String grantType,
       @RequestParam(value = "code", required = false) String code,
       @RequestParam(value = "redirect_uri", required = false) String redirectUri) {
-
     if (!GrantType.AUTHORIZATION_CODE.toString().equals(grantType)) {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       return new OauthErrorDto(OauthErrors.TokenResponse.UNSUPPORTED_GRANT_TYPE,
@@ -187,6 +187,12 @@ public class OauthController {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       return new OauthErrorDto(OauthErrors.TokenResponse.INVALID_REQUEST,
           "missing redirect_uri",
+          DEFAULT_ERROR_URI);
+    }
+    if (!clientAppService.validateApp(clientId, clientSecret)) {
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      return new OauthErrorDto(OauthErrors.TokenResponse.INVALID_CLIENT,
+          "invalid client",
           DEFAULT_ERROR_URI);
     }
     try {

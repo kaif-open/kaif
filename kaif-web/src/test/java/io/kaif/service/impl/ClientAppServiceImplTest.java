@@ -202,6 +202,17 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
+  public void validateApp() throws Exception {
+    assertFalse(service.validateApp("foo", "bar"));
+    ClientApp clientApp = service.create(dev, "myapp", "ya ~ good", "http://myapp.com/callback");
+    assertTrue(service.validateApp(clientApp.getClientId(), clientApp.getClientSecret()));
+    service.resetClientAppSecret(dev, clientApp.getClientId());
+    assertFalse(service.validateApp(clientApp.getClientId(), clientApp.getClientSecret()));
+    ClientApp reset = service.loadClientAppWithoutCache(clientApp.getClientId());
+    assertTrue(service.validateApp(reset.getClientId(), reset.getClientSecret()));
+  }
+
+  @Test
   public void verifyAccessToken_failed_if_user_revoked() throws Exception {
     Account user = savedAccountCitizen("user1");
     ClientApp clientApp = service.create(dev, "myapp", "ya ~ good", "http://myapp.com/callback");

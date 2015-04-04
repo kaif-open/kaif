@@ -199,4 +199,11 @@ public class ClientAppServiceImpl implements ClientAppService {
   public void revokeApp(Authorization user, String clientId) {
     clientAppDao.deleteClientAppUser(user.authenticatedId(), clientId);
   }
+
+  @Override
+  public boolean validateApp(String clientId, String clientSecret) {
+    return clientAppDao.findApp(clientId)
+        .filter(app -> app.getClientSecret().equals(clientSecret))
+        .isPresent();
+  }
 }

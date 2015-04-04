@@ -110,12 +110,14 @@ public class OauthControllerTest extends MvcIntegrationTests {
 
   @Test
   public void accessToken() throws Exception {
+    when(clientAppService.validateApp("client-id-foo", "client-secret-foo")).thenReturn(true);
     when(clientAppService.createOauthAccessTokenByGrantCode("code1234",
         "client-id-foo",
         "foo://callback")).thenReturn(new OauthAccessTokenDto("oauth-token",
         "public feed",
         "Bearer"));
     mockMvc.perform(post("/oauth/access-token").param("client_id", "client-id-foo")
+        .param("client_secret", "client-secret-foo")
         .param("redirect_uri", "foo://callback")
         .param("grant_type", "authorization_code")
         .param("code", "code1234"))
@@ -126,11 +128,26 @@ public class OauthControllerTest extends MvcIntegrationTests {
   }
 
   @Test
+  public void accessToken_invalid_client() throws Exception {
+    when(clientAppService.validateApp("client-id-foo", "client-secret-foo")).thenReturn(false);
+    mockMvc.perform(post("/oauth/access-token").param("client_id", "client-id-foo")
+        .param("client_secret", "client-secret-foo")
+        .param("redirect_uri", "foo://callback")
+        .param("grant_type", "authorization_code")
+        .param("code", "code1234"))
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.error", is("invalid_client")))
+        .andExpect(jsonPath("$.error_description", is("invalid client")));
+  }
+
+  @Test
   public void accessToken_access_denied() throws Exception {
+    when(clientAppService.validateApp("client-id-foo", "client-secret-foo")).thenReturn(true);
     when(clientAppService.createOauthAccessTokenByGrantCode("code1234",
         "client-id-foo",
         "foo://callback")).thenThrow(new AccessDeniedException());
     mockMvc.perform(post("/oauth/access-token").param("client_id", "client-id-foo")
+        .param("client_secret", "client-secret-foo")
         .param("redirect_uri", "foo://callback")
         .param("grant_type", "authorization_code")
         .param("code", "code1234"))
@@ -142,6 +159,7 @@ public class OauthControllerTest extends MvcIntegrationTests {
   @Test
   public void accessToken_wrong_grant_type() throws Exception {
     mockMvc.perform(post("/oauth/access-token").param("client_id", "client-id-foo")
+        .param("client_secret", "client-secret-foo")
         .param("redirect_uri", "foo://callback")
         .param("grant_type", "wrong----type")
         .param("code", "code1234"))
@@ -153,6 +171,7 @@ public class OauthControllerTest extends MvcIntegrationTests {
   @Test
   public void accessToken_missing_client_id() throws Exception {
     mockMvc.perform(post("/oauth/access-token").param("redirect_uri", "foo://callback")
+        .param("client_secret", "client-secret-foo")
         .param("grant_type", "authorization_code")
         .param("code", "code1234"))
         .andExpect(status().isBadRequest())
@@ -163,6 +182,7 @@ public class OauthControllerTest extends MvcIntegrationTests {
   @Test
   public void accessToken_missing_redirect_uri() throws Exception {
     mockMvc.perform(post("/oauth/access-token").param("client_id", "client-id-foo")
+        .param("client_secret", "client-secret-foo")
         .param("grant_type", "authorization_code")
         .param("code", "code1234"))
         .andExpect(status().isBadRequest())
@@ -173,6 +193,7 @@ public class OauthControllerTest extends MvcIntegrationTests {
   @Test
   public void accessToken_missing_code() throws Exception {
     mockMvc.perform(post("/oauth/access-token").param("client_id", "client-id-foo")
+        .param("client_secret", "client-secret-foo")
         .param("redirect_uri", "foo://callback")
         .param("grant_type", "authorization_code"))
         .andExpect(status().isBadRequest())
