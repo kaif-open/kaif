@@ -2,6 +2,17 @@ package io.kaif.web.support;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+/**
+ * a general error response with body like:
+ * <p>
+ * <pre>
+ * {
+ *    "code': 500,
+ *    "reason": "Could not read file"
+ * }
+ * </pre>
+ * <p>
+ */
 @JsonPropertyOrder(value = { "code", "reason" })
 public class RestErrorResponse {
   private static final long serialVersionUID = 488633136099878207L;

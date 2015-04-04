@@ -57,7 +57,7 @@
         <appender-ref ref="MAIL"/>
     </logger>
 
-    <logger name="io.kaif.web.v1" level="INFO">
+    <logger name="io.kaif.web.OauthController" level="INFO">
         <appender-ref ref="OAUTH"/>
     </logger>
 

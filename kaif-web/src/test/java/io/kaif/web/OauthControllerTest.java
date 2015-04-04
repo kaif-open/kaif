@@ -1,4 +1,4 @@
-package io.kaif.web.v1;
+package io.kaif.web;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.*;
@@ -19,7 +19,7 @@ import io.kaif.oauth.OauthAccessTokenDto;
 import io.kaif.test.MvcIntegrationTests;
 import io.kaif.web.support.AccessDeniedException;
 
-public class V1OauthControllerTest extends MvcIntegrationTests {
+public class OauthControllerTest extends MvcIntegrationTests {
 
   private ClientApp clientApp = clientApp(accountCitizen("dev1"), "app1");
 
@@ -31,7 +31,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
   public void authorize() throws Exception {
     when(clientAppService.verifyRedirectUri(clientApp.getClientId(), "foo://callback")).thenReturn(
         Optional.of(clientApp));
-    mockMvc.perform(get("/v1/oauth/authorize").param("client_id", clientApp.getClientId())
+    mockMvc.perform(get("/oauth/authorize").param("client_id", clientApp.getClientId())
         .param("scope", "feed article")
         .param("state", "123")
         .param("response_type", "code")
@@ -45,7 +45,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
   public void authorize_wrong_redirect_uri() throws Exception {
     when(clientAppService.verifyRedirectUri(clientApp.getClientId(), "foo://callback")).thenReturn(
         Optional.empty());
-    mockMvc.perform(get("/v1/oauth/authorize").param("client_id", clientApp.getClientId())
+    mockMvc.perform(get("/oauth/authorize").param("client_id", clientApp.getClientId())
         .param("scope", "feed article")
         .param("state", "123")
         .param("response_type", "code")
@@ -58,7 +58,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
   public void authorize_wrong_responseType() throws Exception {
     when(clientAppService.verifyRedirectUri(clientApp.getClientId(), "foo://callback")).thenReturn(
         Optional.of(clientApp));
-    mockMvc.perform(get("/v1/oauth/authorize").param("client_id", clientApp.getClientId())
+    mockMvc.perform(get("/oauth/authorize").param("client_id", clientApp.getClientId())
         .param("scope", "feed article")
         .param("state", "123")
         .param("redirect_uri", "foo://callback"))
@@ -71,7 +71,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
   public void authorize_unexpected_server_error() throws Exception {
     when(clientAppService.verifyRedirectUri(clientApp.getClientId(), "foo://callback")).thenThrow(
         new RuntimeException("unexpected"));
-    mockMvc.perform(get("/v1/oauth/authorize").param("client_id", clientApp.getClientId())
+    mockMvc.perform(get("/oauth/authorize").param("client_id", clientApp.getClientId())
         .param("scope", "feed article")
         .param("state", "123")
         .param("response_type", "code")
@@ -85,7 +85,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
   public void authorize_missing_state() throws Exception {
     when(clientAppService.verifyRedirectUri(clientApp.getClientId(), "foo://callback")).thenReturn(
         Optional.of(clientApp));
-    mockMvc.perform(get("/v1/oauth/authorize").param("client_id", clientApp.getClientId())
+    mockMvc.perform(get("/oauth/authorize").param("client_id", clientApp.getClientId())
         .param("scope", "feed article")
         .param("response_type", "code")
         .param("redirect_uri", "foo://callback"))
@@ -98,7 +98,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
   public void authorize_wrong_scope() throws Exception {
     when(clientAppService.verifyRedirectUri(clientApp.getClientId(), "foo://callback")).thenReturn(
         Optional.of(clientApp));
-    mockMvc.perform(get("/v1/oauth/authorize").param("client_id", clientApp.getClientId())
+    mockMvc.perform(get("/oauth/authorize").param("client_id", clientApp.getClientId())
         .param("scope", "wrong---scope")
         .param("state", "123")
         .param("response_type", "code")
@@ -115,7 +115,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
         "foo://callback")).thenReturn(new OauthAccessTokenDto("oauth-token",
         "public feed",
         "Bearer"));
-    mockMvc.perform(post("/v1/oauth/access-token").param("client_id", "client-id-foo")
+    mockMvc.perform(post("/oauth/access-token").param("client_id", "client-id-foo")
         .param("redirect_uri", "foo://callback")
         .param("grant_type", "authorization_code")
         .param("code", "code1234"))
@@ -130,7 +130,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
     when(clientAppService.createOauthAccessTokenByGrantCode("code1234",
         "client-id-foo",
         "foo://callback")).thenThrow(new AccessDeniedException());
-    mockMvc.perform(post("/v1/oauth/access-token").param("client_id", "client-id-foo")
+    mockMvc.perform(post("/oauth/access-token").param("client_id", "client-id-foo")
         .param("redirect_uri", "foo://callback")
         .param("grant_type", "authorization_code")
         .param("code", "code1234"))
@@ -141,7 +141,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
 
   @Test
   public void accessToken_wrong_grant_type() throws Exception {
-    mockMvc.perform(post("/v1/oauth/access-token").param("client_id", "client-id-foo")
+    mockMvc.perform(post("/oauth/access-token").param("client_id", "client-id-foo")
         .param("redirect_uri", "foo://callback")
         .param("grant_type", "wrong----type")
         .param("code", "code1234"))
@@ -152,7 +152,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
 
   @Test
   public void accessToken_missing_client_id() throws Exception {
-    mockMvc.perform(post("/v1/oauth/access-token").param("redirect_uri", "foo://callback")
+    mockMvc.perform(post("/oauth/access-token").param("redirect_uri", "foo://callback")
         .param("grant_type", "authorization_code")
         .param("code", "code1234"))
         .andExpect(status().isBadRequest())
@@ -162,7 +162,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
 
   @Test
   public void accessToken_missing_redirect_uri() throws Exception {
-    mockMvc.perform(post("/v1/oauth/access-token").param("client_id", "client-id-foo")
+    mockMvc.perform(post("/oauth/access-token").param("client_id", "client-id-foo")
         .param("grant_type", "authorization_code")
         .param("code", "code1234"))
         .andExpect(status().isBadRequest())
@@ -172,7 +172,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
 
   @Test
   public void accessToken_missing_code() throws Exception {
-    mockMvc.perform(post("/v1/oauth/access-token").param("client_id", "client-id-foo")
+    mockMvc.perform(post("/oauth/access-token").param("client_id", "client-id-foo")
         .param("redirect_uri", "foo://callback")
         .param("grant_type", "authorization_code"))
         .andExpect(status().isBadRequest())
@@ -184,7 +184,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
   public void directGrantCode() throws Exception {
     when(clientAppService.directGrantCode("foo", "client-id-foo", "feed article", "foo://callback"))
         .thenReturn("auth code");
-    mockMvc.perform(post("/v1/oauth/authorize").param("oauthDirectAuthorize", "foo")
+    mockMvc.perform(post("/oauth/authorize").param("oauthDirectAuthorize", "foo")
         .param("client_id", "client-id-foo")
         .param("redirect_uri", "foo://callback")
         .param("scope", "feed article")
@@ -197,7 +197,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
   public void directGrantCode_unexpected_server_error() throws Exception {
     when(clientAppService.directGrantCode("foo", "client-id-foo", "feed article", "foo://callback"))
         .thenThrow(new RuntimeException("unexpected"));
-    mockMvc.perform(post("/v1/oauth/authorize").param("oauthDirectAuthorize", "foo")
+    mockMvc.perform(post("/oauth/authorize").param("oauthDirectAuthorize", "foo")
         .param("client_id", "client-id-foo")
         .param("redirect_uri", "foo://callback")
         .param("scope", "feed article")
@@ -211,7 +211,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
   public void directGrantCode_access_denied() throws Exception {
     when(clientAppService.directGrantCode("foo", "client-id-foo", "feed article", "foo://callback"))
         .thenThrow(new AccessDeniedException());
-    mockMvc.perform(post("/v1/oauth/authorize").param("oauthDirectAuthorize", "foo")
+    mockMvc.perform(post("/oauth/authorize").param("oauthDirectAuthorize", "foo")
         .param("client_id", "client-id-foo")
         .param("scope", "feed article")
         .param("state", "123 456")
@@ -223,7 +223,7 @@ public class V1OauthControllerTest extends MvcIntegrationTests {
 
   @Test
   public void directGrantCode_grantDeny() throws Exception {
-    mockMvc.perform(post("/v1/oauth/authorize").param("oauthDirectAuthorize", "foo")
+    mockMvc.perform(post("/oauth/authorize").param("oauthDirectAuthorize", "foo")
         .param("grantDeny", "true")
         .param("client_id", "client-id-foo")
         .param("scope", "feed article")

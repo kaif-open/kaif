@@ -5,6 +5,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -33,6 +35,8 @@ import io.kaif.config.UtilConfiguration;
 import io.kaif.config.WebConfiguration;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
+import io.kaif.model.clientapp.ClientAppScope;
+import io.kaif.model.clientapp.ClientAppUserAccessToken;
 import io.kaif.service.AccountService;
 import io.kaif.service.ArticleService;
 import io.kaif.service.ClientAppService;
@@ -139,6 +143,17 @@ public abstract class MvcIntegrationTests implements ModelFixture, ToolFixture {
         "pw",
         account.getAuthorities());
     when(accountService.tryDecodeAccessToken(token)).thenReturn(Optional.of(accountAccessToken));
+    return token;
+  }
+
+  protected final String prepareClientAppUserAccessToken(Account account) {
+    String token = account.getUsername() + "-token";
+    ClientAppUserAccessToken accessToken = new ClientAppUserAccessToken(account.getAccountId(),
+        account.getAuthorities(),
+        Stream.of(ClientAppScope.values()).collect(Collectors.toSet()),
+        account.getUsername() + "-client-id",
+        account.getUsername() + "-client-secret");
+    when(clientAppService.verifyAccessToken(token)).thenReturn(Optional.of(accessToken));
     return token;
   }
 

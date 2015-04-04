@@ -1,4 +1,4 @@
-package io.kaif.web.v1.oauth;
+package io.kaif.web;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Optional;
@@ -31,10 +31,10 @@ import io.kaif.service.ClientAppService;
 import io.kaif.web.support.AccessDeniedException;
 
 @Controller
-@RequestMapping("/v1/oauth")
-public class V1OauthController {
+@RequestMapping("/oauth")
+public class OauthController {
 
-  private static final Logger logger = LoggerFactory.getLogger(V1OauthController.class);
+  private static final Logger logger = LoggerFactory.getLogger(OauthController.class);
   //TODO use right oauth error uri
   private static final String DEFAULT_ERROR_URI = "https://kaif.io";
 
