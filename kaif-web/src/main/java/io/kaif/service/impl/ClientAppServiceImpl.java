@@ -37,7 +37,7 @@ import io.kaif.web.support.AccessDeniedException;
 @Transactional
 public class ClientAppServiceImpl implements ClientAppService {
 
-  private static final Duration GRANT_CODE_DURATION = Duration.ofHours(1);
+  private static final Duration GRANT_CODE_DURATION = Duration.ofMinutes(10);
 
   //we are just follow github, grant long term access token instead of requiring refresh periodically
   private static final Duration ACCESS_TOKEN_EXPIRE_DURATION = Duration.ofDays(20 * 365);
