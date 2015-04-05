@@ -146,7 +146,7 @@ public class OauthController {
         locationUri += "?" + encoded;
       }
       RedirectView redirectView = new RedirectView(locationUri);
-      redirectView.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
+      redirectView.setStatusCode(HttpStatus.FOUND);
       redirectView.setExposeModelAttributes(false);
       redirectView.setPropagateQueryParams(false);
       return redirectView;

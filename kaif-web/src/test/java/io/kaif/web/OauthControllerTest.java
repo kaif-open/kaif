@@ -65,7 +65,7 @@ public class OauthControllerTest extends MvcIntegrationTests {
         .param("redirect_uri", "foo://callback"))
         .andExpect(redirectedUrl(
             "foo://callback?error=unsupported_response_type&error_description=response_type%20must%20be%20code&error_uri=https://kaif.io&state=123"))
-        .andExpect(status().isMovedPermanently());
+        .andExpect(status().isFound());
   }
 
   @Test
@@ -79,7 +79,7 @@ public class OauthControllerTest extends MvcIntegrationTests {
         .param("redirect_uri", "foo://callback"))
         .andExpect(redirectedUrl(
             "foo://callback?error=server_error&error_description=unknown%20server%20error&error_uri=https://kaif.io&state=123"))
-        .andExpect(status().isMovedPermanently());
+        .andExpect(status().isFound());
   }
 
   @Test
@@ -92,7 +92,7 @@ public class OauthControllerTest extends MvcIntegrationTests {
         .param("redirect_uri", "foo://callback"))
         .andExpect(redirectedUrl(
             "foo://callback?error=invalid_request&error_description=missing%20state&error_uri=https://kaif.io"))
-        .andExpect(status().isMovedPermanently());
+        .andExpect(status().isFound());
   }
 
   @Test
@@ -106,7 +106,7 @@ public class OauthControllerTest extends MvcIntegrationTests {
         .param("redirect_uri", "foo://callback"))
         .andExpect(redirectedUrl(
             "foo://callback?error=invalid_scope&error_description=wrong%20scope&error_uri=https://kaif.io&state=123"))
-        .andExpect(status().isMovedPermanently());
+        .andExpect(status().isFound());
   }
 
   @Test
@@ -214,7 +214,7 @@ public class OauthControllerTest extends MvcIntegrationTests {
         .param("scope", "feed article")
         .param("state", "123"))
         .andExpect(redirectedUrl("foo://callback?code=auth%20code&state=123"))
-        .andExpect(status().isMovedPermanently())
+        .andExpect(status().isFound())
         .andExpect(header().string("Cache-Control", "no-store"))
         .andExpect(header().string("Pragma", "no-cache"));
   }
@@ -228,9 +228,9 @@ public class OauthControllerTest extends MvcIntegrationTests {
         .param("redirect_uri", "foo://callback")
         .param("scope", "feed article")
         .param("state", "123 456"))
+        .andExpect(status().isFound())
         .andExpect(redirectedUrl(
-            "foo://callback?error=server_error&error_description=unknown%20server%20error&error_uri=https://kaif.io&state=123%20456"))
-        .andExpect(status().isMovedPermanently());
+            "foo://callback?error=server_error&error_description=unknown%20server%20error&error_uri=https://kaif.io&state=123%20456"));
   }
 
   @Test
@@ -244,7 +244,7 @@ public class OauthControllerTest extends MvcIntegrationTests {
         .param("redirect_uri", "foo://callback"))
         .andExpect(redirectedUrl(
             "foo://callback?error=access_denied&error_description=access%20denied&error_uri=https://kaif.io&state=123%20456"))
-        .andExpect(status().isMovedPermanently());
+        .andExpect(status().isFound());
   }
 
   @Test
@@ -257,6 +257,6 @@ public class OauthControllerTest extends MvcIntegrationTests {
         .param("redirect_uri", "foo://callback"))
         .andExpect(redirectedUrl(
             "foo://callback?error=access_denied&error_description=access%20denied&error_uri=https://kaif.io&state=123%20456"))
-        .andExpect(status().isMovedPermanently());
+        .andExpect(status().isFound());
   }
 }
