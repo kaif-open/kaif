@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -124,7 +125,9 @@ public class OauthControllerTest extends MvcIntegrationTests {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.access_token", is("oauth-token")))
         .andExpect(jsonPath("$.token_type", is("Bearer")))
-        .andExpect(jsonPath("$.scope", is("public feed")));
+        .andExpect(jsonPath("$.scope", is("public feed")))
+        .andExpect(header().string("Cache-Control", "no-store"))
+        .andExpect(header().string("Pragma", "no-cache"));
   }
 
   @Test
@@ -211,7 +214,9 @@ public class OauthControllerTest extends MvcIntegrationTests {
         .param("scope", "feed article")
         .param("state", "123"))
         .andExpect(redirectedUrl("foo://callback?code=auth%20code&state=123"))
-        .andExpect(status().isMovedPermanently());
+        .andExpect(status().isMovedPermanently())
+        .andExpect(header().string("Cache-Control", "no-store"))
+        .andExpect(header().string("Pragma", "no-cache"));
   }
 
   @Test

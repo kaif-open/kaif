@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -87,12 +88,14 @@ public class OauthController {
   }
 
   @RequestMapping(value = "/authorize", method = RequestMethod.POST)
-  public Object grantCode(@RequestParam(value = "grantDeny", required = false) Boolean grantDeny,
+  public Object grantCode(HttpServletResponse response,
+      @RequestParam(value = "grantDeny", required = false) Boolean grantDeny,
       @RequestParam(value = "oauthDirectAuthorize") String oauthDirectAuthorize,
       @RequestParam(value = "client_id") String clientId,
       @RequestParam(value = "state") String state,
       @RequestParam(value = "scope") String scope,
       @RequestParam(value = "redirect_uri") String redirectUri) {
+    setResponseNoCache(response);
     try {
       if (Optional.ofNullable(grantDeny).filter(deny -> deny).isPresent()) {
         throw new AccessDeniedException("user cancel");
@@ -165,6 +168,7 @@ public class OauthController {
       @RequestParam(value = "grant_type", required = false) String grantType,
       @RequestParam(value = "code", required = false) String code,
       @RequestParam(value = "redirect_uri", required = false) String redirectUri) {
+    setResponseNoCache(response);
     if (!GrantType.AUTHORIZATION_CODE.toString().equals(grantType)) {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       return new OauthErrorDto(OauthErrors.TokenResponse.UNSUPPORTED_GRANT_TYPE,
@@ -203,6 +207,11 @@ public class OauthController {
           "code is invalid",
           DEFAULT_ERROR_URI);
     }
+  }
+
+  void setResponseNoCache(HttpServletResponse response) {
+    response.setHeader(HttpHeaders.CACHE_CONTROL, "no-store");
+    response.setHeader(HttpHeaders.PRAGMA, "no-cache");
   }
 
 }
