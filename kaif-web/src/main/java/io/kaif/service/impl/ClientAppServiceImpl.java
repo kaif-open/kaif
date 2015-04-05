@@ -131,6 +131,8 @@ public class ClientAppServiceImpl implements ClientAppService {
       String clientId,
       String redirectUri) throws AccessDeniedException {
     return verifyRedirectUri(clientId, redirectUri).flatMap(clientApp -> {
+      //TODO 1. code should only used once
+      //TODO 2. if code reused, revoke previous issued access token by same code
       return GrantCode.tryDecode(code, oauthSecret)
           .filter(grantCode -> grantCode.matches(clientApp, redirectUri))
           .map(grantCode -> createOauthAccessToken(clientApp,
