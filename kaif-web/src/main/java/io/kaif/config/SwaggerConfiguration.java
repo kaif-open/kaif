@@ -65,6 +65,7 @@ public class SwaggerConfiguration {
         .apiVersion(API_VERSION)
         .swaggerGroup("v1")
         .alternateTypeRules()
+        .useDefaultResponseMessages(false)
         .authorizationTypes(authorizationTypes())
         .ignoredParameterTypes(ClientAppUserAccessToken.class)
         .pathProvider(new CustomSwaggerPathProvider());
