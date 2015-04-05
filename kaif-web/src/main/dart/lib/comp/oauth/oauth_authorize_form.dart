@@ -59,7 +59,7 @@ class OauthAuthorizeForm {
     elem.submit();
   }
 
-  Future _authenticateSubmit(Event e) async {
+  _authenticateSubmit(Event e) async {
     e
       ..preventDefault()
       ..stopPropagation();
