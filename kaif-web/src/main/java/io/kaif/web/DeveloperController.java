@@ -25,4 +25,9 @@ public class DeveloperController {
     return new ModelAndView("developer/client-app.part").addObject("clientApps",
         clientAppService.listClientApps(accountAccessToken));
   }
+
+  @RequestMapping("/doc")
+  public String doc() {
+    return "developer/doc";
+  }
 }

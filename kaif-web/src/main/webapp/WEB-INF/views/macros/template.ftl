@@ -127,7 +127,7 @@ sample configs:
             </span>
             <a href="/z/kaif-faq">常見問題</a>
             <a href="/z/kaif-terms">服務條款</a>
-            <a href="/developer/client-app" rel="nofollow">開發者</a>
+            <a href="/developer/doc">開發者</a>
         </div>
     </div>
 </footer>
