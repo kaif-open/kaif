@@ -8,6 +8,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Locale;
+
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -34,7 +36,7 @@ public class V1ResponseWrapperAdviceTest extends MvcIntegrationTests {
   public void wrapString() throws Exception {
     Account account = accountCitizen("foo");
     String token = prepareClientAppUserAccessToken(account);
-    mockMvc.perform(post("/v1/echo/data")//
+    mockMvc.perform(post("/v1/echo/message")//
         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
         .content(q("{'message':'abc'}"))
         .contentType(MediaType.APPLICATION_JSON))
@@ -44,4 +46,17 @@ public class V1ResponseWrapperAdviceTest extends MvcIntegrationTests {
         .andExpect(jsonPath("$.data", is("abc")));
   }
 
+  @Test
+  public void errorResponse() throws Exception {
+    Account account = accountCitizen("foo");
+    String token = prepareClientAppUserAccessToken(account);
+    mockMvc.perform(post("/v1/echo/test-failure")//
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+        .content(q("{'message':'abc'}"))
+        .locale(Locale.ENGLISH)
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.errors[0].title",
+            is("You have not activated your account, please activate and try again.")));
+  }
 }

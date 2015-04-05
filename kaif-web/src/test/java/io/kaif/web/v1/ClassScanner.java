@@ -43,6 +43,7 @@ public class ClassScanner {
         basePackage));
   }
 
+  @SuppressWarnings("unchecked")
   private static boolean isCandidate(MetadataReader metadataReader, Class<?> annotation)
       throws ClassNotFoundException {
     try {

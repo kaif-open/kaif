@@ -25,5 +25,4 @@ public class DeveloperController {
     return new ModelAndView("developer/client-app.part").addObject("clientApps",
         clientAppService.listClientApps(accountAccessToken));
   }
-
 }
