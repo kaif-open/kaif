@@ -50,7 +50,8 @@ import io.kaif.config.SpringProfile;
  * @author ingram
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
-public abstract class AbstractRestExceptionHandler<E> extends ResponseEntityExceptionHandler {
+public abstract class AbstractRestExceptionHandler<E extends ErrorResponse>
+    extends ResponseEntityExceptionHandler {
 
   protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 

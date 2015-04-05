@@ -1,8 +1,10 @@
 package io.kaif.web.v1;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.EnumSet;
@@ -27,7 +29,10 @@ public class ClientAppUserAccessTokenArgumentResolverTest extends MvcIntegration
     mockMvc.perform(get("/v1/echo/current-time")//
         .header(HttpHeaders.AUTHORIZATION, "Bearer  ").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized())
-        .andExpect(header().string("WWW-Authenticate", "Bearer realm=\"Kaif API\""));
+        .andExpect(header().string("WWW-Authenticate", "Bearer realm=\"Kaif API\""))
+        .andExpect(jsonPath("$.errors[0].status", is(401)))
+        .andExpect(jsonPath("$.errors[0].title",
+            is("missing Bearer token in Authorization header")));
   }
 
   @Test

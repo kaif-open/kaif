@@ -11,6 +11,7 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+import io.kaif.web.support.ErrorResponse;
 import io.kaif.web.support.SingleWrapper;
 
 /**
@@ -52,6 +53,9 @@ public class V1ResponseWrapperAdvice implements ResponseBodyAdvice<Object> {
       response.getHeaders()
           .add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8");
       return "{\"data\":\"" + body + "\"}";
+    }
+    if (body instanceof ErrorResponse) {
+      return body;
     }
     if (body instanceof SingleWrapper) {
       return body;

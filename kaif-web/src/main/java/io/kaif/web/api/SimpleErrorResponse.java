@@ -1,6 +1,8 @@
-package io.kaif.web.support;
+package io.kaif.web.api;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import io.kaif.web.support.ErrorResponse;
 
 /**
  * a general error response with body like:
@@ -14,12 +16,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * <p>
  */
 @JsonPropertyOrder(value = { "code", "reason" })
-public class RestErrorResponse {
+public class SimpleErrorResponse implements ErrorResponse {
   private static final long serialVersionUID = 488633136099878207L;
   private final int code;
   private final String reason;
 
-  public RestErrorResponse(final int code, final String reason) {
+  public SimpleErrorResponse(final int code, final String reason) {
     this.code = code;
     this.reason = reason;
   }

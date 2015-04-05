@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.kaif.model.exception.DomainException;
 import io.kaif.web.support.AbstractRestExceptionHandler;
-import io.kaif.web.support.RestErrorResponse;
 
 /**
  * the class only handle exception for official kaif web site api (dart client), it produce
@@ -20,12 +19,12 @@ import io.kaif.web.support.RestErrorResponse;
  * Oauth api use different response json, see {@link io.kaif.web.v1.V1ExceptionHandler}.
  */
 @ControllerAdvice(basePackageClasses = RestExceptionHandler.class)
-public class RestExceptionHandler extends AbstractRestExceptionHandler<RestErrorResponse> {
+public class RestExceptionHandler extends AbstractRestExceptionHandler<SimpleErrorResponse> {
 
-  public static class TranslatedRestErrorResponse extends RestErrorResponse {
+  public static class TranslatedSimpleErrorResponse extends SimpleErrorResponse {
     private static final long serialVersionUID = 1360949999878207L;
 
-    public TranslatedRestErrorResponse(int code, String reason) {
+    public TranslatedSimpleErrorResponse(int code, String reason) {
       super(code, reason);
     }
 
@@ -47,10 +46,10 @@ public class RestExceptionHandler extends AbstractRestExceptionHandler<RestError
 
   @ExceptionHandler(DomainException.class)
   @ResponseBody
-  public ResponseEntity<TranslatedRestErrorResponse> handleDomainException(final DomainException ex,
+  public ResponseEntity<TranslatedSimpleErrorResponse> handleDomainException(final DomainException ex,
       final WebRequest request) {
     final HttpStatus status = HttpStatus.BAD_REQUEST;
-    final TranslatedRestErrorResponse errorResponse = new TranslatedRestErrorResponse(status.value(),
+    final TranslatedSimpleErrorResponse errorResponse = new TranslatedSimpleErrorResponse(status.value(),
         i18n(request, ex.i18nKey(), ex.i18nArgs().toArray()));
     //note that domain exception do not use detail log
     logger.warn("{} {}", guessUri(request), ex.getClass().getSimpleName());
@@ -59,7 +58,7 @@ public class RestExceptionHandler extends AbstractRestExceptionHandler<RestError
   }
 
   @Override
-  protected RestErrorResponse createErrorResponse(HttpStatus status, String reason) {
-    return new RestErrorResponse(status.value(), reason);
+  protected SimpleErrorResponse createErrorResponse(HttpStatus status, String reason) {
+    return new SimpleErrorResponse(status.value(), reason);
   }
 }

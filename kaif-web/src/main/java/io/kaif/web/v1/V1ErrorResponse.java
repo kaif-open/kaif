@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import io.kaif.web.support.ErrorResponse;
+
 /**
  * a oauth error response with body like:
  * <p>
@@ -20,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * </pre>
  * <p>
  */
-public class V1ErrorResponse {
+public class V1ErrorResponse implements ErrorResponse {
 
   @JsonPropertyOrder(value = { "status", "title" })
   public static class Error {
@@ -50,6 +52,7 @@ public class V1ErrorResponse {
       return "{\"status\":" + status + ",\"title\":\"" + title + "\"}";
     }
   }
+
   private static final long serialVersionUID = 4886331307L;
   private final List<Error> errors;
 
