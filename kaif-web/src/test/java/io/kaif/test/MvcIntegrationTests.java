@@ -175,6 +175,7 @@ public abstract class MvcIntegrationTests implements ModelFixture, ToolFixture {
   protected final ResultActions oauthPerform(Account user,
       MockHttpServletRequestBuilder requestBuilder) throws Exception {
     String token = prepareClientAppUserAccessToken(user);
-    return mockMvc.perform(requestBuilder.header(HttpHeaders.AUTHORIZATION, "Bearer " + token));
+    return mockMvc.perform(requestBuilder.header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+        .header(HttpHeaders.CONTENT_TYPE, "application/json;charset=UTF-8"));
   }
 }

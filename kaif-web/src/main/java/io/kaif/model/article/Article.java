@@ -2,6 +2,7 @@ package io.kaif.model.article;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Date;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -16,6 +17,8 @@ import io.kaif.flake.FlakeId;
 import io.kaif.kmark.KmarkProcessor;
 import io.kaif.model.account.Account;
 import io.kaif.model.zone.Zone;
+import io.kaif.web.v1.dto.ArticleType;
+import io.kaif.web.v1.dto.V1ArticleDto;
 
 public class Article {
 
@@ -252,6 +255,20 @@ public class Article {
     } else {
       return "/z/" + zone;
     }
+  }
+
+  public V1ArticleDto toV1Dto() {
+    return new V1ArticleDto(zone.value(),
+        aliasName,
+        articleId.toString(),
+        title,
+        link,
+        content,
+        isExternalLink() ? ArticleType.EXTERNAL_LINK : ArticleType.SPEAK,
+        Date.from(createTime),
+        authorName,
+        upVote,
+        debateCount);
   }
 
   /**
