@@ -1,9 +1,11 @@
 package io.kaif.model.vote;
 
+import java.sql.Date;
 import java.time.Instant;
 import java.util.UUID;
 
 import io.kaif.flake.FlakeId;
+import io.kaif.web.v1.dto.V1VoteDto;
 
 public class DebateVoter {
 
@@ -119,5 +121,9 @@ public class DebateVoter {
 
   public DebateVoterDto toDto() {
     return new DebateVoterDto(debateId, voteState, previousCount, updateTime.toEpochMilli());
+  }
+
+  public V1VoteDto toV1Dto() {
+    return new V1VoteDto(debateId.toString(), voteState, Date.from(updateTime));
   }
 }
