@@ -335,10 +335,10 @@ class VoteService extends _AbstractService {
 
   String _getUrl(String path) => '/api/vote$path';
 
-  Future voteArticle(VoteState newState, String zone, String articleId,
+  Future voteArticle(VoteState newState, String articleId,
                      VoteState previousState, int previousCount) {
     var json = {
-      'newState':newState, 'zone':zone, 'articleId':articleId,
+      'newState':newState, 'articleId':articleId,
       'previousState':previousState, 'previousCount':previousCount
     };
     return _postJson(_getUrl('/article'), json)
@@ -363,10 +363,10 @@ class VoteService extends _AbstractService {
     .then((List<Map> list) => list.map((raw) => new DebateVoter.decode(raw)).toList());
   }
 
-  Future voteDebate(VoteState newState, String zone, String articleId, String debateId,
+  Future voteDebate(VoteState newState, String debateId,
                     VoteState previousState, int previousCount) {
     var json = {
-      'newState':newState, 'zone':zone, 'articleId':articleId, 'debateId':debateId,
+      'newState':newState, 'debateId':debateId,
       'previousState':previousState, 'previousCount':previousCount
     };
     return _postJson(_getUrl('/debate'), json)

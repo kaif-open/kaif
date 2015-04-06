@@ -23,7 +23,6 @@ import io.kaif.model.vote.ArticleVoterDto;
 import io.kaif.model.vote.DebateVoter;
 import io.kaif.model.vote.DebateVoterDto;
 import io.kaif.model.vote.VoteState;
-import io.kaif.model.zone.Zone;
 import io.kaif.service.VoteService;
 
 @RestController
@@ -33,9 +32,6 @@ public class VoteResource {
   static class VoteArticle {
     @NotNull
     public FlakeId articleId;
-
-    @NotNull
-    public Zone zone;
 
     @NotNull
     public Long previousCount;
@@ -50,13 +46,7 @@ public class VoteResource {
   static class VoteDebate {
 
     @NotNull
-    public FlakeId articleId;
-
-    @NotNull
     public FlakeId debateId;
-
-    @NotNull
-    public Zone zone;
 
     @NotNull
     public VoteState newState;
@@ -77,7 +67,6 @@ public class VoteResource {
   public void voteArticle(AccountAccessToken token, @Valid @RequestBody VoteArticle request) {
     ignoreDuplicateVote(() -> //
         voteService.voteArticle(request.newState,
-            request.zone,
             request.articleId,
             token,
             request.previousState,
@@ -98,8 +87,6 @@ public class VoteResource {
   public void voteDebate(AccountAccessToken token, @Valid @RequestBody VoteDebate request) {
     ignoreDuplicateVote(() -> //
         voteService.voteDebate(request.newState,
-            request.zone,
-            request.articleId,
             request.debateId,
             token,
             request.previousState,

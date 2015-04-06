@@ -35,7 +35,6 @@ public class VoteResourceTest extends MvcIntegrationTests {
     Mockito.doThrow(new DuplicateKeyException("vote dup"))
         .when(voteService)
         .voteArticle(eq(VoteState.DOWN),
-            eq(Zone.valueOf("abc")),
             eq(FlakeId.fromString("a")),
             isA(Authorization.class),
             eq(VoteState.EMPTY),

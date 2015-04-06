@@ -69,7 +69,6 @@ public class VoteServiceImpl implements VoteService {
 
   @Override
   public void voteArticle(VoteState newState,
-      Zone zone,
       FlakeId articleId,
       Authorization authorization,
       VoteState previousState,
@@ -78,7 +77,11 @@ public class VoteServiceImpl implements VoteService {
     //no support down vote yet
     Preconditions.checkArgument(newState != VoteState.DOWN);
 
-    ZoneInfo zoneInfo = checkVoteAuthority(zone, authorization);
+    // note that cached article may have stale data (such as not yet change total vote yet),
+    // despite above code already change it.
+    Article cachedArticle = articleDao.loadArticleWithCache(articleId);
+
+    ZoneInfo zoneInfo = checkVoteAuthority(cachedArticle.getZone(), authorization);
 
     voteDao.voteArticle(newState,
         articleId,
@@ -92,9 +95,6 @@ public class VoteServiceImpl implements VoteService {
 
     articleDao.changeTotalVote(articleId, upVoteDelta, downVoteDelta);
 
-    // note that cached article may have stale data (such as not yet change total vote yet),
-    // despite above code already change it.
-    Article cachedArticle = articleDao.loadArticleWithCache(articleId);
     if (zoneInfo.canContributeVoteStats() && !authorization.authenticatedId()
         .equals(cachedArticle.getAuthorId())) {
       accountDao.changeTotalVotedArticle(cachedArticle.getAuthorId(), upVoteDelta, downVoteDelta);
@@ -106,17 +106,18 @@ public class VoteServiceImpl implements VoteService {
 
   @Override
   public void voteDebate(VoteState newState,
-      Zone zone,
-      FlakeId articleId,
       FlakeId debateId,
       Authorization voter,
       VoteState previousState,
       long previousCount) {
 
-    ZoneInfo zoneInfo = checkVoteAuthority(zone, voter);
+    // note: cached debate may have stale data, such total vote not change yet
+    Debate cachedDebate = debateDao.loadDebateWithCache(debateId);
+
+    ZoneInfo zoneInfo = checkVoteAuthority(cachedDebate.getZone(), voter);
 
     voteDao.voteDebate(newState,
-        articleId,
+        cachedDebate.getArticleId(),
         debateId,
         voter.authenticatedId(),
         previousState,
@@ -127,9 +128,6 @@ public class VoteServiceImpl implements VoteService {
     int downVoteDelta = newState.downVoteDeltaFrom(previousState);
 
     debateDao.changeTotalVote(debateId, upVoteDelta, downVoteDelta);
-
-    // note: cached debate may have stale data, such total vote not change yet
-    Debate cachedDebate = debateDao.loadDebateWithCache(debateId);
 
     // total debate vote score only count citizen zone. (tourist zone like /z/test
     // or kVoting will not count)
