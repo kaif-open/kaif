@@ -35,7 +35,7 @@ public class V1ArticleDto {
   private final String content;
 
   @ApiModelProperty(required = true)
-  private final ArticleType articleType;
+  private final V1ArticleType articleType;
 
   @ApiModelProperty(value = "username of article author", required = true)
   private final String authorName;
@@ -52,7 +52,7 @@ public class V1ArticleDto {
       String title,
       String link,
       String content,
-      ArticleType articleType,
+      V1ArticleType articleType,
       Date createTime,
       String authorName,
       long upVote,
@@ -115,7 +115,7 @@ public class V1ArticleDto {
     return content;
   }
 
-  public ArticleType getArticleType() {
+  public V1ArticleType getArticleType() {
     return articleType;
   }
 

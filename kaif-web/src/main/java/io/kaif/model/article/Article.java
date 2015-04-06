@@ -17,8 +17,8 @@ import io.kaif.flake.FlakeId;
 import io.kaif.kmark.KmarkProcessor;
 import io.kaif.model.account.Account;
 import io.kaif.model.zone.Zone;
-import io.kaif.web.v1.dto.ArticleType;
 import io.kaif.web.v1.dto.V1ArticleDto;
+import io.kaif.web.v1.dto.V1ArticleType;
 
 public class Article {
 
@@ -264,7 +264,7 @@ public class Article {
         title,
         link,
         content,
-        isExternalLink() ? ArticleType.EXTERNAL_LINK : ArticleType.SPEAK,
+        isExternalLink() ? V1ArticleType.EXTERNAL_LINK : V1ArticleType.SPEAK,
         Date.from(createTime),
         authorName,
         upVote,
