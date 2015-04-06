@@ -31,6 +31,10 @@ import io.kaif.oauth.OauthErrors;
 import io.kaif.service.ClientAppService;
 import io.kaif.web.support.AccessDeniedException;
 
+/**
+ * we have special settings in nginx for url prefix `/oauth`. so if
+ * you want to change mapping url, please review nginx settins in ansible
+ */
 @Controller
 @RequestMapping("/oauth")
 public class OauthController {
