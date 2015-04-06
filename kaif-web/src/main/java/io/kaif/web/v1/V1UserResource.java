@@ -18,7 +18,7 @@ import io.kaif.model.account.Account;
 import io.kaif.model.clientapp.ClientAppScope;
 import io.kaif.model.clientapp.ClientAppUserAccessToken;
 import io.kaif.service.AccountService;
-import io.kaif.web.v1.dto.UserBasicDto;
+import io.kaif.web.v1.dto.V1UserBasicDto;
 
 @Api(value = "user", description = "User profile")
 @RestController
@@ -31,9 +31,9 @@ public class V1UserResource {
   @ApiOperation(value = "[user] Get my basic information", notes = "Get authorized user basic information")
   @RequiredScope(USER)
   @RequestMapping(value = "/basic", method = RequestMethod.GET)
-  public UserBasicDto basic(ClientAppUserAccessToken accessToken) {
+  public V1UserBasicDto basic(ClientAppUserAccessToken accessToken) {
     Account account = accountService.findMe(accessToken).get();
-    return new UserBasicDto(account.getUsername(),
+    return new V1UserBasicDto(account.getUsername(),
         account.getDescription(),
         Date.from(account.getCreateTime()));
   }
@@ -41,10 +41,10 @@ public class V1UserResource {
   @ApiOperation(value = "[public] Get basic information of the user", notes = "Get other user's basic information")
   @RequiredScope(ClientAppScope.PUBLIC)
   @RequestMapping(value = "/{username}/basic", method = RequestMethod.GET)
-  public UserBasicDto basicByUsername(ClientAppUserAccessToken accessToken,
+  public V1UserBasicDto basicByUsername(ClientAppUserAccessToken accessToken,
       @PathVariable("username") String username) {
     Account account = accountService.loadAccount(username);
-    return new UserBasicDto(account.getUsername(),
+    return new V1UserBasicDto(account.getUsername(),
         account.getDescription(),
         Date.from(account.getCreateTime()));
   }
