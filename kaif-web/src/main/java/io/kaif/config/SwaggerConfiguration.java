@@ -13,6 +13,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.mangofactory.swagger.configuration.SpringSwaggerConfig;
+import com.mangofactory.swagger.models.alternates.AlternateTypeRule;
+import com.mangofactory.swagger.models.alternates.Alternates;
 import com.mangofactory.swagger.models.dto.ApiInfo;
 import com.mangofactory.swagger.models.dto.AuthorizationCodeGrant;
 import com.mangofactory.swagger.models.dto.AuthorizationScope;
@@ -25,8 +27,10 @@ import com.mangofactory.swagger.paths.SwaggerPathProvider;
 import com.mangofactory.swagger.plugin.EnableSwagger;
 import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
 
+import io.kaif.flake.FlakeId;
 import io.kaif.model.clientapp.ClientAppScope;
 import io.kaif.model.clientapp.ClientAppUserAccessToken;
+import io.kaif.model.zone.Zone;
 
 @EnableSwagger
 @Configuration
@@ -58,7 +62,7 @@ public class SwaggerConfiguration {
   @Autowired
   private MessageSource messageSource;
 
-  @Bean //Don't forget the @Bean annotation
+  @Bean
   public SwaggerSpringMvcPlugin customImplementation() {
     return new SwaggerSpringMvcPlugin(this.springSwaggerConfig).apiInfo(apiInfo())
         .includePatterns("/v1/.*")
@@ -67,8 +71,25 @@ public class SwaggerConfiguration {
         .alternateTypeRules()
         .useDefaultResponseMessages(false)
         .authorizationTypes(authorizationTypes())
-        .ignoredParameterTypes(ClientAppUserAccessToken.class)
+        .alternateTypeRules(alternativeTypeRules())
+        .ignoredParameterTypes(ignoredParameterTypes())
         .pathProvider(new CustomSwaggerPathProvider());
+  }
+
+  private Class<?>[] ignoredParameterTypes() {
+    return new Class[] { ClientAppUserAccessToken.class };
+  }
+
+  /**
+   * convert FlakeId and Zone to String in swagger document
+   *
+   * @see io.kaif.web.support.WebDataBinderAdvice
+   * @see json deserializer of FlakeId
+   * @see json deserializer of Zone
+   */
+  private AlternateTypeRule[] alternativeTypeRules() {
+    return new AlternateTypeRule[] { Alternates.newRule(FlakeId.class, String.class),
+        Alternates.newRule(Zone.class, String.class) };
   }
 
   private List<AuthorizationType> authorizationTypes() {

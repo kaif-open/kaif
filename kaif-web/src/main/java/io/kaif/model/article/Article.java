@@ -27,6 +27,9 @@ public class Article {
   public static final int CONTENT_MIN = 10;
   public static final int CONTENT_MAX = 4096;
 
+  //p{L} is unicode letter
+  public static final String URL_PATTERN = "^(https?|ftp)://[\\p{L}\\w\\-]+\\.[\\p{L}\\w\\-]+.*";
+
   public static Article createSpeak(Zone zone,
       String zoneAliasName,
       FlakeId articleId,

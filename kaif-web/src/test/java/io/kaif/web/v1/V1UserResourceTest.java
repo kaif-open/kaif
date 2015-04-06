@@ -13,6 +13,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -21,6 +22,13 @@ import io.kaif.model.clientapp.ClientAppUserAccessToken;
 import io.kaif.test.MvcIntegrationTests;
 
 public class V1UserResourceTest extends MvcIntegrationTests {
+
+  private Account citizen;
+
+  @Before
+  public void setUp() throws Exception {
+    citizen = accountCitizen("citizen1");
+  }
 
   @Test
   @Ignore
@@ -39,4 +47,11 @@ public class V1UserResourceTest extends MvcIntegrationTests {
         .andExpect(jsonPath("$.data.createTime", is("2015-03-04T15:05:06Z")));
   }
 
+  @Test
+  public void basicByUser() throws Exception {
+    Account account = accountCitizen("userB");
+    when(accountService.loadAccount("userB")).thenReturn(account);
+    oauthPerform(citizen, get("/v1/user/userB/basic")).andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.username", is("userB")));
+  }
 }

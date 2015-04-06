@@ -27,12 +27,9 @@ public class ArticleResource {
 
   static class CreateExternalLink {
 
-    //p{L} is unicode letter
-    static final String URL_PATTERN = "^(https?|ftp)://[\\p{L}\\w\\-]+\\.[\\p{L}\\w\\-]+.*";
-
     @Size(max = Article.URL_MAX)
     @NotNull
-    @URL(regexp = URL_PATTERN)
+    @URL(regexp = Article.URL_PATTERN)
     public String url;
 
     @Size(min = Article.TITLE_MIN, max = Article.TITLE_MAX)
