@@ -28,10 +28,20 @@ public class V1ErrorResponse implements ErrorResponse {
   public static class Error {
     private final int status;
     private final String title;
+    //optional
+    private final String type;
+    //optional
+    private final Boolean translated;
 
-    public Error(int status, String title) {
+    public Error(int status, String title, String type, Boolean translated) {
       this.status = status;
       this.title = title;
+      this.type = type;
+      this.translated = translated;
+    }
+
+    public Error(int status, String title) {
+      this(status, title, null, null);
     }
 
     public int getStatus() {
@@ -40,6 +50,14 @@ public class V1ErrorResponse implements ErrorResponse {
 
     public String getTitle() {
       return title;
+    }
+
+    public String getType() {
+      return type;
+    }
+
+    public Boolean isTranslated() {
+      return translated;
     }
 
     /**
@@ -57,7 +75,14 @@ public class V1ErrorResponse implements ErrorResponse {
   private final List<Error> errors;
 
   public V1ErrorResponse(final int status, final String title) {
-    this.errors = Collections.singletonList(new Error(status, title));
+    this(status, title, null, null);
+  }
+
+  public V1ErrorResponse(final int status,
+      final String title,
+      final String type,
+      final Boolean translated) {
+    this.errors = Collections.singletonList(new Error(status, title, type, translated));
   }
 
   public List<Error> getErrors() {

@@ -56,6 +56,8 @@ public class V1ResponseWrapperAdviceTest extends MvcIntegrationTests {
         .locale(Locale.ENGLISH)
         .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.errors[0].type", is("RequireCitizenException")))
+        .andExpect(jsonPath("$.errors[0].translated", is(true)))
         .andExpect(jsonPath("$.errors[0].title",
             is("You have not activated your account, please activate and try again.")));
   }

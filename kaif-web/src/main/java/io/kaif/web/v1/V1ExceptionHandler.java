@@ -41,11 +41,13 @@ public class V1ExceptionHandler extends AbstractRestExceptionHandler<V1ErrorResp
   public ResponseEntity<V1ErrorResponse> handleDomainException(final DomainException ex,
       final WebRequest request) {
     final HttpStatus status = HttpStatus.BAD_REQUEST;
-    final V1ErrorResponse errorResponse = createErrorResponse(status,
-        i18n(request, ex.i18nKey(), ex.i18nArgs().toArray()));
+    String reason = i18n(request, ex.i18nKey(), ex.i18nArgs().toArray());
+    final V1ErrorResponse errorResponse = new V1ErrorResponse(status.value(),
+        reason,
+        ex.getClass().getSimpleName(),
+        true);
     //note that domain exception do not use detail log
     logger.warn("{} {}", guessUri(request), ex.getClass().getSimpleName());
-
     return new ResponseEntity<>(errorResponse, status);
   }
 
