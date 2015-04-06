@@ -31,12 +31,13 @@
             <h4>相關連結</h4>
             <ul>
                 <li>
-                    <a href="https://github.com/kaif-open/kaif-api" target="_blank">
+                    <a href="https://github.com/kaif-open/kaif-api/wiki" target="_blank">
                         開發指南 (github) <i class="fa fa-external-link"></i>
                     </a>
 
                     <p>
-                        如果 API 有任何使用上問題，請在該 github 專案上發 issue。
+                        開發指南說明 kaif OAuth2 的使用，以及 API 的使用簡介。如果 API 有任何使用上問題
+                        ，請在該 github 專案上發 issue。
                     </p>
                 </li>
                 <li>
@@ -45,16 +46,17 @@
                     </a>
 
                     <p>
-                        API 文件以 <a href="http://swagger.io" target="_blank">Swagger</a>
-                        的方式呈現，不過只能當文件查詢，Swagger UI 上提供的測試功能還不能使用。
+                        列出所有可呼叫的 API，包括相關參數與回傳結果，內容以
+                        <a href="http://swagger.io" target="_blank">Swagger</a>
+                        的方式呈現。(註：API 文件目前只能查看，Swagger UI 上提供的測試功能還不能使用。)
                     </p>
-                    <#--
-                    <p>你可以利用 Swagger 提供的工具自動
-                        <a href="https://github.com/swagger-api/swagger-codegen" target="_blank">
-                            產生呼叫 API 的程式</a>。
-                        kaif Open API 的 Swagger 定義網址為 <code><a href="/api-docs">https://kaif.io/api-docs</a></code>
-                    </p>
-                    -->
+                <#--
+                <p>你可以利用 Swagger 提供的工具自動
+                    <a href="https://github.com/swagger-api/swagger-codegen" target="_blank">
+                        產生呼叫 API 的程式</a>。
+                    kaif Open API 的 Swagger 定義網址為 <code><a href="/api-docs">https://kaif.io/api-docs</a></code>
+                </p>
+                -->
                 </li>
                 <li>
                     <a href="/developer/client-app" rel="nofollow">

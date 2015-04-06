@@ -4,6 +4,7 @@ import static io.kaif.model.clientapp.ClientAppScope.PUBLIC;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +28,7 @@ public class V1EchoResource {
   static class MessageEntry {
     @ApiModelProperty(required = true)
     @NotNull
+    @Size(min = 1, max = 1000)
     public String message;
   }
 
