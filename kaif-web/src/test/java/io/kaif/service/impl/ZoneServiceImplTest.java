@@ -218,7 +218,21 @@ public class ZoneServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
+  public void canCreateZone() throws Exception {
+    assertFalse(service.canCreateZone(citizen));
+    accountDao.changeTotalVotedDebate(citizen.getAccountId(), 60, 0);
+    assertTrue(service.canCreateZone(citizen));
+
+  }
+
+  @Test
   public void isZoneAvailable() {
+    assertFalse(service.isZoneAvailable("kaif-ok"));
+    assertFalse(service.isZoneAvailable("kaif-null"));
+
+    assertFalse(service.isZoneAvailable("null"));
+    assertFalse(service.isZoneAvailable("create"));
+
     assertTrue(service.isZoneAvailable("aaa"));
     savedZoneDefault("aaa");
     assertFalse(service.isZoneAvailable("aaa"));

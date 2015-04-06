@@ -1,6 +1,8 @@
 package io.kaif.model.zone;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -21,6 +23,8 @@ import com.google.common.base.Strings;
 public class Zone {
 
   public static final String ZONE_PATTERN_STR = "^[a-z0-9][a-z0-9\\-]{1,18}[a-z0-9]$";
+
+  private static final List<String> RESERVE_ZONES = Arrays.asList("null", "create");
   /**
    * - must start with az09, end with az09, no dash
    * - must use dash to separate
@@ -38,11 +42,15 @@ public class Zone {
     return rawValue.toLowerCase().replaceAll("[\\-_]+", "-");
   }
 
+  public static boolean validateReserveZone(String zone) {
+    return !RESERVE_ZONES.contains(zone);
+  }
+
   private static boolean validateZone(String zone) {
     return zone != null
         && ZONE_PATTERN.matcher(zone).matches()
         && !zone.contains("--")
-        && !zone.equals("null");
+        && validateReserveZone(zone);
   }
 
   /**

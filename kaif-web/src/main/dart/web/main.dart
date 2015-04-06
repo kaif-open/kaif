@@ -13,6 +13,7 @@ import 'package:kaif_web/comp/debate/debate_tree.dart';
 import 'package:kaif_web/comp/debate/debate_list.dart';
 import 'package:kaif_web/comp/server_part_loader.dart';
 import 'package:kaif_web/comp/short_url.dart';
+import 'package:kaif_web/comp/zone/zone_form.dart';
 import 'dart:html';
 import 'dart:async';
 
@@ -36,6 +37,7 @@ class AppModule {
   AccountSession accountSession;
   AccountService accountService;
   ArticleService articleService;
+  ZoneService zoneService;
   VoteService voteService;
   PartService partService;
   ServerPartLoader serverPartLoader;
@@ -50,6 +52,7 @@ class AppModule {
     accountService = new AccountService(serverType, accessTokenProvider);
     articleService = new ArticleService(serverType, accessTokenProvider);
     voteService = new VoteService(serverType, accessTokenProvider);
+    zoneService = new ZoneService(serverType, accessTokenProvider);
     partService = new PartService(serverType, accessTokenProvider);
     newsFeedNotification = new NewsFeedNotification(accountService, accountSession, newsFeedDao);
     serverPartLoader = new ServerPartLoader(partService, _initializeComponents);
@@ -94,6 +97,10 @@ class AppModule {
     });
     parent.querySelectorAll('[short-url-input]').forEach((el) {
       new ShortUrlInput(el);
+    });
+
+    parent.querySelectorAll('[zone-form]').forEach((el) {
+      new ZoneForm(el, zoneService, accountSession);
     });
   }
 

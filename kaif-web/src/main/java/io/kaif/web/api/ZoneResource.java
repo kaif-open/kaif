@@ -49,24 +49,11 @@ public class ZoneResource {
 
     @NotNull
     @Pattern(regexp = Zone.ZONE_PATTERN_STR)
-    private final String zone;
+    public String zone;
 
     @Size(max = ZoneInfo.ALIAS_NAME_MAX)
     @NotNull
-    private final String aliasName;
-
-    public CreateZone(String zone, String aliasName) {
-      this.zone = zone;
-      this.aliasName = aliasName;
-    }
-
-    public String getZone() {
-      return zone;
-    }
-
-    public String getAliasName() {
-      return aliasName;
-    }
+    public String aliasName;
   }
 
   @Autowired
@@ -84,11 +71,17 @@ public class ZoneResource {
       MediaType.APPLICATION_JSON_VALUE })
   public void create(AccountAccessToken token,
       @Valid @RequestBody CreateZone request) {
-    zoneService.createByUser(request.getZone(), request.getAliasName(), token);
+    zoneService.createByUser(request.zone, request.aliasName, token);
   }
 
   @RequestMapping(value = "/zone-available")
   public SingleWrapper<Boolean> isZoneAvailable(@RequestParam("zone") String zone) {
     return SingleWrapper.of(zoneService.isZoneAvailable(zone));
   }
+
+  @RequestMapping(value = "/can-create", method = RequestMethod.GET)
+  public SingleWrapper<Boolean> canCreateZone(AccountAccessToken token) {
+    return SingleWrapper.of(zoneService.canCreateZone(token));
+  }
+
 }

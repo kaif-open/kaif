@@ -118,7 +118,14 @@ public class ZoneServiceImpl implements ZoneService {
 
   @Override
   public boolean isZoneAvailable(String zone) {
-    return !zoneDao.findZoneWithoutCache(Zone.valueOf(zone)).isPresent();
+    return Zone.validateReserveZone(zone)
+        && ZoneInfo.validateReserveWord(zone)
+        && !zoneDao.findZoneWithoutCache(Zone.valueOf(zone)).isPresent();
+  }
+
+  @Override
+  public boolean canCreateZone(Authorization authorization) {
+    return verifyAuthority(authorization).flatMap(this::verifyCredit).isSuccess();
   }
 
   private Try<Account> verifyAuthority(Authorization authorization) {

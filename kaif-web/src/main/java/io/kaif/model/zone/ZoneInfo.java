@@ -39,6 +39,7 @@ public class ZoneInfo {
   public static final String THEME_NORMAL_VOTING = "z-theme-normal-voting";
 
   public static final String THEME_K_VOTING = "z-theme-k-voting";
+
   public static final String RESERVED_WORD = "kaif";
 
   public static ZoneInfo createKVoting(String zoneValue,
@@ -134,7 +135,11 @@ public class ZoneInfo {
   }
 
   private static void checkReserveWord(String zoneValue) {
-    Preconditions.checkArgument(!zoneValue.contains(RESERVED_WORD));
+    Preconditions.checkArgument(validateReserveWord(zoneValue));
+  }
+
+  public static boolean validateReserveWord(String zoneValue) {
+    return !zoneValue.contains(RESERVED_WORD);
   }
 
   /**

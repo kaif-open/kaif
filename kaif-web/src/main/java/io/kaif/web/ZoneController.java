@@ -54,6 +54,11 @@ public class ZoneController {
     });
   }
 
+  @RequestMapping("/create")
+  public ModelAndView createZone() {
+    return new ModelAndView("zone/create").addObject("zonePattern", Zone.ZONE_PATTERN_STR);
+  }
+
   @RequestMapping("/{zone}/hot.rss")
   public Object rssFeed(@PathVariable("zone") String rawZone, HttpServletRequest request) {
     return resolveZone(request, rawZone, zoneInfo -> {

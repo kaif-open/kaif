@@ -28,4 +28,6 @@ public interface ZoneService {
       CreditNotEnoughException;
 
   boolean isZoneAvailable(String zone);
+
+  boolean canCreateZone(Authorization authorization);
 }
