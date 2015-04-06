@@ -13,6 +13,7 @@ import org.junit.Test;
 import io.kaif.model.article.Article;
 import io.kaif.model.zone.Zone;
 import io.kaif.test.ModelFixture;
+import io.kaif.web.v1.dto.V1DebateNodeDto;
 
 public class DebateTreeTest implements ModelFixture {
 
@@ -100,6 +101,38 @@ public class DebateTreeTest implements ModelFixture {
 
     DebateTree debateTree = DebateTree.fromDepthFirst(flatten);
     assertEquals(flatten, debateTree.depthFirst().collect(toList()));
+  }
+
+  @Test
+  public void toV1Dto() throws Exception {
+    Debate d1 = debate(null);
+    Debate d2 = debate(null);
+    Debate d2_1 = debate(d2);
+    Debate d2_2 = debate(d2);
+    Debate d3 = debate(null);
+    Debate d3_1 = debate(d3);
+    List<Debate> flatten = asList(//
+        d1,//
+        d2, d2_1, d2_2, //
+        d3, d3_1);
+    DebateTree tree = DebateTree.fromDepthFirst(flatten);
+    V1DebateNodeDto dto = tree.toV1Dto();
+    assertNull(dto.getDebate());
+    List<V1DebateNodeDto> children1 = dto.getChildren();
+    assertEquals(d1.getDebateId().toString(), children1.get(0).getDebate().getDebateId());
+    assertEquals(d2.getDebateId().toString(), children1.get(1).getDebate().getDebateId());
+    assertEquals(d3.getDebateId().toString(), children1.get(2).getDebate().getDebateId());
+    assertTrue(children1.get(0).getChildren().isEmpty());
+
+    List<V1DebateNodeDto> children2 = children1.get(1).getChildren();
+    assertEquals(d2_1.getDebateId().toString(), children2.get(0).getDebate().getDebateId());
+    assertEquals(d2_2.getDebateId().toString(), children2.get(1).getDebate().getDebateId());
+    assertTrue(children2.get(0).getChildren().isEmpty());
+    assertTrue(children2.get(1).getChildren().isEmpty());
+
+    List<V1DebateNodeDto> children3 = children1.get(2).getChildren();
+    assertEquals(d3_1.getDebateId().toString(), children3.get(0).getDebate().getDebateId());
+    assertTrue(children3.get(0).getChildren().isEmpty());
   }
 
   private Debate debate(Debate parent) {

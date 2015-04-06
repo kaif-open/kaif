@@ -29,6 +29,7 @@ import io.kaif.model.debate.Debate;
 import io.kaif.model.zone.Zone;
 import io.kaif.service.ArticleService;
 import io.kaif.web.v1.dto.V1DebateDto;
+import io.kaif.web.v1.dto.V1DebateNodeDto;
 
 @Api(value = "debate", description = "Debates on articles")
 @RestController
@@ -66,11 +67,12 @@ public class V1DebateResource {
     return articleService.loadDebateWithCache(debateId).toV1Dto();
   }
 
-  //TODO document large of data
+  //TODO document large of data, sorted by best score
   @RequiredScope(ClientAppScope.PUBLIC)
   @RequestMapping(value = "/article/{articleId}/tree", method = RequestMethod.GET)
-  public void debateTreeOfArticle(ClientAppUserAccessToken accessToken,
+  public V1DebateNodeDto debateTreeOfArticle(ClientAppUserAccessToken accessToken,
       @PathVariable("articleId") FlakeId articleId) {
+    return articleService.listBestDebates(articleId, null).toV1Dto();
   }
 
   @RequiredScope(ClientAppScope.PUBLIC)

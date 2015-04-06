@@ -2,6 +2,7 @@ package io.kaif.web.v1;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -17,6 +18,7 @@ import io.kaif.model.account.Account;
 import io.kaif.model.article.Article;
 import io.kaif.model.clientapp.ClientAppUserAccessToken;
 import io.kaif.model.debate.Debate;
+import io.kaif.model.debate.DebateTree;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.test.MvcIntegrationTests;
 
@@ -38,9 +40,20 @@ public class V1DebateResourceTest extends MvcIntegrationTests {
 
   @Test
   public void debate() throws Exception {
-    when(articleService.loadDebateWithCache(debate1.getDebateId())).thenReturn(debate1);
-    oauthPerform(user, get("/v1/debate/" + debate1.getDebateId())).andExpect(status().isOk())
+    when(articleService.loadDebateWithCache(FlakeId.fromString("bar666"))).thenReturn(debate1);
+    oauthPerform(user, get("/v1/debate/bar666")).andExpect(status().isOk())
         .andExpect(jsonPath("$.data.content", is("deb1")));
+  }
+
+  @Test
+  public void debateOfArticle() throws Exception {
+    when(articleService.listBestDebates(FlakeId.fromString("foo3000"),
+        null)).thenReturn(DebateTree.fromDepthFirst(asList(debate1, debate2)));
+    oauthPerform(user, get("/v1/debate/article/foo3000/tree")).andExpect(status().isOk())
+        //.andDo(print())
+        .andExpect(jsonPath("$.data.debate", is(nullValue())))
+        .andExpect(jsonPath("$.data.children[0].debate.content", is("deb1")))
+        .andExpect(jsonPath("$.data.children[0].children[0].debate.content", is("deb2")));
   }
 
   @Test
