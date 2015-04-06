@@ -44,7 +44,7 @@ import io.kaif.service.ZoneService;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @SpringApplicationConfiguration(classes = MvcIntegrationTests.WebTestApplication.class)
-public abstract class MvcIntegrationTests implements ModelFixture {
+public abstract class MvcIntegrationTests implements ModelFixture, ToolFixture {
 
   @Profile(SpringProfile.TEST)
   @EnableWebMvc
