@@ -4,14 +4,18 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
 import io.kaif.model.article.Article;
+import io.kaif.model.clientapp.ClientAppUserAccessToken;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.test.MvcIntegrationTests;
@@ -37,6 +41,27 @@ public class V1DebateResourceTest extends MvcIntegrationTests {
     when(articleService.loadDebateWithCache(debate1.getDebateId())).thenReturn(debate1);
     oauthPerform(user, get("/v1/debate/" + debate1.getDebateId())).andExpect(status().isOk())
         .andExpect(jsonPath("$.data.content", is("deb1")));
+  }
+
+  @Test
+  public void create() throws Exception {
+    when(articleService.debate(eq(FlakeId.fromString("foo3000")),
+        eq(FlakeId.fromString("bar666")),
+        isA(ClientAppUserAccessToken.class),
+        eq("ruby is bad"))).thenReturn(debate1);
+    String body = q("{'articleId':'foo3000','content':'ruby is bad','parentDebateId':'bar666'}");
+    oauthPerform(user, put("/v1/debate").content(body))//
+        .andExpect(status().isCreated()).andExpect(jsonPath("$.data.content", is("deb1")));
+  }
+
+  @Test
+  public void updateContent() throws Exception {
+    when(articleService.updateDebateContent(eq(FlakeId.fromString("foo3000")),
+        isA(ClientAppUserAccessToken.class),
+        eq("ruby is good"))).thenReturn("ruby is best");
+    String body = q("{'content':'ruby is good'}");
+    oauthPerform(user, post("/v1/debate/foo3000/content").content(body))//
+        .andExpect(status().isOk()).andExpect(jsonPath("$.data", is("ruby is best")));
   }
 
   @Test

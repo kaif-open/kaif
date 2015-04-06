@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.clientapp.ClientAppScope;
@@ -36,18 +37,22 @@ public class V1DebateResource {
 
   static class CreateDebateEntry {
     @NotNull
+    @ApiModelProperty(required = true)
     public FlakeId articleId;
 
+    @ApiModelProperty(value = "debateId reply to. null if reply to article", required = false)
     public FlakeId parentDebateId;
 
     @Size(min = Debate.CONTENT_MIN, max = Debate.CONTENT_MAX)
     @NotNull
+    @ApiModelProperty(value = "content of debate, min 5 chars", required = true)
     public String content;
   }
 
   static class UpdateDebateEntry {
     @Size(min = Debate.CONTENT_MIN, max = Debate.CONTENT_MAX)
     @NotNull
+    @ApiModelProperty(value = "content of debate, min 5 chars", required = true)
     public String content;
   }
 
@@ -99,18 +104,21 @@ public class V1DebateResource {
   @RequiredScope(ClientAppScope.DEBATE)
   @RequestMapping(value = "", method = RequestMethod.PUT, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
-  public void create(ClientAppUserAccessToken accessToken,
+  public V1DebateDto create(ClientAppUserAccessToken accessToken,
       @Valid @RequestBody CreateDebateEntry entry) {
-
+    return articleService.debate(entry.articleId,
+        entry.parentDebateId,
+        accessToken,
+        entry.content.trim()).toV1Dto();
   }
 
   @RequiredScope(ClientAppScope.DEBATE)
   @RequestMapping(value = "/{debateId}/content", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
-  public void updateDebateContent(ClientAppUserAccessToken accessToken,
+  public String updateDebateContent(ClientAppUserAccessToken accessToken,
       @PathVariable("debateId") FlakeId debateId,
       @Valid @RequestBody UpdateDebateEntry entry) {
-
+    return articleService.updateDebateContent(debateId, accessToken, entry.content.trim());
   }
 
 }
