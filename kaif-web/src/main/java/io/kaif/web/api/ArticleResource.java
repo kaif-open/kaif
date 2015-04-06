@@ -58,9 +58,6 @@ public class ArticleResource {
 
   static class CreateDebate {
     @NotNull
-    public Zone zone;
-
-    @NotNull
     public FlakeId articleId;
 
     public FlakeId parentDebateId;
@@ -107,8 +104,7 @@ public class ArticleResource {
       MediaType.APPLICATION_JSON_VALUE })
   public SingleWrapper<String> create(AccountAccessToken token,
       @Valid @RequestBody CreateDebate request) {
-    return SingleWrapper.of(articleService.debate(request.zone,
-        request.articleId,
+    return SingleWrapper.of(articleService.debate(request.articleId,
         request.parentDebateId,
         token,
         request.content.trim()).getDebateId().toString());

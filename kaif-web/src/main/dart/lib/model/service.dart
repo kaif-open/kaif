@@ -310,10 +310,10 @@ class ArticleService extends _AbstractService {
   /**
    * return created debateId
    */
-  Future<String> debate(String zone, String articleId, String parentDebateId, String content) {
+  Future<String> debate(String articleId, String parentDebateId, String content) {
     String parent = isStringBlank(parentDebateId) ? null : parentDebateId;
     var json = {
-      'zone':zone, 'articleId':articleId, 'parentDebateId':parent, 'content':content
+      'articleId':articleId, 'parentDebateId':parent, 'content':content
     };
     return _putJson(_getUrl('/debate'), json)
     .then(_mapToSingleWrapper);
