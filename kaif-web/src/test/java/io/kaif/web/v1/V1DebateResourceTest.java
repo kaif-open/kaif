@@ -25,7 +25,6 @@ import io.kaif.test.MvcIntegrationTests;
 public class V1DebateResourceTest extends MvcIntegrationTests {
   private Account user;
   private ZoneInfo zone;
-  private Article article;
   private Debate debate1;
   private Debate debate2;
 
@@ -33,7 +32,7 @@ public class V1DebateResourceTest extends MvcIntegrationTests {
   public void setUp() throws Exception {
     user = accountCitizen("user1");
     zone = zoneDefault("fun");
-    article = article(zone.getZone(), "art1");
+    Article article = article(zone.getZone(), "art1");
     debate1 = debate(article, "deb1", null);
     debate2 = debate(article, "deb2", debate1);
   }

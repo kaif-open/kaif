@@ -1,6 +1,7 @@
 package io.kaif.web.v1;
 
 import static io.kaif.model.clientapp.ClientAppScope.VOTE;
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.*;
 
 import java.util.Collections;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.clientapp.ClientAppUserAccessToken;
@@ -37,20 +39,24 @@ import io.kaif.web.v1.dto.V1VoteDto;
 public class V1VoteResource {
 
   static class VoteArticleEntry {
+    @ApiModelProperty(required = true)
     @NotNull
     public FlakeId articleId;
 
-    //TODO document passing down vote will cause exception
+    @ApiModelProperty(value = "note that articles only support EMPTY and UP state", required = true)
     @NotNull
-    public VoteState state;
+    public VoteState voteState;
   }
 
   static class VoteDebateEntry {
+
+    @ApiModelProperty(required = true)
     @NotNull
     public FlakeId debateId;
 
+    @ApiModelProperty(required = true)
     @NotNull
-    public VoteState state;
+    public VoteState voteState;
   }
 
   private static List<FlakeId> toFlakeIds(List<String> ids) {
@@ -60,6 +66,7 @@ public class V1VoteResource {
         .map(FlakeId::fromString)
         .collect(toList());
   }
+
   @Autowired
   private VoteService voteService;
   @Autowired
@@ -99,7 +106,21 @@ public class V1VoteResource {
   @RequestMapping(value = "/article", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
   public void article(ClientAppUserAccessToken token, @Valid @RequestBody VoteArticleEntry entry) {
-    ignoreDuplicateVote(null);
+    ignoreDuplicateVote(() -> {
+      VoteState previousState = voteService.listArticleVoters(token, asList(entry.articleId))
+          .stream()
+          .map(ArticleVoter::getVoteState)
+          .findAny()
+          .orElse(VoteState.EMPTY);
+
+      //for api, we don't hack previousCount. this may cause user see stale total counting
+      int previousCount = 0;
+      voteService.voteArticle(entry.voteState,
+          entry.articleId,
+          token,
+          previousState,
+          previousCount);
+    });
   }
 
   private void ignoreDuplicateVote(Runnable runnable) {
@@ -115,6 +136,16 @@ public class V1VoteResource {
   @RequestMapping(value = "/debate", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
   public void debate(ClientAppUserAccessToken token, @Valid @RequestBody VoteDebateEntry entry) {
-    ignoreDuplicateVote(null);
+    ignoreDuplicateVote(() -> {
+      VoteState previousState = voteService.listDebateVotersByIds(token, asList(entry.debateId))
+          .stream()
+          .map(DebateVoter::getVoteState)
+          .findAny()
+          .orElse(VoteState.EMPTY);
+
+      //for api, we don't hack previousCount. this may cause user see stale total counting
+      int previousCount = 0;
+      voteService.voteDebate(entry.voteState, entry.debateId, token, previousState, previousCount);
+    });
   }
 }

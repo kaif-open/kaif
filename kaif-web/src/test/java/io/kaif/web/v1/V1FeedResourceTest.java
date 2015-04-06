@@ -26,8 +26,6 @@ import io.kaif.test.MvcIntegrationTests;
 
 public class V1FeedResourceTest extends MvcIntegrationTests {
   private Account user;
-  private ZoneInfo zone;
-  private Article article;
   private Debate debate1;
   private Debate debate2;
   private FeedAsset asset1;
@@ -36,8 +34,8 @@ public class V1FeedResourceTest extends MvcIntegrationTests {
   @Before
   public void setUp() throws Exception {
     user = accountCitizen("user1");
-    zone = zoneDefault("fun");
-    article = article(zone.getZone(), "art1");
+    ZoneInfo zone = zoneDefault("fun");
+    Article article = article(zone.getZone(), "art1");
     debate1 = debate(article, "deb1", null);
     debate2 = debate(article, "deb2", debate1);
     asset1 = FeedAsset.createReply(debate1.getDebateId(), user.getAccountId(), Instant.now());
