@@ -34,6 +34,7 @@ public class ZoneController {
 
   @Autowired
   private ZoneService zoneService;
+
   @Autowired
   private ArticleService articleService;
 
@@ -52,11 +53,6 @@ public class ZoneController {
               new ArticleList(articleService.listHotZoneArticles(zoneInfo.getZone(),
                   startArticleId)));
     });
-  }
-
-  @RequestMapping("/create")
-  public ModelAndView createZone() {
-    return new ModelAndView("zone/create").addObject("zonePattern", Zone.ZONE_PATTERN_STR);
   }
 
   @RequestMapping("/{zone}/hot.rss")

@@ -231,7 +231,6 @@ public class ZoneServiceImplTest extends DbIntegrationTests {
     assertFalse(service.isZoneAvailable("kaif-null"));
 
     assertFalse(service.isZoneAvailable("null"));
-    assertFalse(service.isZoneAvailable("create"));
 
     assertTrue(service.isZoneAvailable("aaa"));
     savedZoneDefault("aaa");

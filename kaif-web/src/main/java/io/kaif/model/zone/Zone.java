@@ -1,7 +1,7 @@
 package io.kaif.model.zone;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -24,7 +24,7 @@ public class Zone {
 
   public static final String ZONE_PATTERN_STR = "^[a-z0-9][a-z0-9\\-]{1,18}[a-z0-9]$";
 
-  private static final List<String> RESERVE_ZONES = Arrays.asList("null", "create");
+  private static final List<String> RESERVE_ZONES = Collections.singletonList("null");
   /**
    * - must start with az09, end with az09, no dash
    * - must use dash to separate
