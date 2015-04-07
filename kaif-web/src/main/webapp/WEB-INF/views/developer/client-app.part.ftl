@@ -122,6 +122,42 @@
 
                         </fieldset>
                     </form>
+                    <form class="pure-form pure-form-stacked client-app-form debug-client-app-form"
+                          debug-client-app-form>
+                        <fieldset>
+                            <legend>測試區</legend>
+                            <input name="clientIdInput" type="hidden" value="${clientApp.clientId}">
+                        <#--
+                        <div class="pure-control-group">
+                            <label><b>授權的 scope*</b></label>
+                            <input name="scopeInput" type="text"
+                                   value="${allCanonicalScopes}"
+                                   required
+                                   class="pure-input-1">
+                            <div class="pure-form-message-inline">
+                                * 所有支援的 scope: <code>${allCanonicalScopes}</code>
+                            </div>
+                        </div>
+                        -->
+
+                            <div class="pure-controls">
+                                <button type="submit" class="pure-button">
+                                    產生測試用 OAuth2 <code>access_token</code>
+                                </button>
+                                <div class="pure-form-message">ps. 該 token 由你目前帳號授權，並且包含所有權限
+                                    (scope)
+                                </div>
+                            </div>
+                        </fieldset>
+                        <fieldset generated-token-group class="hidden">
+                            <legend>暫時的 <code>access_token</code>:</legend>
+                            <div class="pure-control-group">
+                            <textarea name="generatedTokenInput"
+                                      class="generated-token-input pure-input-1" rows="6" readonly>
+                            </textarea>
+                            </div>
+                        </fieldset>
+                    </form>
                 </div>
             </#list>
             </div>

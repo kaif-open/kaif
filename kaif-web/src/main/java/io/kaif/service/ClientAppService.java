@@ -49,4 +49,6 @@ public interface ClientAppService {
   boolean validateApp(String clientId, String clientSecret);
 
   List<ClientApp> listGrantedApps(Authorization user);
+
+  String generateDebugAccessToken(Authorization developer, String clientId);
 }

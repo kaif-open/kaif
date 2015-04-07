@@ -413,11 +413,18 @@ class ClientAppService extends _AbstractService {
     return null;
   }
 
-  Future<String> revoke(String clientId) async {
+  Future revoke(String clientId) async {
     var json = {
       'clientId':clientId,
     };
     await _postJson(_getUrl('/revoke'), json);
     return null;
+  }
+
+  Future<String> generateDebugAccessToken(String clientId) async {
+    var json = {
+      'clientId':clientId,
+    };
+    return _mapToSingleWrapper(await _postJson(_getUrl('/generate-debug-access-token'), json));
   }
 }

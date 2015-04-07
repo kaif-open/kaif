@@ -2,6 +2,7 @@ package io.kaif.service.impl;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -41,6 +42,8 @@ public class ClientAppServiceImpl implements ClientAppService {
 
   //we are just follow github, grant long term access token instead of requiring refresh periodically
   private static final Duration ACCESS_TOKEN_EXPIRE_DURATION = Duration.ofDays(20 * 365);
+
+  private static final Duration DEBUG_ACCESS_TOKEN_EXPIRE_DURATION = Duration.ofHours(1);
 
   @Autowired
   private AccountDao accountDao;
@@ -137,7 +140,8 @@ public class ClientAppServiceImpl implements ClientAppService {
           .filter(grantCode -> grantCode.matches(clientApp, redirectUri))
           .map(grantCode -> createOauthAccessToken(clientApp,
               grantCode.getAccountId(),
-              grantCode.getScopes()));
+              grantCode.getScopes(),
+              ACCESS_TOKEN_EXPIRE_DURATION));
     }).orElseThrow(() -> new AccessDeniedException("invalid grant for oauth access token"));
   }
 
@@ -147,7 +151,8 @@ public class ClientAppServiceImpl implements ClientAppService {
   @VisibleForTesting
   OauthAccessTokenDto createOauthAccessToken(ClientApp clientApp,
       UUID accountId,
-      Set<ClientAppScope> scopes) {
+      Set<ClientAppScope> scopes,
+      Duration tokenExpireDuration) {
     Account account = accountDao.findById(accountId).get();
     clientAppDao.mergeClientAppUser(account, clientApp, scopes, Instant.now());
     ClientAppUserAccessToken accessToken = new ClientAppUserAccessToken(account.getAccountId(),
@@ -155,8 +160,7 @@ public class ClientAppServiceImpl implements ClientAppService {
         scopes,
         clientApp.getClientId(),
         clientApp.getClientSecret());
-    String encodedToken = accessToken.encode(Instant.now().plus(ACCESS_TOKEN_EXPIRE_DURATION),
-        oauthSecret);
+    String encodedToken = accessToken.encode(Instant.now().plus(tokenExpireDuration), oauthSecret);
     return new OauthAccessTokenDto(encodedToken,
         accessToken.getCanonicalScope(),
         Oauths.DEFAULT_TOKEN_TYPE);
@@ -207,6 +211,15 @@ public class ClientAppServiceImpl implements ClientAppService {
     return clientAppDao.findApp(clientId)
         .filter(app -> app.getClientSecret().equals(clientSecret))
         .isPresent();
+  }
+
+  @Override
+  public String generateDebugAccessToken(Authorization creator, String clientId) {
+    ClientApp clientApp = verifyClientAppForOwner(creator, clientId);
+    return createOauthAccessToken(clientApp,
+        creator.authenticatedId(),
+        EnumSet.allOf(ClientAppScope.class),
+        DEBUG_ACCESS_TOKEN_EXPIRE_DURATION).getAccessToken();
   }
 
   @Override

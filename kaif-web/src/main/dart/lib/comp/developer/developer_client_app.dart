@@ -2,6 +2,7 @@ library developer_client_app;
 import 'dart:html';
 import 'package:kaif_web/util.dart';
 import 'package:kaif_web/model.dart';
+import 'dart:async';
 
 class DeveloperClientApp {
   final Element elem;
@@ -11,6 +12,9 @@ class DeveloperClientApp {
     new CreateClientAppForm(elem.querySelector('[create-client-app-form]'), clientAppService);
     elem.querySelectorAll('[edit-client-app-form]').forEach((el) {
       new EditClientAppForm(el, clientAppService);
+    });
+    elem.querySelectorAll('[debug-client-app-form]').forEach((el) {
+      new DebugClientAppForm(el, clientAppService);
     });
   }
 }
@@ -79,4 +83,36 @@ class EditClientAppForm {
 
   }
 
+}
+
+class DebugClientAppForm {
+  final Element elem;
+  final ClientAppService clientAppService;
+
+  DebugClientAppForm(this.elem, this.clientAppService) {
+    elem.onSubmit.listen(_onSubmit);
+  }
+
+  _onSubmit(Event e) async {
+    e
+      ..preventDefault()
+      ..stopPropagation();
+
+    var clientId = (elem.querySelector('[name=clientIdInput]') as TextInputElement).value;
+    var submit = elem.querySelector('[type=submit]');
+    submit.disabled = true;
+    var loading = new Loading.small()
+      ..renderAfter(submit);
+    try {
+      String token = await clientAppService.generateDebugAccessToken(clientId);
+      await new Future.delayed(const Duration(seconds:2));
+      elem.querySelector('[generated-token-group]').classes.remove('hidden');
+      (elem.querySelector('[name=generatedTokenInput]') as TextAreaElement).value = token;
+    } catch (error) {
+      new Toast.error("$error").render();
+    } finally {
+      submit.disabled = false;
+      loading.remove();
+    }
+  }
 }

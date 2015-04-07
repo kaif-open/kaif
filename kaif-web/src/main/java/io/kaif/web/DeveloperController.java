@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import io.kaif.model.account.AccountAccessToken;
+import io.kaif.model.clientapp.ClientAppScope;
 import io.kaif.service.ClientAppService;
 
 @Controller
@@ -23,7 +24,8 @@ public class DeveloperController {
   @RequestMapping("/client-app.part")
   public ModelAndView clientAppPart(AccountAccessToken accountAccessToken) {
     return new ModelAndView("developer/client-app.part").addObject("clientApps",
-        clientAppService.listClientApps(accountAccessToken));
+        clientAppService.listClientApps(accountAccessToken))
+        .addObject("allCanonicalScopes", ClientAppScope.allCanonicalScopes());
   }
 
   @RequestMapping("/doc")

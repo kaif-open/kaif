@@ -1,6 +1,7 @@
 package io.kaif.model.clientapp;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -45,6 +46,10 @@ public enum ClientAppScope {
         .map(ClientAppScope::toString)
         .sorted()
         .collect(Collectors.joining(" "));
+  }
+
+  public static String allCanonicalScopes() {
+    return toCanonicalString(EnumSet.allOf(ClientAppScope.class));
   }
 
   @Override

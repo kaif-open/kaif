@@ -3,6 +3,7 @@ package io.kaif.service.impl;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 
+import java.time.Duration;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -195,12 +196,23 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
     assertEquals(0, service.listGrantedApps(user).size());
     ClientApp app1 = service.create(dev, "myapp1", "ya ~ good", "http://myapp.com/callback");
     ClientApp app2 = service.create(dev, "myapp2", "ya ~ good", "http://myapp.com/callback");
-    service.createOauthAccessToken(app1, user.getAccountId(), EnumSet.of(ClientAppScope.FEED))
-        .getAccessToken();
-    service.createOauthAccessToken(app2, user.getAccountId(), EnumSet.of(ClientAppScope.FEED))
-        .getAccessToken();
+    service.createOauthAccessToken(app1,
+        user.getAccountId(),
+        EnumSet.of(ClientAppScope.FEED),
+        Duration.ofDays(1)).getAccessToken();
+    service.createOauthAccessToken(app2,
+        user.getAccountId(),
+        EnumSet.of(ClientAppScope.FEED),
+        Duration.ofDays(1)).getAccessToken();
 
     assertEquals(asList(app2, app1), service.listGrantedApps(user));
+  }
+
+  @Test
+  public void generateDebugAccessToken() throws Exception {
+    ClientApp app1 = service.create(dev, "myapp1", "ya ~ good", "http://myapp.com/callback");
+    String token = service.generateDebugAccessToken(dev, app1.getClientId());
+    assertTrue(service.verifyAccessToken(token).isPresent());
   }
 
   @Test
@@ -209,7 +221,8 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
     ClientApp clientApp = service.create(dev, "myapp", "ya ~ good", "http://myapp.com/callback");
     String accessToken = service.createOauthAccessToken(clientApp,
         user.getAccountId(),
-        EnumSet.of(ClientAppScope.FEED)).getAccessToken();
+        EnumSet.of(ClientAppScope.FEED),
+        Duration.ofDays(1)).getAccessToken();
     assertTrue(service.verifyAccessToken(accessToken).isPresent());
     service.resetClientAppSecret(dev, clientApp.getClientId());
     assertFalse(service.verifyAccessToken(accessToken).isPresent());
@@ -232,7 +245,8 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
     ClientApp clientApp = service.create(dev, "myapp", "ya ~ good", "http://myapp.com/callback");
     String accessToken = service.createOauthAccessToken(clientApp,
         user.getAccountId(),
-        EnumSet.of(ClientAppScope.FEED)).getAccessToken();
+        EnumSet.of(ClientAppScope.FEED),
+        Duration.ofDays(1)).getAccessToken();
     assertTrue(service.verifyAccessToken(accessToken).isPresent());
     service.revokeApp(user, clientApp.getClientId());
     assertFalse(service.verifyAccessToken(accessToken).isPresent());
@@ -243,7 +257,10 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
     Account user = savedAccountCitizen("user1");
     ClientApp clientApp = service.create(dev, "myapp", "ya ~ good", "http://myapp.com/callback");
 
-    service.createOauthAccessToken(clientApp, user.getAccountId(), EnumSet.of(ClientAppScope.FEED));
+    service.createOauthAccessToken(clientApp,
+        user.getAccountId(),
+        EnumSet.of(ClientAppScope.FEED),
+        Duration.ofDays(1));
     List<ClientAppUser> clientAppUsers = service.listGrantedAppUsers(user);
     assertEquals(1, clientAppUsers.size());
     ClientAppUser appUser = clientAppUsers.get(0);
@@ -257,7 +274,8 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
     ClientApp resetApp = service.loadClientAppWithoutCache(clientApp.getClientId());
     service.createOauthAccessToken(clientApp,
         user.getAccountId(),
-        EnumSet.of(ClientAppScope.ARTICLE));
+        EnumSet.of(ClientAppScope.ARTICLE),
+        Duration.ofDays(1));
 
     clientAppUsers = service.listGrantedAppUsers(user);
     assertEquals("should update exist client app user if issue new access token",

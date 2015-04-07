@@ -68,6 +68,13 @@ public class ClientAppResource {
 
   }
 
+  static class GenerateDebugAccessToken {
+
+    @NotNull
+    public String clientId;
+
+  }
+
   @Autowired
   private ClientAppService clientAppService;
 
@@ -95,5 +102,12 @@ public class ClientAppResource {
   public void revoke(AccountAccessToken accountAccessToken,
       @RequestBody @Valid RevokeClientApp revoke) {
     clientAppService.revokeApp(accountAccessToken, revoke.clientId);
+  }
+
+  @RequestMapping(value = "/generate-debug-access-token", method = RequestMethod.POST)
+  public SingleWrapper<String> generateDebugAccessToken(AccountAccessToken accountAccessToken,
+      @RequestBody @Valid GenerateDebugAccessToken generate) {
+    return SingleWrapper.of(clientAppService.generateDebugAccessToken(accountAccessToken,
+        generate.clientId));
   }
 }
