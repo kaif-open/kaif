@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import io.kaif.model.account.Authorization;
 import io.kaif.model.exception.CallbackUriReservedException;
 import io.kaif.model.exception.ClientAppNameReservedException;
 
@@ -104,7 +105,7 @@ public class ClientApp {
         '}';
   }
 
-  public UUID getOwnerAccountId() {
+  UUID getOwnerAccountId() {
     return ownerAccountId;
   }
 
@@ -180,5 +181,9 @@ public class ClientApp {
         ownerAccountId,
         revoked,
         callbackUri);
+  }
+
+  public boolean isOwner(Authorization authorization) {
+    return authorization.belongToAccount(getOwnerAccountId());
   }
 }

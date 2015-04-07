@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiModelProperty;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.clientapp.ClientAppUserAccessToken;
@@ -72,9 +74,14 @@ public class V1VoteResource {
   @Autowired
   private ArticleService articleService;
 
+  @ApiOperation(value = "[vote] List votes of the user on multiple articles",
+      notes = "List votes of the user on multiple articles. When you paging articles, "
+          + "you may want to know what user voted for those articles in the page. "
+          + "You can send multiple articleIds to obtain votes in batch.")
   @RequiredScope(VOTE)
   @RequestMapping(value = "/article", method = RequestMethod.GET)
-  public List<V1VoteDto> article(ClientAppUserAccessToken token,
+  public List<V1VoteDto> votesOfArticles(ClientAppUserAccessToken token,
+      @ApiParam(value = "comma separated articleIds", allowMultiple = true)
       @RequestParam("article-id") List<String> articleIds) {
     return voteService.listArticleVoters(token, toFlakeIds(articleIds))
         .stream()
@@ -82,9 +89,14 @@ public class V1VoteResource {
         .collect(toList());
   }
 
+  @ApiOperation(value = "[vote] List votes of the user on multiple debates",
+      notes = "List votes of the user on multiple debates. When you paging debates, "
+          + "you may want to know what user voted for those debates in the page. "
+          + "You can send multiple debateIds to obtain votes in batch.")
   @RequiredScope(VOTE)
   @RequestMapping(value = "/debate", method = RequestMethod.GET)
-  public List<V1VoteDto> debate(ClientAppUserAccessToken token,
+  public List<V1VoteDto> votesOfDebates(ClientAppUserAccessToken token,
+      @ApiParam(value = "comma separated debateIds", allowMultiple = true)
       @RequestParam("debate-id") List<String> debateIds) {
     return voteService.listDebateVotersByIds(token, toFlakeIds(debateIds))
         .stream()
@@ -92,9 +104,13 @@ public class V1VoteResource {
         .collect(toList());
   }
 
+  @ApiOperation(value = "[vote] List all votes of the user for all debates in an article",
+      notes =
+          "List all votes of the user on all debates of the article, this is recommend method when "
+              + "you want all votes of the user in a large debate tree.")
   @RequiredScope(VOTE)
   @RequestMapping(value = "/debate/article/{articleId}", method = RequestMethod.GET)
-  public List<V1VoteDto> debateOfArticle(ClientAppUserAccessToken token,
+  public List<V1VoteDto> votesOfDebatesOfArticle(ClientAppUserAccessToken token,
       @PathVariable("articleId") FlakeId articleId) {
     return voteService.listDebateVoters(token, articleId)
         .stream()
@@ -102,6 +118,8 @@ public class V1VoteResource {
         .collect(toList());
   }
 
+  @ApiOperation(value = "[vote] Vote on an article",
+      notes = "Vote on an article. Note that kaif do not support DOWN vote on article.")
   @RequiredScope(VOTE)
   @RequestMapping(value = "/article", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
@@ -132,6 +150,8 @@ public class V1VoteResource {
     }
   }
 
+  @ApiOperation(value = "[vote] Vote on a debate",
+      notes = "Vote on a debate.")
   @RequiredScope(VOTE)
   @RequestMapping(value = "/debate", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })

@@ -32,14 +32,14 @@ public class V1EchoResource {
     public String message;
   }
 
-  @ApiOperation(value = "Get system current time", notes = "Get system current time in milliseconds")
+  @ApiOperation(value = "[public] Get system current time", notes = "Get system current time in milliseconds")
   @RequiredScope(PUBLIC)
   @RequestMapping(value = "/current-time", method = RequestMethod.GET)
   public long currentTime(ClientAppUserAccessToken accessToken) {
     return System.currentTimeMillis();
   }
 
-  @ApiOperation(value = "Echo input message", notes = "Echo input message to response")
+  @ApiOperation(value = "[public] Echo input message", notes = "Echo input message to response")
   @RequiredScope(PUBLIC)
   @RequestMapping(value = "/message", method = RequestMethod.POST)
   public String message(ClientAppUserAccessToken accessToken,

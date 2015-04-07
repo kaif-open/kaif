@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiModelProperty;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.article.Article;
@@ -80,6 +81,7 @@ public class V1ArticleResource {
   @Autowired
   private VoteService voteService;
 
+  @ApiOperation(value = "[public] Get an article", notes = "Get an article by articleId")
   @RequiredScope(ClientAppScope.PUBLIC)
   @RequestMapping(value = "/{articleId}", method = RequestMethod.GET)
   public V1ArticleDto article(ClientAppUserAccessToken accessToken,
@@ -87,6 +89,9 @@ public class V1ArticleResource {
     return articleService.loadArticle(articleId).toV1Dto();
   }
 
+  @ApiOperation(value = "[public] List hot articles of all zones",
+      notes = "List hot articles of all zones, 25 articles a page. "
+          + "To retrieve next page, passing last article id of previous page in parameter start-article-id")
   @RequiredScope(ClientAppScope.PUBLIC)
   @RequestMapping(value = "/hot", method = RequestMethod.GET)
   public List<V1ArticleDto> hot(ClientAppUserAccessToken accessToken,
@@ -98,6 +103,9 @@ public class V1ArticleResource {
     return articles.stream().map(Article::toV1Dto).collect(toList());
   }
 
+  @ApiOperation(value = "[public] List latest articles of all zones",
+      notes = "List latest articles of all zones, 25 articles a page. "
+          + "To retrieve next page, passing last article id of previous page in parameter start-article-id")
   @RequiredScope(ClientAppScope.PUBLIC)
   @RequestMapping(value = "/latest", method = RequestMethod.GET)
   public List<V1ArticleDto> latest(ClientAppUserAccessToken accessToken,
@@ -105,6 +113,9 @@ public class V1ArticleResource {
     return toDtos(articleService.listLatestArticles(startArticleId));
   }
 
+  @ApiOperation(value = "[public] List latest articles for the zone",
+      notes = "List latest articles for the zone, 25 articles a page. "
+          + "To retrieve next page, passing last article id of previous page in parameter start-article-id")
   @RequiredScope(ClientAppScope.PUBLIC)
   @RequestMapping(value = "/zone/{zone}/latest", method = RequestMethod.GET)
   public List<V1ArticleDto> latestByZone(ClientAppUserAccessToken accessToken,
@@ -113,6 +124,9 @@ public class V1ArticleResource {
     return toDtos(articleService.listLatestZoneArticles(Zone.valueOf(zone), startArticleId));
   }
 
+  @ApiOperation(value = "[public] List hot articles for the zone",
+      notes = "List hot articles for the zone, 25 articles a page. "
+          + "To retrieve next page, passing last article id of previous page in parameter start-article-id")
   @RequiredScope(ClientAppScope.PUBLIC)
   @RequestMapping(value = "/zone/{zone}/hot", method = RequestMethod.GET)
   public List<V1ArticleDto> hotByZone(ClientAppUserAccessToken accessToken,
@@ -121,6 +135,9 @@ public class V1ArticleResource {
     return toDtos(articleService.listHotZoneArticles(Zone.valueOf(zone), startArticleId));
   }
 
+  @ApiOperation(value = "[public] List submitted articles of the user",
+      notes = "List submitted articles of the user, 25 articles a page. "
+          + "To retrieve next page, passing last article id of previous page in parameter start-article-id")
   @RequiredScope(ClientAppScope.PUBLIC)
   @RequestMapping(value = "/user/{username}/submitted", method = RequestMethod.GET)
   public List<V1ArticleDto> submitted(ClientAppUserAccessToken accessToken,
@@ -129,6 +146,9 @@ public class V1ArticleResource {
     return toDtos(articleService.listArticlesByAuthor(username, startArticleId));
   }
 
+  @ApiOperation(value = "[vote] List voted articles of the user",
+      notes = "List voted articles of the user, 25 articles a page. "
+          + "To retrieve next page, passing last article id of previous page in parameter start-article-id")
   @RequiredScope(ClientAppScope.VOTE)
   @RequestMapping(value = "/voted", method = RequestMethod.GET)
   public List<V1ArticleDto> voted(ClientAppUserAccessToken accessToken,
@@ -136,6 +156,8 @@ public class V1ArticleResource {
     return toDtos(voteService.listUpVotedArticles(accessToken, startArticleId));
   }
 
+  @ApiOperation(value = "[article] Create an article with external link",
+      notes = "Create an article with external link in specified zone")
   @ResponseStatus(HttpStatus.CREATED)
   @RequiredScope(ClientAppScope.ARTICLE)
   @RequestMapping(value = "/external-link", method = RequestMethod.PUT, consumes = {
@@ -148,6 +170,8 @@ public class V1ArticleResource {
         entry.url.trim()).toV1Dto();
   }
 
+  @ApiOperation(value = "[article] Create an article with content",
+      notes = "Create an article with content in specified zone")
   @ResponseStatus(HttpStatus.CREATED)
   @RequiredScope(ClientAppScope.ARTICLE)
   @RequestMapping(value = "/speak", method = RequestMethod.PUT, consumes = {

@@ -28,7 +28,8 @@ public class V1UserResource {
   @Autowired
   private AccountService accountService;
 
-  @ApiOperation(value = "[user] Get my basic information", notes = "Get authorized user basic information")
+  @ApiOperation(value = "[user] Get my basic information",
+      notes = "Get authorized user basic information.")
   @RequiredScope(USER)
   @RequestMapping(value = "/basic", method = RequestMethod.GET)
   public V1UserBasicDto basic(ClientAppUserAccessToken accessToken) {
@@ -38,7 +39,8 @@ public class V1UserResource {
         Date.from(account.getCreateTime()));
   }
 
-  @ApiOperation(value = "[public] Get basic information of the user", notes = "Get other user's basic information")
+  @ApiOperation(value = "[public] Get basic information of the user",
+      notes = "Get other user's basic information.")
   @RequiredScope(ClientAppScope.PUBLIC)
   @RequestMapping(value = "/{username}/basic", method = RequestMethod.GET)
   public V1UserBasicDto basicByUsername(ClientAppUserAccessToken accessToken,

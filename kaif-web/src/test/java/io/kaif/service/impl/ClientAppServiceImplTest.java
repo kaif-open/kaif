@@ -48,7 +48,7 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
     assertEquals("http://myapp.com/callback", loaded.getCallbackUri());
     assertEquals(32, loaded.getClientSecret().length());
     assertEquals(16, loaded.getClientId().length());
-    assertEquals(dev.getAccountId(), loaded.getOwnerAccountId());
+    assertTrue(loaded.isOwner(dev));
     assertNotNull(loaded.getCreateTime());
   }
 

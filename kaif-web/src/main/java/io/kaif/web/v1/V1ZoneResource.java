@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import io.kaif.model.clientapp.ClientAppUserAccessToken;
 import io.kaif.model.zone.ZoneInfo;
@@ -26,6 +27,7 @@ public class V1ZoneResource {
   @Autowired
   private ZoneService zoneService;
 
+  @ApiOperation(value = "[public] List all zones", notes = "List all available zones.")
   @RequiredScope(PUBLIC)
   @RequestMapping(value = "/all", method = RequestMethod.GET)
   public List<V1ZoneDto> all(ClientAppUserAccessToken token) {

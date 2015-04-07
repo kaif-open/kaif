@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiModelProperty;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.clientapp.ClientAppScope;
@@ -60,6 +61,7 @@ public class V1DebateResource {
   @Autowired
   private ArticleService articleService;
 
+  @ApiOperation(value = "[public] Get a debate", notes = "Get a debate by debateId")
   @RequiredScope(ClientAppScope.PUBLIC)
   @RequestMapping(value = "/{debateId}", method = RequestMethod.GET)
   public V1DebateDto debate(ClientAppUserAccessToken accessToken,
@@ -67,7 +69,8 @@ public class V1DebateResource {
     return articleService.loadDebateWithCache(debateId).toV1Dto();
   }
 
-  //TODO document large of data, sorted by best score
+  @ApiOperation(value = "[public] Load all debates for an article",
+      notes = "Load all debates (in tree structure) for an article. Note that result may be a big json.")
   @RequiredScope(ClientAppScope.PUBLIC)
   @RequestMapping(value = "/article/{articleId}/tree", method = RequestMethod.GET)
   public V1DebateNodeDto debateTreeOfArticle(ClientAppUserAccessToken accessToken,
@@ -75,6 +78,9 @@ public class V1DebateResource {
     return articleService.listBestDebates(articleId, null).toV1Dto();
   }
 
+  @ApiOperation(value = "[public] List latest debates of all zones",
+      notes = "List latest debates of all zones, 25 debates a page. "
+          + "To retrieve next page, passing last debate id of previous page in parameter start-debate-id.")
   @RequiredScope(ClientAppScope.PUBLIC)
   @RequestMapping(value = "/latest", method = RequestMethod.GET)
   public List<V1DebateDto> latest(ClientAppUserAccessToken accessToken,
@@ -86,6 +92,9 @@ public class V1DebateResource {
     return debates.stream().map(Debate::toV1Dto).collect(toList());
   }
 
+  @ApiOperation(value = "[public] List latest debates for a zone",
+      notes = "List latest debates for a zone, 25 debates a page. "
+          + "To retrieve next page, passing last debate id of previous page in parameter start-debate-id")
   @RequiredScope(ClientAppScope.PUBLIC)
   @RequestMapping(value = "/zone/{zone}/latest", method = RequestMethod.GET)
   public List<V1DebateDto> latestByZone(ClientAppUserAccessToken accessToken,
@@ -94,6 +103,9 @@ public class V1DebateResource {
     return toDtos(articleService.listLatestZoneDebates(Zone.valueOf(zone), startDebateId));
   }
 
+  @ApiOperation(value = "[debate] List submitted debates of the user",
+      notes = "List submitted debates of the user, 25 debates a page. "
+          + "To retrieve next page, passing last debate id of previous page in parameter start-debate-id")
   @RequiredScope(ClientAppScope.DEBATE)
   @RequestMapping(value = "/user/{username}/submitted", method = RequestMethod.GET)
   public List<V1DebateDto> userSubmitted(ClientAppUserAccessToken accessToken,
@@ -102,6 +114,9 @@ public class V1DebateResource {
     return toDtos(articleService.listDebatesByDebater(username, startDebateId));
   }
 
+  @ApiOperation(value = "[debate] Create a debate in the article",
+      notes = "Create a debate in the article. If reply to a debate, "
+          + "it should be specified in the field: parentDebateId.")
   @ResponseStatus(HttpStatus.CREATED)
   @RequiredScope(ClientAppScope.DEBATE)
   @RequestMapping(value = "", method = RequestMethod.PUT, consumes = {
@@ -114,6 +129,8 @@ public class V1DebateResource {
         entry.content.trim()).toV1Dto();
   }
 
+  @ApiOperation(value = "[debate] Edit content of a debate",
+      notes = "Edit content of a debate that user created.")
   @RequiredScope(ClientAppScope.DEBATE)
   @RequestMapping(value = "/{debateId}/content", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })

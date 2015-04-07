@@ -84,8 +84,8 @@ public class SwaggerConfiguration {
    * convert FlakeId and Zone to String in swagger document
    *
    * @see io.kaif.web.support.WebDataBinderAdvice
-   * @see json deserializer of FlakeId
-   * @see json deserializer of Zone
+   * see json deserializer of FlakeId
+   * see json deserializer of Zone
    */
   private AlternateTypeRule[] alternativeTypeRules() {
     return new AlternateTypeRule[] { Alternates.newRule(FlakeId.class, String.class),

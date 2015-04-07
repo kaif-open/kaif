@@ -195,7 +195,7 @@ public class ClientAppServiceImpl implements ClientAppService {
   private ClientApp verifyClientAppForOwner(Authorization creator, String clientId) {
     Account account = verifyDeveloper(creator);
     ClientApp clientApp = clientAppDao.loadAppWithoutCache(clientId);
-    if (!account.belongToAccount(clientApp.getOwnerAccountId())) {
+    if (!clientApp.isOwner(account)) {
       throw new AccessDeniedException("not client app owner");
     }
     return clientApp;

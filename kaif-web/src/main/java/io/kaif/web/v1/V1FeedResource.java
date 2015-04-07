@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiModelProperty;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.clientapp.ClientAppScope;
@@ -46,6 +47,9 @@ public class V1FeedResource {
   @Autowired
   private FeedService feedService;
 
+  @ApiOperation(value = "[feed] Latest news",
+      notes = "List latest FeedAssets, 25 assets a page. "
+          + "To retrieve next page, passing last asset id of previous page in parameter start-asset-id.")
   @RequiredScope(ClientAppScope.FEED)
   @RequestMapping(value = "/news", method = RequestMethod.GET)
   public List<V1FeedAssetDto> news(ClientAppUserAccessToken token,
@@ -73,13 +77,19 @@ public class V1FeedResource {
         .collect(toList());
   }
 
-  //TODO document call once per 5 minutes, max value is 11
+  @ApiOperation(value = "[feed] Get unread count in news feed",
+      notes = "Get unread count in news feed, max value is 11 regardless real unread count. "
+          + "The method should not repeat invoke in short time, we recommend once per 5 minutes.")
   @RequiredScope(ClientAppScope.FEED)
   @RequestMapping(value = "/news-unread-count", method = RequestMethod.GET)
   public int newsUnreadCount(ClientAppUserAccessToken token) {
     return feedService.countUnread(token);
   }
 
+  @ApiOperation(value = "[feed] Acknowledge a FeedAsset",
+      notes = "A FeedAsset set to acknowledged will treat all assets before it as read. "
+          + "Typically you should acknowledge the latest feedAssetId you received "
+          + "when the user open news feed window in your app.")
   @RequiredScope(ClientAppScope.FEED)
   @RequestMapping(value = "/acknowledge", method = RequestMethod.POST, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
