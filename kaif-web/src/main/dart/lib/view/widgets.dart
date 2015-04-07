@@ -316,8 +316,6 @@ class Tabs {
 
     togglers.forEach((AnchorElement toggler) {
       toggler.onClick.listen((event) {
-        event
-          ..preventDefault();
         _activeTabPane(toggler.hash);
       });
     });

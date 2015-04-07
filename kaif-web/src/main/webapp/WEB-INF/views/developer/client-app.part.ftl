@@ -49,7 +49,7 @@
                             </div>
 
                             <div class="pure-control-group">
-                                <label>Callback Uri* (不能包含 kaif 保留字)</label>
+                                <label>callback_uri* (不能包含 kaif 保留字)</label>
                                 <input name="callbackUriInput" type="url"
                                        placeholder="http://... or foo://..."
                                        required
@@ -106,7 +106,7 @@
                             </div>
 
                             <div class="pure-control-group">
-                                <label>Callback Uri* (不能包含 kaif 保留字)</label>
+                                <label>callback_uri* (不能包含 kaif 保留字)</label>
                                 <input name="callbackUriInput" type="url"
                                        placeholder="http://... or foo://..."
                                        value="${clientApp.callbackUri}"
