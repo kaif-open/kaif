@@ -61,6 +61,13 @@ public class ClientAppResource {
 
   }
 
+  static class RevokeClientApp {
+
+    @NotNull
+    public String clientId;
+
+  }
+
   @Autowired
   private ClientAppService clientAppService;
 
@@ -82,5 +89,11 @@ public class ClientAppResource {
         update.name.trim(),
         update.description.trim(),
         update.callbackUri.trim());
+  }
+
+  @RequestMapping(value = "/revoke", method = RequestMethod.POST)
+  public void revoke(AccountAccessToken accountAccessToken,
+      @RequestBody @Valid RevokeClientApp revoke) {
+    clientAppService.revokeApp(accountAccessToken, revoke.clientId);
   }
 }

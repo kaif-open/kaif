@@ -412,4 +412,12 @@ class ClientAppService extends _AbstractService {
     await _postJson(_getUrl('/update'), json);
     return null;
   }
+
+  Future<String> revoke(String clientId) async {
+    var json = {
+      'clientId':clientId,
+    };
+    await _postJson(_getUrl('/revoke'), json);
+    return null;
+  }
 }

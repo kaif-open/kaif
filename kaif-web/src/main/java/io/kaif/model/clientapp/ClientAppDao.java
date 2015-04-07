@@ -185,7 +185,7 @@ public class ClientAppDao implements DaoOperations {
         + "  LIMIT 1 ", clientAppUserMapper, accountId, clientId).stream().findAny();
   }
 
-  public List<ClientAppUser> listAppsByUser(UUID accountId) {
+  public List<ClientAppUser> listUsers(UUID accountId) {
     return jdbc().query(""
         + " SELECT cau.*, ClientApp.clientSecret "
         + "   FROM ClientAppUser cau "
@@ -200,5 +200,14 @@ public class ClientAppDao implements DaoOperations {
         + "   FROM ClientAppUser "
         + "  WHERE accountId = ? "
         + "    AND clientId = ? ", accountId, clientId);
+  }
+
+  public List<ClientApp> listAppsByUser(UUID accountId) {
+    return jdbc().query(""
+        + " SELECT ClientApp.* "
+        + "   FROM ClientAppUser cau "
+        + "   JOIN ClientApp ON (cau.clientId = ClientApp.clientId ) "
+        + "  WHERE cau.accountId = ? "
+        + "  ORDER BY cau.lastUpdateTime DESC ", clientAppMapper, accountId);
   }
 }

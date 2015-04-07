@@ -40,11 +40,13 @@ public interface ClientAppService {
 
   Optional<ClientAppUserAccessToken> verifyAccessToken(String rawAccessToken);
 
-  List<ClientAppUser> listGrantedApps(Authorization authorization);
+  List<ClientAppUser> listGrantedAppUsers(Authorization authorization);
 
   void resetClientAppSecret(Authorization creator, String clientId);
 
   void revokeApp(Authorization user, String clientId);
 
   boolean validateApp(String clientId, String clientSecret);
+
+  List<ClientApp> listGrantedApps(Authorization user);
 }

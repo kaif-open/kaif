@@ -176,7 +176,7 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
     OauthAccessTokenDto tokenDto = service.createOauthAccessTokenByGrantCode(grantCode,
         clientApp.getClientId(),
         "http://myapp.com/callback/foo");
-    ClientAppUser appUser = service.listGrantedApps(user).get(0);
+    ClientAppUser appUser = service.listGrantedAppUsers(user).get(0);
     assertEquals(user.getAccountId(), appUser.getAccountId());
     assertEquals(clientApp.getClientId(), appUser.getClientId());
     assertEquals(clientApp.getClientSecret(), appUser.getCurrentClientSecret());
@@ -187,6 +187,20 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
     assertTrue(clientAppUserAccessToken.validate(appUser));
     assertTrue(clientAppUserAccessToken.containsScope(ClientAppScope.FEED));
     assertTrue(clientAppUserAccessToken.containsScope(ClientAppScope.PUBLIC));
+  }
+
+  @Test
+  public void listGrantedApps() throws Exception {
+    Account user = savedAccountCitizen("user1");
+    assertEquals(0, service.listGrantedApps(user).size());
+    ClientApp app1 = service.create(dev, "myapp1", "ya ~ good", "http://myapp.com/callback");
+    ClientApp app2 = service.create(dev, "myapp2", "ya ~ good", "http://myapp.com/callback");
+    service.createOauthAccessToken(app1, user.getAccountId(), EnumSet.of(ClientAppScope.FEED))
+        .getAccessToken();
+    service.createOauthAccessToken(app2, user.getAccountId(), EnumSet.of(ClientAppScope.FEED))
+        .getAccessToken();
+
+    assertEquals(asList(app2, app1), service.listGrantedApps(user));
   }
 
   @Test
@@ -230,7 +244,7 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
     ClientApp clientApp = service.create(dev, "myapp", "ya ~ good", "http://myapp.com/callback");
 
     service.createOauthAccessToken(clientApp, user.getAccountId(), EnumSet.of(ClientAppScope.FEED));
-    List<ClientAppUser> clientAppUsers = service.listGrantedApps(user);
+    List<ClientAppUser> clientAppUsers = service.listGrantedAppUsers(user);
     assertEquals(1, clientAppUsers.size());
     ClientAppUser appUser = clientAppUsers.get(0);
     assertEquals(user.getAccountId(), appUser.getAccountId());
@@ -245,7 +259,7 @@ public class ClientAppServiceImplTest extends DbIntegrationTests {
         user.getAccountId(),
         EnumSet.of(ClientAppScope.ARTICLE));
 
-    clientAppUsers = service.listGrantedApps(user);
+    clientAppUsers = service.listGrantedAppUsers(user);
     assertEquals("should update exist client app user if issue new access token",
         1,
         clientAppUsers.size());

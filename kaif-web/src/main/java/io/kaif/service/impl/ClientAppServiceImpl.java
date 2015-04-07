@@ -178,8 +178,8 @@ public class ClientAppServiceImpl implements ClientAppService {
   }
 
   @Override
-  public List<ClientAppUser> listGrantedApps(Authorization authorization) {
-    return clientAppDao.listAppsByUser(authorization.authenticatedId());
+  public List<ClientAppUser> listGrantedAppUsers(Authorization authorization) {
+    return clientAppDao.listUsers(authorization.authenticatedId());
   }
 
   @Override
@@ -207,5 +207,10 @@ public class ClientAppServiceImpl implements ClientAppService {
     return clientAppDao.findApp(clientId)
         .filter(app -> app.getClientSecret().equals(clientSecret))
         .isPresent();
+  }
+
+  @Override
+  public List<ClientApp> listGrantedApps(Authorization user) {
+    return clientAppDao.listAppsByUser(user.authenticatedId());
   }
 }
