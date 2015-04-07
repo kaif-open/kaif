@@ -143,7 +143,7 @@ class DebateVoteBox extends Votable {
 
   Future onVote(VoteState newState, VoteState previousState, int previousCount) {
     return debateComp.voteService.voteDebate(
-        newState, debateComp.zone, debateComp.articleId, debateComp.debateId, previousState,
+        newState, debateComp.debateId, previousState,
         previousCount);
   }
 

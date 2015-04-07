@@ -2,7 +2,6 @@ library news_feed;
 
 import 'dart:html';
 import '../server_part_loader.dart';
-import 'package:kaif_web/util.dart';
 import 'package:kaif_web/model.dart';
 
 class NewsFeedComp {
@@ -41,7 +40,7 @@ class FeedAssetComp {
   bool acked;
 
   FeedAssetComp(this.elem) {
-    assetId = elem.dataset['asset-id'] ;
+    assetId = elem.dataset['asset-id'];
     acked = elem.dataset['asset-acked'] == 'true';
   }
 

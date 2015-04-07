@@ -25,7 +25,6 @@ import io.kaif.model.article.ArticleDao;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateDao;
 import io.kaif.model.debate.DebateTree;
-import io.kaif.model.vote.HonorRollDao;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
@@ -148,14 +147,13 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public Debate debate(Zone zone,
-      FlakeId articleId,
+  public Debate debate(FlakeId articleId,
       @Nullable FlakeId parentDebateId,
       Authorization debaterAuth,
       String content) {
     //creating debate should not use cache
-    ZoneInfo zoneInfo = zoneDao.loadZoneWithoutCache(zone);
     Article article = articleDao.loadArticleWithoutCache(articleId);
+    ZoneInfo zoneInfo = zoneDao.loadZoneWithoutCache(article.getZone());
 
     Account debater = accountDao.strongVerifyAccount(debaterAuth)
         .filter(zoneInfo::canDebate)

@@ -1,6 +1,8 @@
 buildscript {
   ext {
     springBootVersion = '1.2.1.RELEASE'
+    // spring boot now use 8.0.15
+    tomcatVersion = '8.0.15'
   }
   dependencies {
     classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -120,9 +122,6 @@ war {
 }
 
 dependencies {
-  // compile("org.springframework.boot:spring-boot-starter-data-elasticsearch")
-  // compile("org.springframework.boot:spring-boot-starter-websocket")
-
   compile("org.springframework.boot:spring-boot-starter-aop")
 
   compile("org.springframework.boot:spring-boot-starter-jdbc") {
@@ -136,13 +135,15 @@ dependencies {
 
   //exclude embed tomcat in production
   providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
-  // spring boot now use 8.0.15
-  providedRuntime 'org.apache.tomcat:tomcat-jdbc:8.0.15'
+  providedRuntime "org.apache.tomcat:tomcat-jdbc:${tomcatVersion}"
 
   // compile("org.springframework.boot:spring-boot-starter-social-twitter")
   compile("org.springframework.boot:spring-boot-starter-actuator")
   compile("org.springframework.boot:spring-boot-starter-remote-shell")
   testCompile("org.springframework.boot:spring-boot-starter-test")
+
+  //upgrade spring should bound json-path version too
+  testCompile('com.jayway.jsonpath:json-path:1.1.0')
 
   compile 'org.springframework.security:spring-security-crypto:3.2.5.RELEASE';
 
@@ -178,6 +179,16 @@ dependencies {
   compile 'org.ocpsoft.prettytime:prettytime:3.2.7.Final'
   compile 'org.apache.commons:commons-math3:3.4.1'
 
+  // rss
   compile 'com.rometools:rome:1.5.0'
+
+  // swagger
+  compile "com.mangofactory:swagger-springmvc:1.0.2"
+  compile "org.ajar:swagger-spring-mvc-ui:0.4"
+
+  // workaround swagger ui 0.4 bug
+  // https://github.com/adrianbk/swagger-springmvc-demo/issues/15
+  // this only affect local development with embed tomcat
+  providedRuntime "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
 }
 

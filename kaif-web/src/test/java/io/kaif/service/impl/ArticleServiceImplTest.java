@@ -64,8 +64,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   @Test
   public void debate() throws Exception {
     Account debater = savedAccountCitizen("debater1");
-    Debate created = service.debate(zoneInfo.getZone(),
-        article.getArticleId(),
+    Debate created = service.debate(article.getArticleId(),
         Debate.NO_PARENT,
         debater,
         "pixel art is *better*");
@@ -90,23 +89,20 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void debate_replyFeed() throws Exception {
-    service.debate(zoneInfo.getZone(),
-        article.getArticleId(),
+    service.debate(article.getArticleId(),
         Debate.NO_PARENT,
         citizen,
         "reply to self article has no feed");
     assertEquals(0, feedService.listFeeds(citizen, null).size());
 
     Account debater = savedAccountCitizen("debater1");
-    Debate debate = service.debate(zoneInfo.getZone(),
-        article.getArticleId(),
+    Debate debate = service.debate(article.getArticleId(),
         Debate.NO_PARENT,
         debater,
         "some one reply to my article");
     assertEquals(debate.getDebateId(), feedService.listFeeds(citizen, null).get(0).getAssetId());
 
-    Debate respone = service.debate(zoneInfo.getZone(),
-        article.getArticleId(),
+    Debate respone = service.debate(article.getArticleId(),
         debate.getDebateId(),
         citizen,
         "author reply me");
@@ -218,8 +214,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     }
 
     Account debater = savedAccountCitizen("debater1");
-    Debate created = service.debate(zoneInfo.getZone(),
-        article.getArticleId(),
+    Debate created = service.debate(article.getArticleId(),
         Debate.NO_PARENT,
         debater,
         "pixel art is better");
@@ -243,11 +238,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertEquals(0, service.listBestDebates(articleId, null).depthFirst().count());
 
     List<Debate> debates = IntStream.rangeClosed(1, 3)
-        .mapToObj(i -> service.debate(zone,
-            articleId,
-            Debate.NO_PARENT,
-            citizen,
-            "debate-content-" + i))
+        .mapToObj(i -> service.debate(articleId, Debate.NO_PARENT, citizen, "debate-content-" + i))
         .collect(toList());
 
     assertEquals(debates, service.listBestDebates(articleId, null).depthFirst().collect(toList()));
@@ -299,8 +290,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   }
 
   private Debate savedDebate(Debate parent) {
-    return service.debate(zoneInfo.getZone(),
-        article.getArticleId(),
+    return service.debate(article.getArticleId(),
         Optional.ofNullable(parent).map(Debate::getDebateId).orElse(Debate.NO_PARENT),
         citizen,
         "debate-content-" + Math.random());
@@ -312,16 +302,12 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     FlakeId parentId = Debate.NO_PARENT;
     Debate last = null;
     for (int i = 0; i < 10; i++) {
-      last = service.debate(zoneInfo.getZone(),
-          article.getArticleId(),
-          parentId,
-          debater,
-          "nested");
+      last = service.debate(article.getArticleId(), parentId, debater, "nested");
       parentId = last.getDebateId();
     }
     assertTrue(last.isMaxLevel());
     try {
-      service.debate(zoneInfo.getZone(), article.getArticleId(), parentId, debater, "failed");
+      service.debate(article.getArticleId(), parentId, debater, "failed");
       fail("IllegalArgumentException expected");
     } catch (IllegalArgumentException expected) {
     }
@@ -330,16 +316,11 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   @Test
   public void debate_reply() throws Exception {
     Account debater = savedAccountCitizen("debater1");
-    Debate l1 = service.debate(zoneInfo.getZone(),
-        article.getArticleId(),
+    Debate l1 = service.debate(article.getArticleId(),
         Debate.NO_PARENT,
         debater,
         "pixel art is better");
-    Debate l2 = service.debate(zoneInfo.getZone(),
-        article.getArticleId(),
-        l1.getDebateId(),
-        debater,
-        "i think so");
+    Debate l2 = service.debate(article.getArticleId(), l1.getDebateId(), debater, "i think so");
     assertEquals(2, l2.getLevel());
     assertTrue(l2.hasParent());
     assertTrue(l2.isParent(l1));
@@ -347,11 +328,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     assertEquals(l1.getDebaterId(), l2.getReplyToAccountId());
 
     assertEquals(2, service.findArticle(article.getArticleId()).get().getDebateCount());
-    Debate l3 = service.debate(zoneInfo.getZone(),
-        article.getArticleId(),
-        l2.getDebateId(),
-        debater,
-        "no no no");
+    Debate l3 = service.debate(article.getArticleId(), l2.getDebateId(), debater, "no no no");
 
     assertEquals(3, l3.getLevel());
     assertTrue(l3.hasParent());
@@ -367,8 +344,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     Debate l1 = savedDebate(article, "reply to my article", null);
     assertEquals(asList(l1), service.listReplyToDebates(citizen, null));
 
-    Debate authorReply = service.debate(zoneInfo.getZone(),
-        article.getArticleId(),
+    Debate authorReply = service.debate(article.getArticleId(),
         Debate.NO_PARENT,
         citizen,
         "article author reply self is ignored");
@@ -383,18 +359,10 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   @Test
   public void listDebatesByDebater() throws Exception {
     assertEquals(0, service.listDebatesByDebater(citizen.getUsername(), null).size());
-    Debate l1 = service.debate(zoneInfo.getZone(),
-        article.getArticleId(),
-        Debate.NO_PARENT,
-        citizen,
-        "debate 1");
+    Debate l1 = service.debate(article.getArticleId(), Debate.NO_PARENT, citizen, "debate 1");
 
     Article article2 = savedArticle(zoneInfo, citizen, "another article");
-    Debate l2 = service.debate(zoneInfo.getZone(),
-        article2.getArticleId(),
-        Debate.NO_PARENT,
-        citizen,
-        "debate 2");
+    Debate l2 = service.debate(article2.getArticleId(), Debate.NO_PARENT, citizen, "debate 2");
 
     assertEquals(asList(l2, l1), service.listDebatesByDebater(citizen.getUsername(), null));
     assertEquals(asList(l1), service.listDebatesByDebater(citizen.getUsername(), l2.getDebateId()));
@@ -406,11 +374,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     Article article = savedArticle(zoneRequireCitizen, citizen, "fun-no1");
     Account tourist = savedAccountTourist("notActivated");
     try {
-      service.debate(zoneRequireCitizen.getZone(),
-          article.getArticleId(),
-          Debate.NO_PARENT,
-          tourist,
-          "pixel art is better");
+      service.debate(article.getArticleId(), Debate.NO_PARENT, tourist, "pixel art is better");
       fail("AccessDeniedException expected");
     } catch (AccessDeniedException expected) {
     }
@@ -565,7 +529,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         "title1",
         "http://foo.com");
 
-    service.debate(touristZone.getZone(), article.getArticleId(), null, tourist, "test article");
+    service.debate(article.getArticleId(), null, tourist, "test article");
     AccountStats stats = accountService.loadAccountStats(tourist.getUsername());
     assertEquals(0, stats.getArticleCount());
     assertEquals(0, stats.getDebateCount());
@@ -632,11 +596,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void loadEditableDebate() throws Exception {
-    Debate d1 = service.debate(zoneInfo.getZone(),
-        article.getArticleId(),
-        Debate.NO_PARENT,
-        citizen,
-        "> a quote");
+    Debate d1 = service.debate(article.getArticleId(), Debate.NO_PARENT, citizen, "> a quote");
     String content = service.loadEditableDebateContent(d1.getDebateId(), citizen);
     assertEquals("&gt; a quote", content);
   }

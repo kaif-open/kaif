@@ -157,7 +157,7 @@ class AccountService extends _AbstractService {
 
   Future createAccount(String username, String email, String password) {
     var json = {
-        'username':username, 'email':email, 'password':password
+      'username':username, 'email':email, 'password':password
     };
     return _putJson(_getUrl('/'), json)
     .then((res) => null);
@@ -165,7 +165,7 @@ class AccountService extends _AbstractService {
 
   Future<bool> isNameAvailable(String username) {
     var params = {
-        'username':username
+      'username':username
     };
     return _get(_getUrl('/name-available'), params:params)
     .then(_mapToSingleWrapper);
@@ -173,7 +173,7 @@ class AccountService extends _AbstractService {
 
   Future<bool> isEmailAvailable(String email) {
     var params = {
-        'email':email
+      'email':email
     };
     return _get(_getUrl('/email-available'), params:params)
     .then(_mapToSingleWrapper);
@@ -187,7 +187,7 @@ class AccountService extends _AbstractService {
 
   Future newsFeedAcknowledge(String assetId) {
     var json = {
-        'assetId':assetId
+      'assetId':assetId
     };
     return _postJson(_getUrl('/news-feed-acknowledge'), json)
     .then((res) => null);
@@ -195,7 +195,7 @@ class AccountService extends _AbstractService {
 
   Future<AccountAuth> authenticate(String username, String password) {
     var json = {
-        'username':username, 'password':password
+      'username':username, 'password':password
     };
     return _postJson(_getUrl('/authenticate'), json)
     .then((req) => JSON.decode(req.responseText))
@@ -209,7 +209,7 @@ class AccountService extends _AbstractService {
 
   Future updatePasswordWithToken(String token, String password) {
     var json = {
-        'token':token, 'password':password
+      'token':token, 'password':password
     };
     return _postJson(_getUrl('/update-password-with-token'), json)
     .then((req) => null);
@@ -217,7 +217,7 @@ class AccountService extends _AbstractService {
 
   Future<AccountAuth> updateNewPassword(String oldPassword, String newPassword) {
     var json = {
-        'oldPassword':oldPassword, 'newPassword':newPassword
+      'oldPassword':oldPassword, 'newPassword':newPassword
     };
     return _postJson(_getUrl('/update-new-password'), json)
     .then((req) => JSON.decode(req.responseText))
@@ -226,7 +226,7 @@ class AccountService extends _AbstractService {
 
   Future sendResetPassword(String username, String email) {
     var json = {
-        'username':username, 'email':email
+      'username':username, 'email':email
     };
     return _postJson(_getUrl('/send-reset-password'), json)
     .then((req) => null);
@@ -234,7 +234,7 @@ class AccountService extends _AbstractService {
 
   Future<String> updateDescription(String description) {
     var json = {
-        'description':description
+      'description':description
     };
     return _postJson(_getUrl('/description'), json)
     .then((req) => req.responseText);
@@ -247,10 +247,16 @@ class AccountService extends _AbstractService {
 
   Future<String> previewDescription(String description) {
     var json = {
-        'description':description
+      'description':description
     };
     return _putJson(_getUrl('/description/preview'), json)
     .then((req) => req.responseText);
+  }
+
+  Future<String> createOauthDirectAuthorizeToken() async {
+    var json = {
+    };
+    return _mapToSingleWrapper(await _putJson(_getUrl('/oauth-direct-authorize-token'), json));
   }
 }
 
@@ -263,7 +269,7 @@ class ArticleService extends _AbstractService {
 
   Future createExternalLink(String zone, String url, String title) {
     var json = {
-        'zone':zone, 'url':url, 'title':title
+      'zone':zone, 'url':url, 'title':title
     };
     return _putJson(_getUrl('/external-link'), json)
     .then((res) => null);
@@ -271,7 +277,7 @@ class ArticleService extends _AbstractService {
 
   Future createSpeak(String zone, String content, String title) {
     var json = {
-        'zone':zone, 'content':content, 'title':title
+      'zone':zone, 'content':content, 'title':title
     };
     return _putJson(_getUrl('/speak'), json)
     .then((res) => null);
@@ -279,7 +285,7 @@ class ArticleService extends _AbstractService {
 
   Future<String> previewDebateContent(String content) {
     var json = {
-        'content':content
+      'content':content
     };
     return _putJson(_getUrl('/debate/content/preview'), json)
     .then((req) => req.responseText);
@@ -287,7 +293,7 @@ class ArticleService extends _AbstractService {
 
   Future<String> loadEditableDebate(String debateId) {
     var params = {
-        'debateId':debateId
+      'debateId':debateId
     };
     return _get(_getUrl('/debate/content'), params:params)
     .then((req) => req.responseText);
@@ -295,7 +301,7 @@ class ArticleService extends _AbstractService {
 
   Future<String> updateDebateContent(String debateId, String content) {
     var json = {
-        'debateId':debateId, 'content':content
+      'debateId':debateId, 'content':content
     };
     return _postJson(_getUrl('/debate/content'), json)
     .then((req) => req.responseText);
@@ -304,10 +310,10 @@ class ArticleService extends _AbstractService {
   /**
    * return created debateId
    */
-  Future<String> debate(String zone, String articleId, String parentDebateId, String content) {
+  Future<String> debate(String articleId, String parentDebateId, String content) {
     String parent = isStringBlank(parentDebateId) ? null : parentDebateId;
     var json = {
-        'zone':zone, 'articleId':articleId, 'parentDebateId':parent, 'content':content
+      'articleId':articleId, 'parentDebateId':parent, 'content':content
     };
     return _putJson(_getUrl('/debate'), json)
     .then(_mapToSingleWrapper);
@@ -315,7 +321,7 @@ class ArticleService extends _AbstractService {
 
   Future<bool> canCreateArticle(String zone) {
     var params = {
-        'zone':zone
+      'zone':zone
     };
     return _get(_getUrl('/can-create'), params:params)
     .then(_mapToSingleWrapper);
@@ -329,11 +335,11 @@ class VoteService extends _AbstractService {
 
   String _getUrl(String path) => '/api/vote$path';
 
-  Future voteArticle(VoteState newState, String zone, String articleId,
+  Future voteArticle(VoteState newState, String articleId,
                      VoteState previousState, int previousCount) {
     var json = {
-        'newState':newState, 'zone':zone, 'articleId':articleId,
-        'previousState':previousState, 'previousCount':previousCount
+      'newState':newState, 'articleId':articleId,
+      'previousState':previousState, 'previousCount':previousCount
     };
     return _postJson(_getUrl('/article'), json)
     .then((res) => null);
@@ -341,7 +347,7 @@ class VoteService extends _AbstractService {
 
   Future<List<ArticleVoter>> listArticleVoters(List<String> articleIds) {
     var params = {
-        'articleIds':articleIds
+      'articleIds':articleIds
     };
     return _get(_getUrl('/article-voters'), params:params)
     .then((req) => JSON.decode(req.responseText))
@@ -350,18 +356,18 @@ class VoteService extends _AbstractService {
 
   Future<List<DebateVoter>> listDebateVotersByIds(List<String> debateIds) {
     var params = {
-        'debateIds':debateIds
+      'debateIds':debateIds
     };
     return _get(_getUrl('/debate-voters-by-ids'), params:params)
     .then((req) => JSON.decode(req.responseText))
     .then((List<Map> list) => list.map((raw) => new DebateVoter.decode(raw)).toList());
   }
 
-  Future voteDebate(VoteState newState, String zone, String articleId, String debateId,
+  Future voteDebate(VoteState newState, String debateId,
                     VoteState previousState, int previousCount) {
     var json = {
-        'newState':newState, 'zone':zone, 'articleId':articleId, 'debateId':debateId,
-        'previousState':previousState, 'previousCount':previousCount
+      'newState':newState, 'debateId':debateId,
+      'previousState':previousState, 'previousCount':previousCount
     };
     return _postJson(_getUrl('/debate'), json)
     .then((res) => null);
@@ -369,11 +375,56 @@ class VoteService extends _AbstractService {
 
   Future<List<DebateVoter>> listDebateVoters(String articleId) {
     var params = {
-        'articleId':articleId
+      'articleId':articleId
     };
 
     return _get(_getUrl('/debate-voters'), params:params)
     .then((req) => JSON.decode(req.responseText))
     .then((List<Map> list) => list.map((raw) => new DebateVoter.decode(raw)).toList());
+  }
+}
+
+class ClientAppService extends _AbstractService {
+
+  ClientAppService(ServerType serverType,
+                   accessTokenProvider accessTokenProvider)
+  : super(serverType, accessTokenProvider);
+
+  String _getUrl(String path) => '/api/client-app$path';
+
+  Future<String> create(String name, String description, String callbackUri) async {
+    var json = {
+      'name':name,
+      'description':description,
+      'callbackUri':callbackUri
+    };
+    return _mapToSingleWrapper(await _putJson(_getUrl('/create'), json));
+  }
+
+  Future<String> update(String clientId, String name, String description,
+                        String callbackUri) async {
+    var json = {
+      'clientId':clientId,
+      'name':name,
+      'description':description,
+      'callbackUri':callbackUri
+    };
+    await _postJson(_getUrl('/update'), json);
+    return null;
+  }
+
+  Future revoke(String clientId) async {
+    var json = {
+      'clientId':clientId,
+    };
+    await _postJson(_getUrl('/revoke'), json);
+    return null;
+  }
+
+  Future<String> generateDebugAccessToken(String clientId) async {
+    var json = {
+      'clientId':clientId,
+    };
+    return _mapToSingleWrapper(await _postJson(_getUrl('/generate-debug-access-token'), json));
   }
 }

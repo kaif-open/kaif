@@ -1,5 +1,6 @@
 package io.kaif.model.debate;
 
+import java.sql.Date;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,6 +15,7 @@ import io.kaif.model.account.Account;
 import io.kaif.model.account.Authorization;
 import io.kaif.model.article.Article;
 import io.kaif.model.zone.Zone;
+import io.kaif.web.v1.dto.V1DebateDto;
 
 public class Debate {
 
@@ -237,6 +239,20 @@ public class Debate {
         newDownVote,
         createTime,
         lastUpdateTime);
+  }
+
+  public V1DebateDto toV1Dto() {
+    return new V1DebateDto(articleId.toString(),
+        debateId.toString(),
+        zone.value(),
+        hasParent() ? parentDebateId.toString() : null,
+        level,
+        content,
+        debaterName,
+        upVote,
+        downVote,
+        Date.from(createTime),
+        Date.from(lastUpdateTime));
   }
 
   public Zone getZone() {

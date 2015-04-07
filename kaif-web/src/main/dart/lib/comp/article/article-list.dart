@@ -99,6 +99,6 @@ class ArticleVoteBox extends Votable {
 
   Future onVote(VoteState newState, VoteState previousState, int previousCount) {
     return articleComp.voteService.voteArticle(
-        newState, articleComp.zone, articleComp.articleId, previousState, previousCount);
+        newState, articleComp.articleId, previousState, previousCount);
   }
 }

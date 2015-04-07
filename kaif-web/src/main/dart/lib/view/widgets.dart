@@ -59,7 +59,8 @@ class _NoneLoading implements Loading {
 
   Element get _el => null;
 
-  void set _timer(_) {}
+  void set _timer(_) {
+  }
 
   Timer get _timer => null;
 
@@ -195,10 +196,10 @@ class FlashToast {
 
   FlashToast._(String message, String type, int seconds) {
     window.sessionStorage[_STORAGE_KEY] = JSON.encode({
-        'message' : message,
-        'type': type,
-        'seconds': seconds,
-        'createTime': new DateTime.now().millisecondsSinceEpoch
+      'message' : message,
+      'type': type,
+      'seconds': seconds,
+      'createTime': new DateTime.now().millisecondsSinceEpoch
     });
   }
 
@@ -291,5 +292,40 @@ class Alert {
 
   void hide() {
     _safeHtmlElem.classes.toggle('hidden', true);
+  }
+}
+
+/**
+ *
+ * requirement:
+ *
+ * <a href="#abc" data-toggle="tab">Abc</a>
+ *
+ * <div id="abc" class="tab-pane">
+ *   ...
+ * </div>
+ */
+class Tabs {
+
+  List<Element> _tabPanes;
+
+  Tabs(Element parent) {
+    var togglers = parent.querySelectorAll('[data-toggle=tab]').toList();
+    _tabPanes = togglers.map((toggler) => toggler.hash).map((
+        href) => parent.querySelector(href)).toList();
+
+    togglers.forEach((AnchorElement toggler) {
+      toggler.onClick.listen((event) {
+        _activeTabPane(toggler.hash);
+      });
+    });
+    _activeTabPane(route.currentHash);
+  }
+
+  void _activeTabPane(String hash) {
+    if (isStringBlank(hash)) {
+      return;
+    }
+    _tabPanes.forEach((el) => el.classes.toggle('active', "#${el.id}" == hash));
   }
 }

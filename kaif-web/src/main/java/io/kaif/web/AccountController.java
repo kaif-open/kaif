@@ -20,11 +20,13 @@ import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.AccountOnceToken;
 import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleList;
+import io.kaif.model.clientapp.ClientApp;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.feed.FeedAsset;
 import io.kaif.model.feed.NewsFeed;
 import io.kaif.service.AccountService;
 import io.kaif.service.ArticleService;
+import io.kaif.service.ClientAppService;
 import io.kaif.service.FeedService;
 import io.kaif.service.VoteService;
 
@@ -37,10 +39,15 @@ public class AccountController {
 
   @Autowired
   private ArticleService articleService;
+
   @Autowired
   private FeedService feedService;
+
   @Autowired
   private VoteService voteService;
+
+  @Autowired
+  private ClientAppService clientAppService;
 
   @RequestMapping("/sign-up")
   public ModelAndView signUp() {
@@ -73,6 +80,17 @@ public class AccountController {
   public ModelAndView settingsPart(AccountAccessToken accountAccessToken) {
     Account account = accountService.findMe(accountAccessToken).orElse(null);
     return new ModelAndView("account/settings.part").addObject("account", account);
+  }
+
+  @RequestMapping("/client-app")
+  public String clientApp() {
+    return "account/account";
+  }
+
+  @RequestMapping("/client-app.part")
+  public ModelAndView clientAppPart(AccountAccessToken accountAccessToken) {
+    List<ClientApp> clientApps = clientAppService.listGrantedApps(accountAccessToken);
+    return new ModelAndView("account/client-app.part").addObject("clientApps", clientApps);
   }
 
   @RequestMapping("/news-feed")

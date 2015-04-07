@@ -9,8 +9,15 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.kaif.config.SwaggerConfiguration;
 import io.kaif.flake.FlakeId;
 
+/**
+ * auto convert flakeId from string.
+ * <p>
+ * if you add more auto conversion for types, consider add it to {@link
+ * SwaggerConfiguration#alternativeTypeRules()}
+ */
 @ControllerAdvice(annotations = { RestController.class, Controller.class })
 public class WebDataBinderAdvice {
   public static class FlakeIdPropertyEditor extends PropertyEditorSupport {

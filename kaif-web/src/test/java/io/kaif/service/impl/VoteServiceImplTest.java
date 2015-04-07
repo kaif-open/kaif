@@ -82,12 +82,12 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     Account tourist = savedAccountTourist("no_permit");
 
     try {
-      service.voteArticle(UP, zone, articleId, tourist, EMPTY, 100);
+      service.voteArticle(UP, articleId, tourist, EMPTY, 100);
       fail("AccessDeniedException expected");
     } catch (AccessDeniedException expected) {
     }
     try {
-      service.voteDebate(UP, zone, articleId, debateId, tourist, EMPTY, 100);
+      service.voteDebate(UP, debateId, tourist, EMPTY, 100);
       fail("AccessDeniedException expected");
     } catch (AccessDeniedException expected) {
     }
@@ -96,7 +96,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   @Test
   public void articleNotAllowDownVote() throws Exception {
     try {
-      service.voteArticle(DOWN, zone, articleId, voter, EMPTY, 100);
+      service.voteArticle(DOWN, articleId, voter, EMPTY, 100);
       fail("IllegalArgumentException expected");
     } catch (IllegalArgumentException expected) {
     }
@@ -106,9 +106,9 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   public void listArticleVoters() throws Exception {
     assertEquals(0, service.listArticleVoters(voter, Collections.emptyList()).size());
 
-    service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
+    service.voteArticle(UP, articleId, voter, EMPTY, 100);
     Article a2 = savedArticle(zoneInfo, savedAccountCitizen("author2"), "title vote");
-    service.voteArticle(UP, zone, a2.getArticleId(), voter, EMPTY, 200);
+    service.voteArticle(UP, a2.getArticleId(), voter, EMPTY, 200);
 
     Set<FlakeId> actual = service.listArticleVoters(voter, asList(articleId, a2.getArticleId()))
         .stream()
@@ -119,7 +119,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void upVoteArticle() throws Exception {
-    service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
+    service.voteArticle(UP, articleId, voter, EMPTY, 100);
 
     assertArticleTotalVote(1);
     assertArticleRotateVoteStats(1);
@@ -140,8 +140,8 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     assertEquals(0, service.listUpVotedArticles(voter, null).size());
     savedArticle(zoneInfo, savedAccountCitizen("other2"), "not voted");
     Article a3 = savedArticle(zoneInfo, savedAccountCitizen("other3"), "title 3");
-    service.voteArticle(UP, zone, a3.getArticleId(), voter, EMPTY, 100);
-    service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
+    service.voteArticle(UP, a3.getArticleId(), voter, EMPTY, 100);
+    service.voteArticle(UP, articleId, voter, EMPTY, 100);
 
     assertEquals(asList(a3, article), service.listUpVotedArticles(voter, null));
     assertEquals(asList(article), service.listUpVotedArticles(voter, a3.getArticleId()));
@@ -149,15 +149,15 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void upVoteArticle_ignore_duplicate() throws Exception {
-    service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
-    service.voteArticle(UP, zone, articleId, voter, UP, 100);
+    service.voteArticle(UP, articleId, voter, EMPTY, 100);
+    service.voteArticle(UP, articleId, voter, UP, 100);
     assertArticleTotalVote(1);
     assertArticleRotateVoteStats(1);
   }
 
   @Test
   public void cancelVoteArticle_no_effect_if_not_exist() throws Exception {
-    service.voteArticle(EMPTY, zone, articleId, voter, EMPTY, 10);
+    service.voteArticle(EMPTY, articleId, voter, EMPTY, 10);
     assertArticleTotalVote(0);
     assertArticleRotateVoteStats(0);
 
@@ -167,9 +167,9 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void upVoteArticle_allow_on_canceled_vote() throws Exception {
-    service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
-    service.voteArticle(EMPTY, zone, articleId, voter, UP, 20);
-    service.voteArticle(UP, zone, articleId, voter, EMPTY, 102);
+    service.voteArticle(UP, articleId, voter, EMPTY, 100);
+    service.voteArticle(EMPTY, articleId, voter, UP, 20);
+    service.voteArticle(UP, articleId, voter, EMPTY, 102);
 
     assertArticleTotalVote(1);
     assertArticleRotateVoteStats(1);
@@ -188,13 +188,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
     Account tourist = savedAccountTourist("guest-a");
     Article testArticle = savedArticle(zoneTourist, tourist, "test article");
     Debate testDebate = savedDebate(testArticle, "foo", null);
-    service.voteDebate(UP,
-        z,
-        testArticle.getArticleId(),
-        testDebate.getDebateId(),
-        tourist,
-        EMPTY,
-        100);
+    service.voteDebate(UP, testDebate.getDebateId(), tourist, EMPTY, 100);
 
     Debate changedDebate = debateDao.findDebate(testDebate.getDebateId()).get();
     assertEquals(0, changedDebate.getDownVote());
@@ -207,7 +201,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void articleSelfVoteDoNotCountInRotateScore() throws Exception {
-    service.voteArticle(UP, zone, articleId, author, EMPTY, 100);
+    service.voteArticle(UP, articleId, author, EMPTY, 100);
     Article changed = articleDao.findArticle(articleId).get();
     assertEquals(1, changed.getUpVote());
     AccountStats stats = accountDao.loadStats(author.getUsername());
@@ -220,7 +214,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void debateSelfVoteDoNotCountInTotalVote() throws Exception {
-    service.voteDebate(UP, zone, articleId, debateId, debater, EMPTY, 20);
+    service.voteDebate(UP, debateId, debater, EMPTY, 20);
 
     AccountStats stats = accountDao.loadStats(debater.getUsername());
     assertEquals(0, stats.getDebateDownVoted());
@@ -234,8 +228,8 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void cancelVoteArticle() throws Exception {
-    service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
-    service.voteArticle(EMPTY, zone, articleId, voter, UP, 0);
+    service.voteArticle(UP, articleId, voter, EMPTY, 100);
+    service.voteArticle(EMPTY, articleId, voter, UP, 0);
     assertArticleTotalVote(0);
 
     List<ArticleVoter> votes = service.listArticleVoters(voter, asList(articleId));
@@ -247,18 +241,18 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void cancelVoteArticle_twice() throws Exception {
-    service.voteArticle(UP, zone, articleId, voter, EMPTY, 100);
-    service.voteArticle(EMPTY, zone, articleId, voter, UP, 100);
-    service.voteArticle(EMPTY, zone, articleId, voter, EMPTY, 100);
+    service.voteArticle(UP, articleId, voter, EMPTY, 100);
+    service.voteArticle(EMPTY, articleId, voter, UP, 100);
+    service.voteArticle(EMPTY, articleId, voter, EMPTY, 100);
     assertEquals(0, articleDao.findArticle(articleId).get().getUpVote());
   }
 
   @Test
   public void voteDebate_ignore_duplicate() throws Exception {
-    service.voteDebate(UP, zone, articleId, debateId, voter, EMPTY, 20);
+    service.voteDebate(UP, debateId, voter, EMPTY, 20);
     assertDebateTotalVote(1, 0);
     assertDebateRotateVoteStats(1, 0);
-    service.voteDebate(UP, zone, articleId, debateId, voter, UP, 20);
+    service.voteDebate(UP, debateId, voter, UP, 20);
     assertDebateTotalVote(1, 0);
     assertDebateRotateVoteStats(1, 0);
     assertEquals(UP, service.listDebateVoters(voter, articleId).get(0).getVoteState());
@@ -268,10 +262,10 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   public void listDebateVotersByIds() throws Exception {
     assertEquals(0, service.listDebateVotersByIds(voter, Collections.emptyList()).size());
 
-    service.voteDebate(UP, zone, articleId, debateId, voter, EMPTY, 20);
+    service.voteDebate(UP, debateId, voter, EMPTY, 20);
     Article a2 = savedArticle(zoneInfo, author, "another article");
     Debate d2 = savedDebate(a2, "foo", null);
-    service.voteDebate(UP, zone, a2.getArticleId(), d2.getDebateId(), voter, EMPTY, 20);
+    service.voteDebate(UP, d2.getDebateId(), voter, EMPTY, 20);
     List<DebateVoter> debateVoters = service.listDebateVotersByIds(voter,
         asList(debateId, d2.getDebateId()));
     assertEquals(2, debateVoters.size());
@@ -281,7 +275,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void upVoteDebate() throws Exception {
-    service.voteDebate(UP, zone, articleId, debateId, voter, EMPTY, 20);
+    service.voteDebate(UP, debateId, voter, EMPTY, 20);
 
     assertDebateTotalVote(1, 0);
     assertDebateRotateVoteStats(1, 0);
@@ -298,7 +292,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void cancelVoteDebate_no_change_if_not_exist() throws Exception {
-    service.voteDebate(EMPTY, zone, articleId, debateId, voter, EMPTY, 0);
+    service.voteDebate(EMPTY, debateId, voter, EMPTY, 0);
 
     assertDebateTotalVote(0, 0);
     assertDebateRotateVoteStats(0, 0);
@@ -308,11 +302,11 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void voteDebate_not_allow_wrong_previous_state() throws Exception {
-    service.voteDebate(DOWN, zone, articleId, debateId, voter, EMPTY, 20);
+    service.voteDebate(DOWN, debateId, voter, EMPTY, 20);
 
     //wrong previous state:
     try {
-      service.voteDebate(EMPTY, zone, articleId, debateId, voter, UP, 0);
+      service.voteDebate(EMPTY, debateId, voter, UP, 0);
       fail("DuplicateKeyException expected");
     } catch (DuplicateKeyException expected) {
     }
@@ -321,9 +315,9 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void voteDebate_up_then_cancel() throws Exception {
-    service.voteDebate(UP, zone, articleId, debateId, voter, EMPTY, 20);
+    service.voteDebate(UP, debateId, voter, EMPTY, 20);
 
-    service.voteDebate(EMPTY, zone, articleId, debateId, voter, UP, 0);
+    service.voteDebate(EMPTY, debateId, voter, UP, 0);
 
     assertDebateTotalVote(0, 0);
     assertDebateRotateVoteStats(0, 0);
@@ -335,7 +329,7 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void downVoteDebate() throws Exception {
-    service.voteDebate(DOWN, zone, articleId, debateId, voter, EMPTY, 20);
+    service.voteDebate(DOWN, debateId, voter, EMPTY, 20);
     assertDebateTotalVote(0, 1);
     assertDebateRotateVoteStats(0, 1);
 
@@ -348,9 +342,9 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void debate_upVote_then_downVote() throws Exception {
-    service.voteDebate(UP, zone, articleId, debateId, voter, EMPTY, 20);
+    service.voteDebate(UP, debateId, voter, EMPTY, 20);
 
-    service.voteDebate(DOWN, zone, articleId, debateId, voter, UP, 49);
+    service.voteDebate(DOWN, debateId, voter, UP, 49);
     assertDebateTotalVote(0, 1);
     assertDebateRotateVoteStats(0, 1);
 
@@ -364,23 +358,23 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   public void debateVoteChain_up_down_up_cancel_down() throws Exception {
     assertDebateTotalVote(0, 0);
 
-    service.voteDebate(UP, zone, articleId, debateId, voter, EMPTY, 20);
+    service.voteDebate(UP, debateId, voter, EMPTY, 20);
     assertDebateTotalVote(1, 0);
     assertDebateRotateVoteStats(1, 0);
 
-    service.voteDebate(DOWN, zone, articleId, debateId, voter, UP, 49);
+    service.voteDebate(DOWN, debateId, voter, UP, 49);
     assertDebateTotalVote(0, 1);
     assertDebateRotateVoteStats(0, 1);
 
-    service.voteDebate(UP, zone, articleId, debateId, voter, DOWN, 30);
+    service.voteDebate(UP, debateId, voter, DOWN, 30);
     assertDebateTotalVote(1, 0);
     assertDebateRotateVoteStats(1, 0);
 
-    service.voteDebate(EMPTY, zone, articleId, debateId, voter, UP, 0);
+    service.voteDebate(EMPTY, debateId, voter, UP, 0);
     assertDebateTotalVote(0, 0);
     assertDebateRotateVoteStats(0, 0);
 
-    service.voteDebate(DOWN, zone, articleId, debateId, voter, EMPTY, 90);
+    service.voteDebate(DOWN, debateId, voter, EMPTY, 90);
     assertDebateTotalVote(0, 1);
     assertDebateRotateVoteStats(0, 1);
 

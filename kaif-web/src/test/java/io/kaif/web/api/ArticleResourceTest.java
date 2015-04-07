@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 
 import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
+import io.kaif.model.article.Article;
 import io.kaif.model.zone.Zone;
 import io.kaif.test.MvcIntegrationTests;
 
@@ -61,7 +62,7 @@ public class ArticleResourceTest extends MvcIntegrationTests {
 
   @Test
   public void urlValidation() throws Exception {
-    Pattern pattern = Pattern.compile(ArticleResource.CreateExternalLink.URL_PATTERN);
+    Pattern pattern = Pattern.compile(Article.URL_PATTERN);
 
     // part of samples list in
     //   https://mathiasbynens.be/demo/url-regex

@@ -16,7 +16,6 @@ import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.Authorization;
 import io.kaif.model.vote.VoteState;
-import io.kaif.model.zone.Zone;
 import io.kaif.test.MvcIntegrationTests;
 
 public class VoteResourceTest extends MvcIntegrationTests {
@@ -30,12 +29,10 @@ public class VoteResourceTest extends MvcIntegrationTests {
     voteArticle.newState = VoteState.DOWN;
     voteArticle.previousCount = 100L;
     voteArticle.previousState = VoteState.EMPTY;
-    voteArticle.zone = Zone.valueOf("abc");
 
     Mockito.doThrow(new DuplicateKeyException("vote dup"))
         .when(voteService)
         .voteArticle(eq(VoteState.DOWN),
-            eq(Zone.valueOf("abc")),
             eq(FlakeId.fromString("a")),
             isA(Authorization.class),
             eq(VoteState.EMPTY),

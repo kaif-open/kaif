@@ -32,7 +32,8 @@ public class UtilConfiguration {
         listHotZonesCacheManager(),
         rssHotArticlesCacheManager(),
         honorRollsCacheManager(),
-        articleCacheManager());
+        articleCacheManager(),
+        findClientAppUserCacheManager());
   }
 
   @Bean
@@ -76,6 +77,22 @@ public class UtilConfiguration {
         .expireAfterWrite(1, TimeUnit.HOURS)
         .maximumSize(100);
     GuavaCacheManager cacheManager = new GuavaCacheManager("listHotZones");
+    cacheManager.setCacheBuilder(cacheBuilder);
+    return cacheManager;
+  }
+
+  /**
+   * short life client app user cache (the cache is Optional<ClientAppUser>), so this is not
+   * distribute-able
+   *
+   * @see {@link io.kaif.model.clientapp.ClientAppDao#findClientAppUserWithCache}
+   */
+  @Bean
+  public CacheManager findClientAppUserCacheManager() {
+    CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
+        .expireAfterWrite(1, TimeUnit.MINUTES)
+        .maximumSize(1000);
+    GuavaCacheManager cacheManager = new GuavaCacheManager("findClientAppUser");
     cacheManager.setCacheBuilder(cacheBuilder);
     return cacheManager;
   }

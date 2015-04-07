@@ -5,7 +5,6 @@ import 'package:kaif_web/model.dart';
 import 'debate_comp.dart';
 import 'dart:async';
 import '../server_part_loader.dart';
-import 'package:kaif_web/util.dart';
 
 class DebateList {
 

@@ -28,14 +28,19 @@ import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 
 import freemarker.template.TemplateModelException;
 import io.kaif.service.AccountService;
+import io.kaif.service.ClientAppService;
 import io.kaif.web.AccountAccessTokenArgumentResolver;
 import io.kaif.web.support.RelativeTime;
+import io.kaif.web.v1.ClientAppUserAccessTokenArgumentResolver;
 
 @Configuration
 public class WebConfiguration extends WebMvcConfigurerAdapter {
 
   @Autowired
   private AccountService accountService;
+
+  @Autowired
+  private ClientAppService clientAppService;
 
   @Autowired
   private freemarker.template.Configuration freeMarkerConfiguration;
@@ -88,6 +93,7 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
   @Override
   public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
     argumentResolvers.add(new AccountAccessTokenArgumentResolver(accountService));
+    argumentResolvers.add(new ClientAppUserAccessTokenArgumentResolver(clientAppService));
   }
 
   // change locale only enable in dev mode, see {@link #addInterceptors}

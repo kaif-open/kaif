@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import javax.annotation.concurrent.Immutable;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 
 import io.kaif.kmark.KmarkProcessor;
@@ -46,6 +47,10 @@ public class Account implements Authorization {
         && username.length() <= NAME_MAX
         && username.matches(NAME_PATTERN)
         && !username.equalsIgnoreCase("null");
+  }
+
+  public static String renderDescriptionPreview(String description) {
+    return KmarkProcessor.process(description);
   }
 
   private final String username;
@@ -92,13 +97,13 @@ public class Account implements Authorization {
     return createTime;
   }
 
-  public Set<Authority> getAuthorities() {
-    return authorities;
-  }
-
   /**
    * do not include password hash in toString
    */
+
+  public Set<Authority> getAuthorities() {
+    return authorities;
+  }
 
   /**
    * equals and hashCode use `username` instead of accountId for easier testing.
@@ -180,11 +185,18 @@ public class Account implements Authorization {
     return description;
   }
 
-  public static String renderDescriptionPreview(String description) {
-    return KmarkProcessor.process(description);
-  }
-
   public String getEscapedDescription() {
     return KmarkProcessor.escapeHtml(description);
+  }
+
+  @VisibleForTesting
+  public Account withPasswordHash(String newPasswordHash) {
+    return new Account(accountId,
+        username,
+        email,
+        newPasswordHash,
+        description,
+        createTime,
+        authorities);
   }
 }
