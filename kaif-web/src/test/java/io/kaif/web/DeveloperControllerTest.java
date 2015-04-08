@@ -3,6 +3,8 @@ package io.kaif.web;
 import static java.util.Arrays.asList;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import java.util.Optional;
@@ -20,6 +22,22 @@ public class DeveloperControllerTest extends MvcIntegrationTests {
   @Test
   public void clientApp() throws Exception {
     mockMvc.perform(get("/developer/client-app")).andExpect(view().name("developer/client-app"));
+  }
+
+  @Test
+  public void doc() throws Exception {
+    mockMvc.perform(get("/developer/doc")).andExpect(view().name("developer/doc"));
+  }
+
+  @Test
+  public void root() throws Exception {
+    mockMvc.perform(get("/developer"))
+        .andExpect(status().isTemporaryRedirect())
+        .andExpect(redirectedUrl("/developer/doc"));
+
+    mockMvc.perform(get("/developer/"))
+        .andExpect(status().isTemporaryRedirect())
+        .andExpect(redirectedUrl("/developer/doc"));
   }
 
   @Test
