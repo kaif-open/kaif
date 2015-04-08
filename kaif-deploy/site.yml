@@ -80,7 +80,7 @@
               return 301 https://kaif.io$request_uri;
             }
         kaif_www:
-          - listen 443 ssl
+          - listen 443 ssl spdy
           - server_name www.kaif.io
           - return 301 https://kaif.io$request_uri
         kaif:
