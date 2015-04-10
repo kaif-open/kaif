@@ -70,9 +70,17 @@
         kaif_80:
           - listen 80
           - server_name .kaif.io
-          - return 301 https://kaif.io$request_uri
+          - location ~ ^/v1.+ {
+              deny all;
+            }
+          - location ~ ^/oauth.+ {
+              deny all;
+            }
+          - location / {
+              return 301 https://kaif.io$request_uri;
+            }
         kaif_www:
-          - listen 443 ssl
+          - listen 443 ssl spdy
           - server_name www.kaif.io
           - return 301 https://kaif.io$request_uri
         kaif:

@@ -16,6 +16,9 @@ import 'package:kaif_web/comp/short_url.dart';
 import 'package:kaif_web/comp/zone/zone_form.dart';
 import 'dart:html';
 import 'dart:async';
+import 'package:kaif_web/comp/developer/developer_client_app.dart';
+import 'package:kaif_web/comp/oauth/oauth_authorize_form.dart';
+import 'package:kaif_web/comp/account/granted_client_app.dart';
 
 final ServerType serverType = new ServerType();
 
@@ -39,6 +42,7 @@ class AppModule {
   ArticleService articleService;
   ZoneService zoneService;
   VoteService voteService;
+  ClientAppService clientAppService;
   PartService partService;
   ServerPartLoader serverPartLoader;
   NewsFeedNotification newsFeedNotification;
@@ -52,6 +56,7 @@ class AppModule {
     accountService = new AccountService(serverType, accessTokenProvider);
     articleService = new ArticleService(serverType, accessTokenProvider);
     voteService = new VoteService(serverType, accessTokenProvider);
+    clientAppService = new ClientAppService(serverType, accessTokenProvider);
     zoneService = new ZoneService(serverType, accessTokenProvider);
     partService = new PartService(serverType, accessTokenProvider);
     newsFeedNotification = new NewsFeedNotification(accountService, accountSession, newsFeedDao);
@@ -97,6 +102,15 @@ class AppModule {
     });
     parent.querySelectorAll('[short-url-input]').forEach((el) {
       new ShortUrlInput(el);
+    });
+    parent.querySelectorAll('[oauth-authorize-form]').forEach((el) {
+      new OauthAuthorizeForm(el, accountSession, accountService);
+    });
+    parent.querySelectorAll('[developer-client-app]').forEach((el) {
+      new DeveloperClientApp(el, clientAppService);
+    });
+    parent.querySelectorAll('[granted-client-app]').forEach((el) {
+      new GrantedClientApp(el, clientAppService);
     });
 
     parent.querySelectorAll('[zone-form]').forEach((el) {

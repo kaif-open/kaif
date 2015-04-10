@@ -20,6 +20,7 @@
     <@spring.messageText 'account-menu.settings' 'Settings'/>
 </#assign>
     <@util.menuLink '/account/settings' settingsName/>
+    <@util.menuLink '/account/client-app' '授權的應用程式'/>
 </nav>
 
 <div class="grid">

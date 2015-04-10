@@ -2,6 +2,7 @@ package io.kaif.model.article;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Date;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -16,6 +17,8 @@ import io.kaif.flake.FlakeId;
 import io.kaif.kmark.KmarkProcessor;
 import io.kaif.model.account.Account;
 import io.kaif.model.zone.Zone;
+import io.kaif.web.v1.dto.V1ArticleDto;
+import io.kaif.web.v1.dto.V1ArticleType;
 
 public class Article {
 
@@ -26,6 +29,9 @@ public class Article {
   public static final int URL_MAX = 512;
   public static final int CONTENT_MIN = 10;
   public static final int CONTENT_MAX = 4096;
+
+  //p{L} is unicode letter
+  public static final String URL_PATTERN = "^(https?|ftp)://[\\p{L}\\w\\-]+\\.[\\p{L}\\w\\-]+.*";
 
   public static Article createSpeak(Zone zone,
       String zoneAliasName,
@@ -249,6 +255,20 @@ public class Article {
     } else {
       return "/z/" + zone;
     }
+  }
+
+  public V1ArticleDto toV1Dto() {
+    return new V1ArticleDto(zone.value(),
+        aliasName,
+        articleId.toString(),
+        title,
+        link,
+        content,
+        isExternalLink() ? V1ArticleType.EXTERNAL_LINK : V1ArticleType.SPEAK,
+        Date.from(createTime),
+        authorName,
+        upVote,
+        debateCount);
   }
 
   /**

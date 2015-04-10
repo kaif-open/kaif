@@ -200,4 +200,9 @@ public class AccountResource {
     return accountService.loadEditableDescription(token);
   }
 
+  @RequestMapping(value = "/oauth-direct-authorize-token", method = RequestMethod.PUT)
+  public SingleWrapper<String> createOauthDirectAuthorizeToken(AccountAccessToken accountAccessToken) {
+    return SingleWrapper.of(accountService.createOauthDirectAuthorizeToken(accountAccessToken)
+        .getToken());
+  }
 }

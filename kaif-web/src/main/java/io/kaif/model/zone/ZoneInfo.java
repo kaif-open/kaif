@@ -13,6 +13,7 @@ import com.google.common.collect.ImmutableList;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.Authority;
 import io.kaif.model.account.Authorization;
+import io.kaif.web.v1.dto.V1ZoneDto;
 
 /**
  * Although authorities has lots of combination, but valid cases are:
@@ -312,5 +313,8 @@ public class ZoneInfo {
     return "/z/" + zone;
   }
 
+  public V1ZoneDto toV1Dto() {
+    return new V1ZoneDto(getName(), getAliasName());
+  }
 }
 

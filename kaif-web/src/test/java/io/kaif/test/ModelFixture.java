@@ -10,6 +10,7 @@ import io.kaif.model.KaifIdGenerator;
 import io.kaif.model.account.Account;
 import io.kaif.model.account.Authority;
 import io.kaif.model.article.Article;
+import io.kaif.model.clientapp.ClientApp;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.feed.FeedAsset;
 import io.kaif.model.vote.HonorRoll;
@@ -108,6 +109,14 @@ public interface ModelFixture extends TimeFixture {
         author,
         title,
         title + "-content",
+        Instant.now());
+  }
+
+  default ClientApp clientApp(Account creator, String name) {
+    return ClientApp.create(creator.getAccountId(),
+        name,
+        name + "-desc",
+        "test://" + name,
         Instant.now());
   }
 }

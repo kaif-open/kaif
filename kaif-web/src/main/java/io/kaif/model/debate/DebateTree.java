@@ -1,6 +1,10 @@
 package io.kaif.model.debate;
 
+import static java.util.stream.Collectors.*;
+
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Stream;
 
@@ -8,6 +12,8 @@ import javax.annotation.concurrent.Immutable;
 
 import io.kaif.rank.SortingNode;
 import io.kaif.rank.WilsonScore;
+import io.kaif.web.v1.dto.V1DebateDto;
+import io.kaif.web.v1.dto.V1DebateNodeDto;
 
 @Immutable
 public final class DebateTree {
@@ -66,6 +72,17 @@ public final class DebateTree {
         .orElseGet(() -> scoreCalc.applyAsDouble(null));
   }
 
+  private static V1DebateNodeDto deepDto(SortingNode<Debate> node) {
+    V1DebateDto currentDto = Optional.ofNullable(node.getValue()).map(Debate::toV1Dto).orElse(null);
+    if (!node.hasChild()) {
+      return new V1DebateNodeDto(currentDto, Collections.emptyList());
+    }
+    List<V1DebateNodeDto> childDto = node.getChildren()
+        .stream()
+        .map(DebateTree::deepDto)
+        .collect(toList());
+    return new V1DebateNodeDto(currentDto, childDto);
+  }
   private final SortingNode<Debate> node;
 
   public DebateTree(SortingNode<Debate> node) {
@@ -120,4 +137,7 @@ public final class DebateTree {
     return node.depthFirst();
   }
 
+  public V1DebateNodeDto toV1Dto() {
+    return deepDto(node);
+  }
 }

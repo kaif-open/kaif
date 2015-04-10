@@ -131,10 +131,7 @@ class DebateForm {
 
     var loading = new Loading.small()
       ..renderAfter(submit);
-    _articleService.debate(zone,
-    articleId,
-    parentDebateId,
-    _contentInput.value)
+    _articleService.debate(articleId, parentDebateId, _contentInput.value)
     .then((String debateId) {
       _contentInput.value = '';
       if (reloadWhenSubmit) {

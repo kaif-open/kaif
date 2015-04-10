@@ -25,6 +25,7 @@ import io.kaif.model.account.AccountStats;
 import io.kaif.model.account.Authority;
 import io.kaif.model.account.Authorization;
 import io.kaif.model.exception.OldPasswordNotMatchException;
+import io.kaif.model.exception.RequireCitizenException;
 import io.kaif.test.DbIntegrationTests;
 import io.kaif.web.support.AccessDeniedException;
 
@@ -171,6 +172,35 @@ public class AccountServiceImplTest extends DbIntegrationTests {
     assertFalse("expired token should invalid", service.activate(token.getToken()));
     Account loaded = accountDao.findById(account.getAccountId()).get();
     assertFalse(loaded.isActivated());
+  }
+
+  @Test
+  public void oauthDirectAuthorizeToken() throws Exception {
+    Account account = savedAccountCitizen("oauthTest");
+    AccountOnceToken token = service.createOauthDirectAuthorizeToken(account);
+    assertTrue(service.oauthDirectAuthorize(token.getToken()).isPresent());
+    assertFalse("consumed token should be invalid",
+        service.oauthDirectAuthorize(token.getToken()).isPresent());
+  }
+
+  @Test
+  public void oauthDirectAuthorizeToken_skip_expired() throws Exception {
+    Account account = savedAccountCitizen("oauthTest");
+    service.setClock(Clock.offset(Clock.systemDefaultZone(), Duration.ofHours(-2)));
+    AccountOnceToken token = service.createOauthDirectAuthorizeToken(account);
+    service.setClock(Clock.systemDefaultZone());
+    assertFalse("expired token should be invalid",
+        service.oauthDirectAuthorize(token.getToken()).isPresent());
+  }
+
+  @Test
+  public void oauthDirectAuthorizeToken_requireCitizen() throws Exception {
+    Account tourist = savedAccountTourist("badOauthTest");
+    try {
+      service.createOauthDirectAuthorizeToken(tourist);
+      fail("RequireCitizenException expected");
+    } catch (RequireCitizenException expected) {
+    }
   }
 
   @Test

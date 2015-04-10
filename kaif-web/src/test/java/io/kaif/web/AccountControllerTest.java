@@ -19,6 +19,7 @@ import io.kaif.model.account.Account;
 import io.kaif.model.account.AccountAccessToken;
 import io.kaif.model.account.Authorization;
 import io.kaif.model.article.Article;
+import io.kaif.model.clientapp.ClientApp;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.feed.FeedAsset;
 import io.kaif.model.zone.Zone;
@@ -54,6 +55,22 @@ public class AccountControllerTest extends MvcIntegrationTests {
   @Test
   public void settings() throws Exception {
     mockMvc.perform(get("/account/settings")).andExpect(view().name("account/account"));
+  }
+
+  @Test
+  public void clientApp() throws Exception {
+    mockMvc.perform(get("/account/client-app")).andExpect(view().name("account/account"));
+  }
+
+  @Test
+  public void clientAppPart() throws Exception {
+    Account account = accountTourist("foo");
+    String token = prepareAccessToken(account);
+    ClientApp app1 = clientApp(account, "app1");
+    when(clientAppService.listGrantedApps(isA(AccountAccessToken.class))).thenReturn(asList(app1));
+    mockMvc.perform(get("/account/client-app.part").header(AccountAccessToken.HEADER_KEY, token))
+        .andExpect(view().name("account/client-app.part"))
+        .andExpect(containsText("app1"));
   }
 
   @Test

@@ -22,8 +22,7 @@ public interface ArticleService {
 
   Optional<Article> findArticle(FlakeId articleId);
 
-  Debate debate(Zone zone,
-      FlakeId articleId,
+  Debate debate(FlakeId articleId,
       @Nullable FlakeId parentDebateId,
       Authorization debater,
       String content);

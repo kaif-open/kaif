@@ -252,6 +252,12 @@ class AccountService extends _AbstractService {
     return _putJson(_getUrl('/description/preview'), json)
     .then((req) => req.responseText);
   }
+
+  Future<String> createOauthDirectAuthorizeToken() async {
+    var json = {
+    };
+    return _mapToSingleWrapper(await _putJson(_getUrl('/oauth-direct-authorize-token'), json));
+  }
 }
 
 class ArticleService extends _AbstractService {
@@ -304,10 +310,10 @@ class ArticleService extends _AbstractService {
   /**
    * return created debateId
    */
-  Future<String> debate(String zone, String articleId, String parentDebateId, String content) {
+  Future<String> debate(String articleId, String parentDebateId, String content) {
     String parent = isStringBlank(parentDebateId) ? null : parentDebateId;
     var json = {
-      'zone':zone, 'articleId':articleId, 'parentDebateId':parent, 'content':content
+      'articleId':articleId, 'parentDebateId':parent, 'content':content
     };
     return _putJson(_getUrl('/debate'), json)
     .then(_mapToSingleWrapper);
@@ -329,10 +335,10 @@ class VoteService extends _AbstractService {
 
   String _getUrl(String path) => '/api/vote$path';
 
-  Future voteArticle(VoteState newState, String zone, String articleId,
+  Future voteArticle(VoteState newState, String articleId,
                      VoteState previousState, int previousCount) {
     var json = {
-      'newState':newState, 'zone':zone, 'articleId':articleId,
+      'newState':newState, 'articleId':articleId,
       'previousState':previousState, 'previousCount':previousCount
     };
     return _postJson(_getUrl('/article'), json)
@@ -357,10 +363,10 @@ class VoteService extends _AbstractService {
     .then((List<Map> list) => list.map((raw) => new DebateVoter.decode(raw)).toList());
   }
 
-  Future voteDebate(VoteState newState, String zone, String articleId, String debateId,
+  Future voteDebate(VoteState newState, String debateId,
                     VoteState previousState, int previousCount) {
     var json = {
-      'newState':newState, 'zone':zone, 'articleId':articleId, 'debateId':debateId,
+      'newState':newState, 'debateId':debateId,
       'previousState':previousState, 'previousCount':previousCount
     };
     return _postJson(_getUrl('/debate'), json)
@@ -375,6 +381,51 @@ class VoteService extends _AbstractService {
     return _get(_getUrl('/debate-voters'), params:params)
     .then((req) => JSON.decode(req.responseText))
     .then((List<Map> list) => list.map((raw) => new DebateVoter.decode(raw)).toList());
+  }
+}
+
+class ClientAppService extends _AbstractService {
+
+  ClientAppService(ServerType serverType,
+                   accessTokenProvider accessTokenProvider)
+  : super(serverType, accessTokenProvider);
+
+  String _getUrl(String path) => '/api/client-app$path';
+
+  Future<String> create(String name, String description, String callbackUri) async {
+    var json = {
+      'name':name,
+      'description':description,
+      'callbackUri':callbackUri
+    };
+    return _mapToSingleWrapper(await _putJson(_getUrl('/create'), json));
+  }
+
+  Future<String> update(String clientId, String name, String description,
+                        String callbackUri) async {
+    var json = {
+      'clientId':clientId,
+      'name':name,
+      'description':description,
+      'callbackUri':callbackUri
+    };
+    await _postJson(_getUrl('/update'), json);
+    return null;
+  }
+
+  Future revoke(String clientId) async {
+    var json = {
+      'clientId':clientId,
+    };
+    await _postJson(_getUrl('/revoke'), json);
+    return null;
+  }
+
+  Future<String> generateDebugAccessToken(String clientId) async {
+    var json = {
+      'clientId':clientId,
+    };
+    return _mapToSingleWrapper(await _postJson(_getUrl('/generate-debug-access-token'), json));
   }
 }
 

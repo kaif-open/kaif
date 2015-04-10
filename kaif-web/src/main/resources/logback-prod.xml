@@ -36,6 +36,17 @@
         </encoder>
     </appender>
 
+    <appender name="OAUTH" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${catalina.base}/logs/oauth.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>90</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>utf-8</charset>
+            <Pattern>%d %-5level [%thread] %logger{0}: %msg%n</Pattern>
+        </encoder>
+    </appender>
+
     <logger name="io.kaif" level="DEBUG"/>
 
     <logger name="io.kaif.web.AwsSnsRestController" level="DEBUG">
@@ -44,6 +55,10 @@
 
     <logger name="io.kaif.mail" level="INFO">
         <appender-ref ref="MAIL"/>
+    </logger>
+
+    <logger name="io.kaif.web.OauthController" level="INFO">
+        <appender-ref ref="OAUTH"/>
     </logger>
 
     <logger name="javax.activation" level="WARN"/>
