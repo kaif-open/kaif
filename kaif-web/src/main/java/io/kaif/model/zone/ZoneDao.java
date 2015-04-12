@@ -119,12 +119,13 @@ public class ZoneDao implements DaoOperations {
     return jdbc().query(" SELECT * FROM ZoneInfo ORDER BY zone ", zoneInfoMapper);
   }
 
-  public List<ZoneInfo> listZoneAdmins(UUID accountId) {
+  public List<ZoneInfo> listZonesByAdmin(UUID accountId) {
     return jdbc().query(
         " SELECT ZoneInfo.* FROM ZoneAdmin "
             + "  LEFT OUTER JOIN ZoneInfo "
             + "               ON (ZoneAdmin.zone = ZoneInfo.zone) "
-            + "            WHERE accountId = ? ",
+            + "            WHERE accountId = ? "
+            + "         ORDER BY ZoneInfo.zone ",
         zoneInfoMapper, accountId);
   }
 }

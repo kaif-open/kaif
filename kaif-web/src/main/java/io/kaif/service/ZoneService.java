@@ -27,6 +27,8 @@ public interface ZoneService {
   ZoneInfo createByUser(String zone, String aliasName, Authorization admin) throws
       CreditNotEnoughException;
 
+  List<ZoneInfo> listAdministerZones(String username);
+
   boolean isZoneAvailable(String zone);
 
   boolean canCreateZone(Authorization authorization);

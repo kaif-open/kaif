@@ -117,6 +117,12 @@ public class ZoneServiceImpl implements ZoneService {
   }
 
   @Override
+  public List<ZoneInfo> listAdministerZones(String username) {
+    Account account = accountDao.loadByUsername(username);
+    return zoneDao.listZonesByAdmin(account.getAccountId());
+  }
+
+  @Override
   public boolean isZoneAvailable(String zone) {
     return Zone.validateReserveZone(zone)
         && ZoneInfo.validateReserveWord(zone)
@@ -139,7 +145,7 @@ public class ZoneServiceImpl implements ZoneService {
 
   private Try<Account> verifyCredit(Account account) {
     return Try.apply(() -> {
-      int zones = zoneDao.listZoneAdmins(account.getAccountId()).size();
+      int zones = zoneDao.listZonesByAdmin(account.getAccountId()).size();
       if (zones >= MAX_AVAILABLE_ZONE) {
         throw new CreditNotEnoughException();
       }

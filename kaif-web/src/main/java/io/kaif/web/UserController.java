@@ -21,9 +21,11 @@ import io.kaif.model.article.ArticleList;
 import io.kaif.model.debate.Debate;
 import io.kaif.model.debate.DebateList;
 import io.kaif.model.vote.HonorRoll;
+import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.AccountService;
 import io.kaif.service.ArticleService;
 import io.kaif.service.HonorRollService;
+import io.kaif.service.ZoneService;
 
 @Controller
 public class UserController {
@@ -33,6 +35,9 @@ public class UserController {
 
   @Autowired
   private ArticleService articleService;
+
+  @Autowired
+  private ZoneService zoneService;
 
   @Autowired
   private HonorRollService honorRollService;
@@ -46,8 +51,11 @@ public class UserController {
       return redirectView;
     }
     AccountStats accountStats = accountService.loadAccountStats(account.getUsername());
+    List<ZoneInfo> zones = zoneService.listAdministerZones(account.getUsername());
     return new ModelAndView("account/user-profile")//
-        .addObject("account", account).addObject("accountStats", accountStats);
+        .addObject("account", account)
+        .addObject("accountStats", accountStats)
+        .addObject("administerZones", zones);
   }
 
   @RequestMapping("/u/{username}/articles")

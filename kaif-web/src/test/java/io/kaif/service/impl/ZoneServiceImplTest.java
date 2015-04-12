@@ -165,7 +165,7 @@ public class ZoneServiceImplTest extends DbIntegrationTests {
     assertFalse(loaded.isHideFromTop());
     assertEquals(citizen.getAccountId(), loaded.getAdminAccountIds().get(0));
 
-    List<ZoneInfo> zones = zoneDao.listZoneAdmins(citizen.getAccountId());
+    List<ZoneInfo> zones = zoneDao.listZonesByAdmin(citizen.getAccountId());
     assertEquals(zoneInfo, zones.get(0));
   }
 
@@ -235,6 +235,20 @@ public class ZoneServiceImplTest extends DbIntegrationTests {
     assertTrue(service.isZoneAvailable("aaa"));
     savedZoneDefault("aaa");
     assertFalse(service.isZoneAvailable("aaa"));
+  }
+
+  @Test
+  public void listAdministerZones() {
+    assertTrue(service.listAdministerZones(citizen.getUsername()).isEmpty());
+
+    accountDao.changeTotalVotedDebate(citizen.getAccountId(), 30, 0);
+    ZoneInfo bZone = service.createByUser("bbb1", "this is aaa1", citizen);
+    ZoneInfo aZone = service.createByUser("aaa2", "this is aaa2", citizen);
+
+    List<ZoneInfo> administerZones = service.listAdministerZones(citizen.getUsername());
+    assertEquals(2, administerZones.size());
+    assertEquals(aZone, administerZones.get(0));
+    assertEquals(bZone, administerZones.get(1));
   }
 
 }
