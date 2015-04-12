@@ -25,7 +25,10 @@ head=headContent
 
                 <div class="aside-card-box">
                     <ul>
-                        <li>未定</li>
+                        <li>英文名一律小寫，可用 - 減號隔開，3 到 20 字</li>
+                        <li>中文名 4 到 10 字為宜</li>
+                        <li>禁止腥色羶類型的討論區</li>
+                        <li>待補充...</li>
                     </ul>
                 </div>
             </div>
@@ -42,11 +45,11 @@ head=headContent
         <input id="zoneInput"
                class="pure-input-1"
                type="text"
-               placeholder="英文字、dash(-)隔開、3~20 個字"
+               placeholder="英文字小寫、dash(-)隔開、3~20 個字"
                maxlength="20"
                pattern="${zonePattern}"
                required
-               title="英文字、dash(-)隔開、3~20 個字必填">
+               title="英文字小寫、dash(-)隔開、3~20 個字必填">
     </div>
 
     <div class="pure-control-group">
