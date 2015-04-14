@@ -12,9 +12,10 @@ class ZoneForm {
   SubmitButtonInputElement submitElem;
   TextInputElement zoneInput;
   TextInputElement aliasNameInput;
+  bool canCreateZone = false;
 
   ZoneForm(this.elem, this.zoneService, AccountSession accountSession) {
-    alert = new Alert.append(elem);
+    alert = new Alert.append(elem.querySelector('[zone-form-alert]'));
     submitElem = elem.querySelector('[type=submit]');
     elem.onSubmit.listen(_onSubmit);
 
@@ -27,7 +28,7 @@ class ZoneForm {
         return;
       }
       zoneService.isZoneAvailable(partial).then((available) {
-        submitElem.disabled = !available;
+        _tryToggleSubmit(enable:available);
         String hintText = available ? 'zone.available' : 'zone.zone-already-taken';
         _showHint(i18n(hintText), ok:available);
       });
@@ -52,11 +53,20 @@ class ZoneForm {
 
   void _checkCanCreateZone() {
     zoneService.canCreateZone().then((ok) {
-      submitElem.disabled = !ok;
+      canCreateZone = ok;
+      _tryToggleSubmit(enable:true);
       elem.querySelector('[can-not-create-zone-hint]').classes.toggle('hidden', ok);
     }).catchError((e) {
       alert.renderError('$e');
     });
+  }
+
+  void _tryToggleSubmit({bool enable}) {
+    if (canCreateZone) {
+      submitElem.disabled = !enable;
+    } else {
+      submitElem.disabled = true;
+    }
   }
 
   void _onSubmit(Event e) {
@@ -70,7 +80,7 @@ class ZoneForm {
 
     TextInputElement urlInput = elem.querySelector('#urlInput');
 
-    submitElem.disabled = true;
+    _tryToggleSubmit(enable:false);
     var loading = new Loading.small()
       ..renderAfter(submitElem);
     String zone = zoneInput.value;
@@ -81,7 +91,7 @@ class ZoneForm {
     }).catchError((e) {
       alert.renderError('${e}');
     }).whenComplete(() {
-      submitElem.disabled = false;
+      _tryToggleSubmit(enable:true);
       loading.remove();
     });
   }

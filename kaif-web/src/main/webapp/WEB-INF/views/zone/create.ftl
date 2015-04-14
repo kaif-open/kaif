@@ -80,6 +80,8 @@ head=headContent
     </div>
 
     <p></p>
+    <div class="pure-controls" zone-form-alert>
+    </div>
 
     <div class="pure-controls hidden" can-not-create-zone-hint>
         <div class="alert alert-warning">
