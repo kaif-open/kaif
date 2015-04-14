@@ -49,11 +49,12 @@ public class ZoneControllerTest extends MvcIntegrationTests {
 
     when(articleService.listHotZoneArticles(z, FlakeId.fromString("123456"))).thenReturn(//
         asList(article1, article2));
-
+    when(zoneService.listAdministratorsWithCache(z)).thenReturn(asList("admin1", "admin2"));
     mockMvc.perform(get("/z/programming?start=123456"))
         .andExpect(content().string(containsString("/snapshot/css/z-theme-default.css")))
         .andExpect(content().string(containsString("programming-alias")))
         .andExpect(content().string(containsString("php-lang")))
+        .andExpect(content().string(containsString("admin1")))
         .andExpect(content().string(containsString("href=\"/z/programming?start=phpone\"")));
   }
 

@@ -33,7 +33,8 @@ public class UtilConfiguration {
         rssHotArticlesCacheManager(),
         honorRollsCacheManager(),
         articleCacheManager(),
-        findClientAppUserCacheManager());
+        findClientAppUserCacheManager(),
+        listAdministratorsCacheManager());
   }
 
   @Bean
@@ -75,8 +76,22 @@ public class UtilConfiguration {
   public CacheManager listHotZonesCacheManager() {
     CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
         .expireAfterWrite(1, TimeUnit.HOURS)
-        .maximumSize(100);
+        .maximumSize(1000);
     GuavaCacheManager cacheManager = new GuavaCacheManager("listHotZones");
+    cacheManager.setCacheBuilder(cacheBuilder);
+    return cacheManager;
+  }
+
+  /**
+   * administrators cache, refresh every one minutes. no need to distribute if we have multiple
+   * web servers (user just not see new administrators)
+   */
+  @Bean
+  public CacheManager listAdministratorsCacheManager() {
+    CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
+        .expireAfterWrite(1, TimeUnit.MINUTES)
+        .maximumSize(1000);
+    GuavaCacheManager cacheManager = new GuavaCacheManager("listAdministrators");
     cacheManager.setCacheBuilder(cacheBuilder);
     return cacheManager;
   }

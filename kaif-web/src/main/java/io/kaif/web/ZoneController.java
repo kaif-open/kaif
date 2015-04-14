@@ -46,12 +46,8 @@ public class ZoneController {
       @RequestParam(value = "start", required = false) FlakeId startArticleId,
       HttpServletRequest request) throws IOException {
     return resolveZone(request, rawZone, zoneInfo -> {
-      return new ModelAndView("zone/zone-page")//
-          .addObject("zoneInfo", zoneInfo)
-          .addObject("recommendZones", zoneService.listRecommendZones())
-          .addObject("articleList",
-              new ArticleList(articleService.listHotZoneArticles(zoneInfo.getZone(),
-                  startArticleId)));
+      return new ZonePageModelView(zoneInfo, zoneService).addObject("articleList",
+          new ArticleList(articleService.listHotZoneArticles(zoneInfo.getZone(), startArticleId)));
     });
   }
 
@@ -101,12 +97,9 @@ public class ZoneController {
       @RequestParam(value = "start", required = false) FlakeId startArticleId,
       HttpServletRequest request) {
     return resolveZone(request, rawZone, zoneInfo -> {
-      return new ModelAndView("zone/zone-page")//
-          .addObject("zoneInfo", zoneInfo)
-          .addObject("recommendZones", zoneService.listRecommendZones())
-          .addObject("articleList",
-              new ArticleList(articleService.listLatestZoneArticles(zoneInfo.getZone(),
-                  startArticleId)));
+      return new ZonePageModelView(zoneInfo, zoneService).addObject("articleList",
+          new ArticleList(articleService.listLatestZoneArticles(zoneInfo.getZone(),
+              startArticleId)));
     });
   }
 
@@ -120,10 +113,8 @@ public class ZoneController {
       List<Article> articles = articleService.listArticlesByDebatesWithCache(debates.stream()
           .map(Debate::getDebateId)
           .collect(Collectors.toList()));
-      return new ModelAndView("zone/zone-page")//
-          .addObject("zoneInfo", zoneInfo)
-          .addObject("recommendZones", zoneService.listRecommendZones())
-          .addObject("debateList", new DebateList(debates, articles));
+      return new ZonePageModelView(zoneInfo, zoneService).addObject("debateList",
+          new DebateList(debates, articles));
     });
   }
 
@@ -138,9 +129,17 @@ public class ZoneController {
   public Object zoneHonors(@PathVariable("zone") String rawZone, HttpServletRequest request) {
     return resolveZone(request,
         rawZone,
-        zoneInfo -> new ModelAndView("/zone/zone-page").addObject("zoneInfo", zoneInfo)
-            .addObject("recommendZones", zoneService.listRecommendZones())
-            .addObject("honorRolls", honorRollService.listHonorRollsByZone(zoneInfo.getZone())));
+        zoneInfo -> new ZonePageModelView(zoneInfo, zoneService).addObject("honorRolls",
+            honorRollService.listHonorRollsByZone(zoneInfo.getZone())));
+  }
+
+  static class ZonePageModelView extends ModelAndView {
+    public ZonePageModelView(ZoneInfo zoneInfo, ZoneService zoneService) {
+      super("/zone/zone-page");
+      addObject("zoneInfo", zoneInfo);
+      addObject("recommendZones", zoneService.listRecommendZones());
+      addObject("administrators", zoneService.listAdministratorsWithCache(zoneInfo.getZone()));
+    }
   }
 
   @RequestMapping("/{zone}/debates/{articleId}")

@@ -59,6 +59,26 @@
 </div>
 </#macro>
 
+<#-- data is username -->
+<#macro administrators data>
+<div class="aside-card aside-user-list">
+    <h4>版主群</h4>
+
+    <div class="aside-card-box">
+        <ul>
+            <#list data as username>
+                <li>
+                    <a class="plain" href="/u/${username}">
+                        /u/${username}
+                    </a>
+                </li>
+            </#list>
+        </ul>
+    </div>
+</div>
+</#macro>
+
+
 <#-- data can be Debate or Article -->
 <#macro shortUrl data>
 <div class="aside-card aside-short-url">

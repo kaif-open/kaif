@@ -249,4 +249,13 @@ public class ZoneServiceImplTest extends DbIntegrationTests {
     assertEquals(bZone, administerZones.get(1));
   }
 
+  @Test
+  public void listAdministrators() {
+    Zone zone = Zone.valueOf("foo");
+    assertTrue(service.listAdministratorsWithCache(zone).isEmpty());
+    accountDao.changeTotalVotedDebate(citizen.getAccountId(), 30, 0);
+    service.createByUser("foo", "this is aaa2", citizen);
+    List<String> administerNames = service.listAdministratorsWithCache(zone);
+    assertEquals(asList(citizen.getUsername()), administerNames);
+  }
 }

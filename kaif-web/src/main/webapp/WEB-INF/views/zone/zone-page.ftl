@@ -47,6 +47,7 @@ applyZoneTheme=true
             <@aside.createArticle />
             <@aside.recommendZones zoneInfos=recommendZones />
             <@aside.rss/>
+            <@aside.administrators data=administrators/>
         </aside>
     </div>
 

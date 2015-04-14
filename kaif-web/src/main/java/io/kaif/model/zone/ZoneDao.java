@@ -52,6 +52,7 @@ public class ZoneDao implements DaoOperations {
     return namedParameterJdbcTemplate;
   }
 
+  @CacheEvict(value = "listAdministrators", key = "#a0.zone")
   public ZoneInfo create(ZoneInfo zoneInfo) {
     jdbc().update(""
             + " INSERT "
@@ -123,5 +124,16 @@ public class ZoneDao implements DaoOperations {
         + "   LEFT OUTER JOIN ZoneInfo ON (ZoneAdmin.zone = ZoneInfo.zone) "
         + "  WHERE accountId = ? "
         + "  ORDER BY ZoneInfo.zone ", zoneInfoMapper, accountId);
+  }
+
+  @Cacheable("listAdministrators")
+  public List<String> listAdministratorsWithCache(Zone zone) {
+    //TODO evict if we can add new administrators
+    return jdbc().query(""
+        + " SELECT Account.username "
+        + "   FROM Account "
+        + "   JOIN ZoneAdmin ON (ZoneAdmin.accountId = Account.accountId) "
+        + "  WHERE zone = ? "
+        + "  ORDER BY Account.username ", (rs, n) -> rs.getString("username"), zone.value());
   }
 }

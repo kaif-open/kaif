@@ -32,4 +32,6 @@ public interface ZoneService {
   boolean isZoneAvailable(String zone);
 
   boolean canCreateZone(Authorization authorization);
+
+  List<String> listAdministratorsWithCache(Zone zone);
 }

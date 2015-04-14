@@ -133,6 +133,14 @@ public class ZoneServiceImpl implements ZoneService {
     return verifyAuthority(authorization).flatMap(this::verifyCredit).isSuccess();
   }
 
+  /**
+   * @return username of administrators
+   */
+  @Override
+  public List<String> listAdministratorsWithCache(Zone zone) {
+    return zoneDao.listAdministratorsWithCache(zone);
+  }
+
   private Try<Account> verifyAuthority(Authorization authorization) {
     // won't compile if put `supplier` inline
     Supplier<Account> supplier = () -> accountDao.strongVerifyAccount(authorization)
