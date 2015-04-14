@@ -43,7 +43,7 @@ head=headContent>
             </div>
         </div>
         <aside class="grid-aside">
-           <@aside.createZone />
+            <@aside.createZone />
         </aside>
     </div>
 

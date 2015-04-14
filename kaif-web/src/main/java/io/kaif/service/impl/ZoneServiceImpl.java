@@ -104,8 +104,8 @@ public class ZoneServiceImpl implements ZoneService {
   }
 
   @Override
-  public ZoneInfo createByUser(String zone, String aliasName, Authorization creator) throws
-      CreditNotEnoughException {
+  public ZoneInfo createByUser(String zone, String aliasName, Authorization creator)
+      throws CreditNotEnoughException {
 
     Account account = verifyAuthority(creator).flatMap(this::verifyCredit).get();
 

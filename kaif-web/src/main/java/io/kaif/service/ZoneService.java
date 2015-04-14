@@ -24,8 +24,8 @@ public interface ZoneService {
 
   List<ZoneInfo> listCitizenZones();
 
-  ZoneInfo createByUser(String zone, String aliasName, Authorization admin) throws
-      CreditNotEnoughException;
+  ZoneInfo createByUser(String zone, String aliasName, Authorization admin)
+      throws CreditNotEnoughException;
 
   List<ZoneInfo> listAdministerZones(String username);
 

@@ -77,19 +77,16 @@ public class ZoneDao implements DaoOperations {
   private void createZoneAdmin(ZoneInfo zoneInfo) {
     List<Object[]> batchArgs = zoneInfo.getAdminAccountIds()
         .stream()
-        .map(uuid -> new Object[] {
-            uuid,
-            zoneInfo.getName(),
+        .map(uuid -> new Object[] { uuid, zoneInfo.getName(),
             Timestamp.from(zoneInfo.getCreateTime()) })
         .collect(toList());
 
     jdbc().batchUpdate(""
-            + " INSERT "
-            + "   INTO ZoneAdmin "
-            + "        (accountId, zone, createTime) "
-            + " VALUES "
-            + questions(3),
-        batchArgs);
+        + " INSERT "
+        + "   INTO ZoneAdmin "
+        + "        (accountId, zone, createTime) "
+        + " VALUES "
+        + questions(3), batchArgs);
   }
 
   public ZoneInfo loadZoneWithoutCache(Zone zone) throws EmptyResultDataAccessException {
@@ -120,12 +117,11 @@ public class ZoneDao implements DaoOperations {
   }
 
   public List<ZoneInfo> listZonesByAdmin(UUID accountId) {
-    return jdbc().query(
-        " SELECT ZoneInfo.* FROM ZoneAdmin "
-            + "  LEFT OUTER JOIN ZoneInfo "
-            + "               ON (ZoneAdmin.zone = ZoneInfo.zone) "
-            + "            WHERE accountId = ? "
-            + "         ORDER BY ZoneInfo.zone ",
-        zoneInfoMapper, accountId);
+    return jdbc().query(""
+        + " SELECT ZoneInfo.* "
+        + "   FROM ZoneAdmin "
+        + "   LEFT OUTER JOIN ZoneInfo ON (ZoneAdmin.zone = ZoneInfo.zone) "
+        + "  WHERE accountId = ? "
+        + "  ORDER BY ZoneInfo.zone ", zoneInfoMapper, accountId);
   }
 }

@@ -40,6 +40,7 @@ class Decryptor {
       throw new RuntimeException("unsupported type of encryption: AES");
     }
   }
+
   private final Cipher decryptCipher;
   private final Key key;
 

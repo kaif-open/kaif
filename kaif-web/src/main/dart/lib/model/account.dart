@@ -23,10 +23,10 @@ class AccountAuth {
       new DateTime.fromMillisecondsSinceEpoch(raw['generateTime']));
 
   toJson() => {
-      'username':username,
-      'accessToken':accessToken,
-      'expireTime':expireTime.millisecondsSinceEpoch,
-      'generateTime':generateTime.millisecondsSinceEpoch
+    'username':username,
+    'accessToken':accessToken,
+    'expireTime':expireTime.millisecondsSinceEpoch,
+    'generateTime':generateTime.millisecondsSinceEpoch
   };
 
   bool isRequireExtends() {

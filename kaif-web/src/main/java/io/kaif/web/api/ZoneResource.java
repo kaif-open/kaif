@@ -69,8 +69,7 @@ public class ZoneResource {
 
   @RequestMapping(value = "/", method = RequestMethod.PUT, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
-  public void create(AccountAccessToken token,
-      @Valid @RequestBody CreateZone request) {
+  public void create(AccountAccessToken token, @Valid @RequestBody CreateZone request) {
     zoneService.createByUser(request.zone, request.aliasName, token);
   }
 

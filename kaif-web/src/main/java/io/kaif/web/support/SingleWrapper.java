@@ -51,6 +51,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonSerialize(using = SingleWrapperSerializer.class)
 public class SingleWrapper<T> {
 
+  private static final long serialVersionUID = 68220190832499715L;
+
   /**
    * wrapped value in "data" field
    * <p>
@@ -76,9 +78,6 @@ public class SingleWrapper<T> {
   public static <T> SingleWrapper<T> of(T value, String fieldName) {
     return new SingleWrapper<>(fieldName, value);
   }
-
-  private static final long serialVersionUID = 68220190832499715L;
-
   private final String fieldName;
 
   private final T value;

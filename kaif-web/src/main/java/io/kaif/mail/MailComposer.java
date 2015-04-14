@@ -27,24 +27,42 @@ import freemarker.template.TemplateModelException;
 @Component
 public class MailComposer {
 
+  /**
+   * see http://stackoverflow.com/a/16572888 for how to manually use ResourceBundle in freemarker
+   * template
+   */
+  public class FreemarkerMessageModel implements TemplateMethodModelEx {
+    private final MessageSource messageSource;
+    private final Locale locale;
+
+    public FreemarkerMessageModel(MessageSource messageSource, Locale locale) {
+      this.messageSource = messageSource;
+      this.locale = locale;
+    }
+
+    @Override
+    public Object exec(List arguments) throws TemplateModelException {
+      if (arguments.size() == 0) {
+        throw new TemplateModelException("Wrong number of arguments");
+      }
+      SimpleScalar simpleScalar = (SimpleScalar) arguments.get(0);
+      if (simpleScalar == null || Strings.isNullOrEmpty(simpleScalar.getAsString())) {
+        throw new TemplateModelException("Invalid code value '" + simpleScalar + "'");
+      }
+      @SuppressWarnings("unchecked")
+      Object[] args = arguments.stream().skip(1).map(Objects::toString).toArray(String[]::new);
+      return messageSource.getMessage(simpleScalar.getAsString(), args, locale);
+    }
+  }
   @Autowired
   private MessageSource messageSource;
-
   @Autowired
   private Configuration configuration;
-
   @Autowired
   private MailProperties mailProperties;
 
   public MailComposer() {
     //spring
-  }
-
-  public Mail createMail() {
-    Mail mail = new Mail();
-    mail.setFrom(mailProperties.getSenderAddress());
-    mail.setFromName(mailProperties.getSenderName());
-    return mail;
   }
 
   @VisibleForTesting
@@ -54,6 +72,13 @@ public class MailComposer {
     this.messageSource = messageSource;
     this.configuration = configuration;
     this.mailProperties = mailProperties;
+  }
+
+  public Mail createMail() {
+    Mail mail = new Mail();
+    mail.setFrom(mailProperties.getSenderAddress());
+    mail.setFromName(mailProperties.getSenderName());
+    return mail;
   }
 
   public String i18n(Locale locale, String key, Object... args) {
@@ -89,33 +114,5 @@ public class MailComposer {
     HashMap<String, Object> model = new HashMap<>();
     model.put("message", new FreemarkerMessageModel(messageSource, locale));
     return model;
-  }
-
-  /**
-   * see http://stackoverflow.com/a/16572888 for how to manually use ResourceBundle in freemarker
-   * template
-   */
-  public class FreemarkerMessageModel implements TemplateMethodModelEx {
-    private final MessageSource messageSource;
-    private final Locale locale;
-
-    public FreemarkerMessageModel(MessageSource messageSource, Locale locale) {
-      this.messageSource = messageSource;
-      this.locale = locale;
-    }
-
-    @Override
-    public Object exec(List arguments) throws TemplateModelException {
-      if (arguments.size() == 0) {
-        throw new TemplateModelException("Wrong number of arguments");
-      }
-      SimpleScalar simpleScalar = (SimpleScalar) arguments.get(0);
-      if (simpleScalar == null || Strings.isNullOrEmpty(simpleScalar.getAsString())) {
-        throw new TemplateModelException("Invalid code value '" + simpleScalar + "'");
-      }
-      @SuppressWarnings("unchecked")
-      Object[] args = arguments.stream().skip(1).map(Objects::toString).toArray(String[]::new);
-      return messageSource.getMessage(simpleScalar.getAsString(), args, locale);
-    }
   }
 }

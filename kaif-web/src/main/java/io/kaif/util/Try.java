@@ -5,31 +5,6 @@ import java.util.function.Supplier;
 
 public abstract class Try<T> {
 
-  private Try() {
-  }
-
-  public abstract boolean isSuccess();
-
-  public abstract boolean isFailure();
-
-  public abstract T get();
-
-  public abstract <U> Try<U> map(Function<? super T, ? extends U> mapper);
-
-  public abstract <U> Try<U> flatMap(Function<? super T, ? extends Try<U>> mapper);
-
-  public abstract Try<Exception> failed();
-
-  public abstract Try<T> orElse(Try<T> defaultValue);
-
-  public static <T> Try<T> apply(Supplier<T> supplier) {
-    try {
-      return new Success<>(supplier.get());
-    } catch (RuntimeException e) {
-      return new Failure<>(e);
-    }
-  }
-
   public static final class Success<T> extends Try<T> {
 
     private final T value;
@@ -122,4 +97,29 @@ public abstract class Try<T> {
       return defaultValue;
     }
   }
+
+  public static <T> Try<T> apply(Supplier<T> supplier) {
+    try {
+      return new Success<>(supplier.get());
+    } catch (RuntimeException e) {
+      return new Failure<>(e);
+    }
+  }
+
+  private Try() {
+  }
+
+  public abstract boolean isSuccess();
+
+  public abstract boolean isFailure();
+
+  public abstract T get();
+
+  public abstract <U> Try<U> map(Function<? super T, ? extends U> mapper);
+
+  public abstract <U> Try<U> flatMap(Function<? super T, ? extends Try<U>> mapper);
+
+  public abstract Try<Exception> failed();
+
+  public abstract Try<T> orElse(Try<T> defaultValue);
 }

@@ -144,7 +144,7 @@ class _WaitVoterState extends _VotableState {
     }
 
     if (trigger.voterReady != null) {
-      Voter voter = trigger.voterReady ;
+      Voter voter = trigger.voterReady;
       if (voter.voteState == VoteState.UP) {
         if (votable.currentCount <= voter.previousCount) {
           // web page is cached (counting is stale)

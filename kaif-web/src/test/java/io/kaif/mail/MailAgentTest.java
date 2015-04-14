@@ -1,18 +1,17 @@
 package io.kaif.mail;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
-import org.springframework.mail.MailException;
+import static org.mockito.Mockito.*;
 
 import java.time.Instant;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
-import io.kaif.model.account.Account;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.mail.MailException;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import io.kaif.model.account.Account;
 
 public class MailAgentTest extends MailTestCases {
 
