@@ -428,3 +428,35 @@ class ClientAppService extends _AbstractService {
     return _mapToSingleWrapper(await _postJson(_getUrl('/generate-debug-access-token'), json));
   }
 }
+
+class ZoneService extends _AbstractService {
+
+  ZoneService(ServerType serverType, accessTokenProvider _provider)
+  : super(serverType, _provider);
+
+  String _getUrl(String path) => '/api/zone$path';
+
+  Future<bool> canCreateZone() {
+    return _get(_getUrl('/can-create'))
+    .then(_mapToSingleWrapper);
+  }
+
+  Future<bool> isZoneAvailable(String zone) {
+    var params = {
+      'zone':zone
+    };
+    return _get(_getUrl('/zone-available'), params:params)
+    .then(_mapToSingleWrapper);
+  }
+
+  Future createZone(String zone, String aliasName) {
+    var json = {
+      'zone':zone,
+      'aliasName': aliasName
+    };
+    return _putJson(_getUrl('/'), json)
+    .then((res) => null);
+  }
+
+
+}

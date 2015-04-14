@@ -85,7 +85,7 @@ public abstract class DbIntegrationTests extends AbstractTransactionalJUnit4Spri
   }
 
   protected final ZoneInfo savedZoneTourist(String zone) {
-    return zoneDao.create(ZoneInfo.createTourist(zone, "allow tourist mutate", Instant.now()));
+    return zoneDao.create(ZoneInfo.createTourist(zone, "allow tourist", Instant.now()));
   }
 
   protected final Account savedAccountCitizen(String username) {

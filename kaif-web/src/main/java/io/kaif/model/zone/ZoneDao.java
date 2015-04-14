@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.*;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,7 @@ public class ZoneDao implements DaoOperations {
     return namedParameterJdbcTemplate;
   }
 
+  @CacheEvict(value = "listAdministrators", key = "#a0.zone")
   public ZoneInfo create(ZoneInfo zoneInfo) {
     jdbc().update(""
             + " INSERT "
@@ -68,13 +70,35 @@ public class ZoneDao implements DaoOperations {
         Timestamp.from(zoneInfo.getCreateTime()),
         createUuidArray(zoneInfo.getAdminAccountIds().stream()),
         zoneInfo.isHideFromTop());
+
+    createZoneAdmin(zoneInfo);
     return zoneInfo;
+  }
+
+  private void createZoneAdmin(ZoneInfo zoneInfo) {
+    List<Object[]> batchArgs = zoneInfo.getAdminAccountIds()
+        .stream()
+        .map(uuid -> new Object[] { uuid, zoneInfo.getName(),
+            Timestamp.from(zoneInfo.getCreateTime()) })
+        .collect(toList());
+
+    jdbc().batchUpdate(""
+        + " INSERT "
+        + "   INTO ZoneAdmin "
+        + "        (accountId, zone, createTime) "
+        + " VALUES "
+        + questions(3), batchArgs);
   }
 
   public ZoneInfo loadZoneWithoutCache(Zone zone) throws EmptyResultDataAccessException {
     return jdbc().queryForObject("SELECT * FROM ZoneInfo WHERE zone = ? ",
         zoneInfoMapper,
         zone.value());
+  }
+
+  public Optional<ZoneInfo> findZoneWithoutCache(Zone zone) {
+    final String sql = " SELECT * FROM ZoneInfo WHERE zone = ? LIMIT 1 ";
+    return jdbc().query(sql, zoneInfoMapper, zone.value()).stream().findAny();
   }
 
   //use argument `zone` as cache key
@@ -91,5 +115,25 @@ public class ZoneDao implements DaoOperations {
   public List<ZoneInfo> listOrderByName() {
     //do we need cache ? the data size is small enough, db should do well
     return jdbc().query(" SELECT * FROM ZoneInfo ORDER BY zone ", zoneInfoMapper);
+  }
+
+  public List<ZoneInfo> listZonesByAdmin(UUID accountId) {
+    return jdbc().query(""
+        + " SELECT ZoneInfo.* "
+        + "   FROM ZoneAdmin "
+        + "   LEFT OUTER JOIN ZoneInfo ON (ZoneAdmin.zone = ZoneInfo.zone) "
+        + "  WHERE accountId = ? "
+        + "  ORDER BY ZoneInfo.zone ", zoneInfoMapper, accountId);
+  }
+
+  @Cacheable("listAdministrators")
+  public List<String> listAdministratorsWithCache(Zone zone) {
+    //TODO evict if we can add new administrators
+    return jdbc().query(""
+        + " SELECT Account.username "
+        + "   FROM Account "
+        + "   JOIN ZoneAdmin ON (ZoneAdmin.accountId = Account.accountId) "
+        + "  WHERE zone = ? "
+        + "  ORDER BY Account.username ", (rs, n) -> rs.getString("username"), zone.value());
   }
 }

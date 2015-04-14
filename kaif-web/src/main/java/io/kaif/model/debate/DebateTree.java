@@ -83,6 +83,7 @@ public final class DebateTree {
         .collect(toList());
     return new V1DebateNodeDto(currentDto, childDto);
   }
+
   private final SortingNode<Debate> node;
 
   public DebateTree(SortingNode<Debate> node) {

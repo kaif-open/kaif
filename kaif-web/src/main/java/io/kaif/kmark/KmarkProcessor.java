@@ -23,10 +23,6 @@ import org.springframework.web.util.HtmlUtils;
 
 public class KmarkProcessor {
 
-  private KmarkProcessor() {
-
-  }
-
   public static String process(final String input) {
     try {
       return new KmarkProcessor().process(new StringReader(input));
@@ -38,6 +34,10 @@ public class KmarkProcessor {
 
   public static String escapeHtml(String input) {
     return HtmlUtils.htmlEscape(input);
+  }
+
+  private KmarkProcessor() {
+
   }
 
   private String process(final Reader reader) throws IOException {

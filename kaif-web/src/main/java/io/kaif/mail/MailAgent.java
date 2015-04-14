@@ -7,12 +7,12 @@
  */
 package io.kaif.mail;
 
-import com.google.common.collect.ImmutableMap;
+import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.mail.MailException;
 
-import java.util.Locale;
-import java.util.concurrent.CompletableFuture;
+import com.google.common.collect.ImmutableMap;
 
 import io.kaif.model.account.Account;
 

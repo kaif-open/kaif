@@ -51,6 +51,7 @@ class Encryptor {
       throw new RuntimeException("unsupported type of encryption: AES");
     }
   }
+
   private final Cipher encryptCipher;
   private final Key key;
 

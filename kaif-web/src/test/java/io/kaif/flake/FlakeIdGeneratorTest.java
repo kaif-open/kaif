@@ -76,10 +76,8 @@ public class FlakeIdGeneratorTest {
   public void generateExceedSubMilliSecond() throws Exception {
     DummyFlakeGenerator production = new DummyFlakeGenerator();
 
-    Set<FlakeId> flakeIds = IntStream.range(0, 1024000)
-        .parallel() //testing multi-thread
-        .mapToObj(i -> production.next())
-        .collect(Collectors.toSet());
+    Set<FlakeId> flakeIds = IntStream.range(0, 1024000).parallel() //testing multi-thread
+        .mapToObj(i -> production.next()).collect(Collectors.toSet());
     assertEquals(1024000, flakeIds.size());
     assertEquals(445, flakeIds.stream().findFirst().get().nodeId());
   }

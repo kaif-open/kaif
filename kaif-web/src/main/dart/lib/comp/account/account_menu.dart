@@ -59,18 +59,18 @@ class AccountMenu {
     return new LIElement()
       ..append(new AnchorElement()
       ..href = href
-      ..text = text) ;
+      ..text = text);
   }
 
   Element _menuElement(String href, Element body) {
     return new LIElement()
       ..append(new AnchorElement()
       ..href = href
-      ..append(body)) ;
+      ..append(body));
   }
 
   final Element elem;
-  final AccountSession accountSession ;
+  final AccountSession accountSession;
 
   final NewsFeedNotification newsFeedNotification;
   CounterNotification counterNotification;

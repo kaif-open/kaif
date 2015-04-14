@@ -30,6 +30,8 @@ import io.kaif.web.v1.dto.V1ZoneDto;
  */
 public class ZoneInfo {
 
+  public static final int ALIAS_NAME_MAX = 20;
+
   public static final String THEME_DEFAULT = "z-theme-default";
 
   // theme used in site related zone, like Blog or FAQ
@@ -38,13 +40,15 @@ public class ZoneInfo {
   public static final String THEME_NORMAL_VOTING = "z-theme-normal-voting";
 
   public static final String THEME_K_VOTING = "z-theme-k-voting";
+
   public static final String RESERVED_WORD = "kaif";
 
   public static ZoneInfo createKVoting(String zoneValue,
       String aliasName,
       Account creator,
       Instant now) {
-    checkReserveWord(zoneValue);
+    checkDefault(zoneValue);
+    checkAliasName(aliasName);
     boolean hideFromTopRanking = false;
     Authority voteAuth = Authority.SUFFRAGE;
     Authority debateAuth = Authority.CITIZEN;
@@ -64,7 +68,8 @@ public class ZoneInfo {
       String aliasName,
       Account creator,
       Instant now) {
-    checkReserveWord(zoneValue);
+    checkDefault(zoneValue);
+    checkAliasName(aliasName);
     boolean hideFromTopRanking = false;
     Authority voteAuth = Authority.CITIZEN;
     Authority debateAuth = Authority.CITIZEN;
@@ -84,6 +89,7 @@ public class ZoneInfo {
    * zone allow tourist to vote/debate/write ...etc, this should be test zone
    */
   public static ZoneInfo createTourist(String zoneValue, String aliasName, Instant now) {
+    checkAliasName(aliasName);
     boolean hideFromTopRanking = true;
     Authority voteAuth = Authority.TOURIST;
     Authority debateAuth = Authority.TOURIST;
@@ -100,6 +106,7 @@ public class ZoneInfo {
   }
 
   public static ZoneInfo createKaif(String zoneValue, String aliasName, Instant now) {
+    checkAliasName(aliasName);
     boolean hideFromTopRanking = true;
     Authority voteAuth = Authority.CITIZEN;
     Authority debateAuth = Authority.CITIZEN;
@@ -116,7 +123,8 @@ public class ZoneInfo {
   }
 
   public static ZoneInfo createDefault(String zoneValue, String aliasName, Instant now) {
-    checkReserveWord(zoneValue);
+    checkDefault(zoneValue);
+    checkAliasName(aliasName);
     boolean hideFromTopRanking = false;
     Authority voteAuth = Authority.CITIZEN;
     Authority debateAuth = Authority.CITIZEN;
@@ -132,8 +140,16 @@ public class ZoneInfo {
         now);
   }
 
-  private static void checkReserveWord(String zoneValue) {
-    Preconditions.checkArgument(!zoneValue.contains(RESERVED_WORD));
+  private static void checkAliasName(String aliasName) {
+    Preconditions.checkArgument(aliasName.length() <= ALIAS_NAME_MAX);
+  }
+
+  private static void checkDefault(String zoneValue) {
+    Preconditions.checkArgument(isValidDefault(zoneValue));
+  }
+
+  public static boolean isValidDefault(String zoneValue) {
+    return !zoneValue.contains(RESERVED_WORD);
   }
 
   /**

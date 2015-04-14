@@ -94,7 +94,7 @@ class Translation {
     });
     List<Match> matches = new RegExp('\{[0-9]\}').allMatches(rawValue).toList();
     args = matches.map((match) {
-      var i = matches.indexOf(match) ;
+      var i = matches.indexOf(match);
       return "a$i";
     }).toList();
   }

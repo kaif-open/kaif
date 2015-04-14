@@ -10,6 +10,12 @@ import org.springframework.core.io.ClassPathResource;
 
 public class KmarkProcessorTest {
 
+  static String readTestFile(String fileName) throws IOException {
+    try (java.util.Scanner s = new java.util.Scanner(new ClassPathResource(fileName).getInputStream())) {
+      return s.useDelimiter("\\A").hasNext() ? s.next() : "";
+    }
+  }
+
   @Before
   public void setup() {
   }
@@ -231,12 +237,6 @@ public class KmarkProcessorTest {
   public void process_with_surrogate_character() throws Exception {
     assertEquals(readTestFile("kmark/out10.out"),
         KmarkProcessor.process(readTestFile("kmark/in10.md")));
-  }
-
-  static String readTestFile(String fileName) throws IOException {
-    try (java.util.Scanner s = new java.util.Scanner(new ClassPathResource(fileName).getInputStream())) {
-      return s.useDelimiter("\\A").hasNext() ? s.next() : "";
-    }
   }
 
 }

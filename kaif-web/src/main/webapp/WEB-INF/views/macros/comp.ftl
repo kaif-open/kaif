@@ -248,11 +248,11 @@
 <div class="grid-center-row">
     <table class="honor-roll-table">
         <thead>
-            <tr>
-                <th class="honor-rank">排行</th>
-                <th class="honor-score">聲望</th>
-                <th class="honor-user">英雄</th>
-            </tr>
+        <tr>
+            <th class="honor-rank">排行</th>
+            <th class="honor-score">聲望</th>
+            <th class="honor-user">英雄</th>
+        </tr>
         </thead>
         <tbody>
             <#list data as honorRoll>

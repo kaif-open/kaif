@@ -13,6 +13,7 @@ import 'package:kaif_web/comp/debate/debate_tree.dart';
 import 'package:kaif_web/comp/debate/debate_list.dart';
 import 'package:kaif_web/comp/server_part_loader.dart';
 import 'package:kaif_web/comp/short_url.dart';
+import 'package:kaif_web/comp/zone/zone_form.dart';
 import 'dart:html';
 import 'dart:async';
 import 'package:kaif_web/comp/developer/developer_client_app.dart';
@@ -39,6 +40,7 @@ class AppModule {
   AccountSession accountSession;
   AccountService accountService;
   ArticleService articleService;
+  ZoneService zoneService;
   VoteService voteService;
   ClientAppService clientAppService;
   PartService partService;
@@ -55,6 +57,7 @@ class AppModule {
     articleService = new ArticleService(serverType, accessTokenProvider);
     voteService = new VoteService(serverType, accessTokenProvider);
     clientAppService = new ClientAppService(serverType, accessTokenProvider);
+    zoneService = new ZoneService(serverType, accessTokenProvider);
     partService = new PartService(serverType, accessTokenProvider);
     newsFeedNotification = new NewsFeedNotification(accountService, accountSession, newsFeedDao);
     serverPartLoader = new ServerPartLoader(partService, _initializeComponents);
@@ -108,6 +111,10 @@ class AppModule {
     });
     parent.querySelectorAll('[granted-client-app]').forEach((el) {
       new GrantedClientApp(el, clientAppService);
+    });
+
+    parent.querySelectorAll('[zone-form]').forEach((el) {
+      new ZoneForm(el, zoneService, accountSession);
     });
   }
 

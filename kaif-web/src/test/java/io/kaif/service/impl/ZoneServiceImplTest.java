@@ -8,16 +8,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.kaif.model.account.Account;
+import io.kaif.model.account.AccountDao;
 import io.kaif.model.account.Authority;
+import io.kaif.model.exception.CreditNotEnoughException;
 import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.ZoneService;
 import io.kaif.test.DbIntegrationTests;
+import io.kaif.web.support.AccessDeniedException;
 
 public class ZoneServiceImplTest extends DbIntegrationTests {
 
@@ -26,6 +30,16 @@ public class ZoneServiceImplTest extends DbIntegrationTests {
 
   @Autowired
   private ZoneDao zoneDao;
+
+  @Autowired
+  private AccountDao accountDao;
+
+  private Account citizen;
+
+  @Before
+  public void setUp() throws Exception {
+    citizen = savedAccountCitizen("citizen1");
+  }
 
   @Test
   public void createDefault() throws Exception {
@@ -134,5 +148,114 @@ public class ZoneServiceImplTest extends DbIntegrationTests {
       savedArticle(z4, account, i + " z4 - title");
     });
     assertTrue(service.listRecommendZones().containsAll(asList(z1, z2, z3, z4)));
+  }
+
+  @Test
+  public void createByUser() throws Exception {
+    accountDao.changeTotalVotedDebate(citizen.getAccountId(), 10, 0);
+    ZoneInfo zoneInfo = service.createByUser("aaa", "this is aaa", citizen);
+    ZoneInfo loaded = zoneDao.loadZoneWithoutCache(Zone.valueOf("aaa"));
+    assertEquals(zoneInfo, loaded);
+    assertEquals("aaa", loaded.getName());
+    assertEquals("this is aaa", loaded.getAliasName());
+    assertEquals(Authority.CITIZEN, loaded.getVoteAuthority());
+    assertEquals(Authority.CITIZEN, loaded.getWriteAuthority());
+    assertEquals(Authority.CITIZEN, loaded.getDebateAuthority());
+    assertEquals(ZoneInfo.THEME_DEFAULT, loaded.getTheme());
+    assertFalse(loaded.isHideFromTop());
+    assertEquals(citizen.getAccountId(), loaded.getAdminAccountIds().get(0));
+
+    List<ZoneInfo> zones = zoneDao.listZonesByAdmin(citizen.getAccountId());
+    assertEquals(zoneInfo, zones.get(0));
+  }
+
+  @Test
+  public void createByUser_not_enough_honor_score() throws Exception {
+    try {
+      service.createByUser("aaa", "this is aaa", citizen);
+      fail("CreditNotEnoughException expected");
+    } catch (CreditNotEnoughException expected) {
+    }
+  }
+
+  @Test
+  public void createByUser_must_be_citizen() throws Exception {
+    try {
+      Account tourist = savedAccountTourist("tourist");
+      accountDao.changeTotalVotedDebate(tourist.getAccountId(), 10, 0);
+      service.createByUser("aaa", "this is aaa", tourist);
+      fail("AccessDeniedException expected");
+    } catch (AccessDeniedException expected) {
+    }
+  }
+
+  @Test
+  public void createByUser_10_per_zone() throws Exception {
+    accountDao.changeTotalVotedDebate(citizen.getAccountId(), 30, 0);
+    service.createByUser("aaa1", "this is aaa1", citizen);
+    service.createByUser("aaa2", "this is aaa2", citizen);
+    service.createByUser("aaa3", "this is aaa3", citizen);
+    try {
+      service.createByUser("aaa4", "this is aaa4", citizen);
+      fail("CreditNotEnoughException expected");
+    } catch (CreditNotEnoughException expected) {
+    }
+  }
+
+  @Test
+  public void createByUser_max_5_zone() throws Exception {
+    accountDao.changeTotalVotedDebate(citizen.getAccountId(), 60, 0);
+    service.createByUser("aaa1", "this is aaa1", citizen);
+    service.createByUser("aaa2", "this is aaa2", citizen);
+    service.createByUser("aaa3", "this is aaa3", citizen);
+    service.createByUser("aaa4", "this is aaa4", citizen);
+    service.createByUser("aaa5", "this is aaa5", citizen);
+    try {
+      service.createByUser("aaa6", "this is aaa6", citizen);
+      fail("CreditNotEnoughException expected");
+    } catch (CreditNotEnoughException expected) {
+    }
+  }
+
+  @Test
+  public void canCreateZone() throws Exception {
+    assertFalse(service.canCreateZone(citizen));
+    accountDao.changeTotalVotedDebate(citizen.getAccountId(), 60, 0);
+    assertTrue(service.canCreateZone(citizen));
+  }
+
+  @Test
+  public void isZoneAvailable() {
+    assertFalse(service.isZoneAvailable("kaif-ok"));
+    assertFalse(service.isZoneAvailable("kaif-null"));
+    assertFalse(service.isZoneAvailable("null"));
+    assertFalse(service.isZoneAvailable("s"));
+    assertTrue(service.isZoneAvailable("aaa"));
+    savedZoneDefault("aaa");
+    assertFalse(service.isZoneAvailable("aaa"));
+  }
+
+  @Test
+  public void listAdministerZones() {
+    assertTrue(service.listAdministerZones(citizen.getUsername()).isEmpty());
+
+    accountDao.changeTotalVotedDebate(citizen.getAccountId(), 30, 0);
+    ZoneInfo bZone = service.createByUser("bbb1", "this is aaa1", citizen);
+    ZoneInfo aZone = service.createByUser("aaa2", "this is aaa2", citizen);
+
+    List<ZoneInfo> administerZones = service.listAdministerZones(citizen.getUsername());
+    assertEquals(2, administerZones.size());
+    assertEquals(aZone, administerZones.get(0));
+    assertEquals(bZone, administerZones.get(1));
+  }
+
+  @Test
+  public void listAdministrators() {
+    Zone zone = Zone.valueOf("foo");
+    assertTrue(service.listAdministratorsWithCache(zone).isEmpty());
+    accountDao.changeTotalVotedDebate(citizen.getAccountId(), 30, 0);
+    service.createByUser("foo", "this is aaa2", citizen);
+    List<String> administerNames = service.listAdministratorsWithCache(zone);
+    assertEquals(asList(citizen.getUsername()), administerNames);
   }
 }

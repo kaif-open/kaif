@@ -12,7 +12,7 @@
             好文難尋，知音難遇。分享你發掘到的好文吧！
         </p>
         <a href="<@url.createArticleLink />"
-           class="pure-button pure-button-primary create-article">
+           class="pure-button pure-button-primary create-button">
             <i class="fa fa-caret-right"></i> 分享新連結</a>
     </div>
     <div class="aside-card-box">
@@ -20,8 +20,23 @@
             分享你的想法、提出你的質疑、說出你的困惑！
         </p>
         <a href="<@url.createArticleSpeak />"
-           class="pure-button pure-button-primary create-article">
+           class="pure-button pure-button-primary create-button">
             <i class="fa fa-caret-right"></i> 我有話要說</a>
+    </div>
+</div>
+</#macro>
+
+<#macro createZone>
+<div class="aside-card">
+    <h4>成立新討論區</h4>
+
+    <div class="aside-card-box">
+        <p>
+            你有一個別人都沒有的想法？你該試試創造一個新的領域！
+        </p>
+        <a href="/zone/create"
+           class="pure-button pure-button-primary create-button">
+            <i class="fa fa-caret-right"></i> 建立討論區</a>
     </div>
 </div>
 </#macro>
@@ -43,6 +58,26 @@
     </div>
 </div>
 </#macro>
+
+<#-- data is username -->
+<#macro administrators data>
+<div class="aside-card aside-user-list">
+    <h4>版主群</h4>
+
+    <div class="aside-card-box">
+        <ul>
+            <#list data as username>
+                <li>
+                    <a class="plain" href="/u/${username}">
+                        /u/${username}
+                    </a>
+                </li>
+            </#list>
+        </ul>
+    </div>
+</div>
+</#macro>
+
 
 <#-- data can be Debate or Article -->
 <#macro shortUrl data>

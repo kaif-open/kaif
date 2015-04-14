@@ -7,7 +7,8 @@
 <div class="news-feed" news-feed debate-list data-first-page="${isFirstPage?string}">
 <#list newsFeed.feedAssets as asset>
     <#if asset.assetType.debate>
-    <div class="feed-asset" feed-asset data-asset-id="${asset.assetId}" data-asset-acked="${asset.acked?string}">
+    <div class="feed-asset" feed-asset data-asset-id="${asset.assetId}"
+         data-asset-acked="${asset.acked?string}">
         <#assign debate=newsFeed.getDebate(asset)/>
         <@comp.debateStandAlone data=debate article=newsFeed.getArticle(debate) />
     <#else>

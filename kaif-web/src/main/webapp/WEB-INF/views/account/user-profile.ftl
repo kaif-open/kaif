@@ -32,6 +32,25 @@ head=headContent>
                 點
             </div>
         </div>
+        <#if administerZones?size gt 0>
+            <h2>管理的討論區</h2>
+
+            <div class="zone-list">
+                <table class="zone-table">
+                    <#list administerZones as zoneInfo>
+                        <tr>
+                            <td class="zone-name">
+                                <a class="plain"
+                                   href="<@url.zone data=zoneInfo/>">/z/${zoneInfo.zone}</a>
+                            </td>
+                            <td>
+                            ${zoneInfo.aliasName}
+                            </td>
+                        </tr>
+                    </#list>
+                </table>
+            </div>
+        </#if>
     </div>
     </@template.user>
 </@template.page>

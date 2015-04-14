@@ -61,13 +61,13 @@ class AccountSession {
 
   Future<AccountAuth> _extendsAccessToken(AccountAuth exist) {
     var headers = {
-        'X-KAIF-ACCESS-TOKEN':exist.accessToken,
-        'Content-Type': 'application/json'
+      'X-KAIF-ACCESS-TOKEN':exist.accessToken,
+      'Content-Type': 'application/json'
     };
 
     //empty json body may cause problem, so fill some garbage
     var json = {
-        'username': exist.username
+      'username': exist.username
     };
 
     return HttpRequest.request(

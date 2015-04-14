@@ -1,6 +1,8 @@
 package io.kaif.model.zone;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -19,6 +21,10 @@ import com.google.common.base.Strings;
 @JsonSerialize(using = ZoneSerializer.class)
 @JsonDeserialize(using = ZoneDeserializer.class)
 public class Zone {
+
+  public static final String ZONE_PATTERN_STR = "^[a-z0-9][a-z0-9\\-]{1,18}[a-z0-9]$";
+
+  private static final List<String> RESERVE_ZONES = Collections.singletonList("null");
   /**
    * - must start with az09, end with az09, no dash
    * - must use dash to separate
@@ -27,7 +33,7 @@ public class Zone {
    * <p>
    * change pattern should review route.dart and ZoneController.java and Emitter.java
    */
-  private static final Pattern ZONE_PATTERN = Pattern.compile("^[a-z0-9][a-z0-9\\-]{1,18}[a-z0-9]$");
+  private static final Pattern ZONE_PATTERN = Pattern.compile(ZONE_PATTERN_STR);
 
   private static String valueFallback(String rawValue) {
     if (Strings.isNullOrEmpty(rawValue)) {
@@ -36,11 +42,11 @@ public class Zone {
     return rawValue.toLowerCase().replaceAll("[\\-_]+", "-");
   }
 
-  private static boolean validateZone(String zone) {
-    return zone != null
-        && ZONE_PATTERN.matcher(zone).matches()
-        && !zone.contains("--")
-        && !zone.equals("null");
+  public static boolean isValid(String rawZone) {
+    return rawZone != null
+        && ZONE_PATTERN.matcher(rawZone).matches()
+        && !rawZone.contains("--")
+        && !RESERVE_ZONES.contains(rawZone);
   }
 
   /**
@@ -49,11 +55,11 @@ public class Zone {
    * fallback rule is follow valid zone pattern
    */
   public static Optional<Zone> tryFallback(String rawZone) {
-    return Optional.ofNullable(valueFallback(rawZone)).filter(Zone::validateZone).map(Zone::new);
+    return Optional.ofNullable(valueFallback(rawZone)).filter(Zone::isValid).map(Zone::new);
   }
 
   public static Zone valueOf(String validValue) {
-    Preconditions.checkArgument(validateZone(validValue), "invalid zone value: %s", validValue);
+    Preconditions.checkArgument(isValid(validValue), "invalid zone value: %s", validValue);
     return new Zone(validValue);
   }
 
