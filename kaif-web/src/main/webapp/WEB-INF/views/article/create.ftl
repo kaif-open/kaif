@@ -2,6 +2,7 @@
 <#import "../macros/template.ftl" as template>
 <#import "../macros/util.ftl" as util>
 <#import "../macros/url.ftl" as url>
+<#import "../macros/aside.ftl" as aside>
 
 <#assign headContent>
 <title>新文章 | kaif.io</title>
@@ -46,6 +47,7 @@ head=headContent
                     </ul>
                 </div>
             </div>
+            <@aside.createZone />
         </aside>
     </div>
 </div>

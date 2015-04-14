@@ -1,6 +1,7 @@
 <#import "/spring.ftl" as spring />
 <#import "../macros/template.ftl" as template>
 <#import "../macros/comp.ftl" as comp>
+<#import "../macros/aside.ftl" as aside>
 <#import "../macros/url.ftl" as url>
 
 <#assign headContent>
@@ -42,6 +43,7 @@ head=headContent>
             </div>
         </div>
         <aside class="grid-aside">
+           <@aside.createZone />
         </aside>
     </div>
 
