@@ -11,8 +11,7 @@ INSERT INTO ZoneAdmin (accountId, zone, createTime)
   SELECT
     unnest(adminaccountids),
     zone,
-    createTime,
-    FALSE
+    createTime
   FROM ZoneInfo;
 
 COMMIT;
