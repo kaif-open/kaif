@@ -52,7 +52,7 @@ head=headContent
                title="英文字小寫、dash(-)隔開、3~20 個字必填">
 
         <div class="pure-form-message-inline">
-            代號將為網址的一部份，且不能變更，請謹慎選擇。
+            * 代號將為網址的一部份，且不能變更，請謹慎選擇。
         </div>
     </div>
 
@@ -62,14 +62,16 @@ head=headContent
                class="pure-input-1"
                type="text"
                placeholder="清楚的名稱"
-               maxlength="15"
+               maxlength="20"
                required
                title="討論區名稱必填">
 
         <div class="pure-form-message-inline">
-            別名通常是中文，4 到 10 字為宜。別名未來不能變更，請謹慎選擇。
+            * 別名通常是中文，4 到 10 字為宜。別名未來不能變更，請謹慎選擇。
         </div>
     </div>
+    <p></p>
+
     <div class="pure-controls">
         <button type="submit" disabled
                 class="pure-button pure-button-primary">
@@ -81,10 +83,10 @@ head=headContent
 
     <div class="pure-controls hidden" can-not-create-zone-hint>
         <div class="alert alert-warning">
-            您沒有權限建立討論區，請確認：
+            您無法建立討論區，請確認：
             <ul>
                 <li>您已經登入帳號，而且帳號已經啟用</li>
-                <li>建立討論區需累積一定聲望，詳情請見
+                <li>建立討論區需累積一定聲望，建立越多需要越高的聲望，詳情請見
                     <a href="/z/kaif-faq/">常見問題</a></li>
             </ul>
         </div>

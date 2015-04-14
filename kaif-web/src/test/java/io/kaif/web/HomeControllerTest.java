@@ -33,8 +33,8 @@ public class HomeControllerTest extends MvcIntegrationTests {
 
   @Before
   public void setUp() throws Exception {
-    when(zoneService.listRecommendZones()).thenReturn(asList(zoneDefault("recommend1"),
-        zoneDefault("recommend2")));
+    when(zoneService.listRecommendZones()).thenReturn(asList(zoneDefault("rec1"),
+        zoneDefault("rec2")));
   }
 
   @Test
@@ -44,8 +44,8 @@ public class HomeControllerTest extends MvcIntegrationTests {
     mockMvc.perform(get("/"))
         .andExpect(content().encoding("UTF-8"))
         .andExpect(content().string(containsString("joke xyz 1")))
-        .andExpect(content().string(containsString("recommend1")))
-        .andExpect(content().string(containsString("recommend2")))
+        .andExpect(content().string(containsString("rec1")))
+        .andExpect(content().string(containsString("rec2")))
         .andExpect(content().string(containsString("/snapshot/css/kaif.css")))
         .andExpect(content().string(containsString("/snapshot/web/main.dart.js")));
   }

@@ -42,15 +42,11 @@ public class Zone {
     return rawValue.toLowerCase().replaceAll("[\\-_]+", "-");
   }
 
-  public static boolean validateReserveZone(String zone) {
-    return !RESERVE_ZONES.contains(zone);
-  }
-
-  private static boolean validateZone(String zone) {
-    return zone != null
-        && ZONE_PATTERN.matcher(zone).matches()
-        && !zone.contains("--")
-        && validateReserveZone(zone);
+  public static boolean isValid(String rawZone) {
+    return rawZone != null
+        && ZONE_PATTERN.matcher(rawZone).matches()
+        && !rawZone.contains("--")
+        && !RESERVE_ZONES.contains(rawZone);
   }
 
   /**
@@ -59,11 +55,11 @@ public class Zone {
    * fallback rule is follow valid zone pattern
    */
   public static Optional<Zone> tryFallback(String rawZone) {
-    return Optional.ofNullable(valueFallback(rawZone)).filter(Zone::validateZone).map(Zone::new);
+    return Optional.ofNullable(valueFallback(rawZone)).filter(Zone::isValid).map(Zone::new);
   }
 
   public static Zone valueOf(String validValue) {
-    Preconditions.checkArgument(validateZone(validValue), "invalid zone value: %s", validValue);
+    Preconditions.checkArgument(isValid(validValue), "invalid zone value: %s", validValue);
     return new Zone(validValue);
   }
 

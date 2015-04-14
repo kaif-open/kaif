@@ -124,9 +124,8 @@ public class ZoneServiceImpl implements ZoneService {
 
   @Override
   public boolean isZoneAvailable(String zone) {
-    return Zone.validateReserveZone(zone)
-        && ZoneInfo.validateReserveWord(zone)
-        && !zoneDao.findZoneWithoutCache(Zone.valueOf(zone)).isPresent();
+    return Zone.isValid(zone) && ZoneInfo.isValidDefault(zone) && !zoneDao.findZoneWithoutCache(Zone
+        .valueOf(zone)).isPresent();
   }
 
   @Override
