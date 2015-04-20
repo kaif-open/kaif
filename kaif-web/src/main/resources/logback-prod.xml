@@ -47,18 +47,33 @@
         </encoder>
     </appender>
 
+    <appender name="EDIT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${catalina.base}/logs/edit.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>90</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>utf-8</charset>
+            <Pattern>%d %-5level [%thread] %logger{0}: %msg%n</Pattern>
+        </encoder>
+    </appender>
+
     <logger name="io.kaif" level="DEBUG"/>
 
-    <logger name="io.kaif.web.AwsSnsRestController" level="DEBUG">
+    <logger name="io.kaif.web.AwsSnsRestController" level="DEBUG" additivity="false">
         <appender-ref ref="MAIL"/>
     </logger>
 
-    <logger name="io.kaif.mail" level="INFO">
+    <logger name="io.kaif.mail" level="INFO" additivity="false">
         <appender-ref ref="MAIL"/>
     </logger>
 
-    <logger name="io.kaif.web.OauthController" level="INFO">
+    <logger name="io.kaif.web.OauthController" level="INFO" additivity="false">
         <appender-ref ref="OAUTH"/>
+    </logger>
+
+    <logger name="EDIT" level="INFO" additivity="false">
+        <appender-ref ref="EDIT"/>
     </logger>
 
     <logger name="javax.activation" level="WARN"/>

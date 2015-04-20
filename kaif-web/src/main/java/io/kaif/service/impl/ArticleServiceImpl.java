@@ -36,7 +36,7 @@ import io.kaif.web.support.AccessDeniedException;
 @Transactional
 public class ArticleServiceImpl implements ArticleService {
 
-  private static final Logger log = LoggerFactory.getLogger(ArticleServiceImpl.class);
+  private static final Logger editLog = LoggerFactory.getLogger("EDIT");
 
   static final int PAGE_SIZE = 25;
 
@@ -138,7 +138,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     debateDao.updateContent(debateId, content, Instant.now());
 
-    log.info("user(id:{}) update debate's(id:{}) content:{}",
+    editLog.info("user(id:{}) update debate's(id:{}) content:{}",
         editorAuth.authenticatedId(),
         debateId.value(),
         debate.getContent());
