@@ -3,6 +3,7 @@
 <#import "../macros/util.ftl" as util>
 <#import "../macros/url.ftl" as url>
 <#import "../macros/aside.ftl" as aside>
+<#import "../macros/comp.ftl" as comp>
 
 <#assign headContent>
 <title>新文章 | kaif.io</title>
@@ -85,13 +86,15 @@ head=headContent
         <div class="pure-control-group">
             <label for="contentInput">想法</label>
             <textarea id="contentInput"
-                      class="pure-input-1"
+                      class="pure-input-1 kmark-input"
                       rows="5"
                       placeholder="您的想法或問題..."
                       maxlength="4096"
                       required
                       title="內文必填"
                     >${preFilledContent}</textarea>
+
+            <div class="hidden kmark kmark-preview" kmark-previewer></div>
         </div>
     </#if>
 
@@ -118,7 +121,15 @@ head=headContent
                 class="pure-button pure-button-primary">
             分享
         </button>
+        <button type="button" kmark-preview
+                class="pure-button hidden">
+            <@spring.messageText "kmark.preview" "Preview" />
+        </button>
+        <button type="button" class="pure-button hidden"
+                kmark-help-toggle><@spring.messageText "kmark.help" "Format Help" /></button>
     </div>
+
+    <@comp.kmarkHelp />
 
     <p></p>
 

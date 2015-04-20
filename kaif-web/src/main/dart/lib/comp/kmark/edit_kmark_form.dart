@@ -37,7 +37,7 @@ abstract class EditKmarkForm {
     _alert = new Alert.append(_elem);
     _elem.onSubmit.listen(_onSubmit);
     new KmarkAutoLinker(_contentInput);
-    KmarkHelper.enableIfExist(_elem);
+    KmarkUtil.enableHelpIfExist(_elem);
   }
 
   void _onCancel(Event e) {
@@ -123,13 +123,7 @@ abstract class EditKmarkForm {
     }
     //<ORDER>
     _contentEditElem.append(_elem);
-    CssStyleDeclaration cssStyleDeclaration = _contentInput.getComputedStyle();
-
-    _contentInput
-      ..style.height = (
-        new Dimension.css(cssStyleDeclaration.paddingTop).value
-        + new Dimension.css(cssStyleDeclaration.paddingBottom).value
-        + _contentElem.clientHeight).toString() + 'px';
+    KmarkUtil.alignInputToRenderedHeight(_contentInput, _contentElem);
     //</ORDER>
     _contentEditElem.classes.toggle('hidden', false);
     _contentElem.classes.toggle('hidden', true);
@@ -156,9 +150,11 @@ abstract class EditKmarkForm {
   }
 }
 
-class KmarkHelper {
-  static void enableIfExist(Element parentElem) {
-    Element toggleElem = parentElem.querySelector('[kmark-help-toggle]');
+class KmarkUtil {
+
+  static void enableHelpIfExist(Element parentElem) {
+    Element toggleElem = parentElem.querySelector('[kmark-help-toggle]')
+      ..classes.remove('hidden');
     Element helpElem = parentElem.querySelector('[kmark-help]');
     if (toggleElem == null || helpElem == null) {
       return;
@@ -170,5 +166,15 @@ class KmarkHelper {
       bool isHidden = helpElem.classes.toggle('hidden');
       toggleElem.text = isHidden ? i18n("kmark.help") : i18n("kmark.finish-help");
     });
+  }
+
+  static void alignInputToRenderedHeight(TextAreaElement input, Element renderedElem) {
+    CssStyleDeclaration cssStyleDeclaration = input.getComputedStyle();
+
+    input
+      ..style.height = (
+        new Dimension.css(cssStyleDeclaration.paddingTop).value
+        + new Dimension.css(cssStyleDeclaration.paddingBottom).value
+        + renderedElem.clientHeight).toString() + 'px';
   }
 }

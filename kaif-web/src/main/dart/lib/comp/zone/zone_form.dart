@@ -3,7 +3,6 @@ library zone_form;
 import 'dart:html';
 import 'package:kaif_web/util.dart';
 import 'package:kaif_web/model.dart';
-import 'dart:async';
 
 class ZoneForm {
   final Element elem;
@@ -77,8 +76,6 @@ class ZoneForm {
     alert.hide();
     zoneInput.value = zoneInput.value.trim();
     aliasNameInput.value = aliasNameInput.value.trim();
-
-    TextInputElement urlInput = elem.querySelector('#urlInput');
 
     _tryToggleSubmit(enable:false);
     var loading = new Loading.small()

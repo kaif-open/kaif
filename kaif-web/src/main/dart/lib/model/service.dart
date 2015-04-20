@@ -291,6 +291,14 @@ class ArticleService extends _AbstractService {
     .then((req) => req.responseText);
   }
 
+  Future<String> previewSpeakContent(String content) {
+    var json = {
+      'content':content
+    };
+    return _putJson(_getUrl('/speak/preview'), json)
+    .then((req) => req.responseText);
+  }
+
   Future<String> loadEditableDebate(String debateId) {
     var params = {
       'debateId':debateId

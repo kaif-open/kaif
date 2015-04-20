@@ -25,7 +25,6 @@ class DebateForm {
   Element _elem;
   Element _placeHolderElem;
   Element _previewerElem;
-  Element _previewCancelElem;
   ButtonElement _previewBtn;
   TextAreaElement _contentInput;
   Alert _alert;
@@ -54,10 +53,9 @@ class DebateForm {
     _previewerElem = _elem.querySelector('[kmark-previewer]');
     _previewBtn = _elem.querySelector('[kmark-preview]');
     _elem.querySelector('[kmark-debate-cancel]').onClick.listen(_onCancel);
-    _previewCancelElem = _elem.querySelector('[kmark-preview-cancel]');
     _contentInput = _elem.querySelector('textarea[name=contentInput]');
     new KmarkAutoLinker(_contentInput);
-    KmarkHelper.enableIfExist(_elem);
+    KmarkUtil.enableHelpIfExist(_elem);
   }
 
   void _updatePreviewVisibility({bool previewVisible}) {

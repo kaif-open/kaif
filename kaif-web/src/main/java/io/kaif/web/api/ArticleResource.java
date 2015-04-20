@@ -76,7 +76,7 @@ public class ArticleResource {
     public String content;
   }
 
-  static class PreviewDebate {
+  static class Previewer {
     @NotNull
     public String content;
   }
@@ -120,8 +120,14 @@ public class ArticleResource {
   //no need authenticate
   @RequestMapping(value = "/debate/content/preview", method = RequestMethod.PUT, consumes = {
       MediaType.APPLICATION_JSON_VALUE })
-  public String previewDebateContent(@Valid @RequestBody PreviewDebate request) {
+  public String previewDebateContent(@Valid @RequestBody Previewer request) {
     return Debate.renderContentPreview(request.content);
+  }
+
+  @RequestMapping(value = "/speak/preview", method = RequestMethod.PUT, consumes = {
+      MediaType.APPLICATION_JSON_VALUE })
+  public String previewSpeakContent(@Valid @RequestBody Previewer request) {
+    return Article.renderSpeakPreview(request.content);
   }
 
   @RequestMapping(value = "/debate/content", method = RequestMethod.GET)

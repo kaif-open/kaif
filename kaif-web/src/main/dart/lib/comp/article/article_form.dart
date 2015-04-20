@@ -5,12 +5,12 @@ import 'package:kaif_web/util.dart';
 import 'package:kaif_web/model.dart';
 import 'dart:async';
 import '../kmark/kmark_auto_linker.dart';
+import 'package:kaif_web/comp/kmark/edit_kmark_form.dart';
 
 
 typedef Future _articleCreator(String zone);
 
 //TODO auto save draft if speak mode
-//TODO kmark preview, for article
 class ArticleForm {
 
   final Element elem;
@@ -19,6 +19,8 @@ class ArticleForm {
   SubmitButtonInputElement submitElem;
   SelectElement zoneInput;
   TextAreaElement contentInput;
+
+  bool get isSpeakMode => contentInput != null;
 
   ArticleForm(this.elem, this.articleService, AccountSession accountSession) {
     alert = new Alert.append(elem);
@@ -38,9 +40,40 @@ class ArticleForm {
     }
 
     contentInput = elem.querySelector('#contentInput');
-    if (contentInput != null) {
-      new KmarkAutoLinker(contentInput);
+    if (isSpeakMode) {
+      _enableKmark();
     }
+  }
+
+  void _enableKmark() {
+    new KmarkAutoLinker(contentInput);
+    KmarkUtil.enableHelpIfExist(elem);
+    var previewerElem = elem.querySelector('[kmark-previewer]');
+    ButtonElement previewBtn = elem.querySelector('[kmark-preview]')
+      ..classes.remove('hidden');
+
+    previewBtn.onClick.listen((e) async {
+      //<ORDER>
+      KmarkUtil.alignInputToRenderedHeight(contentInput, previewerElem);
+      var previewerHidden = previewerElem.classes.toggle('hidden');
+      contentInput.classes.toggle('hidden', !previewerHidden);
+      //</ORDER>
+
+      previewBtn.text = previewerHidden ? i18n('kmark.preview')
+                        : i18n('kmark.finish-preview');
+
+      if (!previewerHidden) {
+        try {
+          previewBtn.disabled = true;
+          String rendered = await articleService.previewSpeakContent(contentInput.value.trim());
+          unSafeInnerHtml(previewerElem, rendered);
+        } catch (error) {
+          alert.renderError('$error');
+        } finally {
+          previewBtn.disabled = false;
+        }
+      }
+    });
   }
 
   void _checkCanCreateArticleOnZone() {
@@ -73,16 +106,8 @@ class ArticleForm {
       return;
     }
 
-    TextInputElement urlInput = elem.querySelector('#urlInput');
 
-    if (urlInput != null) {
-      urlInput.value = urlInput.value.trim();
-
-      _runCreate((String zone) {
-        return articleService.createExternalLink(zone, urlInput.value, titleInput.value);
-      });
-
-    } else if (contentInput != null) {
+    if (isSpeakMode) {
       contentInput.value = contentInput.value.trim();
       //check Article.CONTENT_MIN in java
       var articleContentMin = 10;
@@ -93,6 +118,14 @@ class ArticleForm {
       _runCreate((String zone) {
         return articleService.createSpeak(zone, contentInput.value, titleInput.value);
       });
+    } else {
+      TextInputElement urlInput = elem.querySelector('#urlInput');
+      urlInput.value = urlInput.value.trim();
+
+      _runCreate((String zone) {
+        return articleService.createExternalLink(zone, urlInput.value, titleInput.value);
+      });
+
     }
   }
 
