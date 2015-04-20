@@ -14,9 +14,11 @@ class NewsFeedNotification {
   static const Duration _POLL_INTERVAL = const Duration(minutes:10);
 
   NewsFeedNotification(this.accountService, this.accountSession, this.newsFeedDao) {
-    new Timer.periodic(_POLL_INTERVAL, (timer) {
-      _reloadUnread().then((value) => _onUnreadChanged.add(value));
-    });
+    if (accountSession.isSignIn) {
+      new Timer.periodic(_POLL_INTERVAL, (timer) {
+        _reloadUnread().then((value) => _onUnreadChanged.add(value));
+      });
+    }
   }
 
   Future<int> getUnread() {
