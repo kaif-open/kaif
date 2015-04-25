@@ -157,7 +157,9 @@ public class V1ArticleResource {
   }
 
   @ApiOperation(value = "[article] Create an article with external link",
-      notes = "Create an article with external link in specified zone")
+      notes = "Create an article with external link in specified zone. Before calling the method, "
+          + "it is recommended check the link already submitted by other users. check API - "
+          + "'GET /zone/{zone}/external-link'")
   @ResponseStatus(HttpStatus.CREATED)
   @RequiredScope(ClientAppScope.ARTICLE)
   @RequestMapping(value = "/external-link", method = RequestMethod.PUT, consumes = {
@@ -168,6 +170,28 @@ public class V1ArticleResource {
         entry.zone,
         entry.title.trim(),
         entry.url.trim()).toV1Dto();
+  }
+
+  @ApiOperation(value = "[public] List articles for external link",
+      notes = "List most 3 external-url-articles for a specific url."
+          + "You are encouraged to show exist articles to end user before creating the article "
+          + "to prevent article duplication in zone.")
+  @RequiredScope(ClientAppScope.PUBLIC)
+  @RequestMapping(value = "/zone/{zone}/external-link", method = RequestMethod.GET)
+  public List<V1ArticleDto> externalLink(ClientAppUserAccessToken accessToken,
+      @PathVariable(value = "zone") String zone,
+      @RequestParam("url") String url) {
+    return toDtos(articleService.listArticlesByExternalLink(Zone.valueOf(zone), url));
+  }
+
+  @ApiOperation(value = "[public] check url already submitted in zone",
+      notes = "Check url already submitted as external-url-article in zone")
+  @RequiredScope(ClientAppScope.PUBLIC)
+  @RequestMapping(value = "/zone/{zone}/external-link/exist", method = RequestMethod.GET)
+  public boolean isExternalLinkExist(ClientAppUserAccessToken accessToken,
+      @PathVariable(value = "zone") String zone,
+      @RequestParam("url") String url) {
+    return articleService.isExternalLinkExist(Zone.valueOf(zone), url);
   }
 
   @ApiOperation(value = "[article] Create an article with content",
