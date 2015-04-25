@@ -535,6 +535,34 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
+  public void createExternalLink_check_duplicate_canonical() throws Exception {
+    assertFalse(service.isExternalLinkExist(zoneInfo.getZone(), " http://foo.com "));
+    Article created = service.createExternalLink(citizen,
+        zoneInfo.getZone(),
+        "title1",
+        "http://foo.com");
+    assertTrue(service.isExternalLinkExist(zoneInfo.getZone(), " http://foo.com "));
+    assertTrue(service.isExternalLinkExist(zoneInfo.getZone(), "http://foo.com"));
+
+    //remove utm tracking
+    assertTrue(service.isExternalLinkExist(zoneInfo.getZone(),
+        "http://foo.com?utm_foo=12&utm_bar=aaa"));
+  }
+
+  @Test
+  public void canonicalizeUrl() throws Exception {
+    assertEquals("http://foo.com", service.canonicalizeUrl("http://foo.com"));
+    assertEquals("https://foo.com", service.canonicalizeUrl(" https://foo.com \n \r  \t\t"));
+    assertEquals("http://foo.com?c=2&d=1#hash",
+        service.canonicalizeUrl("http://foo.com?d=1&c=2#hash"));
+    assertEquals("http://foo.com?xyz",
+        service.canonicalizeUrl("http://foo.com?utm_foo=12&utm_bar=aaa&xyz"));
+
+    assertEquals("foo", service.canonicalizeUrl("foo"));
+    assertEquals("ftp://foo.com", service.canonicalizeUrl("ftp://foo.com"));
+  }
+
+  @Test
   public void accountStatsOnlyForCitizenZone() throws Exception {
     ZoneInfo touristZone = savedZoneTourist("test");
     Account tourist = savedAccountTourist("guestB");

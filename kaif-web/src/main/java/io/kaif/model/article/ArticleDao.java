@@ -168,6 +168,7 @@ public class ArticleDao implements DaoOperations {
       Account author,
       String title,
       String url,
+      String canonicalUrl,
       Instant now) {
     FlakeId flakeId = kaifIdGenerator.next();
     Article article = insertArticle(Article.createExternalLink(zoneInfo.getZone(),
@@ -185,7 +186,7 @@ public class ArticleDao implements DaoOperations {
             + questions(5),
         article.getArticleId().value(),
         article.getZone().value(),
-        article.getLink(),
+        canonicalUrl,
         article.getLink(),
         Timestamp.from(article.getCreateTime()));
     return article;
@@ -392,13 +393,13 @@ public class ArticleDao implements DaoOperations {
     return jdbc().query(sql, articleMapper, start.value(), authorId, size);
   }
 
-  public boolean isExternalLinkExist(Zone zone, String externalLink) {
+  public boolean isExternalLinkExist(Zone zone, String canonicalUrl) {
     final String sql = ""
         + " SELECT count(*) > 0 "
         + "   FROM ArticleExternalLink "
         + "  WHERE zone = ? "
         + "    AND canonicalUrl = ? "
         + "  LIMIT 1 ";
-    return jdbc().queryForObject(sql, Boolean.class, zone.value(), externalLink);
+    return jdbc().queryForObject(sql, Boolean.class, zone.value(), canonicalUrl);
   }
 }
