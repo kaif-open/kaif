@@ -1,5 +1,9 @@
 package io.kaif.web.api;
 
+import static java.util.stream.Collectors.*;
+
+import java.util.List;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -146,5 +150,14 @@ public class ArticleResource {
   public SingleWrapper<Boolean> isExternalUrlExist(@RequestParam("zone") String rawZone,
       @RequestParam("url") String url) {
     return SingleWrapper.of(articleService.isExternalLinkExist(Zone.valueOf(rawZone), url));
+  }
+
+  @RequestMapping(value = "/external-link", method = RequestMethod.GET)
+  public List<FlakeId> listArticleIdsByExternalLink(@RequestParam("zone") String rawZone,
+      @RequestParam("url") String url) {
+    return articleService.listArticlesByExternalLink(Zone.valueOf(rawZone), url)
+        .stream()
+        .map(Article::getArticleId)
+        .collect(toList());
   }
 }

@@ -527,11 +527,27 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
         zoneInfo.getZone(),
         "title1",
         "http://foo.com");
-    assertTrue(service.findArticle(created.getArticleId()).isPresent());
-
     assertTrue(service.isExternalLinkExist(zoneInfo.getZone(), "http://foo.com"));
     assertFalse(service.isExternalLinkExist(zoneInfo.getZone(), "http://foo.not.match"));
     assertFalse(service.isExternalLinkExist(Zone.valueOf("other"), "http://foo.com"));
+  }
+
+  @Test
+  public void listArticlesByExternalLink() throws Exception {
+    assertEquals(0,
+        service.listArticlesByExternalLink(zoneInfo.getZone(), "http://foo.com").size());
+    Article a1 = service.createExternalLink(citizen,
+        zoneInfo.getZone(),
+        "title1",
+        "http://foo.com");
+    assertEquals(asList(a1),
+        service.listArticlesByExternalLink(zoneInfo.getZone(), "http://foo.com"));
+    Article a2 = service.createExternalLink(citizen,
+        zoneInfo.getZone(),
+        "title1",
+        "http://foo.com");
+    assertEquals(asList(a2, a1),
+        service.listArticlesByExternalLink(zoneInfo.getZone(), "http://foo.com"));
   }
 
   @Test

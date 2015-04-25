@@ -402,4 +402,20 @@ public class ArticleDao implements DaoOperations {
         + "  LIMIT 1 ";
     return jdbc().queryForObject(sql, Boolean.class, zone.value(), canonicalUrl);
   }
+
+  public List<Article> listArticlesByExternalLink(Zone zone, String canonicalUrl, int size) {
+    final String sql = ""
+        + " SELECT * "
+        + "   FROM Article "
+        + "  WHERE articleId IN ( "
+        + "          SELECT articleId "
+        + "            FROM ArticleExternalLink "
+        + "           WHERE zone = ? "
+        + "             AND canonicalUrl = ? "
+        + "           ORDER BY articleId DESC "
+        + "           LIMIT ? ) "
+        + "    AND deleted = FALSE "
+        + "  ORDER BY articleId DESC ";
+    return jdbc().query(sql, articleMapper, zone.value(), canonicalUrl, size);
+  }
 }

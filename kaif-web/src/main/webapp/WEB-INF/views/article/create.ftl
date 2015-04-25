@@ -134,7 +134,13 @@ head=headContent
     <p></p>
 
     <div alert-section>
-
+    </div>
+    <div class="pure-controls hidden" duplicate-article-hint>
+        <div class="alert alert-warning">
+            此連結已經有人分享了，你可以直接討論：
+            <ul duplicate-article>
+            </ul>
+        </div>
     </div>
     <div class="pure-controls hidden" can-not-create-article-hint>
         <div class="alert alert-warning">

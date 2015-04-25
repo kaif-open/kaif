@@ -45,6 +45,10 @@ class Router {
     _gotoWithQuery('/z/${zone}/new', null);
   }
 
+  String shortArticleUrl(String articleId) {
+    return "/d/$articleId";
+  }
+
   /**
    * change page to target path, with optional query string.
    * the change will be history of browser
@@ -73,4 +77,6 @@ class Router {
   void redirect(String location) {
     window.location.href = location;
   }
+
+
 }

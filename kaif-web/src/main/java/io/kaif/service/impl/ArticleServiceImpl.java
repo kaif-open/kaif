@@ -307,4 +307,9 @@ public class ArticleServiceImpl implements ArticleService {
     }
     return cleaned;
   }
+
+  @Override
+  public List<Article> listArticlesByExternalLink(Zone zone, String externalLink) {
+    return articleDao.listArticlesByExternalLink(zone, canonicalizeUrl(externalLink), 3);
+  }
 }
