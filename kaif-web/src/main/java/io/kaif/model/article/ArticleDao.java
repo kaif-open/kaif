@@ -168,15 +168,28 @@ public class ArticleDao implements DaoOperations {
       Account author,
       String title,
       String url,
+      String canonicalUrl,
       Instant now) {
     FlakeId flakeId = kaifIdGenerator.next();
-    return insertArticle(Article.createExternalLink(zoneInfo.getZone(),
+    Article article = insertArticle(Article.createExternalLink(zoneInfo.getZone(),
         zoneInfo.getAliasName(),
         flakeId,
         author,
         title,
         url,
         now));
+    jdbc().update(""
+            + " INSERT "
+            + "   INTO ArticleExternalLink "
+            + "        (articleId, zone, canonicalUrl, rawUrl, createTime) "
+            + " VALUES "
+            + questions(5),
+        article.getArticleId().value(),
+        article.getZone().value(),
+        canonicalUrl,
+        article.getLink(),
+        Timestamp.from(article.getCreateTime()));
+    return article;
   }
 
   /**
@@ -378,5 +391,31 @@ public class ArticleDao implements DaoOperations {
         + "  ORDER BY articleId DESC "
         + "  LIMIT ? ";
     return jdbc().query(sql, articleMapper, start.value(), authorId, size);
+  }
+
+  public boolean isExternalLinkExist(Zone zone, String canonicalUrl) {
+    final String sql = ""
+        + " SELECT count(*) > 0 "
+        + "   FROM ArticleExternalLink "
+        + "  WHERE zone = ? "
+        + "    AND canonicalUrl = ? "
+        + "  LIMIT 1 ";
+    return jdbc().queryForObject(sql, Boolean.class, zone.value(), canonicalUrl);
+  }
+
+  public List<Article> listArticlesByExternalLink(Zone zone, String canonicalUrl, int size) {
+    final String sql = ""
+        + " SELECT * "
+        + "   FROM Article "
+        + "  WHERE articleId IN ( "
+        + "          SELECT articleId "
+        + "            FROM ArticleExternalLink "
+        + "           WHERE zone = ? "
+        + "             AND canonicalUrl = ? "
+        + "           ORDER BY articleId DESC "
+        + "           LIMIT ? ) "
+        + "    AND deleted = FALSE "
+        + "  ORDER BY articleId DESC ";
+    return jdbc().query(sql, articleMapper, zone.value(), canonicalUrl, size);
   }
 }

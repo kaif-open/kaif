@@ -1,12 +1,20 @@
 package io.kaif.service.impl;
 
+import static java.util.stream.Collectors.*;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
 import javax.annotation.Nullable;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +22,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Charsets;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
@@ -66,6 +77,7 @@ public class ArticleServiceImpl implements ArticleService {
             author,
             title,
             link,
+            canonicalizeUrl(link),
             Instant.now()));
   }
 
@@ -262,5 +274,42 @@ public class ArticleServiceImpl implements ArticleService {
     // we don't use join because we may use cache to optimize later
     Account debater = accountDao.loadByUsername(username);
     return debateDao.listDebatesByDebater(debater.getAccountId(), startDebateId, PAGE_SIZE);
+  }
+
+  @Override
+  public boolean isExternalLinkExist(Zone zone, String externalLink) {
+    return articleDao.isExternalLinkExist(zone, canonicalizeUrl(externalLink));
+  }
+
+  @VisibleForTesting
+  String canonicalizeUrl(String url) {
+    //TODO visit target web page and get header:
+    //   <link rel="canonical" href="https://blog.example.com/dresses/" />
+    String cleaned = url.replaceAll("[\r\n \t]*", "");
+    try {
+      URI uri = new URI(cleaned);
+      List<NameValuePair> params = URLEncodedUtils.parse(uri, Charsets.UTF_8.name());
+      List<NameValuePair> cleanedParams = params.stream()
+          .filter(pair -> !pair.getName().startsWith("utm_"))
+          .sorted(Comparator.comparing(NameValuePair::getName)
+              .thenComparing(NameValuePair::getValue))
+          .collect(toList());
+      URIBuilder uriBuilder = new URIBuilder(uri);
+      if (cleanedParams.isEmpty()) {
+        uriBuilder.clearParameters();
+      } else {
+        //set empty list will cause builder always append `?`
+        uriBuilder.setParameters(cleanedParams);
+      }
+      return uriBuilder.build().toString();
+    } catch (URISyntaxException e) {
+      //ignore
+    }
+    return cleaned;
+  }
+
+  @Override
+  public List<Article> listArticlesByExternalLink(Zone zone, String externalLink) {
+    return articleDao.listArticlesByExternalLink(zone, canonicalizeUrl(externalLink), 3);
   }
 }

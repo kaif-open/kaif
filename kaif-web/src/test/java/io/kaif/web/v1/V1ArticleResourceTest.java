@@ -97,6 +97,22 @@ public class V1ArticleResourceTest extends MvcIntegrationTests {
   }
 
   @Test
+  public void articleByExternalLink() throws Exception {
+    when(articleService.listArticlesByExternalLink(zone.getZone(), "http://foo.com")).thenReturn(
+        asList(article1));
+    oauthPerform(user, get("/v1/article/zone/fun/external-link").param("url", "http://foo.com"))//
+        .andExpect(status().isOk()).andExpect(jsonPath("$.data[0].title", is("art1")));
+  }
+
+  @Test
+  public void externalLinkExist() throws Exception {
+    when(articleService.isExternalLinkExist(zone.getZone(), "http://foo.com")).thenReturn(true);
+    oauthPerform(user,
+        get("/v1/article/zone/fun/external-link/exist").param("url", "http://foo.com"))//
+        .andExpect(status().isOk()).andExpect(jsonPath("$.data", is(true)));
+  }
+
+  @Test
   public void article() throws Exception {
     when(articleService.loadArticle(FlakeId.fromString("foo2000"))).thenReturn(article2);
     oauthPerform(user, get("/v1/article/foo2000"))//

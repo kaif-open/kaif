@@ -334,6 +334,24 @@ class ArticleService extends _AbstractService {
     return _get(_getUrl('/can-create'), params:params)
     .then(_mapToSingleWrapper);
   }
+
+  Future<bool> isExternalUrlExist(String zone, String url) {
+    var params = {
+      'zone':zone,
+      'url': url
+    };
+    return _get(_getUrl('/external-link/exist'), params:params)
+    .then(_mapToSingleWrapper);
+  }
+
+  Future<List<String>> listArticleIdsByExternalLink(String zone, String url) {
+    var params = {
+      'zone':zone,
+      'url': url
+    };
+    return _get(_getUrl('/external-link'), params:params)
+    .then((res) => JSON.decode(res.responseText));
+  }
 }
 
 class VoteService extends _AbstractService {

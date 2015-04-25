@@ -19,12 +19,16 @@ class ArticleForm {
   SubmitButtonInputElement submitElem;
   SelectElement zoneInput;
   TextAreaElement contentInput;
+  Element duplicateArticleHint;
 
   bool get isSpeakMode => contentInput != null;
 
+  bool ignoreDuplicateExternalUrl = false;
+
   ArticleForm(this.elem, this.articleService, AccountSession accountSession) {
-    alert = new Alert.append(elem);
+    alert = new Alert.append(elem.querySelector('[alert-section]'));
     submitElem = elem.querySelector('[type=submit]');
+    duplicateArticleHint = elem.querySelector('[duplicate-article-hint');
     elem.onSubmit.listen(_onSubmit);
 
     zoneInput = elem.querySelector('[name=zoneInput]');
@@ -122,28 +126,62 @@ class ArticleForm {
       TextInputElement urlInput = elem.querySelector('#urlInput');
       urlInput.value = urlInput.value.trim();
 
-      _runCreate((String zone) {
+      _runCreate((String zone) async {
+        if (!ignoreDuplicateExternalUrl) {
+          List<String> articleIds = await articleService.listArticleIdsByExternalLink(zone,
+          urlInput.value);
+          if (articleIds.isNotEmpty) {
+            ignoreDuplicateExternalUrl = true;
+            submitElem.text = i18n('article.force-create');
+            submitElem.classes
+              ..remove('pure-button-primary')
+              ..add('button-danger');
+            throw new DuplicateArticleUrlError(articleIds);
+          }
+        }
         return articleService.createExternalLink(zone, urlInput.value, titleInput.value);
       });
-
     }
   }
 
-  void _runCreate(_articleCreator articleCreator) {
+  _runCreate(_articleCreator articleCreator) async {
     submitElem.disabled = true;
+    duplicateArticleHint.classes.add('hidden');
     String zone = zoneInput.value;
     var loading = new Loading.small()
       ..renderAfter(submitElem);
-    articleCreator(zone)
-    .then((_) {
+    try {
+      await articleCreator(zone);
       elem.remove();
       new FlashToast.success(i18n('article.create-success'), seconds:2);
       route.gotoNewArticlesOfZone(zone);
-    }).catchError((e) {
+    } on DuplicateArticleUrlError catch (error) {
+      _renderDuplicateArticleHints(error);
+    } catch (e) {
       alert.renderError('${e}');
-    }).whenComplete(() {
+    } finally {
       submitElem.disabled = false;
       loading.remove();
+    }
+  }
+
+  void _renderDuplicateArticleHints(DuplicateArticleUrlError error) {
+    duplicateArticleHint.classes.remove('hidden');
+    Element duplicateArticles = duplicateArticleHint.querySelector('[duplicate-article]');
+    error.articleIds.forEach((articleId) {
+      duplicateArticles.append(new LIElement()
+        ..append(new AnchorElement()
+        ..href = route.shortArticleUrl(articleId)
+        ..text = route.shortArticleUrl(articleId)
+      ));
+
     });
+  }
+}
+
+class DuplicateArticleUrlError extends Error {
+  List<String> articleIds;
+
+  DuplicateArticleUrlError(this.articleIds) {
   }
 }

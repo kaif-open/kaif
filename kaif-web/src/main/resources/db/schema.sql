@@ -172,8 +172,19 @@ CREATE TABLE ClientAppUser (
 
 CREATE UNIQUE INDEX ClientAppUserClientAccountIndex ON ClientAppUser (clientId, accountId);
 CREATE TABLE ZoneAdmin (
-  accountId       UUID          NOT NULL,
-  zone            VARCHAR(4096) NOT NULL,
-  createTime      TIMESTAMPTZ NOT NULL,
+  accountId  UUID          NOT NULL,
+  zone       VARCHAR(4096) NOT NULL,
+  createTime TIMESTAMPTZ   NOT NULL,
   PRIMARY KEY (accountId, zone)
 );
+
+CREATE TABLE ArticleExternalLink (
+  articleId    BIGINT        NOT NULL,
+  zone         VARCHAR(4096) NOT NULL,
+  canonicalUrl VARCHAR(4096) NOT NULL,
+  rawUrl       VARCHAR(4096) NOT NULL,
+  createTime   TIMESTAMPTZ   NOT NULL,
+  PRIMARY KEY (articleId)
+);
+
+CREATE INDEX ArticleExternalLinkCanonicalUrlZoneIndex ON ArticleExternalLink (canonicalUrl, zone);

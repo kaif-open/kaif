@@ -103,6 +103,7 @@ public abstract class DbIntegrationTests extends AbstractTransactionalJUnit4Spri
         author,
         title,
         "http://example.com/" + title,
+        "http://example.com/" + title,
         Instant.now());
   }
 
