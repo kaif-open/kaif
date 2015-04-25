@@ -263,4 +263,9 @@ public class ArticleServiceImpl implements ArticleService {
     Account debater = accountDao.loadByUsername(username);
     return debateDao.listDebatesByDebater(debater.getAccountId(), startDebateId, PAGE_SIZE);
   }
+
+  @Override
+  public boolean isExternalLinkExist(Zone zone, String externalLink) {
+    return articleDao.isExternalLinkExist(zone, externalLink);
+  }
 }

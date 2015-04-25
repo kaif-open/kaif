@@ -170,13 +170,25 @@ public class ArticleDao implements DaoOperations {
       String url,
       Instant now) {
     FlakeId flakeId = kaifIdGenerator.next();
-    return insertArticle(Article.createExternalLink(zoneInfo.getZone(),
+    Article article = insertArticle(Article.createExternalLink(zoneInfo.getZone(),
         zoneInfo.getAliasName(),
         flakeId,
         author,
         title,
         url,
         now));
+    jdbc().update(""
+            + " INSERT "
+            + "   INTO ArticleExternalLink "
+            + "        (articleId, zone, canonicalUrl, rawUrl, createTime) "
+            + " VALUES "
+            + questions(5),
+        article.getArticleId().value(),
+        article.getZone().value(),
+        article.getLink(),
+        article.getLink(),
+        Timestamp.from(article.getCreateTime()));
+    return article;
   }
 
   /**
@@ -378,5 +390,15 @@ public class ArticleDao implements DaoOperations {
         + "  ORDER BY articleId DESC "
         + "  LIMIT ? ";
     return jdbc().query(sql, articleMapper, start.value(), authorId, size);
+  }
+
+  public boolean isExternalLinkExist(Zone zone, String externalLink) {
+    final String sql = ""
+        + " SELECT count(*) > 0 "
+        + "   FROM ArticleExternalLink "
+        + "  WHERE zone = ? "
+        + "    AND canonicalUrl = ? "
+        + "  LIMIT 1 ";
+    return jdbc().queryForObject(sql, Boolean.class, zone.value(), externalLink);
   }
 }

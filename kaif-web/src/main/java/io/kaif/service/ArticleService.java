@@ -64,4 +64,6 @@ public interface ArticleService {
   List<Article> listArticlesByAuthor(String username, @Nullable FlakeId startArticleId);
 
   List<Debate> listDebatesByDebater(String username, @Nullable FlakeId startDebateId);
+
+  boolean isExternalLinkExist(Zone zone, String externalLink);
 }

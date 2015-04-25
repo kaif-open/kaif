@@ -521,6 +521,20 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
+  public void createExternalLink_check_duplicate() throws Exception {
+    assertFalse(service.isExternalLinkExist(zoneInfo.getZone(), "http://foo.com"));
+    Article created = service.createExternalLink(citizen,
+        zoneInfo.getZone(),
+        "title1",
+        "http://foo.com");
+    assertTrue(service.findArticle(created.getArticleId()).isPresent());
+
+    assertTrue(service.isExternalLinkExist(zoneInfo.getZone(), "http://foo.com"));
+    assertFalse(service.isExternalLinkExist(zoneInfo.getZone(), "http://foo.not.match"));
+    assertFalse(service.isExternalLinkExist(Zone.valueOf("other"), "http://foo.com"));
+  }
+
+  @Test
   public void accountStatsOnlyForCitizenZone() throws Exception {
     ZoneInfo touristZone = savedZoneTourist("test");
     Account tourist = savedAccountTourist("guestB");
