@@ -142,4 +142,9 @@ public class ArticleResource {
     return SingleWrapper.of(articleService.canCreateArticle(Zone.valueOf(rawZone), token));
   }
 
+  @RequestMapping(value = "/external-link/exist", method = RequestMethod.GET)
+  public SingleWrapper<Boolean> isExternalUrlExist(@RequestParam("zone") String rawZone,
+      @RequestParam("url") String url) {
+    return SingleWrapper.of(articleService.isExternalLinkExist(Zone.valueOf(rawZone), url));
+  }
 }

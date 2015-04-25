@@ -133,6 +133,9 @@ head=headContent
 
     <p></p>
 
+    <div alert-section>
+
+    </div>
     <div class="pure-controls hidden" can-not-create-article-hint>
         <div class="alert alert-warning">
             您沒有權限發表文章，請確認：

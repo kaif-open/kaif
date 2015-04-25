@@ -22,8 +22,10 @@ class ArticleForm {
 
   bool get isSpeakMode => contentInput != null;
 
+  bool ignoreDuplicateExternalUrl = false;
+
   ArticleForm(this.elem, this.articleService, AccountSession accountSession) {
-    alert = new Alert.append(elem);
+    alert = new Alert.append(elem.querySelector('[alert-section]'));
     submitElem = elem.querySelector('[type=submit]');
     elem.onSubmit.listen(_onSubmit);
 
@@ -122,10 +124,19 @@ class ArticleForm {
       TextInputElement urlInput = elem.querySelector('#urlInput');
       urlInput.value = urlInput.value.trim();
 
-      _runCreate((String zone) {
+      _runCreate((String zone) async {
+        if (!ignoreDuplicateExternalUrl) {
+          if (await articleService.isExternalUrlExist(zone, urlInput.value)) {
+            ignoreDuplicateExternalUrl = true;
+            submitElem.text = i18n('article.force-create');
+            submitElem.classes
+              ..remove('pure-button-primary')
+              ..add('button-danger');
+            throw i18n('article.url-exist');
+          }
+        }
         return articleService.createExternalLink(zone, urlInput.value, titleInput.value);
       });
-
     }
   }
 
