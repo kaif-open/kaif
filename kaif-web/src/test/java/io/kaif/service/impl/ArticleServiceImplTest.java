@@ -3,8 +3,12 @@ package io.kaif.service.impl;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.*;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.*;
 
+import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
@@ -19,6 +23,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.account.Account;
+import io.kaif.model.account.AccountDao;
 import io.kaif.model.account.AccountStats;
 import io.kaif.model.article.Article;
 import io.kaif.model.article.ArticleContentType;
@@ -30,6 +35,7 @@ import io.kaif.model.zone.Zone;
 import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.AccountService;
 import io.kaif.service.FeedService;
+import io.kaif.service.ZoneService;
 import io.kaif.test.DbIntegrationTests;
 import io.kaif.web.support.AccessDeniedException;
 
@@ -49,6 +55,12 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
   @Autowired
   private FeedService feedService;
+
+  @Autowired
+  private ZoneService zoneService;
+
+  @Autowired
+  private AccountDao accountDao;
 
   private ZoneInfo zoneInfo;
   private Article article;
@@ -493,6 +505,68 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
     assertEquals(firstPage, service.listTopArticles(null));
     assertEquals(secondPage, service.listTopArticles(firstPage.get(24).getArticleId()));
+  }
+
+  @Test
+  public void deleteArticle_by_author() throws Exception {
+    service.deleteArticle(citizen, article.getArticleId());
+    Zone zone = zoneInfo.getZone();
+    assertFalse(service.isExternalLinkExist(zone, article.getLink()));
+
+    // query single record still return article, not null
+    assertTrue(service.loadArticle(article.getArticleId()).isDeleted());
+    assertTrue(service.findArticle(article.getArticleId()).get().isDeleted());
+
+    // will excluded in all public articles query
+    assertThat(service.listArticlesByAuthor(citizen.getUsername(), null), not(hasItem(article)));
+    assertThat(service.listTopArticles(null), not(hasItem(article)));
+    assertThat(service.listLatestArticles(null), not(hasItem(article)));
+    assertThat(service.listLatestZoneArticles(zone, null), not(hasItem(article)));
+    assertThat(service.listHotZoneArticles(zone, null), not(hasItem(article)));
+
+    // 1) RSS article still see deleted articles (stale)
+    // 2) voted article still see deleted articles, check voteService test
+  }
+
+  @Test
+  public void deleteArticle_reject_not_author() throws Exception {
+    Article article = savedArticle(zoneInfo, citizen, "to be delete");
+    try {
+      Account other = savedAccountCitizen("misc_user");
+      service.deleteArticle(other, article.getArticleId());
+      fail("AccessDeniedException expected");
+    } catch (AccessDeniedException expected) {
+    }
+    assertFalse(service.loadArticle(article.getArticleId()).isDeleted());
+  }
+
+  @Test
+  public void deleteArticle_author_can_not_after_10_minutes() throws Exception {
+    service.setClock(Clock.offset(Clock.systemDefaultZone(), Duration.ofMinutes(-11)));
+    Article article = service.createSpeak(citizen, zoneInfo.getZone(), "titleFoo", "contentFoo");
+    try {
+      service.setClock(Clock.systemDefaultZone());
+      service.deleteArticle(citizen, article.getArticleId());
+      fail("AccessDeniedException expected");
+    } catch (AccessDeniedException expected) {
+    }
+    assertFalse(service.loadArticle(article.getArticleId()).isDeleted());
+  }
+
+  @Test
+  public void deleteArticle_zone_admin() throws Exception {
+    Account admin = savedAccountCitizen("admin");
+    accountDao.changeTotalVotedDebate(admin.getAccountId(), 1000, 0);
+    ZoneInfo aZone = zoneService.createByUser("a-zone", "a-zone", admin);
+
+    service.setClock(Clock.offset(Clock.systemDefaultZone(), Duration.ofMinutes(11)));
+    Article article = service.createSpeak(citizen, aZone.getZone(), "titleFoo", "contentFoo");
+
+    service.setClock(Clock.systemDefaultZone());
+
+    //admin can delete article without time constraint
+    service.deleteArticle(admin, article.getArticleId());
+    assertTrue(service.loadArticle(article.getArticleId()).isDeleted());
   }
 
   @Test

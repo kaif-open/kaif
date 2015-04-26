@@ -145,6 +145,11 @@ public class VoteServiceImplTest extends DbIntegrationTests {
 
     assertEquals(asList(a3, article), service.listUpVotedArticles(voter, null));
     assertEquals(asList(article), service.listUpVotedArticles(voter, a3.getArticleId()));
+
+    articleDao.markAsDeleted(article);
+    assertEquals("up voted article should include deleted one",
+        asList(a3, article),
+        service.listUpVotedArticles(voter, null));
   }
 
   @Test

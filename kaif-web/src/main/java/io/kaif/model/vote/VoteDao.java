@@ -205,6 +205,9 @@ public class VoteDao implements DaoOperations {
 
   }
 
+  /**
+   * up voted articles are private to voter, so we don't exclude deleted articles
+   */
   public List<Article> listUpVotedArticles(UUID voterId,
       @Nullable FlakeId startArticleId,
       int size) {

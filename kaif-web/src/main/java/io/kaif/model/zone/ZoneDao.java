@@ -126,6 +126,14 @@ public class ZoneDao implements DaoOperations {
         + "  ORDER BY ZoneInfo.zone ", zoneInfoMapper, accountId);
   }
 
+  public boolean isZoneAdmin(Zone zone, UUID accountId) {
+    return jdbc().queryForObject(""
+        + " SELECT count(*) > 0 "
+        + "   FROM ZoneAdmin "
+        + "  WHERE accountId = ? "
+        + "    AND zone = ? ", Boolean.class, accountId, zone.value());
+  }
+
   @Cacheable("listAdministrators")
   public List<String> listAdministratorsWithCache(Zone zone) {
     //TODO evict if we can add new administrators
