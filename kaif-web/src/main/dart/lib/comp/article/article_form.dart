@@ -28,7 +28,7 @@ class ArticleForm {
   ArticleForm(this.elem, this.articleService, AccountSession accountSession) {
     alert = new Alert.append(elem.querySelector('[alert-section]'));
     submitElem = elem.querySelector('[type=submit]');
-    duplicateArticleHint = elem.querySelector('[duplicate-article-hint');
+    duplicateArticleHint = elem.querySelector('[duplicate-article-hint]');
     elem.onSubmit.listen(_onSubmit);
 
     zoneInput = elem.querySelector('[name=zoneInput]');
