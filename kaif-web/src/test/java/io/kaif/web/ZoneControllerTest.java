@@ -215,7 +215,8 @@ public class ZoneControllerTest extends MvcIntegrationTests {
 
     mockMvc.perform(get("/z/programming/debates/aaa"))
         .andExpect(view().name("article/debates"))
-        .andExpect(content().string(containsString("文章已刪除")));
+        .andExpect(containsText("<meta name=\"robots\" content=\"noindex, nofollow\">"))
+        .andExpect(containsText("文章已刪除"));
   }
 
   @Test

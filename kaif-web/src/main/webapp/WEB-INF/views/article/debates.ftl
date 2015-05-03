@@ -14,6 +14,10 @@
 <meta name="description"
       content="${article.title} | ${zoneInfo.aliasName}">
 
+<#if article.deleted>
+    <meta name="robots" content="noindex, nofollow">
+</#if>
+
 </#assign>
 
 <@template.page
