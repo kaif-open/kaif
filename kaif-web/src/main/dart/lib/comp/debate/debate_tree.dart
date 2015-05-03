@@ -17,7 +17,8 @@ class DebateTree {
   DebateTree(this.elem, this.articleService, this.voteService, this.accountSession) {
 
     var articleElem = elem.querySelector('[article]');
-    ArticleComp articleComp = new ArticleComp(articleElem, voteService, accountSession);
+    ArticleComp articleComp = new ArticleComp(articleElem, voteService, accountSession,
+    articleService);
     var zone = articleComp.zone;
 
     _initArticleVote(articleComp);

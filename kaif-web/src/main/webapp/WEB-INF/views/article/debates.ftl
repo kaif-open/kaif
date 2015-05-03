@@ -26,42 +26,48 @@ applyZoneTheme=true
     <div class="grid">
 
         <div class="grid-body">
-            <div class="debate-tree" debate-tree>
-                <#if parentDebate??>
+            <#if article.deleted>
+                <p class="grid-center-row alert alert-warning">
+                    文章已刪除
+                </p>
+            <#else>
+                <div class="debate-tree" debate-tree>
+                    <#if parentDebate??>
 
-                <#-- tree parent is Debate, we still create article component for dart,
-                     but it is invisible to user -->
-                    <@comp.article data=article hidden=true />
-                    <@comp.debate data=parentDebate parentMode=true/>
-                <#else>
+                    <#-- tree parent is Debate, we still create article component for dart,
+                         but it is invisible to user -->
+                        <@comp.article data=article hidden=true />
+                        <@comp.debate data=parentDebate parentMode=true/>
+                    <#else>
 
-                <#-- tree parent is Article -->
-                    <@comp.article data=article parentMode=true />
-                    <div class="grid-center-row debate-form-container">
-                    <#-- place holder debate-form will replace by comp-template
-                         keep place holder looks the same as <@comp.debateForm>
-                         (but without cancel button)
-                         -->
-                        <div class="pure-form debate-form" debate-form>
-                            <div>
-                                <div class="hidden kmark kmark-preview"></div>
-                                <textarea class="pure-input-1 kmark-input" rows="3"></textarea>
-                            </div>
-                            <div class="form-action-bar">
-                                <button type="submit" class="pure-button pure-button-primary">留言
-                                </button>
-                                <button type="button" class="pure-button">
-                                    <@spring.messageText "kmark.preview" "Preview" /></button>
-                                <button type="button" class="pure-button">
-                                    <@spring.messageText "kmark.help" "Format Help" /></button>
+                    <#-- tree parent is Article -->
+                        <@comp.article data=article parentMode=true />
+                        <div class="grid-center-row debate-form-container">
+                        <#-- place holder debate-form will replace by comp-template
+                             keep place holder looks the same as <@comp.debateForm>
+                             (but without cancel button)
+                             -->
+                            <div class="pure-form debate-form" debate-form>
+                                <div>
+                                    <div class="hidden kmark kmark-preview"></div>
+                                    <textarea class="pure-input-1 kmark-input" rows="3"></textarea>
+                                </div>
+                                <div class="form-action-bar">
+                                    <button type="submit" class="pure-button pure-button-primary">留言
+                                    </button>
+                                    <button type="button" class="pure-button">
+                                        <@spring.messageText "kmark.preview" "Preview" /></button>
+                                    <button type="button" class="pure-button">
+                                        <@spring.messageText "kmark.help" "Format Help" /></button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </#if>
-                <#list debateTree.children as debateNode>
-                    <@comp.debateNode data=debateNode />
-                </#list>
-            </div>
+                    </#if>
+                    <#list debateTree.children as debateNode>
+                        <@comp.debateNode data=debateNode />
+                    </#list>
+                </div>
+            </#if>
         </div>
         <aside class="grid-aside">
             <#if parentDebate??>

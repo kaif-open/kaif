@@ -323,10 +323,22 @@ public class ArticleServiceImpl implements ArticleService {
   @Override
   public void deleteArticle(Authorization authorization, FlakeId articleId) {
     Article target = articleDao.findArticle(articleId).filter(article -> {
-      return article.canDelete(authorization, Instant.now(clock))
-          || zoneDao.isZoneAdmin(article.getZone(), authorization.authenticatedId());
+      return canDeleteArticle(authorization, article);
     }).orElseThrow(() -> new AccessDeniedException("not allow delete article: " + articleId));
 
     articleDao.markAsDeleted(target);
+  }
+
+  private boolean canDeleteArticle(Authorization authorization, Article article) {
+    return article.canDelete(authorization, Instant.now(clock))
+        || zoneDao.isZoneAdmin(article.getZone(), authorization.authenticatedId());
+  }
+
+  @Override
+  public boolean canDeleteArticle(String username, FlakeId articleId) {
+    return accountDao.findByUsername(username)
+        .flatMap(account -> articleDao.findArticle(articleId)
+            .filter(article -> canDeleteArticle(account, article)))
+        .isPresent();
   }
 }

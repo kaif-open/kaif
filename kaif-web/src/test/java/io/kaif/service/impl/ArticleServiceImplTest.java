@@ -509,6 +509,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void deleteArticle_by_author() throws Exception {
+    assertTrue(service.canDeleteArticle(citizen.getUsername(), article.getArticleId()));
     service.deleteArticle(citizen, article.getArticleId());
     Zone zone = zoneInfo.getZone();
     assertFalse(service.isExternalLinkExist(zone, article.getLink()));
@@ -533,6 +534,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     Article article = savedArticle(zoneInfo, citizen, "to be delete");
     try {
       Account other = savedAccountCitizen("misc_user");
+      assertFalse(service.canDeleteArticle(other.getUsername(), article.getArticleId()));
       service.deleteArticle(other, article.getArticleId());
       fail("AccessDeniedException expected");
     } catch (AccessDeniedException expected) {
@@ -546,6 +548,7 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     Article article = service.createSpeak(citizen, zoneInfo.getZone(), "titleFoo", "contentFoo");
     try {
       service.setClock(Clock.systemDefaultZone());
+      assertFalse(service.canDeleteArticle(citizen.getUsername(), article.getArticleId()));
       service.deleteArticle(citizen, article.getArticleId());
       fail("AccessDeniedException expected");
     } catch (AccessDeniedException expected) {
@@ -563,6 +566,8 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
     Article article = service.createSpeak(citizen, aZone.getZone(), "titleFoo", "contentFoo");
 
     service.setClock(Clock.systemDefaultZone());
+
+    assertTrue(service.canDeleteArticle(admin.getUsername(), article.getArticleId()));
 
     //admin can delete article without time constraint
     service.deleteArticle(admin, article.getArticleId());

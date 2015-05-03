@@ -11,6 +11,7 @@ import javax.validation.UnexpectedTypeException;
 
 import org.springframework.web.util.HtmlUtils;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
@@ -302,5 +303,23 @@ public class Article {
 
   public boolean canDelete(Authorization authorization, Instant now) {
     return authorization.belongToAccount(authorId) && createTime.plus(DELETE_LIMIT).isAfter(now);
+  }
+
+  @VisibleForTesting
+  public Article withDeleted() {
+    return new Article(zone,
+        aliasName,
+        articleId,
+        title,
+        link,
+        content,
+        contentType,
+        createTime,
+        authorId,
+        authorName,
+        true,
+        upVote,
+        downVote,
+        debateCount);
   }
 }

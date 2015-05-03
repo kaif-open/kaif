@@ -5,6 +5,7 @@ import 'package:kaif_web/model.dart';
 import '../vote/votable.dart';
 import 'dart:async';
 import '../server_part_loader.dart';
+import 'package:kaif_web/util.dart';
 
 class ArticleList {
 
@@ -16,7 +17,7 @@ class ArticleList {
   ArticleList(this.elem, this.articleService, this.voteService, this.accountSession,
               ServerPartLoader serverPartLoader) {
     List<ArticleComp> articleComps = elem.querySelectorAll('[article]').map((Element el) {
-      return new ArticleComp(el, voteService, accountSession);
+      return new ArticleComp(el, voteService, accountSession, articleService);
     }).toList();
 
     _initArticleVoters(articleComps);
@@ -45,6 +46,8 @@ class ArticleComp {
   final Element elem;
   final VoteService voteService;
   final AccountSession accountSession;
+  final ArticleService articleService;
+
   String _zone;
   String _articleId;
   ArticleVoteBox _voteBox;
@@ -55,11 +58,14 @@ class ArticleComp {
 
   ArticleVoteBox get voteBox => _voteBox;
 
-  ArticleComp(this.elem, this.voteService, this.accountSession) {
+  ArticleComp(this.elem, this.voteService, this.accountSession, this.articleService) {
     _articleId = elem.dataset['article-id'];
     _zone = elem.dataset['zone'];
     var voteBoxElem = elem.querySelector('[article-vote-box]');
     _voteBox = new ArticleVoteBox(voteBoxElem, this);
+    elem.querySelectorAll('[article-deletion]').forEach((targetElem) {
+      new ArticleDeletion(targetElem, this);
+    });
   }
 }
 
@@ -100,5 +106,40 @@ class ArticleVoteBox extends Votable {
   Future onVote(VoteState newState, VoteState previousState, int previousCount) {
     return articleComp.voteService.voteArticle(
         newState, articleComp.articleId, previousState, previousCount);
+  }
+}
+
+class ArticleDeletion {
+  final ArticleComp articleComp;
+  final Element elem;
+
+  ArticleDeletion(this.elem, this.articleComp) {
+    String authorName = elem.dataset['author-name'];
+    if (!articleComp.accountSession.isSelf(authorName)) {
+      return;
+    }
+    _init(authorName);
+  }
+
+  _init(String authorName) async {
+    bool canDelete = await articleComp.articleService.canDeleteArticle(authorName,
+    articleComp.articleId);
+    if (!canDelete) {
+      return;
+    }
+    elem.classes.remove('hidden');
+    var deleteElem = elem.querySelector('[delete]');
+    elem.querySelector('[confirm-delete]').onClick.listen((e) {
+      e.target.classes.add('hidden');
+      deleteElem.classes.remove('hidden');
+    });
+    deleteElem.onClick.listen((e) async {
+      try {
+        await articleComp.articleService.deleteArticle(articleComp.articleId);
+        route.reload();
+      } catch (error) {
+        new Toast.error('${error}', seconds:2).render();
+      }
+    });
   }
 }

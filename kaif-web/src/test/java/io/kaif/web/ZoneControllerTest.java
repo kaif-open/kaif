@@ -201,6 +201,24 @@ public class ZoneControllerTest extends MvcIntegrationTests {
   }
 
   @Test
+  public void articleDebates_deleted() throws Exception {
+    Zone z = zoneInfo.getZone();
+    FlakeId articleId = FlakeId.fromString("aaa");
+    Article deleted = article(z, "erlang discussion").withDeleted();
+    List<Debate> debates = asList(//
+        debate(deleted, "JAVA is better", null));
+
+    when(zoneService.loadZone(z)).thenReturn(zoneInfo);
+    when(articleService.loadArticle(articleId)).thenReturn(deleted);
+    when(articleService.listBestDebates(articleId, null)).thenReturn(DebateTree.fromDepthFirst(
+        debates));
+
+    mockMvc.perform(get("/z/programming/debates/aaa"))
+        .andExpect(view().name("article/debates"))
+        .andExpect(content().string(containsString("文章已刪除")));
+  }
+
+  @Test
   public void childDebates() throws Exception {
     Zone z = zoneInfo.getZone();
     FlakeId articleId = FlakeId.fromString("aaa");
