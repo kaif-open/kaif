@@ -64,6 +64,10 @@ abstract class _AbstractService extends Object with _ModelMapper {
     return _requestJson('POST', url, json, header:header);
   }
 
+  Future<HttpRequest> _deleteJson(String url, dynamic json, {Map<String, String> header}) {
+    return _requestJson('DELETE', url, json, header:header);
+  }
+
   Future<HttpRequest> _putJson(String url, dynamic json, {Map<String, String> header}) {
     return _requestJson('PUT', url, json, header:header);
   }
@@ -335,6 +339,15 @@ class ArticleService extends _AbstractService {
     .then(_mapToSingleWrapper);
   }
 
+  Future<bool> canDeleteArticle(String username, String articleId) {
+    var params = {
+      'username':username,
+      'articleId': articleId
+    };
+    return _get(_getUrl('/can-delete'), params:params)
+    .then(_mapToSingleWrapper);
+  }
+
   Future<bool> isExternalUrlExist(String zone, String url) {
     var params = {
       'zone':zone,
@@ -351,6 +364,14 @@ class ArticleService extends _AbstractService {
     };
     return _get(_getUrl('/external-link'), params:params)
     .then((res) => JSON.decode(res.responseText));
+  }
+
+  Future deleteArticle(String articleId) {
+    var json = {
+      'articleId':articleId
+    };
+    return _deleteJson(_getUrl('/'), json)
+    .then((res) => null);
   }
 }
 

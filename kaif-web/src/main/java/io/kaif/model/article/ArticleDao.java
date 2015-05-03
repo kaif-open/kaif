@@ -304,8 +304,15 @@ public class ArticleDao implements DaoOperations {
 
   @CacheEvict(value = "Article", key = "#a0.articleId")
   public void markAsDeleted(Article article) {
+    //TODO evict hot/latest Articles cache if present
+
+    // notice: we could not evict cache: articleByDebatesCache
     jdbc().update(" UPDATE Article SET deleted = TRUE WHERE articleId = ? ",
         article.getArticleId().value());
+    if (article.isExternalLink()) {
+      jdbc().update(" DELETE FROM ArticleExternalLink WHERE articleId = ? ",
+          article.getArticleId().value());
+    }
   }
 
   public Article createSpeak(ZoneInfo zoneInfo,

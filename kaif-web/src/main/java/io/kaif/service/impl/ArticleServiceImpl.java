@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Clock;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
@@ -65,6 +66,12 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Autowired
   private FeedService feedService;
+  private Clock clock = Clock.systemDefaultZone();
+
+  @VisibleForTesting
+  void setClock(Clock clock) {
+    this.clock = clock;
+  }
 
   @Override
   public Article createExternalLink(Authorization authorization,
@@ -78,7 +85,7 @@ public class ArticleServiceImpl implements ArticleService {
             title,
             link,
             canonicalizeUrl(link),
-            Instant.now()));
+            Instant.now(clock)));
   }
 
   private Article createArticle(Authorization authorization,
@@ -112,7 +119,7 @@ public class ArticleServiceImpl implements ArticleService {
             author,
             title,
             content,
-            Instant.now()));
+            Instant.now(clock)));
   }
 
   @Override
@@ -148,7 +155,7 @@ public class ArticleServiceImpl implements ArticleService {
         .filter(debate::canEdit)
         .orElseThrow(() -> new AccessDeniedException("no permission to edit debate:" + debateId));
 
-    debateDao.updateContent(debateId, content, Instant.now());
+    debateDao.updateContent(debateId, content, Instant.now(clock));
 
     editLog.info("user(id:{}) update debate's(id:{}) content:{}",
         editorAuth.authenticatedId(),
@@ -173,7 +180,7 @@ public class ArticleServiceImpl implements ArticleService {
             + article.getZone()));
 
     Debate parent = Optional.ofNullable(parentDebateId).flatMap(debateDao::findDebate).orElse(null);
-    Debate debate = debateDao.create(article, parent, content, debater, Instant.now());
+    Debate debate = debateDao.create(article, parent, content, debater, Instant.now(clock));
 
     //may improve later to make it async, but async has transaction problem
     articleDao.increaseDebateCount(article);
@@ -311,5 +318,27 @@ public class ArticleServiceImpl implements ArticleService {
   @Override
   public List<Article> listArticlesByExternalLink(Zone zone, String externalLink) {
     return articleDao.listArticlesByExternalLink(zone, canonicalizeUrl(externalLink), 3);
+  }
+
+  @Override
+  public void deleteArticle(Authorization authorization, FlakeId articleId) {
+    Article target = articleDao.findArticle(articleId).filter(article -> {
+      return canDeleteArticle(authorization, article);
+    }).orElseThrow(() -> new AccessDeniedException("not allow delete article: " + articleId));
+
+    articleDao.markAsDeleted(target);
+  }
+
+  private boolean canDeleteArticle(Authorization authorization, Article article) {
+    return article.canDelete(authorization, Instant.now(clock))
+        || zoneDao.isZoneAdmin(article.getZone(), authorization.authenticatedId());
+  }
+
+  @Override
+  public boolean canDeleteArticle(String username, FlakeId articleId) {
+    return accountDao.findByUsername(username)
+        .flatMap(account -> articleDao.findArticle(articleId)
+            .filter(article -> canDeleteArticle(account, article)))
+        .isPresent();
   }
 }

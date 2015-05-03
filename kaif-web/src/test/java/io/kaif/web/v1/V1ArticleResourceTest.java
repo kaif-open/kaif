@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -117,6 +118,21 @@ public class V1ArticleResourceTest extends MvcIntegrationTests {
     when(articleService.loadArticle(FlakeId.fromString("foo2000"))).thenReturn(article2);
     oauthPerform(user, get("/v1/article/foo2000"))//
         .andExpect(status().isOk()).andExpect(jsonPath("$.data.title", is("art2")));
+  }
+
+  @Test
+  public void canDeleteArticle() throws Exception {
+    when(articleService.canDeleteArticle("foo", FlakeId.fromString("foo2000"))).thenReturn(true);
+    oauthPerform(user, get("/v1/article/foo2000/can-delete").param("username", "foo"))//
+        .andExpect(status().isOk()).andExpect(jsonPath("$.data", is(true)));
+  }
+
+  @Test
+  public void deleteArticle() throws Exception {
+    oauthPerform(user, delete("/v1/article/foo3000"))//
+        .andExpect(status().isOk()).andExpect(jsonPath("$.data", nullValue()));
+    verify(articleService).deleteArticle(isA(ClientAppUserAccessToken.class),
+        eq(FlakeId.fromString("foo3000")));
   }
 
   @Test

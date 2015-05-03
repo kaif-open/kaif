@@ -45,6 +45,11 @@ public class ArticleResource {
 
   }
 
+  static class DeleteArticle {
+    @NotNull
+    public FlakeId articleId;
+  }
+
   static class CreateSpeak {
 
     @Size(max = Article.CONTENT_MAX, min = Article.CONTENT_MIN)
@@ -96,6 +101,12 @@ public class ArticleResource {
         request.zone,
         request.title.trim(),
         request.url.trim());
+  }
+
+  @RequestMapping(value = "/", method = RequestMethod.DELETE, consumes = {
+      MediaType.APPLICATION_JSON_VALUE })
+  public void deleteArticle(AccountAccessToken token, @Valid @RequestBody DeleteArticle request) {
+    articleService.deleteArticle(token, request.articleId);
   }
 
   @RequestMapping(value = "/speak", method = RequestMethod.PUT, consumes = {
@@ -159,5 +170,12 @@ public class ArticleResource {
         .stream()
         .map(Article::getArticleId)
         .collect(toList());
+  }
+
+  @RequestMapping(value = "/can-delete", method = RequestMethod.GET)
+  public SingleWrapper<Boolean> canDeleteArticle(AccountAccessToken token,
+      @RequestParam("username") String username,
+      @RequestParam("articleId") FlakeId articleId) {
+    return SingleWrapper.of(articleService.canDeleteArticle(username, articleId));
   }
 }

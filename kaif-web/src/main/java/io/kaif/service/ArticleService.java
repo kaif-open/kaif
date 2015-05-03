@@ -68,4 +68,8 @@ public interface ArticleService {
   boolean isExternalLinkExist(Zone zone, String externalLink);
 
   List<Article> listArticlesByExternalLink(Zone zone, String externalLink);
+
+  void deleteArticle(Authorization authorization, FlakeId articleId);
+
+  boolean canDeleteArticle(String username, FlakeId articleId);
 }

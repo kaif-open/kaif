@@ -3,6 +3,7 @@ package io.kaif.model.article;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Date;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -10,12 +11,14 @@ import javax.validation.UnexpectedTypeException;
 
 import org.springframework.web.util.HtmlUtils;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.kmark.KmarkProcessor;
 import io.kaif.model.account.Account;
+import io.kaif.model.account.Authorization;
 import io.kaif.model.zone.Zone;
 import io.kaif.web.v1.dto.V1ArticleDto;
 import io.kaif.web.v1.dto.V1ArticleType;
@@ -32,6 +35,7 @@ public class Article {
 
   //p{L} is unicode letter
   public static final String URL_PATTERN = "^(https?|ftp)://[\\p{L}\\w\\-]+\\.[\\p{L}\\w\\-]+.*";
+  public static final Duration DELETE_LIMIT = Duration.ofMinutes(10);
 
   public static Article createSpeak(Zone zone,
       String zoneAliasName,
@@ -295,5 +299,27 @@ public class Article {
 
   public String getShortUrlPath() {
     return String.format("/d/%s", getArticleId());
+  }
+
+  public boolean canDelete(Authorization authorization, Instant now) {
+    return authorization.belongToAccount(authorId) && createTime.plus(DELETE_LIMIT).isAfter(now);
+  }
+
+  @VisibleForTesting
+  public Article withDeleted() {
+    return new Article(zone,
+        aliasName,
+        articleId,
+        title,
+        link,
+        content,
+        contentType,
+        createTime,
+        authorId,
+        authorName,
+        true,
+        upVote,
+        downVote,
+        debateCount);
   }
 }

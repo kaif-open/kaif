@@ -84,6 +84,23 @@
                     <i class="fa fa-caret-right"></i> ${article.aliasName}
                 </a>
             </#if>
+            <#if article.deleted>
+                <span class="label label-warning">文章已刪除</span>
+            <#else>
+                <#if parentMode>
+                    <span class="hidden" article-deletion
+                          data-author-name="${article.authorName}">
+                        <button type="button" confirm-delete
+                                class="pure-button button-warning">
+                            刪除文章 ?
+                        </button>
+                        <button type="button" delete
+                                class="pure-button button-danger hidden">
+                            確定要刪除 ? 刪除後無法回復.
+                        </button>
+                    </span>
+                </#if>
+            </#if>
         </div>
     </div>
 </div>
