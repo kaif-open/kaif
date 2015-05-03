@@ -194,6 +194,17 @@ public class V1ArticleResource {
     return articleService.isExternalLinkExist(Zone.valueOf(zone), url);
   }
 
+  @ApiOperation(value = "[public] check the article can be deleted",
+      notes = "Check the article can be deleted by user. Note that there is time-constraint "
+          + "on article deletion. If article is old enough, the method return false.")
+  @RequiredScope(ClientAppScope.PUBLIC)
+  @RequestMapping(value = "/{articleId}/can-delete", method = RequestMethod.GET)
+  public boolean canDeleteArticle(ClientAppUserAccessToken accessToken,
+      @PathVariable(value = "articleId") FlakeId articleId,
+      @RequestParam("username") String username) {
+    return articleService.canDeleteArticle(username, articleId);
+  }
+
   @ApiOperation(value = "[article] Create an article with content",
       notes = "Create an article with content in specified zone")
   @ResponseStatus(HttpStatus.CREATED)
@@ -203,5 +214,16 @@ public class V1ArticleResource {
   public V1ArticleDto speak(ClientAppUserAccessToken token, @Valid @RequestBody SpeakEntry entry) {
     return articleService.createSpeak(token, entry.zone, entry.title.trim(), entry.content.trim())
         .toV1Dto();
+  }
+
+  @ApiOperation(value = "[article] Delete an article",
+      notes = "Delete an article, return status 200 if success, response as error if sign-in user "
+          + "not allow to delete the article.")
+  @RequiredScope(ClientAppScope.ARTICLE)
+  @RequestMapping(value = "/{articleId}", method = RequestMethod.DELETE, consumes = {
+      MediaType.APPLICATION_JSON_VALUE })
+  public void deleteArticle(ClientAppUserAccessToken token,
+      @PathVariable("articleId") FlakeId articleId) {
+    articleService.deleteArticle(token, articleId);
   }
 }
