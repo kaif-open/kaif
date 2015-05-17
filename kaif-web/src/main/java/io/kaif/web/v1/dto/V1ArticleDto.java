@@ -46,6 +46,9 @@ public class V1ArticleDto {
   @ApiModelProperty(value = "total debate count", required = true)
   private final long debateCount;
 
+  @ApiModelProperty(required = true)
+  private final boolean deleted;
+
   public V1ArticleDto(String zone,
       String zoneTitle,
       String articleId,
@@ -56,7 +59,8 @@ public class V1ArticleDto {
       Date createTime,
       String authorName,
       long upVote,
-      long debateCount) {
+      long debateCount,
+      boolean deleted) {
     this.zone = zone;
     this.zoneTitle = zoneTitle;
     this.articleId = articleId;
@@ -68,6 +72,7 @@ public class V1ArticleDto {
     this.authorName = authorName;
     this.upVote = upVote;
     this.debateCount = debateCount;
+    this.deleted = deleted;
   }
 
   public String getZone() {
@@ -84,11 +89,16 @@ public class V1ArticleDto {
         ", createTime=" + createTime +
         ", link='" + link + '\'' +
         ", content='" + content + '\'' +
-        ", contentType=" + articleType +
+        ", articleType=" + articleType +
         ", authorName='" + authorName + '\'' +
         ", upVote=" + upVote +
         ", debateCount=" + debateCount +
+        ", deleted=" + deleted +
         '}';
+  }
+
+  public boolean isDeleted() {
+    return deleted;
   }
 
   public String getZoneTitle() {
@@ -148,6 +158,9 @@ public class V1ArticleDto {
     if (debateCount != that.debateCount) {
       return false;
     }
+    if (deleted != that.deleted) {
+      return false;
+    }
     if (zone != null ? !zone.equals(that.zone) : that.zone != null) {
       return false;
     }
@@ -189,6 +202,7 @@ public class V1ArticleDto {
     result = 31 * result + (authorName != null ? authorName.hashCode() : 0);
     result = 31 * result + (int) (upVote ^ (upVote >>> 32));
     result = 31 * result + (int) (debateCount ^ (debateCount >>> 32));
+    result = 31 * result + (deleted ? 1 : 0);
     return result;
   }
 }

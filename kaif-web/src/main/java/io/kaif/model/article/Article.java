@@ -272,7 +272,8 @@ public class Article {
         Date.from(createTime),
         authorName,
         upVote,
-        debateCount);
+        debateCount,
+        deleted);
   }
 
   /**
