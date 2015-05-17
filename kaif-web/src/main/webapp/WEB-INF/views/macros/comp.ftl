@@ -28,7 +28,7 @@
 </div>
 </#macro>
 
-<#macro article data hidden=false parentMode=false showZone=false>
+<#macro article data hidden=false parentMode=false showZone=false zoneAdmins="">
 
     <#local article=data />
     <#local hiddenCls=hidden?string("hidden", "") />
@@ -89,7 +89,8 @@
             <#else>
                 <#if parentMode>
                     <span class="hidden" article-deletion
-                          data-author-name="${article.authorName}">
+                          data-author-name="${article.authorName}"
+                          data-zone-admins="${zoneAdmins}">
                         <button type="button" confirm-delete
                                 class="pure-button button-warning">
                             刪除文章 ?

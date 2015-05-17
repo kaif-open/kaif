@@ -55,6 +55,10 @@ class AccountSession {
     return isSignIn && username == current.username;
   }
 
+  bool containSelf(List<String> usernames) {
+    return isSignIn && usernames.contains(current.username);
+  }
+
   String provideAccessToken() {
     return _current != null ? _current.accessToken : null;
   }

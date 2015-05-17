@@ -32,12 +32,18 @@ import io.kaif.service.ZoneService;
 @RequestMapping("/z")
 public class ZoneController {
 
+  static class ZonePageModelView extends ModelAndView {
+    public ZonePageModelView(ZoneInfo zoneInfo, ZoneService zoneService) {
+      super("/zone/zone-page");
+      addObject("zoneInfo", zoneInfo);
+      addObject("recommendZones", zoneService.listRecommendZones());
+      addObject("administrators", zoneService.listAdministratorsWithCache(zoneInfo.getZone()));
+    }
+  }
   @Autowired
   private ZoneService zoneService;
-
   @Autowired
   private ArticleService articleService;
-
   @Autowired
   private HonorRollService honorRollService;
 
@@ -133,15 +139,6 @@ public class ZoneController {
             honorRollService.listHonorRollsByZone(zoneInfo.getZone())));
   }
 
-  static class ZonePageModelView extends ModelAndView {
-    public ZonePageModelView(ZoneInfo zoneInfo, ZoneService zoneService) {
-      super("/zone/zone-page");
-      addObject("zoneInfo", zoneInfo);
-      addObject("recommendZones", zoneService.listRecommendZones());
-      addObject("administrators", zoneService.listAdministratorsWithCache(zoneInfo.getZone()));
-    }
-  }
-
   @RequestMapping("/{zone}/debates/{articleId}")
   public Object articleDebates(@PathVariable("zone") String rawZone,
       @PathVariable("articleId") FlakeId articleFlakeId,
@@ -151,6 +148,10 @@ public class ZoneController {
           .addObject("zoneInfo", zoneInfo)
           .addObject("recommendZones", zoneService.listRecommendZones())
           .addObject("article", articleService.loadArticle(articleFlakeId))
+          .addObject("zoneAdmins",
+              zoneService.listAdministratorsWithCache(zoneInfo.getZone())
+                  .stream()
+                  .collect(Collectors.joining(",")))
           .addObject("debateTree", articleService.listBestDebates(articleFlakeId, null));
     });
   }

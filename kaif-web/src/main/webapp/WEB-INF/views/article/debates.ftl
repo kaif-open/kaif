@@ -14,9 +14,9 @@
 <meta name="description"
       content="${article.title} | ${zoneInfo.aliasName}">
 
-<#if article.deleted>
+    <#if article.deleted>
     <meta name="robots" content="noindex, nofollow">
-</#if>
+    </#if>
 
 </#assign>
 
@@ -45,7 +45,7 @@ applyZoneTheme=true
                     <#else>
 
                     <#-- tree parent is Article -->
-                        <@comp.article data=article parentMode=true />
+                        <@comp.article data=article parentMode=true zoneAdmins="${zoneAdmins}"/>
                         <div class="grid-center-row debate-form-container">
                         <#-- place holder debate-form will replace by comp-template
                              keep place holder looks the same as <@comp.debateForm>

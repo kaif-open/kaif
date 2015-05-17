@@ -115,14 +115,19 @@ class ArticleDeletion {
 
   ArticleDeletion(this.elem, this.articleComp) {
     String authorName = elem.dataset['author-name'];
-    if (!articleComp.accountSession.isSelf(authorName)) {
+
+    List<String> deleterNames = trimStringToEmpty(elem.dataset['zone-admins']).split(",").where((
+        name) => !isStringBlank(name)).toList(growable:true)
+      ..add(authorName);
+
+    if (!articleComp.accountSession.containSelf(deleterNames)) {
       return;
     }
-    _init(authorName);
+    _init(articleComp.accountSession.current.username);
   }
 
-  _init(String authorName) async {
-    bool canDelete = await articleComp.articleService.canDeleteArticle(authorName,
+  _init(String deleterName) async {
+    bool canDelete = await articleComp.articleService.canDeleteArticle(deleterName,
     articleComp.articleId);
     if (!canDelete) {
       return;

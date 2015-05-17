@@ -170,6 +170,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
     when(articleService.loadArticle(articleId)).thenReturn(article);
     when(articleService.listBestDebates(articleId, null)).thenReturn(DebateTree.fromDepthFirst(
         debates));
+    when(zoneService.listAdministratorsWithCache(z)).thenReturn(asList("admin1", "admin2"));
 
     mockMvc.perform(get("/z/programming/debates/aaa"))
         .andExpect(view().name("article/debates"))
@@ -178,6 +179,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
         .andExpect(content().string(containsString("erlang discussion")))
         .andExpect(content().string(containsString("ERLANG is bad")))
         .andExpect(content().string(containsString("JAVA is better")))
+        .andExpect(containsText("data-zone-admins=\"admin1,admin2\""))
         .andExpect(containsDebateFormTemplate());
   }
 
