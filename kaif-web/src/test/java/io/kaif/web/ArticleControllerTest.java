@@ -16,7 +16,7 @@ public class ArticleControllerTest extends MvcIntegrationTests {
   @Test
   public void createLink() throws Exception {
 
-    when(zoneService.listRecommendZones()).thenReturn(//
+    when(zoneService.listCitizenZones()).thenReturn(//
         asList(zoneDefault("zone1"), zoneDefault("zone2")));
 
     mockMvc.perform(get("/article/create-link"))

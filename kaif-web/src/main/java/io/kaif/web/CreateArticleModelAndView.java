@@ -14,10 +14,7 @@ public class CreateArticleModelAndView extends ModelAndView {
     super("article/create");
     addObject("zoneInfo", zoneInfo);
     addObject("candidateZoneInfos",
-        zoneService.listRecommendZones()
-            .stream()
-            .filter(z -> !z.equals(zoneInfo))
-            .collect(toList()));
+        zoneService.listCitizenZones().stream().filter(z -> !z.equals(zoneInfo)).collect(toList()));
     preFilled("", "");
   }
 
