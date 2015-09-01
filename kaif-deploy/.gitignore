@@ -1,4 +1,5 @@
 .vagrant/
 tmp/
-secret.yml
 secret/
+secret
+secret.yml
