@@ -7,7 +7,7 @@
 ### Prepare Dart
 
  * download dart sdk, install to a path -- `/path/to/dart-sdk`
- * export env in your shell `export DART_SDK=/path/to/dart-sdk`
+ * export env in your shell `export dart_sdk_home=/path/to/dart-sdk`
  * install Intellij Dart plugin
  * open `pubspec.yaml` and click `Get Dependencies`
 
@@ -41,7 +41,7 @@
  * `pubServe` will start pub server in 15980 port, which used by dev server
 
  * you can use gradle in Intellij to run `bootRun` and `pubServe`. For `pubServe`
-   you need to specify vm arguments: `-DDART_SDK=/absolute/path/to/dart-sdk`
+   you need to specify vm arguments: `-Ddart_sdk_home=/absolute/path/to/dart-sdk`
 
 ### Intellij IDEA configuration
 

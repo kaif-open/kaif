@@ -40,21 +40,21 @@ tasks.withType(org.springframework.boot.gradle.run.BootRunTask) {
 def dartDist = "dart_dist"
 
 def getDartPub() {
-  def envDart = System.env['DART_SDK']
-  def propDart = System.properties['DART_SDK']
+  def envDart = System.env['dart_sdk_home']
+  def propDart = System.properties['dart_sdk_home']
   if (envDart == null && propDart == null) {
     return null;
   }
   if (envDart != null) {
-    return "${System.env['DART_SDK']}/bin/pub"
+    return "${System.env['dart_sdk_home']}/bin/pub"
   }
-  return "${System.properties['DART_SDK']}/bin/pub"
+  return "${System.properties['dart_sdk_home']}/bin/pub"
 }
 
 task buildDart(dependsOn: classes, type: Exec) {
   doFirst {
     if (getDartPub() == null) {
-      throw new IllegalStateException('missing DART_SDK environment var., please install dart and set env first');
+      throw new IllegalStateException("missing 'dart_sdk_home' environment var., please install dart and set env first");
     }
   }
   workingDir "src/main/dart"
@@ -64,7 +64,7 @@ task buildDart(dependsOn: classes, type: Exec) {
 task pubServe(type: Exec) {
   doFirst {
     if (getDartPub() == null) {
-      throw new IllegalStateException('missing DART_SDK environment var., please install dart and set env first');
+      throw new IllegalStateException("missing 'dart_sdk_home' environment var., please install dart and set env first");
     }
   }
   workingDir "src/main/dart"
