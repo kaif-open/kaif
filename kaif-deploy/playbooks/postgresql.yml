@@ -1,0 +1,9 @@
+---
+
+- hosts: [pgs]
+  roles:
+    - { role: postgresql,
+        postgresql: {
+           shared_buffers: "{{inv_postgresql_shared_buffers}}"
+        }
+      }
