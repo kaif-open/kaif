@@ -54,7 +54,7 @@
               return 301 https://kaif.io$request_uri;
             }
         kaif_www:
-          - listen 443 ssl spdy
+          - listen 443 ssl http2
           - server_name www.kaif.io
           - return 301 https://kaif.io$request_uri
         kaif:
@@ -62,7 +62,7 @@
           ### ssl
           # temporary disable spdy because nginx 1.7.10 not work in safari 8
           # - listen 443 ssl spdy
-          - listen 443 ssl
+          - listen 443 ssl http2
           - ssl_session_cache builtin:1000 shared:SSL:10m
           - ssl_session_timeout 10m
           - ssl_certificate /etc/nginx_pki/kaif.io.crt
