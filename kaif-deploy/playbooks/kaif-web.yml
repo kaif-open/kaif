@@ -12,25 +12,16 @@
       nginx_http_params:
         - sendfile "on"
         - access_log "/var/log/nginx/access.log"
-        # for nginx debugging
-        # - error_log "/var/log/nginx/debug_error.log" debug
         - proxy_cache_path {{nginx_cache_dir}} levels=1:2 keys_zone=one:10m
         - proxy_temp_path {{nginx_cache_dir}}/tmp
-        - ssl_protocols TLSv1 TLSv1.1 TLSv1.2
-        - ssl_prefer_server_ciphers on
-        # mozilla recommended:
-        - ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128:AES256:AES:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK'
-        - ssl_dhparam /etc/nginx_pki/dhparam.pem
-        - ssl_stapling on
-        - ssl_stapling_verify on
-        - ssl_trusted_certificate /etc/nginx_pki/gd_bundle-g2-g1.crt
-        - resolver 8.8.4.4 8.8.8.8 valid=300s
-        - resolver_timeout 10s
+        # for nginx debugging
+        # - error_log "/var/log/nginx/debug_error.log" debug
       nginx_ssl_crt: kaif.io.crt
       nginx_ssl_key: kaif.io.key
-      nginx_dhparam_pem_content: "{{inv_nginx_dhparam_pem_content}}"
-      nginx_ssl_key_content: "{{inv_nginx_ssl_key_content}}"
+      nginx_dhparam: kaif.io.dhparam.pem
       nginx_ssl_crt_content: "{{inv_nginx_ssl_crt_content}}"
+      nginx_ssl_key_content: "{{inv_nginx_ssl_key_content}}"
+      nginx_dhparam_pem_content: "{{inv_nginx_dhparam_pem_content}}"
       nginx_sites:
         stub_status:
           - listen 80
@@ -63,10 +54,20 @@
           # temporary disable spdy because nginx 1.7.10 not work in safari 8
           # - listen 443 ssl spdy
           - listen 443 ssl http2
+          - ssl_protocols TLSv1 TLSv1.1 TLSv1.2
+          - ssl_prefer_server_ciphers on
+          # mozilla recommended:
+          - ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128:AES256:AES:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK'
+          - ssl_dhparam /etc/nginx_pki/{{nginx_dhparam}}
+          - ssl_certificate /etc/nginx_pki/{{nginx_ssl_crt}}
+          - ssl_certificate_key /etc/nginx_pki/{{nginx_ssl_key}}
+          - ssl_stapling on
+          - ssl_stapling_verify on
+          - ssl_trusted_certificate /etc/nginx_pki/gd_bundle-g2-g1.crt
+          - resolver 8.8.4.4 8.8.8.8 valid=300s
+          - resolver_timeout 10s
           - ssl_session_cache builtin:1000 shared:SSL:10m
           - ssl_session_timeout 10m
-          - ssl_certificate /etc/nginx_pki/kaif.io.crt
-          - ssl_certificate_key /etc/nginx_pki/kaif.io.key
           - proxy_redirect http:// $scheme://
           ### security
           # do not use "includeSubdomains;" because blog.kaif.io
