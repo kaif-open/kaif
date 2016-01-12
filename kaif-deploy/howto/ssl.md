@@ -3,7 +3,7 @@
 * generate private/public key first,  keyalg and keysize is important (or iphone could not used)
 
 ```
-keytool -genkey -keystore kaifio.jks -alias kaif -keyalg RSA -keysize 2048 -dname "CN=kaif.io, OU=Kaif, O=Kaif, L=Taipei, ST=Taiwan, C=tw"
+keytool -genkey -keystore kaifio.jks -alias kaif -keyalg RSA -keysize 2048 -dname "CN=kaif.io, OU=Kaif, O=Kaif, L=Taipei, ST=Taiwan, C=TW"
 ```
 
 * generate certification request (csr) for godaddy

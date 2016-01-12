@@ -110,7 +110,10 @@
   tags: [configuration,nginx]
 
 - name: Copy SSL root CA and intermediate CA's certificate for OCSP
-  copy: src=gd_bundle-g2-g1.crt dest=/etc/nginx_pki/gd_bundle-g2-g1.crt
+  copy: src={{item}} dest=/etc/nginx_pki/{{item}}
+  with_items:
+    - gd_bundle-g2-g1.crt
+    - comodo-bundle.crt
   notify:
    - reload nginx
   tags: [configuration,nginx]
