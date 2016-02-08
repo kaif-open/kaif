@@ -66,7 +66,7 @@
           - ssl_trusted_certificate /etc/nginx_pki/comodo-bundle.crt
           - resolver 8.8.4.4 8.8.8.8 valid=300s
           - resolver_timeout 10s
-          - ssl_session_cache builtin:1000 shared:SSL:10m
+          - ssl_session_cache shared:SSL:10m
           - ssl_session_timeout 10m
           - proxy_redirect http:// $scheme://
           ### security
