@@ -1,8 +1,11 @@
 /var/lib/{{tomcat.name}}/logs/catalina.out {
- copytruncate
- daily
- rotate 7
- compress
- missingok
- size 5M
+  copytruncate
+  daily
+  rotate 7
+  compress
+  missingok
+  size 5M
+  postrotate
+     find /var/lib/{{tomcat.name}}/logs -mtime +30 -exec rm {} \;
+  endscript
 }
