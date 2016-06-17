@@ -286,7 +286,7 @@ public class ZoneControllerTest extends MvcIntegrationTests {
   public void createSpeak() throws Exception {
     when(zoneService.loadZone(Zone.valueOf("programming"))).thenReturn(zoneInfo);
     ZoneInfo another = zoneDefault("another");
-    when(zoneService.listRecommendZones()).thenReturn(asList(zoneInfo, another));
+    when(zoneService.listCitizenZones()).thenReturn(asList(zoneInfo, another));
     mockMvc.perform(get("/z/programming/article/create-speak"))
         .andExpect(view().name("article/create"))
         .andExpect(model().attribute("candidateZoneInfos", hasItem(another)))
