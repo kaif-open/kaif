@@ -3,10 +3,30 @@
 
 - name: Automatically select the Oracle License
   tags: java
-  shell: echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
+  shell: echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections
+  changed_when: false
 
-- name: Install Oracle Java
+- name: Ensure Oracle Java Present
   tags: java
-  apt: pkg={{ item }} state=latest update_cache=yes cache_valid_time=86400
-  when: item|search("^oracle")
-  with_items: java_versions
+  apt: pkg={{java_versions}} state=present update_cache=yes cache_valid_time=86400
+
+- name: Unhold Oracle Java before upgrade
+  tags: java
+  command: apt-mark unhold {{java_versions}}
+  when: java_force_upgrade
+
+- name: Force Upgrade Oracle Java
+  tags: java
+  apt: pkg={{java_versions}} state=latest
+  when: java_force_upgrade
+
+- name: Check Oracle Java Hold
+  tags: java
+  shell: apt-mark showhold {{java_versions}}
+  register: java_oracle_hold_results
+  changed_when: false
+
+- name: Hold Oracle Java Version
+  tags: java
+  command: apt-mark hold {{java_versions}}
+  when: java_oracle_hold_results.stdout != java_versions

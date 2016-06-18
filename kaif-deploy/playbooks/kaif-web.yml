@@ -3,7 +3,10 @@
 
 - hosts: [web_masters, web_slaves]
   roles:
-    - { role: java, sudo: True, java_versions: 'oracle-java8-installer' }
+    - role: java
+      become: true
+      java_versions: 'oracle-java8-installer'
+
     - role: nginx
       sudo: true
       keep_only_specified: False
