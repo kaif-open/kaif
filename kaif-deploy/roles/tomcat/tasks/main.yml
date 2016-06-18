@@ -6,7 +6,7 @@
   command: "/usr/bin/test -d /var/lib/{{ tomcat.name }} "
   ignore_errors: True
   register: tomcat_installed
-  sudo: yes
+  changed_when: false
 
 - name: copy tomcat server for {{ tomcat.name }}
   when: tomcat_installed|failed
@@ -14,7 +14,6 @@
              dest=/var/lib
              owner={{tomcat.owner}}
              group={{tomcat.owner}}
-  sudo: yes
 
 - name: install tomcat server for {{ tomcat.name }}
   when: tomcat_installed|failed
@@ -22,23 +21,19 @@
   with_items:
     - mv /var/lib/apache-tomcat-8.0.17 /var/lib/{{tomcat.name }}
     - chown -R {{tomcat.owner}}.{{tomcat.owner}} /var/lib/{{ tomcat.name }}
-  sudo: yes
 
 - name: install tomcat init service for {{ tomcat.name }}
   template: src=tomcat-init.j2
             dest=/etc/init.d/{{tomcat.name}}
             mode=755
-  sudo: yes
 
 - name: install tomcat catalina.out rotate for {{ tomcat.name }}
   template: src=tomcat-rotate.j2
             dest=/etc/logrotate.d/{{tomcat.name}}
             mode=644
-  sudo: yes
 
 - name: enable tomcat service for {{ tomcat.name }}
   service: name={{tomcat.name}} enabled=true
-  sudo: yes
 
 - name: apply tomcat setenv.sh
   template: src=setenv.sh.j2
@@ -46,7 +41,6 @@
             owner={{tomcat.owner}} group={{tomcat.owner}}
   notify:
     - restart {{tomcat.name}}
-  sudo: yes
 
 - name: apply tomcat server.xml for {{ tomcat.name }}
   template: src=server.xml.j2
@@ -54,8 +48,7 @@
             owner={{tomcat.owner}} group={{tomcat.owner}}
   notify:
     - restart {{tomcat.name}}
-  sudo: yes
 
 - name: quick link for {{tomcat.name}}
   file: src=/var/lib/{{tomcat.name}} dest={{tomcat.name}} state=link
-
+        owner={{tomcat.owner}} group={{tomcat.owner}}
