@@ -4,20 +4,16 @@
 - name: Install git and zsh 
   apt: name={{item}} state=present update_cache=yes cache_valid_time=86400
   with_items:
-  - git
-  - zsh
-  - git-core
-  sudo: True
+    - git
+    - zsh
+    - git-core
 
 - name: Clone oh-my-zsh repo
-  git: repo=https://github.com/robbyrussell/oh-my-zsh.git dest=/home/{{user}}/.oh-my-zsh update=no
-  sudo: True
+  git: repo=https://github.com/robbyrussell/oh-my-zsh.git dest=/home/{{zsh_user}}/.oh-my-zsh update=no
 
 - name: deploy .zshrc
-  template: src=zshrc.j2 dest=/home/{{user}}/.zshrc owner={{user}}
-  sudo: True
+  template: src=zshrc.j2 dest=/home/{{zsh_user}}/.zshrc owner={{zsh_user}}
 
 - name: Set zsh as default shell
-  user: name={{user}} shell=/bin/zsh
-  sudo: True
+  user: name={{zsh_user}} shell=/bin/zsh
 

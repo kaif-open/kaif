@@ -6,3 +6,4 @@
       become: true
 
     - ohmyzsh
+      become: true

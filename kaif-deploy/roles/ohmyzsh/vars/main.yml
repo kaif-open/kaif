@@ -1,2 +1,2 @@
-user: "{{ansible_ssh_user}}"
+zsh_user: "{{ansible_user}}"
 
