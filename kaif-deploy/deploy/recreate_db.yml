@@ -3,18 +3,18 @@
 
   - name: copy schema files
     copy: src=db_link dest=/tmp force=yes
-    sudo_user: postgres
-    sudo: yes
+    become_user: postgres
+    become: yes
 
   - name: stop kaif-web before drop database
     command: /usr/sbin/service kaif-web stop
     ignore_errors: yes
-    sudo: yes
+    become: yes
 
   - name: restart postgres to disconnect all clients
     command: /usr/sbin/service postgresql restart 
     ignore_errors: yes
-    sudo: yes
+    become: yes
 
   - name: destroy and recreate database and schema
     shell: "{{ item }}"
@@ -23,6 +23,6 @@
       - psql -U kaif < /tmp/db_link/schema.sql
       - psql -U kaif < /tmp/db_link/data.sql
       - psql < /tmp/db_link/recreate_db_ci.sql
-    sudo_user: postgres
-    sudo: yes
+    become_user: postgres
+    become: yes
 

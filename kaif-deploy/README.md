@@ -8,13 +8,14 @@ Install required software
 * Prepare for Mac
 
 ```
-  # ansible
-  brew install ansible
+  # install ansible version 2.0.2.0 (other version not work) 
+  brew install python
+  pip install ansible==2.0.2.0 markupsafe  
 
-  # vagrant
+  # vagrant version >= 1.8.1
   # go to https://www.vagrantup.com/downloads and install .dmg
 
-  # virtualbox
+  # virtualbox > 5.0
   # go to https://www.virtualbox.org/wiki/Downloads and install .dmg
 ```
 

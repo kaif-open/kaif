@@ -3,12 +3,12 @@
 
   - name: install unzip
     apt: name=unzip state=present cache_valid_time=86400
-    sudo: yes
+    become: yes
 
   - name: stop kaif-web
     command: /usr/sbin/service kaif-web stop
     ignore_errors: yes
-    sudo: yes
+    become: yes
 
   - name: remove old webapps
     file: path=/var/lib/kaif-web/webapps/ROOT state=absent
@@ -22,4 +22,4 @@
 
   - name: start kaif-web
     service: name=kaif-web state=started
-    sudo: yes
+    become: yes

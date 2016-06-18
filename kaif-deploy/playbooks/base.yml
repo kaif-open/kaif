@@ -2,8 +2,8 @@
 
 - hosts: all
   roles:
-    - common
+    - role: common
       become: true
 
-    - ohmyzsh
+    - role: ohmyzsh
       become: true

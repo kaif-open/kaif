@@ -1,7 +1,7 @@
 ##
 #  playbook use for production
 #
-kaif       ansible_ssh_host=104.155.193.153  ansible_ssh_user=ubuntu
+kaif       ansible_host=104.155.193.153  ansible_user=ubuntu
 
 [web_masters]
 kaif
