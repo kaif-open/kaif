@@ -1,5 +1,5 @@
 Host kaif
-  HostName 104.155.193.153
+  HostName 104.199.175.252
   StrictHostKeyChecking no
   IdentityFile secret/kaif_rsa
   User ubuntu
