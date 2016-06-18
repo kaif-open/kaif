@@ -31,7 +31,7 @@
   apt: >
     pkg={{ item }}
     state=installed
-  with_items: postfix_packages
+  with_items: '{{postfix_packages}}'
   when: ansible_os_family == 'Debian'
   tags:
     - common

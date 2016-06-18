@@ -12,3 +12,5 @@ postfix_relayhost_pass: false
 # custom by ingram
 postfix_inet_interfaces: 'loopback-only'
 postfix_additional_my_networks: ''
+postfix_header_size_limit: '102400'
+postfix_smtp_tls_security_level: ''

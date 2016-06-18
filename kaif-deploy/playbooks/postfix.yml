@@ -2,10 +2,9 @@
 
 - hosts: [postfix]
   roles:
-    - { role: postfix,
-        sudo: true,
-        postfix_domain: 'kaif.io',
-        postfix_notify_email: 'kaifio@gmail.com',
-        postfix_inet_interfaces: "{{inv_postfix_inet_interfaces}}",
-        postfix_additional_my_networks: "{{inv_postfix_additional_my_networks}}"
-      }
+    - role: postfix
+      become: true
+      postfix_domain: 'kaif.io'
+      postfix_notify_email: 'kaifio@gmail.com'
+      postfix_inet_interfaces: "{{inv_postfix_inet_interfaces}}"
+      postfix_additional_my_networks: "{{inv_postfix_additional_my_networks}}"
