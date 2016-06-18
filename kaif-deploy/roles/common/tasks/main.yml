@@ -4,6 +4,15 @@
   #- name: install python-apt
   #  raw: apt-get update && apt-get install python-apt -y -q
 
+  ###
+  #
+  # configure required package for ansible core and extension modules
+  #
+  - name: install required package for ansible
+    apt: name={{item}} state=present update_cache=yes cache_valid_time=86400
+    with_items:
+    - aptitude
+
   ##
   # configure distro
   #
@@ -15,8 +24,16 @@
   - name: ensure en_US.UTF-8
     locale_gen: name=en_US.UTF-8 state=present
 
-  ## 
-  # configure locales
+  ##
+  # for xenial
+  - name: ensure LC_CTYPE
+    lineinfile:
+      dest: /etc/default/locale
+      line: 'LC_CTYPE="en_US.UTF-8"'
+      state: present
+
+  ##
+  # configure ssh locales
   #
   # if not disable, the ssh locales become zh_TW.UTF-8 when
   # we ssh from taiwan clients

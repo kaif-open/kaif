@@ -26,7 +26,7 @@ ssh -F vagrant.ssh_config kaif
 * re-provision
 
 ```
-vagrant provision kaif
+ansible-playbook -i dev site.yml
 ```
 
 * deploy war to vagrant 
@@ -52,12 +52,6 @@ vagrant reload kaif
 
 ```
 vagrant destroy kaif
-```
-
-* remove vagrant box
-
-```
-vagrant box remove ubuntu14
 ```
 
 ### sample command for production

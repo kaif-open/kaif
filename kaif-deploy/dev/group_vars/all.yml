@@ -1,0 +1,8 @@
+---
+
+## ansible
+
+ansible_user: ubuntu
+ansible_private_key_file: ".vagrant/machines/{{inventory_hostname}}/virtualbox/private_key"
+
+zsh_theme: "candy"

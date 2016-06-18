@@ -19,7 +19,7 @@
 ```
    cd kaif-deploy
    vagrant up
-   vagrant provision   # if failed on postfix, just retry again
+   ansible-playbook -dev site.yml  # if failed on postfix, just retry again
 ```
 
  * after vagrant complete, run `play_vagrant_recreate_db.sh` to initialize
