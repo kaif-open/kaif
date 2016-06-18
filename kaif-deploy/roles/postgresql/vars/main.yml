@@ -1,4 +1,2 @@
-postgresql:
-  version: '9.3'
-  db_path: '/volume/lib/postgresql'
-  shared_buffers: '32MB'
+postgresql_version: '9.3'
+postgresql_db_path: '/volume/lib/postgresql'

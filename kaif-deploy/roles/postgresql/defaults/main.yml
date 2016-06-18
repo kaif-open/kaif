@@ -1,0 +1,5 @@
+postgresql:
+  max_connections: '100'
+  shared_buffers: '32MB'
+  checkpoint_segments: '3'
+  effective_cache_size: '512MB'
