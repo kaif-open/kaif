@@ -1,0 +1,17 @@
+---
+
+  - name: prepare backup folder
+    shell: "{{item}}"
+    with_items:
+      - mkdir -p {{backup_dir}}/kaif
+    changed_when: false
+
+  - name: gce disk snapshot
+    template: src=gce_backup.sh.j2
+              dest={{backup_dir}}/kaif/gce_backup.sh
+              mode=755
+
+  - name: enable cron for gce disk snaphost
+    cron: name="gce disk snaphost" minute="35" hour="3"
+          user="{{ansible_user}}"
+          job="{{backup_dir}}/kaif/gce_backup.sh"

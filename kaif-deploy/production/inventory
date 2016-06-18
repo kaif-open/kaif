@@ -34,3 +34,6 @@ kaif
 [postfix:vars]
 inv_postfix_inet_interfaces="loopback-only"
 inv_postfix_additional_my_networks=""
+
+[backup]
+kaif

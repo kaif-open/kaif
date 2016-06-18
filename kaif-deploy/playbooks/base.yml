@@ -7,3 +7,7 @@
 
     - role: ohmyzsh
       become: true
+
+- hosts: backup
+  roles:
+    - role: backup   #note that backup role do not use sudo
