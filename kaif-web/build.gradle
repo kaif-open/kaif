@@ -1,8 +1,8 @@
 buildscript {
   ext {
-    springBootVersion = '1.2.1.RELEASE'
-    // spring boot now use 8.0.15
-    tomcatVersion = '8.0.15'
+    springBootVersion = '1.2.8.RELEASE'
+    // spring boot now use 8.0.30
+    tomcatVersion = '8.0.30'
   }
   dependencies {
     classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -143,15 +143,15 @@ dependencies {
   testCompile("org.springframework.boot:spring-boot-starter-test")
 
   //upgrade spring should bound json-path version too
-  testCompile('com.jayway.jsonpath:json-path:1.1.0')
+  testCompile('com.jayway.jsonpath:json-path:1.2.0')
 
   compile 'org.springframework.security:spring-security-crypto:3.2.5.RELEASE';
 
-  compile('org.postgresql:postgresql:9.4-1200-jdbc41') {
+  compile('org.postgresql:postgresql:9.4.1208') {
     exclude group: 'org.slf4j'
   }
 
-  compile 'com.google.guava:guava:18.0'
+  compile 'com.google.guava:guava:19.0'
 
   // postgresql driver not better fit HikariCP
   // compile 'com.zaxxer:HikariCP:2.3.0'
