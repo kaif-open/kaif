@@ -1,5 +1,6 @@
 Host kaif
   HostName 192.168.59.59
+  UserKnownHostsFile /dev/null
   StrictHostKeyChecking no
-  IdentityFile ~/.vagrant.d/insecure_private_key 
-  User vagrant 
+  IdentityFile .vagrant/machines/kaif/virtualbox/private_key
+  User ubuntu

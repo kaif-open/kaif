@@ -21,8 +21,8 @@
   when: ansible_os_family == "Debian"
   tags: [packages,nginx]
 
-- name: Install nginx repository for stable trusty
-  apt_repository: repo='deb http://nginx.org/packages/ubuntu/ trusty nginx' state=present update_cache=yes
+- name: Install nginx repository for stable
+  apt_repository: repo='deb http://nginx.org/packages/ubuntu/ xenial nginx' state=present update_cache=yes
   when: ansible_os_family == "Debian"
   tags: [packages,nginx]
 

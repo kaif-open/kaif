@@ -4,7 +4,7 @@
 #  the IP is defined in Vagrantfile, changing IP
 #  also require update vagrant.ssh_config
 #
-kaif       ansible_host=192.168.59.59  ansible_user=vagrant
+kaif       ansible_host=192.168.59.59
 
 [web_masters]
 kaif
