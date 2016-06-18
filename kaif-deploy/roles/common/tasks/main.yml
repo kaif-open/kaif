@@ -3,34 +3,30 @@
   # 
   #- name: install python-apt
   #  raw: apt-get update && apt-get install python-apt -y -q
-  #  sudo: yes
 
   ##
   # configure distro
   #
   - name: upgrade apt to latest safe
-    apt: upgrade=safe state=latest update_cache=yes cache_valid_time=864000
-    sudo: yes
+    apt: upgrade=safe state=latest update_cache=yes cache_valid_time=86400
 
   ## 
   # locale_gen only support ansible >= 1.6
   - name: ensure en_US.UTF-8
     locale_gen: name=en_US.UTF-8 state=present
-    sudo: yes
 
   ## 
   # configure locales
   #
   # if not disable, the ssh locales become zh_TW.UTF-8 when
   # we ssh from taiwan clients
-  # TODO not idempotent
   #
   - name: ensure not allow ssh use remote locale
-    lineinfile: "dest=/etc/ssh/sshd_config
-      regexp='^#?AcceptEnv LANG LC_\\*$'
-      line='#AcceptEnv LANG LC_*'
-      state=present"
-    sudo: yes
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      regexp: '^#?AcceptEnv LANG LC_\*$'
+      line: '#AcceptEnv LANG LC_*'
+      state: present
     notify: reload ssh
   
   ###
@@ -38,16 +34,14 @@
   #
   - name: ensure ntp is present
     apt: pkg=ntp state=present
-    sudo: yes
   - name: set /etc/localtime to {{timezone}}
-    command: /bin/cp /usr/share/zoneinfo/{{timezone}} /etc/localtime
-    sudo: yes
+    copy: remote_src=true src=/usr/share/zoneinfo/{{timezone}} dest=/etc/localtime
   - name: set /etc/timezone to {{timezone}}
     template: src=etc/timezone dest=/etc/timezone
-    sudo: yes
-    notify: update tzdata
-    notify: restart ntp
-    notify: restart cron
+    notify:
+      - update tzdata
+      - restart ntp
+      - restart cron
   
   ###
   # 
@@ -56,7 +50,6 @@
   - name: setup security limits.conf
     template: src=etc/security/limits.d/vagrant.conf 
               dest=/etc/security/limits.d/vagrant.conf
-    sudo: yes
 
   ###
   # 
@@ -65,16 +58,16 @@
   - name: install common utils
     apt: name={{item}} state=present update_cache=yes cache_valid_time=86400
     with_items:
-    - netcat
-    - git
-    - zsh
-    - iotop
-    - telnet
-    - bonnie++
-    - iftop
-    - tree
-    - vim
-    sudo: True
+      - netcat
+      - git
+      - zsh
+      - iotop
+      - telnet
+      - bonnie++
+      - iftop
+      - tree
+      - vim
+      - mutt
 
   ###
   #
@@ -83,7 +76,6 @@
   - name: setup performance tune sysctl.conf
     copy: src=etc/sysctl.d/99-tuning.conf
           dest=/etc/sysctl.d/99-tuning.conf
-    sudo: yes
     notify: reload sysctl
 
   ###
@@ -94,10 +86,8 @@
   #
   - name: configure etc hosts
     lineinfile: dest=/etc/hosts regexp='^127\.0\.1\.1' line='127.0.1.1 {{inventory_hostname}}'
-    sudo: yes
   - name: configure hostname
     hostname: name={{inventory_hostname}}
-    sudo: yes
 
   ###
   #
@@ -105,5 +95,4 @@
   #
   - name: add service sudo permission to user
     template: src=etc/sudoers.d/kaif dest=/etc/sudoers.d/kaif mode=440
-    when: ansible_ssh_user == "kaif"
-    sudo: yes
+    when: ansible_user == "kaif"

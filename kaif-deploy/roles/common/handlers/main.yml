@@ -1,18 +1,14 @@
 - name: update tzdata
-  command: /usr/sbin/dpkg-reconfigure --frontend noninteractive 
-  sudo: yes
+  command: /usr/sbin/dpkg-reconfigure --frontend noninteractive tzdata
 
 - name: reload ssh
   service: name=ssh state=reloaded
-  sudo: yes
 
 - name: restart ntp
   service: name=ntp state=restarted
-  sudo: yes
 
 - name: restart cron
   service: name=cron state=restarted
-  sudo: yes
 
 - name: reload sysctl
 
@@ -21,4 +17,3 @@
 
   ## service way:
   service: name=procps state=restarted
-  sudo: yes
