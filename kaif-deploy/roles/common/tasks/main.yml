@@ -1,19 +1,4 @@
   ##
-  # workaround missing python-apt in ansible < 1.6
-  # 
-  #- name: install python-apt
-  #  raw: apt-get update && apt-get install python-apt -y -q
-
-  ###
-  #
-  # configure required package for ansible core and extension modules
-  #
-  - name: install required package for ansible
-    apt: name={{item}} state=present update_cache=yes cache_valid_time=86400
-    with_items:
-    - aptitude
-
-  ##
   # configure distro
   #
   - name: upgrade apt to latest safe

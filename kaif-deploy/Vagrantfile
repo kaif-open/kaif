@@ -21,9 +21,10 @@ Vagrant.configure(2) do |config|
     end
   end
 
-  # xenial cloud image default do not have python2, which required
-  # by ansible
-  config.vm.provision "shell", inline:"apt-get -y install python"
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "site.yml"
+    ansible.inventory_path = "dev"
+  end
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
