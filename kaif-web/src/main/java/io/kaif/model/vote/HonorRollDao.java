@@ -25,8 +25,8 @@ public class HonorRollDao implements DaoOperations {
   @Autowired
   private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-  private final RowMapper<HonorRoll> honorRollRowMapper = (rs,
-      rowNum) -> new HonorRoll(UUID.fromString(rs.getString("accountId")),
+  private final RowMapper<HonorRoll> honorRollRowMapper = (rs, rowNum) -> new HonorRoll(UUID.fromString(
+      rs.getString("accountId")),
       rs.getString("zone") == null ? null : Zone.valueOf(rs.getString("zone")),
       // for total
       rs.getString("bucket"),
@@ -57,27 +57,20 @@ public class HonorRollDao implements DaoOperations {
 
   public void updateRotateVoteStats(HonorRollVoter voter) {
     String upsert = ""
-        + "   WITH Upsert "
-        + "     AS ("
-        + "             UPDATE HonorRoll "
-        + "                SET articleUpVoted = articleUpVoted + :deltaArticleUpVoted "
-        + "                  , debateUpVoted = debateUpVoted + :deltaDebateUpVoted "
-        + "                  , debateDownVoted = debateDownVoted + :deltaDebateDownVoted "
-        + "              WHERE accountId = :accountId "
-        + "                AND zone = :zone "
-        + "                AND bucket = :bucket "
-        + "          RETURNING * "
-        + "        ) "
-        + " INSERT "
-        + "   INTO HonorRoll "
-        + "        (accountId, zone, bucket, username, articleUpVoted, "
-        + "         debateUpVoted, debateDownVoted) "
-        + " SELECT :accountId, :zone, :bucket, :username, "
-        + "        :deltaArticleUpVoted,:deltaDebateUpVoted,:deltaDebateDownVoted "
-        + "  WHERE NOT EXISTS (SELECT * FROM Upsert) ";
+        + "      INSERT "
+        + "        INTO HonorRoll "
+        + "             (accountId, zone, bucket, username, articleUpVoted, "
+        + "             debateUpVoted, debateDownVoted) "
+        + "      VALUES (:accountId, :zone, :bucket, :username, :deltaArticleUpVoted,"
+        + "             :deltaDebateUpVoted, :deltaDebateDownVoted) "
+        + " ON CONFLICT (accountId, zone, bucket) "
+        + "   DO UPDATE "
+        + "         SET articleUpVoted = HonorRoll.articleUpVoted + :deltaArticleUpVoted "
+        + "           , debateUpVoted = HonorRoll.debateUpVoted + :deltaDebateUpVoted "
+        + "           , debateDownVoted = HonorRoll.debateDownVoted + :deltaDebateDownVoted ";
 
-    Map<String, Object> params = ImmutableMap.<String, Object>builder()
-        .put("accountId", voter.getAccountId())
+    Map<String, Object> params = ImmutableMap.<String, Object>builder().put("accountId",
+        voter.getAccountId())
         .put("zone", voter.getZone().value())
         .put("bucket", monthlyBucket(voter.getFlakeId()).toString())
         .put("username", voter.getUsername())

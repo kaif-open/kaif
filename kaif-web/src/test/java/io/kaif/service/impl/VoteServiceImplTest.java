@@ -161,6 +161,18 @@ public class VoteServiceImplTest extends DbIntegrationTests {
   }
 
   @Test
+  public void upVoteArticle_not_allow_wrong_previous_state() throws Exception {
+    service.voteArticle(UP, articleId, voter, EMPTY, 100);
+
+    //wrong previous state:
+    try {
+      service.voteArticle(UP, articleId, voter, EMPTY, 100);
+      fail("DuplicateKeyException expected");
+    } catch (DuplicateKeyException expected) {
+    }
+  }
+
+  @Test
   public void cancelVoteArticle_no_effect_if_not_exist() throws Exception {
     service.voteArticle(EMPTY, articleId, voter, EMPTY, 10);
     assertArticleTotalVote(0);

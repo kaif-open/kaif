@@ -93,26 +93,19 @@ public class VoteDao implements DaoOperations {
     // note that we do not allow update previousState not match.
 
     String upsert = ""
-        + "   WITH UpsertVote "
-        + "     AS ("
-        + "             UPDATE DebateVoter "
-        + "                SET previousCount = :previousCount "
-        + "                  , updateTime = :updateTime "
-        + "                  , voteState = :voteState "
-        + "              WHERE articleId = :articleId "
-        + "                AND voterId = :voterId "
-        + "                AND debateId = :debateId "
-        + "                AND voteState = :previousState "
-        + "          RETURNING * "
-        + "        ) "
-        + " INSERT "
-        + "   INTO DebateVoter "
-        + "        (voterId, articleId, debateId, previousCount, updateTime, voteState) "
-        + " SELECT :voterId, :articleId, :debateId, :previousCount, :updateTime, :voteState "
-        + "  WHERE NOT EXISTS (SELECT * FROM UpsertVote) ";
+        + "      INSERT "
+        + "        INTO DebateVoter "
+        + "             (voterId, articleId, debateId, previousCount, updateTime, voteState) "
+        + "      VALUES (:voterId, :articleId, :debateId, :previousCount, :updateTime, :voteState) "
+        + " ON CONFLICT (voterId, articleId, debateId) "
+        + "   DO UPDATE "
+        + "         SET previousCount = :previousCount "
+        + "           , updateTime = :updateTime "
+        + "           , voteState = :voteState "
+        + "       WHERE DebateVoter.voteState = :previousState ";
 
-    Map<String, Object> params = ImmutableMap.<String, Object>builder()
-        .put("voterId", voter.getVoterId())
+    Map<String, Object> params = ImmutableMap.<String, Object>builder().put("voterId",
+        voter.getVoterId())
         .put("debateId", voter.getDebateId().value())
         .put("articleId", voter.getArticleId().value())
         .put("previousCount", voter.getPreviousCount())
@@ -121,7 +114,17 @@ public class VoteDao implements DaoOperations {
         .put("previousState", previousState.name())
         .build();
 
-    namedJdbc().update(upsert, params);
+    /**
+     * when inserted, rowAffected = 1
+     * when conflict update, rowAffected = 1
+     * when conflict update but previousState not match, rowAffected = 0
+     */
+    final int rowAffected = namedJdbc().update(upsert, params);
+    if (rowAffected == 0) {
+      throw new DuplicateKeyException("previousState: "
+          + previousState
+          + " not match exist DebateVoter.voteState");
+    }
   }
 
   public List<DebateVoter> listDebateVotersByArticle(UUID accountId, FlakeId articleId) {
@@ -145,25 +148,19 @@ public class VoteDao implements DaoOperations {
      * implementation similar to voteDebate, see document there for explanation
      */
     String upsert = ""
-        + "   WITH UpsertVote "
-        + "     AS ("
-        + "             UPDATE ArticleVoter "
-        + "                SET previousCount = :previousCount "
-        + "                  , updateTime = :updateTime "
-        + "                  , voteState = :voteState "
-        + "              WHERE articleId = :articleId "
-        + "                AND voterId = :voterId "
-        + "                AND voteState = :previousState "
-        + "          RETURNING * "
-        + "        ) "
-        + " INSERT "
-        + "   INTO ArticleVoter "
-        + "        (voterId, articleId, previousCount, updateTime, voteState) "
-        + " SELECT :voterId, :articleId, :previousCount, :updateTime, :voteState "
-        + "  WHERE NOT EXISTS (SELECT * FROM UpsertVote) ";
+        + "      INSERT "
+        + "        INTO ArticleVoter "
+        + "             (voterId, articleId, previousCount, updateTime, voteState) "
+        + "      VALUES (:voterId, :articleId, :previousCount, :updateTime, :voteState) "
+        + " ON CONFLICT (voterid, articleId) "
+        + "   DO UPDATE "
+        + "         SET voteState = :voteState "
+        + "           , previousCount = :previousCount "
+        + "           , updateTime = :updateTime "
+        + "       WHERE ArticleVoter.voteState = :previousState ";
 
-    Map<String, Object> params = ImmutableMap.<String, Object>builder()
-        .put("voterId", voter.getVoterId())
+    Map<String, Object> params = ImmutableMap.<String, Object>builder().put("voterId",
+        voter.getVoterId())
         .put("articleId", voter.getArticleId().value())
         .put("previousCount", voter.getPreviousCount())
         .put("updateTime", Timestamp.from(voter.getUpdateTime()))
@@ -171,7 +168,12 @@ public class VoteDao implements DaoOperations {
         .put("previousState", previousState.name())
         .build();
 
-    namedJdbc().update(upsert, params);
+    final int rowAffected = namedJdbc().update(upsert, params);
+    if (rowAffected == 0) {
+      throw new DuplicateKeyException("previousState: "
+          + previousState
+          + " not match exist ArticleVoter.voteState");
+    }
   }
 
   public List<ArticleVoter> listArticleVoters(UUID voterId, List<FlakeId> articleIds) {
