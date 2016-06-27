@@ -26,7 +26,7 @@
                 </td>
                 <td>
                     <button class="pure-button button-danger"
-                            data-client-id="${clientApp.clientId}">撤消
+                            data-client-id="${clientApp.clientId}">撤銷
                     </button>
                 </td>
             </tr>
