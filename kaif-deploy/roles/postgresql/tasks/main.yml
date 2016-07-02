@@ -55,7 +55,7 @@
         user="postgres"
         job="/usr/lib/postgresql/{{ postgresql_version }}/bin/vacuumdb -a -z"
 
-- name: enable weekly cron for full vacuum
-  cron: name="weekly vacuum full" minute="0" hour="6" weekday="0"
-        user="postgres"
-        job="/usr/lib/postgresql/{{ postgresql_version }}/bin/vacuumdb -a -z -f"
+#- name: enable weekly cron for full vacuum
+#  cron: name="weekly vacuum full" minute="0" hour="6" weekday="0"
+#        user="postgres"
+#        job="/usr/lib/postgresql/{{ postgresql_version }}/bin/vacuumdb -a -z -f"
