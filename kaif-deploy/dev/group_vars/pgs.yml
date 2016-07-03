@@ -1,0 +1,5 @@
+---
+
+postgresql:
+  shared_buffers: '16MB'
+  effective_cache_size: '128MB'

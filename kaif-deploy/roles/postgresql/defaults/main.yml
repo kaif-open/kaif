@@ -1,4 +1,10 @@
 postgresql:
   max_connections: '100'
-  shared_buffers: '32MB'
-  effective_cache_size: '512MB'
+  shared_buffers: '128MB'
+  effective_cache_size: '4GB'
+  work_mem: '4MB'
+  maintenance_work_mem: '128MB'
+  checkpoint_completion_target: '0.5'
+  min_wal_size: '80MB'
+  max_wal_size: '1GB'
+  wal_buffers: '-1'

@@ -4,5 +4,3 @@
   roles:
     - role: postgresql
       become: true
-      postgresql:
-        shared_buffers: "{{inv_postgresql_shared_buffers}}"

@@ -56,7 +56,7 @@ external_pid_file = '/var/run/postgresql/{{postgresql_version}}-main.pid'			# wr
 
 # - Connection Settings -
 
-#kaif, use '*' because virtual machine not from localhost
+#customed, use '*' because virtual machine not from localhost
 listen_addresses = '*'			# what IP address(es) to listen on;
 					# comma-separated list of addresses;
 					# defaults to 'localhost'; use '*' for all
@@ -113,9 +113,7 @@ ssl_key_file = '/etc/ssl/private/ssl-cert-snakeoil.key'		# (change requires rest
 
 # - Memory -
 
-#kaif
-#production recommend 128MB
-#vagrant vm use 32MB
+#customed
 shared_buffers = {{postgresql.shared_buffers}}			# min 128kB
 					# (change requires restart)
 #huge_pages = try			# on, off, or try
@@ -126,10 +124,10 @@ shared_buffers = {{postgresql.shared_buffers}}			# min 128kB
 # per transaction slot, plus lock space (see max_locks_per_transaction).
 # It is not advisable to set max_prepared_transactions nonzero unless you
 # actively intend to use prepared transactions.
-#kaif, default 1MB
-work_mem = 4MB                          # min 64kB
-#kaif, default 16MB
-maintenance_work_mem = 128MB            # min 1MB
+#customed, default 1MB
+work_mem = {{postgresql.work_mem}} # min 64kB
+#customed, default 16MB
+maintenance_work_mem = {{postgresql.maintenance_work_mem}}            # min 1MB
 #autovacuum_work_mem = -1		# min 1MB, or -1 to use maintenance_work_mem
 #max_stack_depth = 2MB			# min 100kB
 dynamic_shared_memory_type = posix	# the default is the first option
@@ -193,8 +191,8 @@ dynamic_shared_memory_type = posix	# the default is the first option
 #wal_compression = off			# enable compression of full-page writes
 #wal_log_hints = off			# also do full page writes of non-critical updates
 					# (change requires restart)
-#kaif, default is -1 (64kb?)
-wal_buffers = 16MB                      # min 32kB, -1 sets based on shared_buffers
+#customed, default is -1
+wal_buffers = {{postgresql.wal_buffers}}                      # min 32kB, -1 sets based on shared_buffers
 					# (change requires restart)
 #wal_writer_delay = 200ms		# 1-10000 milliseconds
 
@@ -204,9 +202,12 @@ wal_buffers = 16MB                      # min 32kB, -1 sets based on shared_buff
 # - Checkpoints -
 
 #checkpoint_timeout = 5min		# range 30s-1h
-#max_wal_size = 1GB
-#min_wal_size = 80MB
-#checkpoint_completion_target = 0.5	# checkpoint target duration, 0.0 - 1.0
+#customed, default is 1GB
+max_wal_size = {{postgresql.max_wal_size}}
+#customed, default is 80MB
+min_wal_size = {{postgresql.min_wal_size}}
+#customed, default is 0.5
+checkpoint_completion_target = {{postgresql.checkpoint_completion_target}}	# checkpoint target duration, 0.0 - 1.0
 #checkpoint_warning = 30s		# 0 disables
 
 # - Archiving -
@@ -297,7 +298,7 @@ wal_buffers = 16MB                      # min 32kB, -1 sets based on shared_buff
 #cpu_index_tuple_cost = 0.005		# same scale as above
 #cpu_operator_cost = 0.0025		# same scale as above
 
-#kaif, default is 4GB
+#customed, default is 4GB
 effective_cache_size = {{postgresql.effective_cache_size}}
 
 # - Genetic Query Optimizer -

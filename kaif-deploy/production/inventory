@@ -21,10 +21,6 @@ inv_flake_node_id="1"
 # TODO all web servers should use diff node id
 inv_flake_node_id="2"
 
-# webs:vars check group_vars/webs file
-[webs:vars]
-inv_postgresql_shared_buffers="128MB"
-
 [pgs]
 kaif
 
