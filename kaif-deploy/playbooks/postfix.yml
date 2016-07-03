@@ -4,7 +4,8 @@
   roles:
     - role: postfix
       become: true
-      postfix_domain: 'kaif.io'
+      postfix_hostname: 'kaif.io'
+      postfix_domain: 'io'
       postfix_notify_email: 'kaifio@gmail.com'
       postfix_inet_interfaces: "{{inv_postfix_inet_interfaces}}"
       postfix_additional_my_networks: "{{inv_postfix_additional_my_networks}}"

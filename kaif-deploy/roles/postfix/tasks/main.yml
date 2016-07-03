@@ -18,14 +18,14 @@
     - common
     - postfix
 
-- name: Pre-seed Postfix configuration
-  command: >
-    /usr/bin/debconf-set-selections /tmp/postfix_selections
-    executable=/bin/bash
-  when: preseed_template|changed
-  tags:
-    - common
-    - postfix
+#- name: Pre-seed Postfix configuration
+#  command: >
+#    /usr/bin/debconf-set-selections /tmp/postfix_selections
+#    executable=/bin/bash
+#  when: preseed_template|changed
+#  tags:
+#    - common
+#    - postfix
 
 - name: Install packages for Debian derivatives
   apt: >

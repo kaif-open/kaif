@@ -1,9 +1,4 @@
 
-# Debian specific:  Specifying a file name will cause the first
-# line of that file to be used as the name.  The Debian default
-# is /etc/mailname.
-#myorigin = /etc/mailname
-
 smtpd_banner = $myhostname ESMTP $mail_name
 biff = no
 
@@ -32,10 +27,14 @@ smtp_tls_security_level = {{postfix_smtp_tls_security_level}}
 
 {% endif %}
 # General
-myhostname = {{ ansible_hostname }}
+{% if postfix_hostname is defined %}
+myhostname = {{ postfix_hostname }}
+{% else %}
+myhostname = {{ inventory_hostname }}
+{% endif %}
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
-mydestination = {% if postfix_domain is defined %}{{ ansible_hostname }}.{{ postfix_domain }}, {% endif %}localhost.localdomain, localhost
+mydestination = {% if postfix_domain is defined %}{{ inventory_hostname }}.{{ postfix_domain }}, {% endif %}localhost.localdomain, localhost
 relayhost = {{ postfix_relayhost }}
 mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128 {{ postfix_additional_my_networks }}
 mailbox_size_limit = 0
