@@ -1,0 +1,84 @@
+---
+
+- name: prepare acme directory
+  file: path=/root/soft state=directory
+
+- name: clone acme.sh
+  git:
+    repo: https://github.com/Neilpang/acme.sh.git
+    dest: "/root/soft/acme.sh"
+
+- name: install acme.sh
+  command: ./acme.sh --install
+  args:
+    chdir: /root/soft/acme.sh/
+    creates: /root/.acme.sh/acme.sh
+
+- name: prepare certification directory
+  file: path={{letsencrypt_nginx_pki_path}}/{{item}} state=directory
+  with_items:
+    "{{letsencrypt_domain_names}}"
+
+- name: install dhparam
+  command: openssl dhparam -out {{letsencrypt_nginx_pki_path}}/{{item}}/dhparam.pem 2048
+  args:
+    creates: "{{letsencrypt_nginx_pki_path}}/{{item}}/dhparam.pem"
+  with_items:
+    "{{letsencrypt_domain_names}}"
+
+- name: check number of cert installed
+  find:
+    paths: "{{letsencrypt_nginx_pki_path}}/{{item}}"
+    age: "-89d"
+    patterns: "letsencrypt\\-.+\\.pem$"
+    use_regex: true
+  with_items:
+    "{{letsencrypt_domain_names}}"
+  register: cert_installed
+
+# sample output
+#
+#     results: [
+#       {
+#          item: foo.example.com,
+#          matched: 3
+#       },
+#       {  item: bar.example.com,
+#          matched: 6
+#       }
+#     ]
+#
+#- name: debug
+#  debug: var=cert_installed
+
+- name: collect expired cert
+  set_fact:
+    expired_domain_names: []
+
+- name: collect expired cert (cont.)
+  set_fact:
+    expired_domain_names: "{{expired_domain_names + [item.item]}}"
+  when: item.matched != 3
+  with_items: "{{ cert_installed.results }}"
+
+#- name: debug expired
+#  debug: var=expired_domain_names
+
+- name: issue cert by aws dns
+  environment:
+    AWS_ACCESS_KEY_ID: "{{letsencrypt_aws_access_key_id}}"
+    AWS_SECRET_ACCESS_KEY: "{{letsencrypt_aws_secret_access_key}}"
+  command: /root/.acme.sh/acme.sh --issue --dns dns_aws -d {{item}}
+  with_items:
+    "{{expired_domain_names}}"
+  ignore_errors: yes
+
+- name: install cert to nginx
+  command: >
+      /root/.acme.sh/acme.sh --installcert -d {{item}}
+      --keypath       {{letsencrypt_nginx_pki_path}}/{{item}}/letsencrypt-key.pem
+      --fullchainpath {{letsencrypt_nginx_pki_path}}/{{item}}/letsencrypt-cert.pem
+      --capath        {{letsencrypt_nginx_pki_path}}/{{item}}/letsencrypt-chain.pem
+      --reloadcmd 'service nginx reload'
+  with_items:
+    "{{expired_domain_names}}"
