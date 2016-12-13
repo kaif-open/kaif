@@ -64,11 +64,13 @@
 #- name: debug expired
 #  debug: var=expired_domain_names
 
+## TODO: we always issue additional `www.` domain. This is naive approach!
+##       it should be better specified by caller
 - name: issue cert by aws dns
   environment:
     AWS_ACCESS_KEY_ID: "{{letsencrypt_aws_access_key_id}}"
     AWS_SECRET_ACCESS_KEY: "{{letsencrypt_aws_secret_access_key}}"
-  command: /root/.acme.sh/acme.sh --issue --dns dns_aws -d {{item}}
+  command: /root/.acme.sh/acme.sh --issue --dns dns_aws -d {{item}} -d www.{{item}}
   with_items:
     "{{expired_domain_names}}"
   ignore_errors: yes
