@@ -105,15 +105,7 @@
     owner: "{{nginx_user}}"
     group: "{{nginx_group}}"
     mode: 0600
-  notify:
-   - reload nginx
-  tags: [configuration,nginx]
-
-- name: Copy SSL root CA and intermediate CA's certificate for OCSP
-  copy: src={{item}} dest=/etc/nginx_pki/{{item}}
-  with_items:
-    - gd_bundle-g2-g1.crt
-    - comodo-bundle.crt
+  when: nginx_dhparam_pem_content is defined
   notify:
    - reload nginx
   tags: [configuration,nginx]
@@ -126,6 +118,7 @@
   copy:
     content: "{{nginx_ssl_crt_content}}"
     dest: "/etc/nginx_pki/{{nginx_ssl_crt}}"
+  when: nginx_ssl_crt_content is defined
   notify:
    - reload nginx
   tags: [configuration,nginx]
@@ -142,6 +135,7 @@
     owner: "{{nginx_user}}"
     group: "{{nginx_group}}"
     mode: 0600
+  when: nginx_ssl_key_content is defined
   notify:
    - reload nginx
   tags: [configuration,nginx]
