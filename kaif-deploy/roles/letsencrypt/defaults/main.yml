@@ -3,5 +3,6 @@
 # do not end with slash
 letsencrypt_nginx_pki_path: /etc/nginx_pki
 
-letsencrypt_aws_access_key_id: "{{aws_key.letsencrypt_access}}"
-letsencrypt_aws_secret_access_key: "{{aws_key.letsencrypt_secret}}"
+### you must define following vars
+# letsencrypt_aws_access_key_id:
+# letsencrypt_aws_secret_access_key:

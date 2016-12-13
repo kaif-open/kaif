@@ -1,4 +1,4 @@
 ---
 
-inv_letsencrypt_domain_names:
+inv_ssl_domain_names:
   - localdev.kaif.io

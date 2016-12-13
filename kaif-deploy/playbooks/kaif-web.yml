@@ -9,7 +9,13 @@
 
     - role: letsencrypt
       become: true
-      letsencrypt_domain_names: "{{inv_letsencrypt_domain_names}}"
+      letsencrypt_domain_names: "{{inv_ssl_domain_names}}"
+      when: letsencrypt_aws_access_key_id is defined
+
+    - role: selfsigned
+      become: true
+      selfsigned_domain_names: "{{inv_ssl_domain_names}}"
+      when: letsencrypt_aws_access_key_id is undefined
 
     - role: nginx
       become: true
@@ -57,10 +63,10 @@
           - ssl_prefer_server_ciphers on
           # mozilla recommended:
           - ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128:AES256:AES:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK'
-          - ssl_dhparam "/etc/nginx_pki/{{inv_letsencrypt_domain_names[0]}}/dhparam.pem"
-          - ssl_certificate "/etc/nginx_pki/{{inv_letsencrypt_domain_names[0]}}/letsencrypt-cert.pem"
-          - ssl_certificate_key "/etc/nginx_pki/{{inv_letsencrypt_domain_names[0]}}/letsencrypt-key.pem"
-          - ssl_trusted_certificate "/etc/nginx_pki/{{inv_letsencrypt_domain_names[0]}}/letsencrypt-chain.pem"
+          - ssl_dhparam "/etc/nginx_pki/{{inv_ssl_domain_names[0]}}/dhparam.pem"
+          - ssl_certificate "/etc/nginx_pki/{{inv_ssl_domain_names[0]}}/letsencrypt-cert.pem"
+          - ssl_certificate_key "/etc/nginx_pki/{{inv_ssl_domain_names[0]}}/letsencrypt-key.pem"
+          - ssl_trusted_certificate "/etc/nginx_pki/{{inv_ssl_domain_names[0]}}/letsencrypt-chain.pem"
           - ssl_stapling on
           - ssl_stapling_verify on
           - resolver 8.8.4.4 8.8.8.8 valid=300s
