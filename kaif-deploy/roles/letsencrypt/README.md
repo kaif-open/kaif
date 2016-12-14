@@ -13,9 +13,9 @@
 ```
    - role: letsencrypt
      become: true
-     letsencrypt_domain_names:
-       - domain1.com
-       - repository.liquable.com
+     letsencrypt_domains:
+        "domain1.com": "-d www.domain1.com -d localdev.domain1.com"
+        "th.domain1.com": "-d localdevth.domain1.ccom"
 ``` 
 
  * nginx configuration

@@ -3,6 +3,19 @@
 # do not end with slash
 letsencrypt_nginx_pki_path: /etc/nginx_pki
 
-### you must define following vars
-# letsencrypt_aws_access_key_id:
-# letsencrypt_aws_secret_access_key:
+## note staging generated certificates are not valid (just like self-signed)
+letsencrypt_staging: "{{ansible_virtualization_type == 'virtualbox'}}"
+
+## must define one of following dns parameter pair
+
+##
+## cloudflare
+##
+#    letsencrypt_cf_key:
+#    letsencrypt_cf_email:
+
+##
+## aws route53
+##
+#    letsencrypt_aws_access_key_id:
+#    letsencrypt_aws_secret_access_key:

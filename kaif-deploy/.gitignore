@@ -3,3 +3,4 @@ tmp/
 secret/
 secret
 secret.yml
+*-cloudimg-console.log
