@@ -1,2 +1,5 @@
 - name: restart {{tomcat.name}}
   service: name={{tomcat.name}} state=restarted
+
+- name: reload systemd
+  command: systemctl daemon-reload

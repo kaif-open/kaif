@@ -40,7 +40,7 @@ start() {
 }
 
 stop() {
- su -l {{tomcat.owner}} -c "$TOMCAT_HOME/bin/shutdown.sh"
+ su -l {{tomcat.owner}} -c "$TOMCAT_HOME/bin/shutdown.sh -force 10"
 }
 
 force-stop() {

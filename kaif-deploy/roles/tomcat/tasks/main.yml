@@ -26,6 +26,8 @@
   template: src=tomcat-init.j2
             dest=/etc/init.d/{{tomcat.name}}
             mode=755
+  notify:
+    - reload systemd
 
 - name: install tomcat catalina.out rotate for {{ tomcat.name }}
   template: src=tomcat-rotate.j2
