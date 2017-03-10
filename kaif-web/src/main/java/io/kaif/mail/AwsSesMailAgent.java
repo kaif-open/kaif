@@ -22,8 +22,11 @@ import org.springframework.mail.MailException;
 import org.springframework.stereotype.Component;
 
 import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.amazonaws.services.simpleemail.model.Body;
 import com.amazonaws.services.simpleemail.model.Content;
 import com.amazonaws.services.simpleemail.model.Destination;
@@ -46,7 +49,7 @@ public class AwsSesMailAgent implements MailAgent {
 
   private static final Logger logger = LoggerFactory.getLogger(AwsSesMailAgent.class);
 
-  private AmazonSimpleEmailServiceClient client;
+  private AmazonSimpleEmailService client;
   private final ExecutorService executor = Executors.newFixedThreadPool(5,
       new ThreadFactoryBuilder().setNameFormat("aws-ses-mail-agent-pool-%d").build());
 
@@ -67,7 +70,10 @@ public class AwsSesMailAgent implements MailAgent {
   public void afterPropertiesSet() {
     AWSCredentials awsSesCredentials = new BasicAWSCredentials(mailProperties.getAwsAccessKey(),
         mailProperties.getAwsSecretKey());
-    this.client = new AmazonSimpleEmailServiceClient(awsSesCredentials);
+    this.client = AmazonSimpleEmailServiceClientBuilder.standard()
+        .withRegion(Regions.US_EAST_1)
+        .withCredentials(new AWSStaticCredentialsProvider(awsSesCredentials))
+        .build();
     logger.info("mail agent ready, sender:"
         + mailProperties.getAwsSenderAddress()
         + ", access key:"
