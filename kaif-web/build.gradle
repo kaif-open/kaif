@@ -19,6 +19,8 @@ apply plugin: 'org.springframework.boot'
 
 bootRepackage {
   mainClass = 'io.kaif.Application'
+  // exclude `lib-provided` folder in war
+  enabled = false
 }
 
 springBoot {
@@ -135,7 +137,6 @@ dependencies {
 
   // compile("org.springframework.boot:spring-boot-starter-social-twitter")
   compile("org.springframework.boot:spring-boot-starter-actuator")
-  compile("org.springframework.boot:spring-boot-starter-remote-shell")
   testCompile("org.springframework.boot:spring-boot-starter-test")
 
   //upgrade spring should bound json-path version too
@@ -171,6 +172,7 @@ dependencies {
 
   // aws will depends on jackson/joda/httpclient
   compile 'com.amazonaws:aws-java-sdk-ses:1.9.16'
+  compile 'com.sun.mail:javax.mail:1.5.6'
 
   compile 'org.ocpsoft.prettytime:prettytime:3.2.7.Final'
   compile 'org.apache.commons:commons-math3:3.4.1'
