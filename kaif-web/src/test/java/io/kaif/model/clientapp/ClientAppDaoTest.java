@@ -36,7 +36,8 @@ public class ClientAppDaoTest extends DbIntegrationTests {
     dao.mergeClientAppUser(user, app, EnumSet.of(ClientAppScope.FEED), Instant.now());
     Optional<ClientAppUser> loaded = dao.findClientAppUserWithCache(user.getAccountId(),
         app.getClientId());
-    assertSame(loaded, dao.findClientAppUserWithCache(user.getAccountId(), app.getClientId()));
+    assertSame(loaded.get(),
+        dao.findClientAppUserWithCache(user.getAccountId(), app.getClientId()).get());
 
     dao.mergeClientAppUser(user,
         app,

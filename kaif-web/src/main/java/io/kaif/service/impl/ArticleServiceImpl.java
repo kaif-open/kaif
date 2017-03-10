@@ -295,7 +295,7 @@ public class ArticleServiceImpl implements ArticleService {
     String cleaned = url.replaceAll("[\r\n \t]*", "");
     try {
       URI uri = new URI(cleaned);
-      List<NameValuePair> params = URLEncodedUtils.parse(uri, Charsets.UTF_8.name());
+      List<NameValuePair> params = URLEncodedUtils.parse(uri, Charsets.UTF_8);
       List<NameValuePair> cleanedParams = params.stream()
           .filter(pair -> !pair.getName().startsWith("utm_"))
           .sorted(Comparator.comparing(NameValuePair::getName)

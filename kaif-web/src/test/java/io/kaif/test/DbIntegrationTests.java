@@ -9,7 +9,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -33,15 +34,15 @@ import io.kaif.model.zone.ZoneDao;
 import io.kaif.model.zone.ZoneInfo;
 
 @ActiveProfiles(SpringProfile.TEST)
-@SpringApplicationConfiguration(classes = DbIntegrationTests.JdbcTestApplication.class)
+@SpringBootTest(classes = DbIntegrationTests.JdbcTestApplication.class)
 public abstract class DbIntegrationTests extends AbstractTransactionalJUnit4SpringContextTests
     implements ModelFixture {
 
   @Profile(SpringProfile.TEST)
   @ComponentScan(basePackages = { "io.kaif.model", "io.kaif.service" })
   @Import(value = { DataSourceAutoConfiguration.class,
-      DataSourceTransactionManagerAutoConfiguration.class, ModelConfiguration.class,
-      UtilConfiguration.class, MockTestConfig.class })
+      DataSourceTransactionManagerAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
+      ModelConfiguration.class, UtilConfiguration.class, MockTestConfig.class })
   @Configuration
   public static class JdbcTestApplication {
 

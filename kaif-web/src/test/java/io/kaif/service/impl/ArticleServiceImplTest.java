@@ -646,15 +646,15 @@ public class ArticleServiceImplTest extends DbIntegrationTests {
 
   @Test
   public void canonicalizeUrl() throws Exception {
-    assertEquals("http://foo.com", service.canonicalizeUrl("http://foo.com"));
-    assertEquals("https://foo.com", service.canonicalizeUrl(" https://foo.com \n \r  \t\t"));
-    assertEquals("http://foo.com?c=2&d=1#hash",
+    assertEquals("http://foo.com/", service.canonicalizeUrl("http://foo.com"));
+    assertEquals("https://foo.com/", service.canonicalizeUrl(" https://foo.com \n \r  \t\t"));
+    assertEquals("http://foo.com/?c=2&d=1#hash",
         service.canonicalizeUrl("http://foo.com?d=1&c=2#hash"));
-    assertEquals("http://foo.com?xyz",
+    assertEquals("http://foo.com/?xyz",
         service.canonicalizeUrl("http://foo.com?utm_foo=12&utm_bar=aaa&xyz"));
 
-    assertEquals("foo", service.canonicalizeUrl("foo"));
-    assertEquals("ftp://foo.com", service.canonicalizeUrl("ftp://foo.com"));
+    assertEquals("/foo", service.canonicalizeUrl("foo"));
+    assertEquals("ftp://foo.com/", service.canonicalizeUrl("ftp://foo.com"));
   }
 
   @Test

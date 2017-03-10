@@ -6,6 +6,7 @@
     - role: java
       become: true
       java_versions: 'oracle-java8-installer'
+      # java_force_upgrade: true
 
     - role: letsencrypt
       become: true
