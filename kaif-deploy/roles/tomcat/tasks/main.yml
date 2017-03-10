@@ -10,7 +10,7 @@
 
 - name: copy tomcat server for {{ tomcat.name }}
   when: tomcat_installed|failed
-  unarchive: src=blank-tomcat-8.0.17.tar.gz
+  unarchive: src=blank-tomcat-8.5.11.tar.gz
              dest=/var/lib
              owner={{tomcat.owner}}
              group={{tomcat.owner}}
@@ -19,7 +19,7 @@
   when: tomcat_installed|failed
   shell: "{{item}}"
   with_items:
-    - mv /var/lib/apache-tomcat-8.0.17 /var/lib/{{tomcat.name }}
+    - mv /var/lib/apache-tomcat-8.5.11 /var/lib/{{tomcat.name }}
     - chown -R {{tomcat.owner}}.{{tomcat.owner}} /var/lib/{{ tomcat.name }}
 
 - name: install tomcat init service for {{ tomcat.name }}
