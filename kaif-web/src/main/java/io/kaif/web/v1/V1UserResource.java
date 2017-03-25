@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 import io.kaif.model.account.Account;
 import io.kaif.model.clientapp.ClientAppScope;
@@ -20,7 +20,7 @@ import io.kaif.model.clientapp.ClientAppUserAccessToken;
 import io.kaif.service.AccountService;
 import io.kaif.web.v1.dto.V1UserBasicDto;
 
-@Api(value = "user", description = "User profile")
+@Api(tags = "user", description = "User profile")
 @RestController
 @RequestMapping(value = "/v1/user", produces = MediaType.APPLICATION_JSON_VALUE)
 public class V1UserResource {

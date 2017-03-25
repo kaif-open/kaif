@@ -41,7 +41,7 @@
                     </p>
                 </li>
                 <li>
-                    <a href="/sdoc.jsp" target="_blank">
+                    <a href="/swagger-ui.html" target="_blank">
                         API 文件 <i class="fa fa-external-link"></i>
                     </a>
 

@@ -149,9 +149,8 @@ dependencies {
   // rss
   compile 'com.rometools:rome:1.5.0'
 
-  // swagger
-  compile "com.mangofactory:swagger-springmvc:1.0.2"
-  compile "org.ajar:swagger-spring-mvc-ui:0.4"
+  compile "io.springfox:springfox-swagger2:2.6.1"
+  compile "io.springfox:springfox-swagger-ui:2.6.1"
 
 }
 

@@ -3,8 +3,8 @@ package io.kaif.web.v1.dto;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.wordnik.swagger.annotations.ApiModel;
-import com.wordnik.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import io.kaif.web.v1.V1Commons;
 

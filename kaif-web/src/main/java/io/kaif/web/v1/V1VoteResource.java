@@ -21,10 +21,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiModelProperty;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.clientapp.ClientAppUserAccessToken;
@@ -35,7 +35,7 @@ import io.kaif.service.ArticleService;
 import io.kaif.service.VoteService;
 import io.kaif.web.v1.dto.V1VoteDto;
 
-@Api(value = "vote", description = "Vote on articles or debates")
+@Api(tags = "vote", description = "Vote on articles or debates")
 @RestController
 @RequestMapping(value = "/v1/vote", produces = MediaType.APPLICATION_JSON_VALUE)
 public class V1VoteResource {

@@ -12,15 +12,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mangofactory.swagger.annotations.ApiIgnore;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiModelProperty;
-import com.wordnik.swagger.annotations.ApiOperation;
-
 import io.kaif.model.clientapp.ClientAppUserAccessToken;
 import io.kaif.model.exception.RequireCitizenException;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 
-@Api(value = "echo", description = "Echo service for testing")
+@Api(tags = "echo", description = "Echo service for testing")
 @RestController
 @RequestMapping(value = "/v1/echo", produces = MediaType.APPLICATION_JSON_VALUE)
 public class V1EchoResource {
@@ -47,7 +45,7 @@ public class V1EchoResource {
     return message.message;
   }
 
-  @ApiIgnore
+  @ApiOperation(value = "for test", hidden = true)
   @RequiredScope(PUBLIC)
   @RequestMapping(value = "/test-failure", method = RequestMethod.POST)
   public void testFailure(ClientAppUserAccessToken accessToken,

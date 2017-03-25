@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiModelProperty;
-import com.wordnik.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.clientapp.ClientAppScope;
@@ -32,7 +32,7 @@ import io.kaif.service.ArticleService;
 import io.kaif.web.v1.dto.V1DebateDto;
 import io.kaif.web.v1.dto.V1DebateNodeDto;
 
-@Api(value = "debate", description = "Debates on articles")
+@Api(tags = "debate", description = "Debates on articles")
 @RestController
 @RequestMapping(value = "/v1/debate", produces = MediaType.APPLICATION_JSON_VALUE)
 public class V1DebateResource {

@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 import io.kaif.model.clientapp.ClientAppUserAccessToken;
 import io.kaif.model.zone.Zone;
@@ -21,7 +21,7 @@ import io.kaif.model.zone.ZoneInfo;
 import io.kaif.service.ZoneService;
 import io.kaif.web.v1.dto.V1ZoneDto;
 
-@Api(value = "zone", description = "Discussion zones")
+@Api(tags = "zone", description = "Discussion zones")
 @RestController
 @RequestMapping(value = "/v1/zone", produces = MediaType.APPLICATION_JSON_VALUE)
 public class V1ZoneResource {

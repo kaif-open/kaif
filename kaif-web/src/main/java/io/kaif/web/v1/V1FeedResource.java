@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiModelProperty;
-import com.wordnik.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.clientapp.ClientAppScope;
@@ -31,7 +31,7 @@ import io.kaif.web.v1.dto.V1AssetType;
 import io.kaif.web.v1.dto.V1DebateDto;
 import io.kaif.web.v1.dto.V1FeedAssetDto;
 
-@Api(value = "feed", description = "Personal news feed")
+@Api(tags = "feed", description = "Personal news feed")
 @RestController
 @RequestMapping(value = "/v1/feed", produces = MediaType.APPLICATION_JSON_VALUE)
 public class V1FeedResource {

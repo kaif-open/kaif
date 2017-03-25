@@ -1,6 +1,6 @@
 package io.kaif.web.v1.dto;
 
-import com.wordnik.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModel;
 
 @ApiModel("AssetType")
 public enum V1AssetType {

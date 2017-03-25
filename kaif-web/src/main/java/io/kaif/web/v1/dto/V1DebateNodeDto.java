@@ -2,8 +2,8 @@ package io.kaif.web.v1.dto;
 
 import java.util.List;
 
-import com.wordnik.swagger.annotations.ApiModel;
-import com.wordnik.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(value = "DebateNode", description = "Nested tree of debates")
 public class V1DebateNodeDto {
