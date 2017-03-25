@@ -1,0 +1,26 @@
+/*
+ material design - Blue Grey
+ */
+.z-theme-default {
+}
+
+.z-theme-default .zone-title {
+    color: #263238;
+}
+
+.z-theme-default .zone-header a {
+    color: #263238;
+}
+
+.z-theme-default .zone-header a:hover {
+    color: #78909C;
+}
+
+.z-theme-default .zone-menu .pure-menu-selected {
+    background-color: #ECEFF1;
+}
+
+.z-theme-default .zone-menu li a:hover {
+    background-color: #CFD8DC;
+    color: #263238;
+}

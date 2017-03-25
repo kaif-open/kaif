@@ -5,7 +5,6 @@ server:
 
 ## freemarker
 spring.freemarker:
-    templateLoaderPath: /WEB-INF/views,classpath:/mail
     cache: true
     settings:
         show_error_tips: false
@@ -14,7 +13,6 @@ spring.freemarker:
 ## spring mvc resources
 # cache one month for css, js, favicon.ico...etc
 spring.resources.cache-period: 2592000
-
 
 ## actuator
 endpoints.enabled: false
@@ -56,10 +54,6 @@ oauth:
 
 ## flake node id, every web server should use it's own unique node id
 flake.node-id: ${env.flake.node-id}
-
-
-## app, replace while gradle build (by ant syntax)
-app.build: @app.build@
 
 
 ## logback

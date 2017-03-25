@@ -1,0 +1,20 @@
+- hosts: webs 
+  tasks:
+
+  - name: stop kaif-web
+    service: name=kaif-web state=stopped
+    ignore_errors: yes
+    become: yes
+
+  - name: remove old jar
+    file: path=/var/lib/kaif-web/kaif-web.jar state=absent
+    ignore_errors: yes
+
+  - name: deploy new jar
+    copy: src=../../kaif-web/build/libs/kaif-web.jar
+          dest=/var/lib/kaif-web/kaif-web.jar
+          mode=755
+
+  - name: start kaif-web
+    service: name=kaif-web state=started
+    become: yes

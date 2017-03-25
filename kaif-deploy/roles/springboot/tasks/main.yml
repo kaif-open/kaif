@@ -1,0 +1,33 @@
+---
+
+- name: install springboot systemd for {{ springboot_name }}
+  template: src=springboot.service.j2
+            dest=/etc/systemd/system/{{springboot_name}}.service
+            mode=644
+  notify:
+    - reload systemd
+
+- name: prepare folders for {{springboot_name}}
+  file: path={{item}} state=directory
+        owner={{springboot_owner}} group={{springboot_owner}}
+  with_items:
+    - /var/lib/{{springboot_name}}
+    - /var/lib/{{springboot_name}}/logs
+
+- name: install conf for {{ springboot_name }}
+  template: src=springboot.conf.j2
+            dest=/var/lib/{{springboot_name}}/{{springboot_name}}.conf
+            owner={{springboot_owner}} group={{springboot_owner}}
+            mode=644
+
+- name: install log rotate for {{ springboot_name }}
+  template: src=springboot.rotate.j2
+            dest=/etc/logrotate.d/{{springboot_name}}
+            mode=644
+
+- name: enable service for {{ springboot_name }}
+  service: name={{springboot_name}} enabled=true
+
+- name: quick link for {{springboot_name}}
+  file: src=/var/lib/{{springboot_name}} dest={{springboot_name}} state=link
+        owner={{springboot_owner}} group={{springboot_owner}}

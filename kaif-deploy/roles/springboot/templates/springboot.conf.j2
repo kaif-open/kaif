@@ -1,0 +1,18 @@
+STOP_WAIT_TIME=10
+JAVA_OPTS=" \
+    -server \
+    -XX:+PrintAdaptiveSizePolicy \
+    -XX:+PrintGCDetails \
+    -XX:+PrintGCDateStamps \
+    -XX:+PrintCommandLineFlags \
+    {{springboot_vm_options}} \
+    -Duser.language=en \
+    -Duser.country=US \
+    -Djava.awt.headless=true \
+    -Dcom.sun.management.jmxremote.port={{springboot_jmxport}} \
+    -Dcom.sun.management.jmxremote.authenticate=false \
+    -Dcom.sun.management.jmxremote.ssl=false \
+    -Dcom.sun.management.jmxremote \
+    -Dspring.profiles.active={{ springboot_profiles_active }} \
+    {{springboot_app_options}} \
+    "

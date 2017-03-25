@@ -46,8 +46,8 @@ public class HomeControllerTest extends MvcIntegrationTests {
         .andExpect(content().string(containsString("joke xyz 1")))
         .andExpect(content().string(containsString("rec1")))
         .andExpect(content().string(containsString("rec2")))
-        .andExpect(content().string(containsString("/snapshot/css/kaif.css")))
-        .andExpect(content().string(containsString("/snapshot/web/main.dart.js")));
+        .andExpect(content().string(containsString("/css/kaif.css")))
+        .andExpect(content().string(containsString("/web/main.dart.js")));
   }
 
   @Test

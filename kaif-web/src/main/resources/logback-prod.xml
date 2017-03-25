@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration scan="true">
+    <!-- this should write log to /var/lib/{{springboot_name}}/logs folder, see ansible role -->
+    <property name="LOG_FOLDER" value="logs"/>
+    
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <charset>utf-8</charset>
@@ -11,7 +14,7 @@
     <!-- The FILE and ASYNC appenders are here as examples for a production configuration -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${catalina.base}/logs/web.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${LOG_FOLDER}/web.log.%d{yyyy-MM-dd}</fileNamePattern>
             <maxHistory>90</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -27,7 +30,7 @@
 
     <appender name="MAIL" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${catalina.base}/logs/mail.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${LOG_FOLDER}/mail.log.%d{yyyy-MM-dd}</fileNamePattern>
             <maxHistory>90</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -38,7 +41,7 @@
 
     <appender name="OAUTH" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${catalina.base}/logs/oauth.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${LOG_FOLDER}/oauth.log.%d{yyyy-MM-dd}</fileNamePattern>
             <maxHistory>90</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -49,7 +52,7 @@
 
     <appender name="EDIT" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${catalina.base}/logs/edit.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${LOG_FOLDER}/edit.log.%d{yyyy-MM-dd}</fileNamePattern>
             <maxHistory>90</maxHistory>
         </rollingPolicy>
         <encoder>

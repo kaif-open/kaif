@@ -64,9 +64,9 @@
  * build kaif-web.war then deploy to vagrant
 
 ```
-  ./war.sh
+  ./assemble.sh
   cd kaif-deploy
-  ./play_vagrant_deploy_war.sh
+  ./play_vagrant_deploy.sh
 ```
 
  * edit your /etc/hosts

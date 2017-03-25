@@ -1,0 +1,612 @@
+//
+// less file specific to components in dart
+//
+// for css not related to component, put to `template.less`
+// for css related to kmark, put to `kmark.less`
+//
+
+[comp-template] {
+  display: none !important;
+}
+
+//
+// sign-up-form
+//
+.sign-up-form {
+  max-width: @form-max-width;
+}
+
+//
+// article
+//
+
+.article-list {
+}
+
+.article-list-pager {
+  margin-top: @padding-lg-vertical;
+}
+
+.article {
+  padding-top: @padding-lg-vertical;
+}
+
+.article-vote-box {
+  font-size: @font-size;
+  text-align: right;
+  padding-right: @padding-sm-horizontal;
+  @media (min-width: @screen-md-min) {
+    padding-right: @padding-lg-horizontal;
+    font-size: @font-size-lg;
+
+    white-space: nowrap;
+    & > * {
+      display: inline-block;
+    }
+  }
+}
+
+.article-title {
+  overflow-x: hidden;
+  @media (min-width: @screen-md-min) {
+    font-size: @font-size-lg;
+  }
+
+  a {
+    text-decoration: none;
+  }
+  a:visited {
+    //custom to #919191 because user complain
+    color: lighten(@gray-base, 57%);
+  }
+  a:hover {
+    color: @link-hover-color;
+  }
+  // note <a> 's outline is preserved
+  // it used as a hint for user just visited that link
+}
+
+.article-link-hint {
+  color: @gray-light;
+  font-size: @font-size-sm;
+  .speak-hint {
+    font-weight: bold;
+  }
+}
+
+.article-content {
+  overflow-x: hidden;
+  margin-top: @padding-vertical;
+  margin-left: @padding-xs-horizontal;
+  margin-right: @padding-xs-horizontal;
+  padding: @padding-vertical @padding-horizontal;
+  border-radius: @border-radius-sm;
+  box-shadow: 0 0 6px -1px @gray-lighter;
+  max-width: @text-content-max-width;
+}
+
+.article-info {
+  color: @gray-light;
+  padding-top: @padding-xs-vertical;
+
+  font-size: @font-size-sm;
+
+  & > * {
+    padding-right: @padding-horizontal;
+  }
+
+  span {
+  }
+
+  a {
+    color: @gray-light;
+    text-decoration: none;
+    white-space: nowrap;
+    &:hover {
+      color: @link-hover-color;
+    }
+  }
+}
+
+//
+// article-form
+//
+
+.article-form {
+  margin-top: @padding-vertical;
+  max-width: @form-max-width;
+}
+
+//
+// user-profile
+//
+
+.user-profile {
+  border: 2px solid @gray-light;
+  margin-top: 20px;
+  padding: 30px;
+  .user-info-list {
+    margin-top: 30px;
+    font-size: @font-size-lg;
+    div {
+      padding-bottom: @padding-lg-vertical;
+    }
+    .user-number {
+      color: @brand-triangle-color;
+      font-family: serif;
+      font-size: @font-size * 2;
+    }
+  }
+  time {
+    display: block;
+    color: @gray-light;
+    float: right;
+    padding-top: 1em;
+  }
+  .kmark {
+    font-size: @font-size;
+    padding: @padding-lg-vertical @padding-lg-horizontal;
+  }
+}
+
+// see settings.part.ftl
+.about-me-control {
+  label {
+    vertical-align: top !important;
+  }
+  .about-me {
+    //below style is like [input] of pure-css
+    border: 1px solid #ccc;
+    box-shadow: inset 0 1px 3px #ddd;
+    border-radius: 4px;
+  }
+}
+
+.about-me {
+  background-color: @gray-lightest;
+  padding: @padding-vertical @padding-sm-horizontal;
+  min-height: 10em;
+}
+
+//
+// debate
+//
+
+.debate-tree {
+}
+
+.debate-form-container {
+  padding-top: @padding-lg-vertical;
+  margin-top: @padding-lg-vertical;
+  border-top: 1px dashed @gray-lighter;
+  max-width: @text-content-max-width;
+}
+
+.debate-form {
+  max-width: @form-max-width;
+}
+
+.child-debate-hint {
+  margin-top: @padding-lg-vertical;
+  max-width: @text-content-max-width;
+}
+
+.debate {
+  margin-top: @padding-lg-vertical;
+
+  .vote-count {
+    //    font-size: @font-size;
+    //    color: @gray-dark;
+    padding: @padding-xs-vertical @padding-xs-horizontal;
+    border-radius: @border-radius-sm;
+    border: 1px solid lighten(@gray-base, 80%);
+  }
+}
+
+.debate-vote-box {
+  padding-bottom: @padding-lg-vertical;
+  padding-right: @padding-sm-horizontal;
+  white-space: nowrap;
+  text-align: center;
+
+  @media (min-width: @screen-md-min) {
+    padding-right: @padding-lg-horizontal;
+    font-size: @font-size;
+    text-align: right;
+  }
+}
+
+.debate-info, .debate-title {
+  font-size: @font-size-sm;
+  color: @gray-light;
+
+  & > * {
+    padding-right: @padding-xs-horizontal;
+  }
+
+  a {
+    text-decoration: none;
+    color: @gray-light;
+    &:hover {
+      color: @link-hover-color;
+    }
+  }
+  .debate-edited {
+    color: @gray-dark;
+  }
+}
+
+.debate-content {
+  overflow-x: hidden;
+  max-width: @text-content-max-width;
+}
+
+.debate-action {
+  a {
+    white-space: nowrap;
+    .weak-button();
+    .button-sm();
+  }
+
+  // time tag should mark as inline-block or space between action will gone.
+  a time {
+    display: inline-block;
+  }
+}
+
+.debate-child {
+  .debate {
+    border-left: 1px solid @gray-lightest;
+    // better look by box-shadow, but firefox feel slower
+    // box-shadow: -7px 0px 5px -6px @gray-lightest;
+  }
+}
+
+// TODO hack grid for debate tree, search better way
+.debate {
+  .debate-child {
+    .grid-convex {
+      width: 30px;
+    }
+    .grid-center {
+      margin-left: 30px;
+    }
+    .debate-vote-box.grid-convex {
+      text-align: center;
+      padding-right: 0;
+    }
+  }
+
+  // debate page is change to mobile mode when size < 1024
+  // this is faster than other grid (so it will look wired
+  // when screen width between 768~1024 in debate page.
+  // Of course this is ugly, but since debate tree is nested
+  // too many level, readability is more important
+  @media (max-width: @screen-md-max) {
+    .grid-center, .debate-child .grid-center {
+      margin-left: 26px;
+    }
+
+    .grid-convex, .debate-child .grid-convex {
+      width: 26px;
+    }
+
+    .debate-child {
+      margin-left: -20px;
+    }
+  }
+}
+
+//
+// debate-list
+//
+.debate-list {
+
+  .debate-list-pager {
+    margin-top: @padding-lg-vertical;
+  }
+}
+
+//
+// debate-standalone
+//
+.debate-standalone {
+
+  .debate {
+    .debate-action {
+
+    }
+  }
+
+  .debate-navigation {
+    color: @gray-light;
+    padding-top: @padding-lg-vertical;
+    padding-bottom: @padding-lg-vertical;
+    //note that news-feed-unread override this
+    border-bottom: 1px solid @gray-lighter;
+    & > * {
+      padding-right: @padding-horizontal;
+    }
+
+    a {
+      color: @gray-light;
+      text-decoration: none;
+      white-space: nowrap;
+      &:hover {
+        color: @link-hover-color;
+      }
+    }
+  }
+}
+
+//
+// news-feed
+//
+.news-feed {
+
+  .news-feed-pager {
+    margin-top: @padding-lg-vertical;
+  }
+
+  .news-feed-unread {
+    // TODO this is hack, we should find better UI for unread
+    .debate-navigation {
+      border-bottom: 1px solid @brand-triangle-color;
+      // box-shadow: 2px 8px 11px -10px #ff5619;
+    }
+  }
+}
+
+//
+// kmark editor
+//
+
+.kmark-preview {
+  border: 2px dashed @brand-info;
+  border-radius: @border-radius;
+  padding: @padding-sm-vertical @padding-sm-horizontal;
+  min-height: 100px;
+}
+
+.kmark-input {
+  min-height: 100px;
+}
+
+//
+// votable
+//
+// @see votable.dart
+//
+
+@empty-vote-color: @gray-lighter;
+@up-voted-color: @brand-triangle-color;
+@down-voted-color: rgba(86, 79, 255, 0.75);
+@triangle-width: 8px;
+
+.votable {
+  a, a:focus, a:visited {
+    outline: 0;
+    text-decoration: none;
+  }
+  color: @empty-vote-color;
+}
+
+.votable-up {
+  color: @up-voted-color;
+}
+
+.votable-down {
+  color: @down-voted-color;
+}
+
+.up-vote {
+  .mixin-up-triangle(@color: @empty-vote-color; @width: @triangle-width);
+  transition: all 0.5s ease;
+}
+
+.votable-up .up-vote {
+  .mixin-up-triangle(@color: @up-voted-color; @width: @triangle-width);
+  transform: rotate(360deg);
+}
+
+.down-vote {
+  .mixin-down-triangle(@color: @empty-vote-color; @width: @triangle-width);
+  transition: all 0.5s ease;
+}
+
+.votable-down .down-vote {
+  .mixin-down-triangle(@color: @down-voted-color; @width: @triangle-width);
+  transform: rotate(-360deg);
+}
+
+//
+// bookmarklet
+//
+
+.bookmarklet {
+  h3 {
+    border-bottom: 1px solid @gray-lighter;
+  }
+  //bookmarklet page currently place within form
+  max-width: @form-max-width;
+
+  padding: @padding-lg-vertical @padding-lg-horizontal;
+  background-color: @gray-lightest;
+  border-radius: @border-radius;
+  .bookmarklet-container {
+    text-align: center;
+    a.bookmarklet-link {
+      font-weight: bold;
+      font-size: @font-size-lg;
+      padding-left: @padding-xs-horizontal;
+      padding-right: @padding-xs-horizontal;
+    }
+  }
+
+  .article-form & {
+    margin-top: 50px;
+  }
+}
+
+//
+// rss-link-icon
+//
+.rss-icon {
+  color: #FF6600;
+  font-size: @font-size;
+}
+
+//
+// notification
+//
+.notification {
+  .notification-counter {
+    background-color: @brand-triangle-color;
+    color: @gray-lightest;
+    .padding-h(@padding-xs-horizontal);
+    .padding-v(2px);
+    margin-left: @padding-xs-horizontal;
+    font-size: @font-size-sm;
+    border-radius: @border-radius-sm;
+    vertical-align: top;
+  }
+}
+
+//
+// honor roll
+//
+.honor-positive-score {
+  color: @up-voted-color;
+  .up-vote {
+    .mixin-up-triangle(@color: @up-voted-color; @width: @triangle-width);
+  }
+}
+
+.honor-negative-score {
+  color: @down-voted-color;
+  .down-vote {
+    .mixin-down-triangle(@color: @down-voted-color; @width: @triangle-width);
+  }
+}
+
+.honor-zero-score {
+
+}
+
+.honor-roll-formula {
+  font-size: @font-size-lg;
+}
+
+.honor-roll-title {
+  color: @gray-light;
+  padding-top: @padding-lg-vertical;
+  padding-bottom: @padding-vertical;
+  margin-bottom: 0;
+  border-bottom: 1px solid @gray-lighter;
+  a {
+    color: @gray-light;
+    text-decoration: none;
+    white-space: nowrap;
+    &:hover {
+      color: @link-hover-color;
+    }
+  }
+}
+
+.honor-roll-table {
+  width: 100%;
+  margin-top: @padding-lg-vertical;
+  thead {
+    border-bottom: 1px solid @gray-lighter;
+    color: @gray-light;
+  }
+  td {
+    .padding-v(@padding-vertical);
+  }
+  .fa-trophy-0 {
+    color: #DAA520;
+    font-size: @font-size-lg;
+  }
+  .fa-trophy-1 {
+    color: silver;
+    font-size: @font-size-lg;
+  }
+  .fa-trophy-2 {
+    color: #CD7F32;
+    font-size: @font-size-lg;
+  }
+  .honor-rank {
+    width: @convex-row-width;
+    text-align: right;
+  }
+  .honor-score {
+    width: @convex-row-width;
+    text-align: right;
+  }
+  .honor-user {
+    padding-left: @padding-lg-horizontal * 2;
+    text-align: left;
+  }
+}
+
+//
+// client-app-form (create/edit)
+//
+.client-app-form {
+  .margin-h(@padding-lg-horizontal);
+  max-width: @form-max-width;
+}
+
+.debug-client-app-form {
+  border: 2px dashed @brand-info;
+  border-radius: @border-radius;
+  margin-top: @padding-lg-vertical * 2;
+  padding: @padding-lg-vertical @padding-lg-horizontal;
+
+  .generated-token-input {
+    font-family: @font-family-monospace;
+    word-break: break-all;
+  }
+}
+
+.client-app-menu {
+  &.pure-menu li a {
+    white-space: normal;
+  }
+}
+
+.client-app-card {
+  margin-top: @padding-lg-vertical;
+  margin-left: @padding-lg-horizontal;
+  background-color: @gray-lightest;
+  border-radius: @border-radius-sm;
+  padding: @padding-lg-vertical @padding-lg-horizontal;
+  h3 {
+    color: @gray-light;
+    margin: @padding-lg-vertical 0;
+    border-bottom: 1px solid @gray-lighter;
+  }
+  .client-app-author {
+
+  }
+}
+
+.granted-client-app {
+  margin-top: @padding-lg-vertical;
+  table {
+    width: 100%;
+    .client-app-description {
+      width: 50%;
+    }
+  }
+
+}
+
+//
+// zone-form
+//
+
+.zone-form {
+  margin-top: @padding-vertical;
+  max-width: @form-max-width;
+}

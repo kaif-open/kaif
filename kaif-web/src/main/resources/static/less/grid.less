@@ -1,0 +1,102 @@
+//
+// grid (default)
+//
+//
+// |                                                              |
+// |-- .grid                                                    --|
+// |                                                              |
+// |                                                              |
+// ||-- .grid-body                            --||- .grid-aside -||
+// |                                             |                |
+// |                                             |                |
+// |||- .grid-row                             -|||                |
+// ||||- .grid-convex    -|- .grid-center    -||||                |
+// |                                             |                |
+// |                                             |                |
+// |||- .................. - .grid-center-row -|||                |
+// |                                             |                |
+//
+// .grid-row is repeatable, and can be use standalone
+//
+// .grid-center-row is simplified .grid-row, with center only (left
+// side is just blank margin
+//
+
+.grid {
+  .flex-display();
+  .flex-flow(column);
+  .justify-content(space-between);
+
+  @media (min-width: @screen-md-min) {
+    //TODO this is wrong
+    .flex-flow(row);
+  }
+
+  .grid-body {
+    width: 100%;
+  }
+
+  // firefox only hack
+  // when .grid-body contains long un-break text (ex. in debate content)
+  // firefox will extends .grid-body's width and this breaks grid layout
+  @media screen and (-moz-images-in-menus: 0) {
+    .grid-body {
+      overflow-x: hidden;
+    }
+  }
+
+  .grid-aside {
+    .flex-grow(0);
+    .flex-shrink(0);
+    .flex-basis(auto);
+
+    margin-bottom: @padding-lg-vertical;
+
+    // <ORDER>
+    @media (min-width: @screen-md-min) {
+      .flex-basis(@aside-width-sm);
+      margin-left: @padding-horizontal;
+    }
+
+    @media (min-width: @screen-xl-min) {
+      .flex-basis(@aside-width);
+      margin-left: @padding-lg-horizontal;
+    }
+    // </ORDER>
+  }
+}
+
+.grid-row {
+
+  & > * {
+    vertical-align: top;
+  }
+
+  .grid-convex {
+    float: left;
+    width: @convex-row-width-sm;
+  }
+
+  .grid-center {
+    margin-left: @convex-row-width-sm;
+  }
+
+  @media (min-width: @screen-md-min) {
+    .grid-convex {
+      width: @convex-row-width;
+    }
+
+    .grid-center {
+      margin-left: @convex-row-width;
+    }
+  }
+}
+
+.grid-center-row {
+  margin-left: 0;
+
+  @media (min-width: @screen-md-min) {
+    margin-left: @convex-row-width;
+  }
+}
+

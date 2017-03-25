@@ -1,0 +1,261 @@
+//
+// less file for general page ftl or template.ftl
+//
+
+//
+// top-menu
+//
+.top-menu {
+
+  @logo-height: 25px;
+  @logo-margin: 10px;
+  @top-height: (@logo-height + @logo-margin * 2);
+  @top-link-color: lighten(@link-color, 35%);
+  @top-link-hover-color: lighten(@link-color, 45%);
+
+  .padding-h(@padding-sm-horizontal);
+  text-align: left;
+  z-index: @zindex-navbar;
+  height: @top-height;
+  line-height: @top-height;
+
+  & > ul {
+    float: right;
+  }
+
+  img.logo {
+    width: 60px;
+    height: @logo-height;
+    .margin-v(@logo-margin);
+  }
+
+  // override purecss block mode in mobile
+  @media (max-width: 480px) {
+    &.pure-menu-horizontal > .pure-menu-children > li {
+      display: inline-block;
+    }
+
+    .pure-menu-can-have-children .pure-menu-children li {
+      border: 0;
+    }
+
+    // smaller padding in mobile
+    &.pure-menu a {
+      .padding-h(10px);
+    }
+  }
+
+  &.pure-menu .pure-menu-heading {
+    .padding-v(0);
+  }
+
+  &.pure-menu-open {
+    background: inherit; //override pure-menu
+  }
+
+  &.pure-menu-horizontal .pure-menu-open {
+    background-color: @header-hover-bg;
+    border: 0;
+  }
+
+  //remove vertical-align: middle in purecss because it cause
+  //strange top padding
+  &.pure-menu.pure-menu-horizontal > ul,
+  & > ul > li {
+    vertical-align: top;
+  }
+
+  & > ul > li > a {
+    line-height: inherit;
+    border: 0;
+    outline: none;
+    .padding-v(0);
+
+    color: @top-link-color;
+    text-decoration: none;
+
+    &:hover, &:focus, &:active {
+      background-color: @header-hover-bg;
+      text-decoration: none;
+      color: @top-link-hover-color;
+    }
+  }
+
+  // children menu
+  &.pure-menu.pure-menu-horizontal li .pure-menu-children {
+    background: @header-bg;
+    border: 0;
+    a {
+      color: @top-link-color;
+      &:hover, &:focus, &:active {
+        background-color: @header-hover-bg;
+        color: @top-link-hover-color;
+      }
+    }
+    .pure-menu-separator {
+      background-color: @gray-light;
+    }
+  }
+
+}
+
+//
+// home
+//
+.home-menu {
+  @media (min-width: @screen-md-min) {
+    padding-left: @convex-row-width;
+  }
+}
+
+.home-menu .pure-menu-selected {
+  background-color: @gray-lightest;
+}
+
+//
+// user
+//
+.user {
+
+}
+
+.user-menu {
+  @media (min-width: @screen-md-min) {
+    padding-left: @convex-row-width;
+  }
+}
+
+.user-menu .pure-menu-selected {
+  background-color: @gray-lightest;
+}
+
+//
+// zone
+//
+.zone {
+
+}
+
+.zone-header {
+  border-bottom: solid 1px @gray-lightest;
+  padding-top: @padding-lg-vertical;
+  padding-bottom: @padding-lg-vertical;
+  a {
+    text-decoration: none;
+    &:hover {
+      color: @link-hover-color;
+    }
+  }
+  @media (min-width: @screen-md-min) {
+    padding-left: @convex-row-width;
+  }
+}
+
+.zone-menu {
+  @media (min-width: @screen-md-min) {
+    padding-left: @convex-row-width;
+  }
+}
+
+.zone-menu .pure-menu-heading {
+  font-weight: bold;
+}
+
+.zone-menu .pure-menu-selected {
+  background-color: @gray-lightest;
+}
+
+.zone-menu li a:hover {
+  background-color: @gray-lightest;
+}
+
+a.create-button {
+  width: 100%;
+}
+
+//
+// zone-list
+//
+.zone-list {
+  .zone-category {
+    border-bottom: 1px solid @gray-lightest;
+  }
+  .zone-table {
+    .zone-name {
+      min-width: 200px;
+    }
+  }
+}
+
+//
+// aside card
+//
+.aside-card {
+  h4 {
+    color: @gray-light;
+    margin: @padding-lg-vertical 0;
+    border-bottom: 1px solid @gray-lightest;
+  }
+  .aside-card-box {
+    margin-top: @padding-lg-vertical;
+    background-color: @gray-lightest;
+    border-radius: @border-radius-sm;
+    padding: @padding-lg-vertical @padding-lg-horizontal;
+  }
+}
+
+//
+// aside zone-list
+//
+.aside-zone-list {
+  ul {
+    list-style: none;
+    padding-left: 0;
+  }
+}
+
+//
+// aside user-list
+//
+.aside-user-list {
+  ul {
+    list-style: none;
+    padding-left: 0;
+  }
+}
+
+//
+// aside short url
+//
+.aside-short-url {
+  input[type=text] {
+    font-size: @font-size-sm;
+    width: 100%;
+  }
+}
+
+//
+// search
+//
+
+.search-form {
+  .flex-display(inline-flex);
+  .justify-content(space-between);
+  width: 100%;
+  input[type=text] {
+    .flex-grow(1);
+  }
+  button[type=submit] {
+    .flex-basis(90px);
+    margin-left: @padding-xs-horizontal;
+    @media only screen and (max-width: @screen-md-max) {
+      margin-top: 0;
+    }
+  }
+}
+
+.form-action-bar {
+  & > .pure-button {
+    margin-top: 0.7em;
+  }
+}

@@ -11,7 +11,7 @@ public class SpringProfile {
   /**
    * activated when deploy to production.
    * <p>
-   * in catalina.sh, you can add:
+   * in tomcat env, you can add:
    * <p>
    * <pre>
    *

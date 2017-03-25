@@ -1,6 +1,0 @@
-# robotstxt.org/
-
-User-agent: *
-# new-debate has meta to avoid index
-Disallow: /account/
-Allow: /

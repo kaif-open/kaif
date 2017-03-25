@@ -7,15 +7,13 @@ server:
 spring.freemarker:
     # cache settings same as production while test
     cache: true
-    # while MvcIntegrationTests it dosen't know it is in web app, hence use module relative dir
-    templateLoaderPath: file:src/main/webapp/WEB-INF/views,classpath:/mail
+    templateLoaderPath: classpath:/templates,classpath:/mail
     settings:
         show_error_tips: true
 
 
 ## spring mvc resources
 http.mappers.jsonPrettyPrint: true
-
 
 ## actuator
 endpoints.enabled: false
@@ -57,7 +55,6 @@ flake.node-id: 99
 
 
 ## app, replace while gradle build
-app.build: snapshot
 
 
 ## logback

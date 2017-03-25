@@ -5,7 +5,6 @@ server:
 
 ## freemarker
 spring.freemarker:
-    templateLoaderPath: /WEB-INF/views,classpath:/mail
     cache: false
     settings:
         show_error_tips: true
@@ -54,7 +53,6 @@ flake.node-id: 99
 
 
 ## app
-app.build: snapshot
 
 
 ## logback

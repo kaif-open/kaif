@@ -1,0 +1,86 @@
+// utility
+.hidden {
+  display: none !important;
+}
+
+.l-box {
+  padding: @padding-lg-vertical @padding-lg-horizontal;
+}
+
+a.plain {
+  text-decoration: none;
+  &:hover {
+    color: @link-hover-color;
+  }
+}
+
+//
+// pure css triangle
+//
+// although @width is variable, but in some browser bad value cause alias
+//
+// the current tested good value is width=8px, (height=16px) triangle. it
+// looks good on firefox and chrome
+//
+// there is a hack `-moz-transform: scale(.9999);` for firefox antialias
+// but since we have another transform, so we can't use this trick
+//
+.mixin-up-triangle(@color; @width;) {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-color: transparent transparent @color transparent;
+  display: inline-block;
+
+  @width-sm: (@width - 2px);
+  border-width: 0 @width-sm (@width-sm * 2) @width-sm;
+  @media (min-width: @screen-md-min) {
+    border-width: 0 @width @width * 2 @width;
+  }
+}
+
+.mixin-down-triangle(@color; @width;) {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-color: @color transparent transparent transparent;
+  display: inline-block;
+
+  @width-sm: (@width - 2px);
+  border-width: @width-sm * 2 @width-sm 0 @width-sm;
+  @media (min-width: @screen-md-min) {
+    border-width: @width * 2 @width 0 @width;
+  }
+}
+
+//
+// small mixin
+//
+.size(@width; @height) {
+  width: @width;
+  height: @height;
+}
+
+.square(@size) {
+  .size(@size; @size);
+}
+
+.margin-v(@size) {
+  margin-top: @size;
+  margin-bottom: @size;
+}
+
+.margin-h(@size) {
+  margin-left: @size;
+  margin-right: @size;
+}
+
+.padding-v(@size) {
+  padding-top: @size;
+  padding-bottom: @size;
+}
+
+.padding-h(@size) {
+  padding-left: @size;
+  padding-right: @size;
+}

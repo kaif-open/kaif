@@ -1,0 +1,11 @@
+/var/lib/{{springboot_name}}/logs/{{springboot_name}}.log {
+  copytruncate
+  daily
+  rotate 7
+  compress
+  missingok
+  size 5M
+  postrotate
+     find /var/lib/{{springboot_name}}/logs -mtime +30 -exec rm {} \;
+  endscript
+}

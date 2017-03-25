@@ -1,8 +1,6 @@
 buildscript {
   ext {
     springBootVersion = '1.5.2.RELEASE'
-    // spring boot now use 8.5.11
-    tomcatVersion = '8.5.11'
   }
   dependencies {
     classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -10,21 +8,17 @@ buildscript {
   }
 }
 
-def appBuild = 'build-' + new Date().format('yyyy-MM-dd-HH-mm-ss')
-
-apply plugin: 'war'
 
 /** spring boot begin **/
 apply plugin: 'org.springframework.boot'
 
 bootRepackage {
   mainClass = 'io.kaif.Application'
-  // exclude `lib-provided` folder in war
-  enabled = false
 }
 
 springBoot {
   mainClass = 'io.kaif.Application'
+  executable = true
 }
 
 // hack to make `gradle bootRun` start with dev mode
@@ -70,7 +64,7 @@ task pubServe(type: Exec) {
   commandLine getDartPub(), "serve", "--port", "15980", "--hostname", "localhost", "--force-poll"
 }
 
-war.dependsOn buildDart
+jar.dependsOn buildDart
 
 /** dart configuration end **/
 
@@ -81,59 +75,34 @@ apply plugin: "lesscss"
 def lessDist = "less_dist"
 
 lessc {
-  sourceDir "$webAppDirName/less"
+  sourceDir "src/main/resources/static/less"
   include "kaif.less"
   destinationDir = "$buildDir/$lessDist"
 }
 
-war.dependsOn lessc
+jar.dependsOn lessc
 
 /** less configuration end **/
-import org.apache.tools.ant.filters.ReplaceTokens
-
-// replace @app.build@ in application-prod.yml
-processResources {
-  filesMatching('**/application-prod.yml') {
-    filter ReplaceTokens, tokens: [
-        "app.build": appBuild
-    ]
-  }
-}
 
 jar {
   baseName = 'kaif-web'
-}
-
-war {
-  baseName = 'kaif-web'
   from("${buildDir}/$dartDist") {
-    into "${appBuild}"
+    into "static"
   }
   from("${buildDir}/$lessDist") {
-    into "${appBuild}/css"
+    into "static/css"
   }
-  from("${webAppDirName}/snapshot") {
-    into "${appBuild}"
-  }
-  exclude "snapshot"
-  exclude "less"
+  exclude "static/less"
 }
 
 dependencies {
   compile("org.springframework.boot:spring-boot-starter-aop")
 
-  compile("org.springframework.boot:spring-boot-starter-jdbc") {
-    // uncomment if you want to remove tomcat jdbc pool
-    exclude group: 'org.apache.tomcat';
-  }
+  compile("org.springframework.boot:spring-boot-starter-jdbc")
   compile("org.springframework.boot:spring-boot-starter-freemarker")
-  compile("org.springframework.boot:spring-boot-starter-web") {
-    exclude module: 'spring-boot-starter-tomcat'
-  }
+  compile("org.springframework.boot:spring-boot-starter-web")
 
-  //exclude embed tomcat in production
-  providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
-  providedRuntime "org.apache.tomcat:tomcat-jdbc:${tomcatVersion}"
+  compile("org.springframework.boot:spring-boot-starter-tomcat")
 
   // compile("org.springframework.boot:spring-boot-starter-social-twitter")
   compile("org.springframework.boot:spring-boot-starter-actuator")
@@ -184,9 +153,5 @@ dependencies {
   compile "com.mangofactory:swagger-springmvc:1.0.2"
   compile "org.ajar:swagger-spring-mvc-ui:0.4"
 
-  // workaround swagger ui 0.4 bug
-  // https://github.com/adrianbk/swagger-springmvc-demo/issues/15
-  // this only affect local development with embed tomcat
-  providedRuntime "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
 }
 

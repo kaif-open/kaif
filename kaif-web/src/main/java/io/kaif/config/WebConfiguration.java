@@ -134,7 +134,6 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
 
   private void configureFreeMarker() throws TemplateModelException {
     Map<String, Object> variables = new HashMap<>();
-    variables.put("appBuild", appProperties.getBuild());
     variables.put("profilesActive",
         Arrays.stream(environment.getActiveProfiles()).collect(Collectors.joining(",")));
     freeMarkerConfiguration.setSharedVariable("kaif", variables);
