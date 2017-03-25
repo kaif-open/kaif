@@ -6,7 +6,14 @@
 ####
 
 ## web server
-
+server:
+  connection-timeout: 20000
+  tomcat:
+    max-connections: 600
+    uri-encoding: UTF-8
+  error:
+    whitelabel:
+      enabled: false
 
 ## freemarker
 spring.freemarker:
@@ -17,7 +24,6 @@ spring.freemarker:
         datetime_format: yyyy-MM-dd
         number_format: 0.######
 
-error.whitelabel.enabled: false
 
 
 ## spring mvc resources

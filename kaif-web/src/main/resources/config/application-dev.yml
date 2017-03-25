@@ -11,7 +11,7 @@ spring.freemarker:
 
 
 ## spring mvc resources
-http.mappers.jsonPrettyPrint: true
+spring.jackson.serialization.indent_output: true
 
 
 ## actuator
@@ -57,7 +57,6 @@ flake.node-id: 99
 
 ## logback
 logging.config: classpath:logback-dev.xml
-
-
-## misc
-spring.main.show_banner: true
+spring:
+  main:
+    banner-mode: log
