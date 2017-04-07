@@ -41,7 +41,7 @@ Production provision and deployment
   
 * please copy corresponding secret files to correct locations.
 
-* NEVER commit `vault_password_file` and `kaif_rsa` to git !!! See `kaif/kaif-deploy/.gitignore`
+* NEVER commit `vault_password_file` and `kaif_rsa*` to git !!! See `kaif/kaif-deploy/.gitignore`
 
 * after secret files ready, you can execute production commands in `COMMAND.md`
 
