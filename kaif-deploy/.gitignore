@@ -1,6 +1,5 @@
 .vagrant/
 tmp/
-secret/
-secret
-secret.yml
 *-cloudimg-console.log
+secret/vault_password_file
+secret/kaif_rsa

@@ -83,7 +83,10 @@ Host kaif
 
 ```
 cd kaif/kaif-deploy
-ansible-playbook -i production --private-key secret/kaif_rsa site.yml
+ansible-playbook -i production \
+  --vault-password-file=secret/vault_password_file \
+  --private-key secret/kaif_rsa \
+  site.yml 
 ```
 
 * deploy war to production
@@ -92,7 +95,10 @@ ansible-playbook -i production --private-key secret/kaif_rsa site.yml
 cd kaif/kaif-deploy
 
 # run playbook directly
-ansible-playbook -i production --private-key secret/kaif_rsa deploy/deploy_war.yml
+ansible-playbook -i production \
+  --vault-password-file=secret/vault_password_file \
+  --private-key secret/kaif_rsa \
+  deploy/deploy_war.yml
 
 # or simply use script
 ./play_production_deploy.war.sh

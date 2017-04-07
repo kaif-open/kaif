@@ -24,18 +24,24 @@ Production provision and deployment
 ===================================
 
 * To use ansible with production server, you need to prepare secret files first.
-  There are three files required to operate production servers:
 
-```
-kaif/kaif-deploy
-                /secret/kaif_rsa
-                /secret/kaif_rsa.pub
-                /production/group_vars/webs/secret.yml
-```
+* secret files
+  
+  prepare following secret files in folder
+  
+  ```
+  secret/vault_password_file
+  ```
 
+  then decrypt all vault encrypted files:
+
+  ```
+  ansible-playbook -i production deploy/decrypt_secret.yml --vault-password-file=secret/vault_password_file 
+  ```
+  
 * please copy corresponding secret files to correct locations.
 
-* NEVER commit secret files to git !!! See `kaif/kaif-deploy/.gitignore`
+* NEVER commit `vault_password_file` and `kaif_rsa` to git !!! See `kaif/kaif-deploy/.gitignore`
 
 * after secret files ready, you can execute production commands in `COMMAND.md`
 
