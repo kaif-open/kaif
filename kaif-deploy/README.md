@@ -27,7 +27,7 @@ Production provision and deployment
 
 * secret files
   
-  prepare following secret files in folder
+  prepare ansible vault password in file:
   
   ```
   secret/vault_password_file
@@ -43,5 +43,4 @@ Production provision and deployment
 
 * after secret files ready, you can execute production commands in `COMMAND.md`
 
-* there are several how-to guide for configure GCE instances and apply SSL certification
-  see `howto` folder.
+* there are several how-to guide for configure GCE instances, see `howto` folder.

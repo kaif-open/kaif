@@ -1,10 +1,10 @@
 ## building application
 
-* assemble latest war
+* assemble latest app 
 
 ```
 cd kaif
-./war.sh
+./assemble.sh
 ```
 
 ## sample commands for vagrant
@@ -33,7 +33,7 @@ ansible-playbook -i dev site.yml
 
 ```
 cd kaif/kaif-deploy
-./play_vagrant_deploy_war.sh
+./play_vagrant_deploy.sh
 ```
 
 * shutdown vm
@@ -98,8 +98,8 @@ cd kaif/kaif-deploy
 ansible-playbook -i production \
   --vault-password-file=secret/vault_password_file \
   --private-key secret/kaif_rsa \
-  deploy/deploy_war.yml
+  deploy/deploy_app.yml
 
 # or simply use script
-./play_production_deploy.war.sh
+./play_production_deploy.sh
 ```

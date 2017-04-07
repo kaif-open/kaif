@@ -61,18 +61,12 @@
 
 ### Deploy web app to vagrant
 
- * build kaif-web.war then deploy to vagrant
+ * build kaif-web app then deploy to vagrant
 
 ```
   ./assemble.sh
   cd kaif-deploy
   ./play_vagrant_deploy.sh
-```
-
- * edit your /etc/hosts
-
-```
-  192.168.59.59  localdev.kaif.io
 ```
 
  * go visit https://localdev.kaif.io/ to check nginx is ready
