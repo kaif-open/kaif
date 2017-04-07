@@ -33,14 +33,12 @@ Production provision and deployment
   secret/vault_password_file
   ```
 
-  then decrypt all vault encrypted files:
+  then decrypt vault encrypted ssh keys:
 
   ```
   ansible-playbook -i production deploy/decrypt_secret.yml --vault-password-file=secret/vault_password_file 
   ```
   
-* please copy corresponding secret files to correct locations.
-
 * NEVER commit `vault_password_file` and `kaif_rsa*` to git !!! See `kaif/kaif-deploy/.gitignore`
 
 * after secret files ready, you can execute production commands in `COMMAND.md`
