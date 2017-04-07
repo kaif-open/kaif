@@ -3,3 +3,4 @@ tmp/
 *-cloudimg-console.log
 secret/vault_password_file
 secret/kaif_rsa
+secret/kaif_rsa.pub
