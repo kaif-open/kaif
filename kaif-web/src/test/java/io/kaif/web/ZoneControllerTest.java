@@ -81,6 +81,20 @@ public class ZoneControllerTest extends MvcIntegrationTests {
   }
 
   @Test
+  public void rssFeed_invalid_xml_character() throws Exception {
+    Zone z = zoneInfo.getZone();
+    when(zoneService.loadZone(z)).thenReturn(zoneInfo);
+
+    Article article1 = article(z, "bad-character \b in xml");
+
+    when(articleService.listRssHotZoneArticlesWithCache(z)).thenReturn(//
+        asList(article1));
+
+    mockMvc.perform(get("/z/programming/hot.rss"))
+        .andExpect(xpath("/rss/channel/item[1]/title").string("bad-character  in xml"));
+  }
+
+  @Test
   public void rssFeed_no_articles() throws Exception {
     Zone z = zoneInfo.getZone();
     when(zoneService.loadZone(z)).thenReturn(zoneInfo);

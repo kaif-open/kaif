@@ -68,12 +68,21 @@ public class HotArticleRssContentView extends AbstractRssFeedView {
         .orElse(fallbackTime));
   }
 
+  // XML 1.0
+  // #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]
+  private static String XML10_PATTERN = "[^"
+      + "\u0009"
+      + "\u0020-\uD7FF"
+      + "\uE000-\uFFFD"
+      + "\ud800\udc00-\udbff\udfff"
+      + "]";
+
   private Item convertArticle(Article article) {
     Item entry = new Item();
     Guid guid = new Guid();
     guid.setValue(article.getArticleId().toString());
     entry.setGuid(guid);
-    entry.setTitle(article.getTitle());
+    entry.setTitle(cleanXml10Characters(article.getTitle()));
     entry.setPubDate(Date.from(article.getCreateTime()));
     Description summary = new Description();
     summary.setType("html");
@@ -81,6 +90,10 @@ public class HotArticleRssContentView extends AbstractRssFeedView {
     entry.setDescription(summary);
     entry.setLink(articleUrl(article));
     return entry;
+  }
+
+  private String cleanXml10Characters(String input) {
+    return input.replaceAll(XML10_PATTERN, "");
   }
 
   private String buildAuthorPart(String username) {
@@ -117,7 +130,7 @@ public class HotArticleRssContentView extends AbstractRssFeedView {
     builder.append(article.getDebateCount());
     builder.append("個討論]");
     builder.append("</a><br>");
-    return builder.toString();
+    return cleanXml10Characters(builder.toString());
   }
 
   @Override
