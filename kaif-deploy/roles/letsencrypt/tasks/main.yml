@@ -9,7 +9,7 @@
     dest: "/root/soft/acme.sh"
 
 - name: install acme.sh
-  command: ./acme.sh --install --log
+  command: ./acme.sh --log --install
   args:
     chdir: /root/soft/acme.sh/
     creates: /root/.acme.sh/acme.sh
