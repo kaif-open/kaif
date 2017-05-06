@@ -2,6 +2,7 @@ package io.kaif.web.v1;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.isA;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -18,6 +19,33 @@ import io.kaif.model.account.Account;
 import io.kaif.test.MvcIntegrationTests;
 
 public class V1ResponseWrapperAdviceTest extends MvcIntegrationTests {
+
+  @Test
+  public void wrapObjectNull() throws Exception {
+    Account account = accountCitizen("foo");
+    String token = prepareClientAppUserAccessToken(account);
+    mockMvc.perform(post("/v1/echo/object")//
+        .content(q("{'object':null}"))
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+        .contentType(MediaType.APPLICATION_JSON))
+        //.andDo(print())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data", nullValue()));
+  }
+
+  @Test
+  public void wrapStringNull() throws Exception {
+    Account account = accountCitizen("foo");
+    String token = prepareClientAppUserAccessToken(account);
+    mockMvc.perform(post("/v1/echo/message")//
+        .content(q("{'message':null}"))
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data", nullValue()));
+  }
 
   @Test
   public void wrapPrimitive() throws Exception {
@@ -44,6 +72,20 @@ public class V1ResponseWrapperAdviceTest extends MvcIntegrationTests {
         .andExpect(status().isOk())
         .andExpect(content().contentType("application/json;charset=UTF-8"))
         .andExpect(jsonPath("$.data", is("abc")));
+  }
+
+  @Test
+  public void wrapStringEscape() throws Exception {
+    Account account = accountCitizen("foo");
+    String token = prepareClientAppUserAccessToken(account);
+    mockMvc.perform(post("/v1/echo/message")//
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+        .content(q("{'message':'\\\"foo'}"))
+        .contentType(MediaType.APPLICATION_JSON))
+        //.andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType("application/json;charset=UTF-8"))
+        .andExpect(jsonPath("$.data", is("\"foo")));
   }
 
   @Test

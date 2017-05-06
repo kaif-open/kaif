@@ -11,6 +11,9 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.kaif.web.support.ErrorResponse;
 import io.kaif.web.support.SingleWrapper;
 
@@ -26,6 +29,12 @@ import io.kaif.web.support.SingleWrapper;
  */
 @ControllerAdvice(basePackageClasses = V1ResponseWrapperAdvice.class)
 public class V1ResponseWrapperAdvice implements ResponseBodyAdvice<Object> {
+
+  private final ObjectMapper stringMapper;
+
+  public V1ResponseWrapperAdvice() {
+    this.stringMapper = new ObjectMapper();
+  }
 
   /**
    * for POJO or primitive response, the converterType is MappingJackson2HttpMessageConverter, so
@@ -48,11 +57,16 @@ public class V1ResponseWrapperAdvice implements ResponseBodyAdvice<Object> {
       Class<? extends HttpMessageConverter<?>> selectedConverterType,
       ServerHttpRequest request,
       ServerHttpResponse response) {
+    if (body == null) {
+      if (CharSequence.class.isAssignableFrom(returnType.getMethod().getReturnType())) {
+        return prepareStringResponse(response, null);
+      }
+      return SingleWrapper.of(null);
+    }
+
     if (body instanceof CharSequence) {
       //for StringHttpMessageConverter
-      response.getHeaders()
-          .add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8");
-      return "{\"data\":\"" + body + "\"}";
+      return prepareStringResponse(response, (CharSequence) body);
     }
     if (body instanceof ErrorResponse) {
       return body;
@@ -61,5 +75,15 @@ public class V1ResponseWrapperAdvice implements ResponseBodyAdvice<Object> {
       return body;
     }
     return SingleWrapper.of(body);
+  }
+
+  private String prepareStringResponse(ServerHttpResponse response, CharSequence body) {
+    response.getHeaders()
+        .add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8");
+    try {
+      return stringMapper.writeValueAsString(SingleWrapper.of(body));
+    } catch (JsonProcessingException e) {
+      throw new IllegalStateException(e);
+    }
   }
 }

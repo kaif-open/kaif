@@ -2,8 +2,9 @@ package io.kaif.web.v1;
 
 import static io.kaif.model.clientapp.ClientAppScope.PUBLIC;
 
+import java.util.Map;
+
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.springframework.http.MediaType;
@@ -25,9 +26,13 @@ public class V1EchoResource {
 
   static class MessageEntry {
     @ApiModelProperty(required = true)
-    @NotNull
     @Size(min = 1, max = 1000)
     public String message;
+  }
+
+  static class ObjectEntry {
+    @ApiModelProperty(required = false)
+    public Map<?, ?> object;
   }
 
   @ApiOperation(value = "[public] Get system current time", notes = "Get system current time in milliseconds")
@@ -43,6 +48,13 @@ public class V1EchoResource {
   public String message(ClientAppUserAccessToken accessToken,
       @Valid @RequestBody MessageEntry message) {
     return message.message;
+  }
+
+  @ApiOperation(value = "[public] Echo input object", notes = "Echo input object to response", hidden = true)
+  @RequiredScope(PUBLIC)
+  @RequestMapping(value = "/object", method = RequestMethod.POST)
+  public Map<?, ?> object(ClientAppUserAccessToken accessToken, @RequestBody ObjectEntry entry) {
+    return entry.object;
   }
 
   @ApiOperation(value = "for test", hidden = true)
