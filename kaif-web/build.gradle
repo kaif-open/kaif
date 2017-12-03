@@ -4,10 +4,17 @@ buildscript {
   }
   dependencies {
     classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-    classpath "com.github.houbie:lesscss-gradle-plugin:1.0.3-less-1.7.0"
   }
 }
 
+
+apply plugin: 'java'
+
+tasks.withType(JavaCompile) {
+  options.encoding = 'UTF-8'
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 /** spring boot begin **/
 apply plugin: 'org.springframework.boot'
@@ -30,66 +37,20 @@ tasks.withType(org.springframework.boot.gradle.run.BootRunTask) {
 
 /** dart configuration begin **/
 
-def dartDist = "dart_dist"
-
-def getDartPub() {
-  def envDart = System.env['dart_sdk_home']
-  def propDart = System.properties['dart_sdk_home']
-  if (envDart == null && propDart == null) {
-    return null;
-  }
-  if (envDart != null) {
-    return "${System.env['dart_sdk_home']}/bin/pub"
-  }
-  return "${System.properties['dart_sdk_home']}/bin/pub"
-}
-
-task buildDart(dependsOn: classes, type: Exec) {
-  doFirst {
-    if (getDartPub() == null) {
-      throw new IllegalStateException("missing 'dart_sdk_home' environment var., please install dart and set env first");
-    }
-  }
-  workingDir "src/main/dart"
-  commandLine getDartPub(), "build", "-o", "${buildDir}/${dartDist}"
-}
-
-task pubServe(type: Exec) {
-  doFirst {
-    if (getDartPub() == null) {
-      throw new IllegalStateException("missing 'dart_sdk_home' environment var., please install dart and set env first");
-    }
-  }
-  workingDir "src/main/dart"
-  commandLine getDartPub(), "serve", "--port", "15980", "--hostname", "localhost", "--force-poll"
-}
-
-jar.dependsOn buildDart
+jar.dependsOn ":kaif-fe:pubCleanBuild"
 
 /** dart configuration end **/
 
-/** less configuration begin **/
-
-apply plugin: "lesscss"
-
-def lessDist = "less_dist"
-
-lessc {
-  sourceDir "src/main/resources/static/less"
-  include "kaif.less"
-  destinationDir = "$buildDir/$lessDist"
-}
-
-jar.dependsOn lessc
-
-/** less configuration end **/
-
 jar {
   baseName = 'kaif-web'
-  from("${buildDir}/$dartDist") {
+
+  //copy `web/` folder to `static/` (dart dist)
+  from("../kaif-fe/build") {
+    exclude "less_link"
     into "static"
   }
-  from("${buildDir}/$lessDist") {
+  //copy less css to `static/css/` ( <@spring.url> only process this css folder )
+  from("../kaif-fe/build/web/css") {
     into "static/css"
   }
   exclude "static/less"
@@ -132,12 +93,6 @@ dependencies {
   // webjars
   compile 'org.webjars:font-awesome:4.2.0'
   compile 'org.webjars:yui-pure:0.5.0'
-
-  // we are use old less 1.7.0 because lesscss-gradle-plugin use old one
-  //
-  // @see buildscript - lesscss-gradle-plugin
-  // @see webapp/WEB-INF/views/macros/template.ftl
-  compile 'org.webjars:less:1.7.0'
 
   // aws will depends on jackson/joda/httpclient
   compile 'com.amazonaws:aws-java-sdk-ses:1.11.86'

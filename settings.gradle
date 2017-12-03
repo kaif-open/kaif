@@ -1,4 +1,4 @@
-include 'kaif-web'
+include 'kaif-web', 'kaif-fe'
 
 gradle.allprojects {
   buildscript {

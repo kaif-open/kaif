@@ -47,20 +47,10 @@ sample configs:
     <link rel='stylesheet' href='/webjars/yui-pure/0.5.0/grids-responsive-min.css'>
     <link rel="stylesheet" href="/webjars/font-awesome/4.2.0/css/font-awesome.min.css">
 
-<#-- use webjars less js, in production it is compile by gradle rhino less plugin
-     @see build.gradle lessc task
+<#-- less/kaif.less are compiled by dart transformer
   -->
     <#if kaif.profilesActive?contains('dev')>
-        <link rel="stylesheet/less" type="text/css" href="/less/kaif.less">
-        <script>less = {
-            env: 'development',
-            logLevel: 2,
-        };</script>
-        <script src="/webjars/less/1.7.0/less.js"></script>
-        <script>
-            // uncomment if you want auto refresh in browser
-            // less.watch();
-        </script>
+        <link rel="stylesheet" href="//localhost:15980/css/kaif.css">
     <#else>
         <link rel="stylesheet" href="<@spring.url '/css/kaif.css' />">
     </#if>
@@ -70,7 +60,7 @@ sample configs:
     <#if head?length == 0>
         <title>kaif.io</title>
     <#else>
-    ${head}
+        ${head}
     </#if>
 
 </head>
@@ -134,7 +124,7 @@ sample configs:
 <#-- Error page will not enable js, for security reason -->
     <#if !errorPage >
         <#if kaif.profilesActive?contains('dev')>
-        <#-- require dart pub serve, please run `./gradlew pubServe` -->
+        <#-- require dart pub serve, please run `cd kaif-fe; ../gradlew pubPollServe` -->
         <div id="waitingPubServe"
              style="position: fixed; bottom:0; right:0px; padding: 3px 10px; background-color: rgba(92, 0, 0, 0.67); color:white">
             Waiting Pub Serve...
