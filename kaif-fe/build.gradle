@@ -1,0 +1,90 @@
+plugins {
+  id "de.undercouch.download" version "3.3.0"
+}
+
+plugins {
+  id 'com.github.ngyewch.dart' version '0.3.0'
+}
+
+def DART_SDK_VERSION = "1.24.2"
+
+/// start of install local dart sdk
+
+def dartSdkInstallPath = "${projectDir}/.gradle/dart/${DART_SDK_VERSION}-${platformArch}"
+def dartSdkDownloadZip = "${projectDir}/.gradle/dart/download/dartsdk-${DART_SDK_VERSION}-${platformArch}-release.zip"
+def installedDartSdkHome = "${dartSdkInstallPath}/dart-sdk"
+
+import de.undercouch.gradle.tasks.download.Download
+import org.apache.tools.ant.taskdefs.condition.Os
+
+task downloadDart(type: Download) {
+  doFirst {
+    logger.info("Downloading dart sdk ${DART_SDK_VERSION} ${platformArch} ...")
+  }
+  def downloadUrl =
+      "https://storage.googleapis.com/dart-archive/channels" +
+          "/stable/release/${DART_SDK_VERSION}/sdk" +
+          "/dartsdk-${platformArch}-release.zip"
+
+  src downloadUrl
+  dest dartSdkDownloadZip
+  quiet false
+}
+
+task installDart(type: Copy) {
+  if (!file(installedDartSdkHome + "/bin/dart").exists()) {
+    dependsOn downloadDart
+  }
+  from zipTree(file(dartSdkDownloadZip))
+  into file(dartSdkInstallPath)
+
+  doLast {
+    logger.info("Using dart sdk at $dartSdkInstallPath")
+  }
+}
+
+private static String getPlatformArch() {
+  if (Os.isFamily(Os.FAMILY_MAC)) {
+    return "macos-x64"
+  } else if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+    return "windows-x64"
+  } else {
+    //assume rest is linux
+    return "linux-x64"
+  }
+}
+/// end of local install dart sdk
+
+
+dart {
+  dartSdkHome = installedDartSdkHome
+}
+
+pubGet.dependsOn installDart
+pubBuild.dependsOn installDart
+pubServe.dependsOn installDart
+pubUpgrade.dependsOn installDart
+
+// for some strange reason, following dependsOn not work (pubGet never executed)
+//
+//    task pubCleanBuild(dependsOn: [pubGet, pubBuild]) {}
+//
+// to workaround, we extends DartPubBuildTask instead
+
+task pubCleanBuild(dependsOn: pubGet, type: com.github.ngyewch.dart.task.DartPubBuildTask) {
+  group = "Build"
+}
+
+//
+// could not customize exist pubServe arguments, use Exec directly.
+//
+task pubPollServe(dependsOn: installDart, type: Exec) {
+  group = "Build"
+  commandLine = ["${dart.dartSdkBin}/pub", "serve", "--port", "15980",
+                 "--hostname", "localhost", "--force-poll"]
+}
+
+task clean() {
+  group = "Build"
+  delete(file("build"))
+}

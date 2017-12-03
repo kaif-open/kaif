@@ -8,6 +8,14 @@ buildscript {
 }
 
 
+apply plugin: 'java'
+
+tasks.withType(JavaCompile) {
+  options.encoding = 'UTF-8'
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 /** spring boot begin **/
 apply plugin: 'org.springframework.boot'
 
@@ -29,47 +37,13 @@ tasks.withType(org.springframework.boot.gradle.run.BootRunTask) {
 
 /** dart configuration begin **/
 
-def dartDist = "dart_dist"
-
-def getDartPub() {
-  def envDart = System.env['dart_sdk_home']
-  def propDart = System.properties['dart_sdk_home']
-  if (envDart == null && propDart == null) {
-    return null;
-  }
-  if (envDart != null) {
-    return "${System.env['dart_sdk_home']}/bin/pub"
-  }
-  return "${System.properties['dart_sdk_home']}/bin/pub"
-}
-
-task buildDart(dependsOn: classes, type: Exec) {
-  doFirst {
-    if (getDartPub() == null) {
-      throw new IllegalStateException("missing 'dart_sdk_home' environment var., please install dart and set env first");
-    }
-  }
-  workingDir "src/main/dart"
-  commandLine getDartPub(), "build", "-o", "${buildDir}/${dartDist}"
-}
-
-task pubServe(type: Exec) {
-  doFirst {
-    if (getDartPub() == null) {
-      throw new IllegalStateException("missing 'dart_sdk_home' environment var., please install dart and set env first");
-    }
-  }
-  workingDir "src/main/dart"
-  commandLine getDartPub(), "serve", "--port", "15980", "--hostname", "localhost", "--force-poll"
-}
-
-jar.dependsOn buildDart
+jar.dependsOn ":kaif-fe:pubCleanBuild"
 
 /** dart configuration end **/
 
 jar {
   baseName = 'kaif-web'
-  from("${buildDir}/$dartDist") {
+  from("../kaif-fe/build") {
     exclude "less_link"
     into "static"
   }
