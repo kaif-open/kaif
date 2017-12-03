@@ -47,22 +47,12 @@ sample configs:
     <link rel='stylesheet' href='/webjars/yui-pure/0.5.0/grids-responsive-min.css'>
     <link rel="stylesheet" href="/webjars/font-awesome/4.2.0/css/font-awesome.min.css">
 
-<#-- use webjars less js, in production it is compile by gradle rhino less plugin
-     @see build.gradle lessc task
+<#-- less/kaif.less are compiled by dart transformer
   -->
     <#if kaif.profilesActive?contains('dev')>
-        <link rel="stylesheet/less" type="text/css" href="/less/kaif.less">
-        <script>less = {
-            env: 'development',
-            logLevel: 2,
-        };</script>
-        <script src="/webjars/less/1.7.0/less.js"></script>
-        <script>
-            // uncomment if you want auto refresh in browser
-            // less.watch();
-        </script>
+        <link rel="stylesheet" href="//localhost:15980/css/kaif.css">
     <#else>
-        <link rel="stylesheet" href="<@spring.url '/css/kaif.css' />">
+        <link rel="stylesheet" href="<@spring.url '/web/css/kaif.css' />">
     </#if>
     <#if applyZoneTheme>
         <link rel="stylesheet" href="<@spring.url '/css/${zoneInfo.theme}.css' />">
@@ -70,7 +60,7 @@ sample configs:
     <#if head?length == 0>
         <title>kaif.io</title>
     <#else>
-    ${head}
+        ${head}
     </#if>
 
 </head>

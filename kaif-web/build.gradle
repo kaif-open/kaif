@@ -4,7 +4,6 @@ buildscript {
   }
   dependencies {
     classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-    classpath "com.github.houbie:lesscss-gradle-plugin:1.0.3-less-1.7.0"
   }
 }
 
@@ -68,29 +67,11 @@ jar.dependsOn buildDart
 
 /** dart configuration end **/
 
-/** less configuration begin **/
-
-apply plugin: "lesscss"
-
-def lessDist = "less_dist"
-
-lessc {
-  sourceDir "src/main/resources/static/less"
-  include "kaif.less"
-  destinationDir = "$buildDir/$lessDist"
-}
-
-jar.dependsOn lessc
-
-/** less configuration end **/
-
 jar {
   baseName = 'kaif-web'
   from("${buildDir}/$dartDist") {
+    exclude "less_link"
     into "static"
-  }
-  from("${buildDir}/$lessDist") {
-    into "static/css"
   }
   exclude "static/less"
 }
@@ -132,12 +113,6 @@ dependencies {
   // webjars
   compile 'org.webjars:font-awesome:4.2.0'
   compile 'org.webjars:yui-pure:0.5.0'
-
-  // we are use old less 1.7.0 because lesscss-gradle-plugin use old one
-  //
-  // @see buildscript - lesscss-gradle-plugin
-  // @see webapp/WEB-INF/views/macros/template.ftl
-  compile 'org.webjars:less:1.7.0'
 
   // aws will depends on jackson/joda/httpclient
   compile 'com.amazonaws:aws-java-sdk-ses:1.11.86'
