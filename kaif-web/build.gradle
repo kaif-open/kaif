@@ -46,14 +46,13 @@ jar {
 
   //copy `web/` folder to `static/` (dart dist)
   from("../kaif-fe/build") {
-    exclude "less_link"
+    exclude "less"
     into "static"
   }
   //copy less css to `static/css/` ( <@spring.url> only process this css folder )
   from("../kaif-fe/build/web/css") {
     into "static/css"
   }
-  exclude "static/less"
 }
 
 dependencies {

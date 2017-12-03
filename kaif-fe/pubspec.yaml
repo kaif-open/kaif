@@ -11,9 +11,9 @@ dev_dependencies:
 transformers:
   - less_dart:
       entry_points:
-        - web/less_link/kaif.less
+        - web/less/kaif.less
       output: web/css/kaif.css
-      include_path: web/less_link
+      include_path: web/less
       cleancss: true
       compress: true
   - kaif_web:
