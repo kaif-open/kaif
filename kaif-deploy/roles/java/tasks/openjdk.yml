@@ -1,6 +1,4 @@
 ---
 - name: Install OpenJDK
   tags: java
-  apt: pkg={{ item }} update-cache=yes state=latest
-  when: item|search("^openjdk")
-  with_items: java_versions
+  apt: pkg={{ java_versions }} update-cache=yes state=latest

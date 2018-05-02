@@ -16,6 +16,8 @@ tasks.withType(JavaCompile) {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+println "Using JDK: ${org.gradle.internal.jvm.Jvm.current()}"
+
 /** spring boot begin **/
 apply plugin: 'org.springframework.boot'
 
