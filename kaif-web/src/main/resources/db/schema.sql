@@ -54,7 +54,7 @@ CREATE INDEX ArticleZoneIndex ON Article (zone);
 
 CREATE TABLE Debate (
   debateId         BIGINT         NOT NULL,
-  articleId        BIGINT         NOT NULL,
+  articleId        BIGINT         NOT NULL REFERENCES Article (articleId),
   zone             VARCHAR(4096)  NOT NULL,
   parentDebateId   BIGINT         NOT NULL,
   replyToAccountId UUID           NOT NULL,
