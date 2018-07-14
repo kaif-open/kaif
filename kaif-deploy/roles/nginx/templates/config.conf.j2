@@ -1,3 +1,3 @@
-{% for v in nginx_configs[item] %}
+{% for v in item.value %}
    {{ v.replace(";",";\n      ").replace("{","{\n      ").replace("}","\n   }\n") }}{% if v.find('{') == -1%} ;{% endif %} 
 {% endfor %}

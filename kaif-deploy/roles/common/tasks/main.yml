@@ -29,9 +29,9 @@
   - name: ensure ntp is present
     apt: pkg=ntp state=present
   - name: set /etc/localtime to {{timezone}}
-    copy: remote_src=true src=/usr/share/zoneinfo/{{timezone}} dest=/etc/localtime
+    file: src=/usr/share/zoneinfo/{{timezone}} dest=/etc/localtime state=link force=true
   - name: set /etc/timezone to {{timezone}}
-    template: src=etc/timezone dest=/etc/timezone
+    template: src=timezone.j2 dest=/etc/timezone
     notify:
       - update tzdata
       - restart ntp

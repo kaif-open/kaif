@@ -56,27 +56,27 @@
   tags: [configuration,nginx]
 
 - name: Ensure auth_basic files created
-  template: src=auth_basic.j2 dest=/etc/nginx/auth_basic/{{ item }} owner=root group={{nginx_group}} mode=0750
-  with_items: '{{nginx_auth_basic_files.keys()}}'
+  template: src=auth_basic.j2 dest=/etc/nginx/auth_basic/{{ item.key }} owner=root group={{nginx_group}} mode=0750
+  with_dict: '{{nginx_auth_basic_files}}'
   tags: [configuration,nginx]
 
 - name: Create the configurations for sites
-  template: src=site.conf.j2 dest=/etc/nginx/sites-available/{{ item }}.conf
-  with_items: '{{nginx_sites.keys()}}'
+  template: src=site.conf.j2 dest=/etc/nginx/sites-available/{{ item.key }}.conf
+  with_dict: '{{nginx_sites}}'
   notify:
    - reload nginx
   tags: [configuration,nginx]
 
 - name: Create links for sites-enabled
-  file: state=link src=/etc/nginx/sites-available/{{ item }}.conf dest=/etc/nginx/sites-enabled/{{ item }}.conf
-  with_items: '{{nginx_sites.keys()}}'
+  file: state=link src=/etc/nginx/sites-available/{{ item.key }}.conf dest=/etc/nginx/sites-enabled/{{ item.key }}.conf
+  with_dict: '{{nginx_sites}}'
   notify:
    - reload nginx
   tags: [configuration,nginx]
 
 - name: Create the configurations for independent config file
-  template: src=config.conf.j2 dest=/etc/nginx/conf.d/{{ item }}.conf
-  with_items: '{{nginx_configs.keys()}}'
+  template: src=config.conf.j2 dest=/etc/nginx/conf.d/{{ item.key }}.conf
+  with_dict: '{{nginx_configs}}'
   notify:
    - reload nginx
   tags: [configuration,nginx]

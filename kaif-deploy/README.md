@@ -8,9 +8,9 @@ Install required software
 * Prepare for Mac
 
 ```
-  # install ansible version 2.3.1.0 (other version not work) 
+  # install ansible version 2.6.1 (other version not work) 
   brew install python
-  pip install ansible==2.3.1.0 markupsafe  
+  pip install ansible==2.6.1 markupsafe  
 
   # vagrant version >= 1.8.1
   # go to https://www.vagrantup.com/downloads and install .dmg

@@ -1,6 +1,6 @@
 ---
 
-- include: playbooks/base.yml
-- include: playbooks/postgresql.yml
-- include: playbooks/postfix.yml
-- include: playbooks/kaif-web.yml
+- import_playbook: playbooks/base.yml
+- import_playbook: playbooks/postgresql.yml
+- import_playbook: playbooks/postfix.yml
+- import_playbook: playbooks/kaif-web.yml
