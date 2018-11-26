@@ -250,7 +250,7 @@ class Emitter {
       if (!Strings.isNullOrEmpty(lr.title)) {
         out.appendHtml(" title=\"").append(lr.title).appendHtml("\"");
       }
-      out.appendHtml(" class=\"reference-link\" rel=\"nofollow\" target=\"_blank\">");
+      out.appendHtml(" class=\"reference-link\" rel=\"noopener nofollow\" target=\"_blank\">");
       this.recursiveEmitLine(out, name, 0, MarkToken.LINK);
       out.appendHtml("</a>");
     } else {
@@ -648,7 +648,7 @@ class Emitter {
         if (!Strings.isNullOrEmpty(linkRef.title)) {
           out.appendHtml(" title=\"").append(linkRef.title).appendHtml("\"");
         }
-        out.appendHtml(" rel=\"nofollow\" target=\"_blank\">")
+        out.appendHtml(" rel=\"noopener nofollow\" target=\"_blank\">")
             .append(linkRef.link)
             .appendHtml("</a>");
       } else {

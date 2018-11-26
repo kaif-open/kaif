@@ -46,7 +46,7 @@
         <div class="article-title">
         <#-- TODO, not to use article content as url directly -->
             <#if article.externalLink>
-                <a href="${article.link}" target="_blank">${article.title}</a>
+                <a href="${article.link}" target="_blank" rel="noopener">${article.title}</a>
             <#else>
                 <a href="<@url.article data=article />">${article.title}</a>
             </#if>
@@ -306,7 +306,7 @@
 <div class="kmark-help hidden" kmark-help>
     <h4>Kmark 語法說明</h4>
 
-    <p>Kmark 是一個類似 <a href="http://en.wikipedia.org/wiki/Markdown" target="_blank">Markdown</a>
+    <p>Kmark 是一個類似 <a href="http://en.wikipedia.org/wiki/Markdown" target="_blank" rel="noopener">Markdown</a>
         語法的格式，以下為提供的功能:</p>
     <table class="pure-table pure-table-horizontal">
         <tr>
@@ -451,7 +451,7 @@ function abc()
                     <div class="reference-appendix-block">
                         <div class="reference-appendix-index">1</div>
                         <div class="reference-appendix-wrap"><a href="http://example.com"
-                                                                rel="nofollow" target="_blank">http://example.com</a>
+                                                                rel="noopener nofollow" target="_blank">http://example.com</a>
                         </div>
                     </div>
                 </div>
