@@ -13,7 +13,8 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -60,9 +61,7 @@ public class AwsSnsRestController {
 
     @Override
     public String toString() {
-      return "Delivery{" +
-          "recipients=" + recipients +
-          '}';
+      return "Delivery{" + "recipients=" + recipients + '}';
     }
   }
 
@@ -83,10 +82,13 @@ public class AwsSnsRestController {
 
     @Override
     public String toString() {
-      return "Complaint{" +
-          "complaintFeedbackType='" + complaintFeedbackType + '\'' +
-          ", complainedRecipients=" + complainedRecipients +
-          '}';
+      return "Complaint{"
+          + "complaintFeedbackType='"
+          + complaintFeedbackType
+          + '\''
+          + ", complainedRecipients="
+          + complainedRecipients
+          + '}';
     }
   }
 
@@ -101,12 +103,20 @@ public class AwsSnsRestController {
 
       @Override
       public String toString() {
-        return "BouncedRecipient{" +
-            "emailAddress='" + emailAddress + '\'' +
-            ", status='" + status + '\'' +
-            ", action='" + action + '\'' +
-            ", diagnosticCode='" + diagnosticCode + '\'' +
-            '}';
+        return "BouncedRecipient{"
+            + "emailAddress='"
+            + emailAddress
+            + '\''
+            + ", status='"
+            + status
+            + '\''
+            + ", action='"
+            + action
+            + '\''
+            + ", diagnosticCode='"
+            + diagnosticCode
+            + '\''
+            + '}';
       }
     }
 
@@ -116,11 +126,16 @@ public class AwsSnsRestController {
 
     @Override
     public String toString() {
-      return "Bounce{" +
-          "bounceType='" + bounceType + '\'' +
-          ", bounceSubType='" + bounceSubType + '\'' +
-          ", bouncedRecipients=" + bouncedRecipients +
-          '}';
+      return "Bounce{"
+          + "bounceType='"
+          + bounceType
+          + '\''
+          + ", bounceSubType='"
+          + bounceSubType
+          + '\''
+          + ", bouncedRecipients="
+          + bouncedRecipients
+          + '}';
     }
   }
 
@@ -160,7 +175,7 @@ public class AwsSnsRestController {
     }
   }
 
-  private static final Logger logger = Logger.getLogger(AwsSnsRestController.class);
+  private static final Logger logger = LoggerFactory.getLogger(AwsSnsRestController.class);
   private static final String NO_SUCH_FIELD = "-no-such-field";
   private final ObjectMapper objectMapper = new ObjectMapper();
 

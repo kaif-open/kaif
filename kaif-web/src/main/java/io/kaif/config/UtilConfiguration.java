@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.guava.GuavaCacheManager;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.cache.support.CompositeCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.google.common.cache.CacheBuilder;
+import com.github.benmanes.caffeine.cache.Caffeine;
 
 @Configuration
 @EnableCaching
@@ -39,31 +39,31 @@ public class UtilConfiguration {
 
   @Bean
   public CacheManager rssHotArticlesCacheManager() {
-    CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
+    Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder()
         .expireAfterWrite(4, TimeUnit.HOURS)
         .maximumSize(100);
-    GuavaCacheManager cacheManager = new GuavaCacheManager("rssHotArticles");
-    cacheManager.setCacheBuilder(cacheBuilder);
+    CaffeineCacheManager cacheManager = new CaffeineCacheManager("rssHotArticles");
+    cacheManager.setCaffeine(cacheBuilder);
     return cacheManager;
   }
 
   @Bean
   public CacheManager zoneInfoCacheManager() {
-    CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
+    Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder()
         .expireAfterWrite(10, TimeUnit.MINUTES)
         .maximumSize(2000);
-    GuavaCacheManager cacheManager = new GuavaCacheManager("ZoneInfo");
-    cacheManager.setCacheBuilder(cacheBuilder);
+    CaffeineCacheManager cacheManager = new CaffeineCacheManager("ZoneInfo");
+    cacheManager.setCaffeine(cacheBuilder);
     return cacheManager;
   }
 
   @Bean
   public CacheManager articleCacheManager() {
-    CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
+    Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder()
         .expireAfterWrite(10, TimeUnit.MINUTES)
         .maximumSize(2000);
-    GuavaCacheManager cacheManager = new GuavaCacheManager("Article");
-    cacheManager.setCacheBuilder(cacheBuilder);
+    CaffeineCacheManager cacheManager = new CaffeineCacheManager("Article");
+    cacheManager.setCaffeine(cacheBuilder);
     return cacheManager;
   }
 
@@ -74,11 +74,11 @@ public class UtilConfiguration {
    */
   @Bean
   public CacheManager listHotZonesCacheManager() {
-    CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
+    Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder()
         .expireAfterWrite(1, TimeUnit.HOURS)
         .maximumSize(1000);
-    GuavaCacheManager cacheManager = new GuavaCacheManager("listHotZones");
-    cacheManager.setCacheBuilder(cacheBuilder);
+    CaffeineCacheManager cacheManager = new CaffeineCacheManager("listHotZones");
+    cacheManager.setCaffeine(cacheBuilder);
     return cacheManager;
   }
 
@@ -88,11 +88,11 @@ public class UtilConfiguration {
    */
   @Bean
   public CacheManager listAdministratorsCacheManager() {
-    CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
+    Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder()
         .expireAfterWrite(1, TimeUnit.MINUTES)
         .maximumSize(1000);
-    GuavaCacheManager cacheManager = new GuavaCacheManager("listAdministrators");
-    cacheManager.setCacheBuilder(cacheBuilder);
+    CaffeineCacheManager cacheManager = new CaffeineCacheManager("listAdministrators");
+    cacheManager.setCaffeine(cacheBuilder);
     return cacheManager;
   }
 
@@ -104,21 +104,21 @@ public class UtilConfiguration {
    */
   @Bean
   public CacheManager findClientAppUserCacheManager() {
-    CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
+    Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder()
         .expireAfterWrite(1, TimeUnit.MINUTES)
         .maximumSize(1000);
-    GuavaCacheManager cacheManager = new GuavaCacheManager("findClientAppUser");
-    cacheManager.setCacheBuilder(cacheBuilder);
+    CaffeineCacheManager cacheManager = new CaffeineCacheManager("findClientAppUser");
+    cacheManager.setCaffeine(cacheBuilder);
     return cacheManager;
   }
 
   @Bean
   public CacheManager honorRollsCacheManager() {
-    CacheBuilder<Object, Object> cacheBuilder = CacheBuilder.newBuilder()
+    Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder()
         .expireAfterWrite(1, TimeUnit.HOURS)
         .maximumSize(100);
-    GuavaCacheManager cacheManager = new GuavaCacheManager("listHonorRoll");
-    cacheManager.setCacheBuilder(cacheBuilder);
+    CaffeineCacheManager cacheManager = new CaffeineCacheManager("listHonorRoll");
+    cacheManager.setCaffeine(cacheBuilder);
     return cacheManager;
   }
 }

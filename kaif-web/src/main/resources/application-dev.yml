@@ -1,0 +1,63 @@
+## web server
+server:
+  port: 5980
+
+
+## freemarker
+spring.freemarker:
+  cache: false
+  settings:
+    show_error_tips: true
+
+
+## spring mvc resources
+spring.jackson.serialization.indent_output: true
+
+
+## actuator
+management:
+  endpoints:
+    enabled-by-default: true
+
+
+## database
+spring.datasource:
+  url: jdbc:postgresql://192.168.59.59:5432/kaif
+  username: kaif
+  password: changeme
+  schema:
+  data:
+  initialization-mode: never
+
+## jmx
+
+
+## messages
+spring.messages.cache-duration: 0s
+
+
+## mail
+spring.mail.host: 192.168.59.59
+
+
+## model, see AccountSecret.java
+account:
+  mac: n7LOo9kKqSqM-fshf_T3xw
+  key: dnXAz2u6mn4L_vZyiW0hHA
+
+## oauth, see OauthSecret.java
+oauth:
+  mac: n7LOo9kKqSqM-fshf_T3xw
+  key: dnXAz2u6mn4L_vZyiW0hHA
+
+## flake node id
+flake.node-id: 99
+
+
+## app
+
+
+## logback
+logging.config: classpath:logback-dev.xml
+
+spring.main.banner-mode: log

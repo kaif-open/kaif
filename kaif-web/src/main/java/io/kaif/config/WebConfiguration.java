@@ -24,8 +24,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
-import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
-
 import freemarker.template.TemplateModelException;
 import io.kaif.service.AccountService;
 import io.kaif.service.ClientAppService;
@@ -60,7 +58,7 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
   @SuppressWarnings("unchecked")
   @Bean
   public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
-    return new Jackson2ObjectMapperBuilder().modulesToInstall(AfterburnerModule.class);
+    return new Jackson2ObjectMapperBuilder();
   }
 
   @Override

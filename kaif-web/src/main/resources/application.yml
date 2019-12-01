@@ -7,8 +7,8 @@
 
 ## web server
 server:
-  connection-timeout: 20000
   tomcat:
+    connection-timeout: 20000
     max-connections: 600
     uri-encoding: UTF-8
   error:
@@ -17,12 +17,12 @@ server:
 
 ## freemarker
 spring.freemarker:
-    templateLoaderPath: classpath:/templates,classpath:/mail
-    # expose `request` so it is accessible in ftl
-    request-context-attribute: request
-    settings:
-        datetime_format: yyyy-MM-dd
-        number_format: 0.######
+  templateLoaderPath: classpath:/templates,classpath:/mail
+  # expose `request` so it is accessible in ftl
+  request-context-attribute: request
+  settings:
+    datetime_format: yyyy-MM-dd
+    number_format: 0.######
 
 
 
@@ -37,15 +37,19 @@ spring.resources.chain.strategy.content.paths:
   - /web/*.js
 
 ## actuator
-management.context-path: /actuate
-management.add-application-context-header: false
-endpoints.info.enabled: true
-endpoints.health.enabled: true
+management:
+  server:
+    add-application-context-header: false
+  endpoint:
+    health:
+      enabled: true
+    info:
+      enabled: false
 
 
 ## database
 spring.datasource:
-    driver-class-name: org.postgresql.Driver
+  driver-class-name: org.postgresql.Driver
 
 
 ## jmx

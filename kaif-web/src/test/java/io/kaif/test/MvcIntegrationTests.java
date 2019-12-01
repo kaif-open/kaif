@@ -14,6 +14,12 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.HttpEncodingAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -23,14 +29,12 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import io.kaif.config.AppProperties;
 import io.kaif.config.SpringProfile;
@@ -51,16 +55,24 @@ import io.kaif.service.ZoneService;
 
 @ActiveProfiles(SpringProfile.TEST)
 @RunWith(SpringRunner.class)
-@WebAppConfiguration
 @SpringBootTest(classes = MvcIntegrationTests.WebTestApplication.class)
 public abstract class MvcIntegrationTests implements ModelFixture, ToolFixture {
 
   @Profile(SpringProfile.TEST)
-  @EnableWebMvc
   @ComponentScan(basePackages = "io.kaif.web")
-  @Import(value = { UtilConfiguration.class, MessageSourceAutoConfiguration.class,
-      MockTestConfig.class, WebConfiguration.class, FreeMarkerAutoConfiguration.class,
-      AppProperties.class, SwaggerConfiguration.class })
+  @Import(value = { //
+      DispatcherServletAutoConfiguration.class,//
+      HttpMessageConvertersAutoConfiguration.class, HttpEncodingAutoConfiguration.class,
+      MultipartAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
+      WebMvcAutoConfiguration.class,
+
+      UtilConfiguration.class,//
+      MessageSourceAutoConfiguration.class, //
+      MockTestConfig.class, //
+      WebConfiguration.class,//
+      FreeMarkerAutoConfiguration.class, //
+      AppProperties.class, //
+      SwaggerConfiguration.class })
   public static class WebTestApplication {
   }
 

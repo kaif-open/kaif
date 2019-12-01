@@ -57,8 +57,8 @@ sample configs:
     <#if applyZoneTheme>
         <link rel="stylesheet" href="<@spring.url '/css/${zoneInfo.theme}.css' />">
     </#if>
-    <#if head?length == 0>
-        <title>kaif.io</title>
+    <#if head?is_string>
+       <title>kaif.io</title>
     <#else>
         ${head}
     </#if>

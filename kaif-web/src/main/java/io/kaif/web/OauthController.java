@@ -1,6 +1,5 @@
 package io.kaif.web;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -138,25 +137,21 @@ public class OauthController {
   }
 
   private RedirectView redirectViewWithQuery(String redirectUri, String state, String query) {
-    try {
-      if (!Strings.isNullOrEmpty(state)) {
-        query += "&state=" + state;
-      }
-      String encoded = UriUtils.encodeQuery(query, Charsets.UTF_8.name());
-      String locationUri = redirectUri;
-      if (redirectUri.contains("?")) {
-        locationUri += "&" + encoded;
-      } else {
-        locationUri += "?" + encoded;
-      }
-      RedirectView redirectView = new RedirectView(locationUri);
-      redirectView.setStatusCode(HttpStatus.FOUND);
-      redirectView.setExposeModelAttributes(false);
-      redirectView.setPropagateQueryParams(false);
-      return redirectView;
-    } catch (UnsupportedEncodingException e) {
-      throw new RuntimeException(e);
+    if (!Strings.isNullOrEmpty(state)) {
+      query += "&state=" + state;
     }
+    String encoded = UriUtils.encodeQuery(query, Charsets.UTF_8.name());
+    String locationUri = redirectUri;
+    if (redirectUri.contains("?")) {
+      locationUri += "&" + encoded;
+    } else {
+      locationUri += "?" + encoded;
+    }
+    RedirectView redirectView = new RedirectView(locationUri);
+    redirectView.setStatusCode(HttpStatus.FOUND);
+    redirectView.setExposeModelAttributes(false);
+    redirectView.setPropagateQueryParams(false);
+    return redirectView;
   }
 
   /**

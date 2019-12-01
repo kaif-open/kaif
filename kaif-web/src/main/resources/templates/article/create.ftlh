@@ -14,12 +14,14 @@ layout='full'
 applyZoneTheme=zoneInfo??
 head=headContent
 >
-    <#assign createLinkPath >
-        <@url.createArticleLink />
-    </#assign>
-    <#assign createSpeakPath>
-        <@url.createArticleSpeak />
-    </#assign>
+<#outputformat "plainText">
+  <#assign createLinkPath >
+      <@url.createArticleLink />
+  </#assign>
+  <#assign createSpeakPath>
+      <@url.createArticleSpeak />
+  </#assign>
+</#outputformat>
 
 <div class="zone ${(zoneInfo.theme)!''}">
     <#if zoneInfo??>

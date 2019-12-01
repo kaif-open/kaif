@@ -1,32 +1,40 @@
 ## web server
 server:
-    port: 5980
+  port: 5980
 
 
 ## freemarker
 spring.freemarker:
-    cache: true
-    settings:
-        show_error_tips: false
+  cache: true
+  settings:
+    show_error_tips: false
 
 
 ## spring mvc resources
 # cache one month for css, js, favicon.ico...etc
-spring.resources.cache-period: 2592000
+spring:
+  resources:
+    chain:
+      cache: true
+    cache:
+      cachecontrol:
+        max-age: 30d
+        cache-public: true
 
 ## actuator
-endpoints.enabled: false
+management:
+  endpoints:
+    enabled-by-default: false
 
 
 ## database
 spring.datasource:
-    initialize: false
-    # TODO change `localhost` from ansible
-    url: jdbc:postgresql://localhost:5432/kaif
-    username: kaif
-    password: ${env.dbpassword}
-    schema:
-    data:
+  initialization-mode: never
+  url: jdbc:postgresql://localhost:5432/kaif
+  username: kaif
+  password: ${env.dbpassword}
+  schema:
+  data:
 
 ## jmx
 
@@ -43,14 +51,14 @@ mail.aws-access-key: ${env.mail.aws-access-key}
 
 ## model
 account:
-    mac: ${env.account.mac}
-    key: ${env.account.key}
+  mac: ${env.account.mac}
+  key: ${env.account.key}
 
 
 ## oauth, see OauthSecret.java
 oauth:
-    mac: ${env.oauth.mac}
-    key: ${env.oauth.key}
+  mac: ${env.oauth.mac}
+  key: ${env.oauth.key}
 
 ## flake node id, every web server should use it's own unique node id
 flake.node-id: ${env.flake.node-id}
@@ -60,5 +68,3 @@ flake.node-id: ${env.flake.node-id}
 logging.config: classpath:logback-prod.xml
 
 
-## misc
-spring.main.show_banner: true

@@ -7,8 +7,8 @@ allprojects {
 apply plugin: 'idea'
 idea {
   project {
-    jdkName = '1.8'
-    languageLevel = '1.8'
+    jdkName = '11'
+    languageLevel = '11'
   }
 }
 
@@ -18,7 +18,11 @@ subprojects {
   }
 }
 
-task wrapper(type: Wrapper) {
-  gradleVersion = '4.5.1'
-  distributionType = 'ALL'
+/**
+ * to upgrade specific gradle version, run below command:
+ *
+ *   ./gradlew wrapper --gradle-version 5.2.1
+ */
+wrapper {
+  distributionType = Wrapper.DistributionType.ALL
 }
