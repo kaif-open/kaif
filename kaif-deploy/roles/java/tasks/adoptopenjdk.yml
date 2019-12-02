@@ -1,0 +1,16 @@
+---
+- name: Install adoptopenjdk repo key
+  apt_key: url=https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public state=present
+  tags:
+    - java
+    - java-adoptopenjdk
+
+- name: Add the adoptopenjdk APT repository
+  tags:
+    - java
+    - java-adoptopenjdk
+  apt_repository: repo="deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ xenial main" state=present update_cache=yes
+
+- name: Install adoptopenjdk
+  tags: java
+  apt: pkg={{ java_versions }} update-cache=yes state=latest

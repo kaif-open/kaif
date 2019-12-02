@@ -1,5 +1,5 @@
 springboot_owner: "{{ansible_user}}"
-springboot_vm_options: '-Xms512M -XX:+UseG1GC -XX:+UseStringDeduplication'
+springboot_vm_options: '-XX:MaxRAM=768M -XX:MinRAMPercentage=30 -XX:MaxRAMPercentage=50'
 springboot_profiles_active: 'prod'
 springboot_app_options: ''
 springboot_jmxport: 15980
