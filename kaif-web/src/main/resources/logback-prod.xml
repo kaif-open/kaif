@@ -62,6 +62,7 @@
     </appender>
 
     <logger name="io.kaif" level="DEBUG"/>
+    <logger name="io.kaif.web.HotArticleRssContentView" level="INFO"/>
 
     <logger name="io.kaif.web.AwsSnsRestController" level="DEBUG" additivity="false">
         <appender-ref ref="MAIL"/>
@@ -98,8 +99,8 @@
     <logger name="org.springframework.cache" level="WARN"/>
     <logger name="org.xnio" level="WARN"/>
     <logger name="com.mangofactory.swagger" level="WARN"/>
-    <logger name="com.wordnik.swagger" level="warn"/>
-    <logger name="sun.rmi.transport" level="warn"/>
+    <logger name="com.wordnik.swagger" level="WARN"/>
+    <logger name="sun.rmi.transport" level="WARN"/>
 
     <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
         <resetJUL>true</resetJUL>
