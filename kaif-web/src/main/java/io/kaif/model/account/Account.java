@@ -138,14 +138,23 @@ public class Account implements Authorization {
 
   @Override
   public String toString() {
-    return "Account{" +
-        "username='" + username + '\'' +
-        ", accountId=" + accountId +
-        ", email='" + email + '\'' +
-        ", description='" + description + '\'' +
-        ", createTime=" + createTime +
-        ", authorities=" + authorities +
-        '}';
+    return "Account{"
+        + "username='"
+        + username
+        + '\''
+        + ", accountId="
+        + accountId
+        + ", email='"
+        + email
+        + '\''
+        + ", description='"
+        + description
+        + '\''
+        + ", createTime="
+        + createTime
+        + ", authorities="
+        + authorities
+        + '}';
   }
 
   @Override
@@ -163,6 +172,17 @@ public class Account implements Authorization {
     return authenticatedId().equals(account.getAccountId())
         && passwordHash.equals(account.getPasswordHash())
         && authorities.equals(account.getAuthorities());
+  }
+
+  public Account withDescription(String description) {
+    Preconditions.checkNotNull(KmarkProcessor.process(description));
+    return new Account(accountId,
+        username,
+        email,
+        passwordHash,
+        description,
+        createTime,
+        authorities);
   }
 
   public Account withAuthorities(Set<Authority> authorities) {

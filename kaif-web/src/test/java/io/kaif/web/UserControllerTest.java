@@ -25,9 +25,11 @@ public class UserControllerTest extends MvcIntegrationTests {
 
   @Test
   public void userProfile() throws Exception {
-    when(accountService.loadAccount("foo-user")).thenReturn(account);
-    when(accountService.loadAccountStats("foo-user")).thenReturn(AccountStats.zero(account.getAccountId()));
+    Account accountWithDesc = account.withDescription("**bold**");
+    when(accountService.loadAccount("foo-user")).thenReturn(accountWithDesc);
+    when(accountService.loadAccountStats("foo-user")).thenReturn(AccountStats.zero(accountWithDesc.getAccountId()));
     mockMvc.perform(get("/u/foo-user"))
+        .andExpect(content().string(containsString("<p><strong>bold</strong></p>")))
         .andExpect(content().string(containsString("關於 foo-user")))
         .andExpect(content().string(containsString(
             "<link rel=\"canonical\" href=\"https://kaif.io/u/foo-user\"/>")));

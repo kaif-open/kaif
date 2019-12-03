@@ -24,7 +24,7 @@
                     <div description-content-edit class="hidden"></div>
                     <div class="about-me kmark" description-content>
                     <#if account.renderDescription?has_content>
-                    ${account.renderDescription}
+                    ${account.renderDescription?no_esc}
                     <#else>
                         <p>(尚無自介)</p>
                     </#if>

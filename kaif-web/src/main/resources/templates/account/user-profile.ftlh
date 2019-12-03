@@ -18,7 +18,7 @@ head=headContent>
         <@util.time instant=account.createTime  maxUnit="Day" />
         <h2>關於 ${account.username}</h2>
 
-        <div class="kmark">${account.renderDescription}</div>
+        <div class="kmark">${account.renderDescription?no_esc}</div>
         <div class="user-info-list">
             <div>
                 文章分享 <span class="user-number">${accountStats.articleCount}</span> 篇

@@ -29,12 +29,13 @@ public class AccountControllerTest extends MvcIntegrationTests {
 
   @Test
   public void settingsPart() throws Exception {
-    Account account = accountTourist("foo");
+    Account account = accountTourist("foo").withDescription("**foo**");
     String token = prepareAccessToken(account);
 
     when(accountService.findMe(isA(Authorization.class))).thenReturn(Optional.of(account));
 
     mockMvc.perform(get("/account/settings.part").header(AccountAccessToken.HEADER_KEY, token))
+        .andExpect(content().string(containsString("<p><strong>foo</strong></p>")))
         .andExpect(view().name("account/settings.part"))
         .andExpect(content().string(containsString("foo@example.com")))
         .andExpect(content().string(containsString("foo")));
