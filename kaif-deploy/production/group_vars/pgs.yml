@@ -1,9 +1,9 @@
 ---
 
-## the tuning is for 4GB ram in production
+## the tuning is for 2GB ram in production
 ## see http://www.pgconfig.org
 postgresql:
   shared_buffers: '512MB'
-  effective_cache_size: '3GB'
+  effective_cache_size: '2GB'
   work_mem: '16MB'
   checkpoint_completion_target: '0.7'
