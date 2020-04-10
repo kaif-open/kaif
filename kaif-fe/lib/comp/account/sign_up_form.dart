@@ -34,7 +34,7 @@ class SignUpForm {
 
     elem.querySelector('#consentInput')
       ..onClick.first.then((e) {
-      e.target.disabled = true;
+        (e.target as ButtonElement).disabled = true;
       elem.querySelector('#consentLabel').text = '我猜你沒讀，不過就當作你看過了吧';
     });
   }
@@ -49,7 +49,7 @@ class SignUpForm {
 
   void _createAccount(TextInputElement passwordInput) {
 
-    SubmitButtonInputElement submit = elem.querySelector('[type=submit]');
+    ButtonElement submit = elem.querySelector('[type=submit]');
     submit.disabled = true;
 
     var loading = new Loading.small()

@@ -5,7 +5,7 @@ import 'dao.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:html';
-import 'package:cookie/cookie.dart' as cookie;
+//import 'package:cookie/cookie.dart' as cookie;
 
 class AccountSession {
 
@@ -19,11 +19,12 @@ class AccountSession {
 
   void _detectForceLogout() {
     // see AccountController.java #activation
-    var value = cookie.get("force-logout");
-    if (value != null && "true" == value.toLowerCase()) {
-      cookie.remove("force-logout", path:"/", secure:true);
-      signOut();
-    }
+    // TODO#dart2 cookie
+//    var value = cookie.get("force-logout");
+//    if (value != null && "true" == value.toLowerCase()) {
+//      cookie.remove("force-logout", path:"/", secure:true);
+//      signOut();
+//    }
   }
 
   void save(AccountAuth auth, {bool rememberMe}) {
@@ -77,7 +78,7 @@ class AccountSession {
     return HttpRequest.request(
         '/api/account/extends-access-token',
         method:'POST',
-        sendData:JSON.encode(json),
+        sendData:jsonEncode(json),
         requestHeaders:headers)
     .catchError((ProgressEvent event) {
       HttpRequest req = event.target;
@@ -86,7 +87,7 @@ class AccountSession {
       }
       throw new StateError('abort');
     })
-    .then((req) => JSON.decode(req.responseText))
+    .then((req) => jsonDecode(req.responseText))
     .then((raw) => new AccountAuth.decode(raw));
   }
 

@@ -4,11 +4,14 @@ import static java.util.stream.Collectors.*;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import io.kaif.flake.FlakeId;
 import io.kaif.model.article.Article;
@@ -89,5 +92,11 @@ public class HomeController {
     //            new Random().nextInt(100)))
     //        .collect(toList());
     return new IndexModelAndView(zoneService).addObject("honorRolls", honorRolls);
+  }
+
+  //TODO#dart2 move proxy to dev
+  @RequestMapping(value = { "/packages/**", "main.ddc.js", "main.ddc.js.errors" })
+  public RedirectView dartDev(HttpServletRequest request) {
+    return new RedirectView("http://localhost:15980" + request.getRequestURI());
   }
 }

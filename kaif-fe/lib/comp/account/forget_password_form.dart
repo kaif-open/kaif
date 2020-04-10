@@ -21,7 +21,7 @@ class ForgetPasswordForm {
 
     TextInputElement nameInput = elem.querySelector('#nameInput');
     TextInputElement emailInput = elem.querySelector('#emailInput');
-    SubmitButtonInputElement submit = elem.querySelector('[type=submit]');
+    ButtonElement submit = elem.querySelector('[type=submit]');
     submit.disabled = true;
 
     alert.hide();

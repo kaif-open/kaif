@@ -15,7 +15,7 @@ class AccountDao {
     }
 
     var storage = _useLocalStorage ? window.localStorage : window.sessionStorage;
-    storage[_KEY] = JSON.encode(auth);
+    storage[_KEY] = jsonEncode(auth);
   }
 
   void remove() {
@@ -30,7 +30,7 @@ class AccountDao {
         return null;
       }
       try {
-        return new AccountAuth.decode(JSON.decode(storage[_KEY]));
+        return new AccountAuth.decode(jsonDecode(storage[_KEY]));
       } catch (error) {
         // possible cause of decode error:
         //
@@ -65,7 +65,7 @@ class NewsFeedDao {
   static const Duration _EXPIRE = const Duration(minutes:1);
 
   void saveCounter(int value) {
-    window.localStorage[_KEY] = JSON.encode({
+    window.localStorage[_KEY] = jsonEncode({
       'counter': value,
       'updateTime': new DateTime.now().millisecondsSinceEpoch
     });
@@ -77,7 +77,7 @@ class NewsFeedDao {
       return null;
     }
     try {
-      var saved = JSON.decode(window.localStorage[_KEY]);
+      var saved = jsonDecode(window.localStorage[_KEY]);
       var updateTime = new DateTime.fromMillisecondsSinceEpoch(saved['updateTime']);
       if (updateTime.add(_EXPIRE).isBefore(new DateTime.now())) {
         //expired

@@ -8,7 +8,7 @@ class ZoneForm {
   final Element elem;
   final ZoneService zoneService;
   Alert alert;
-  SubmitButtonInputElement submitElem;
+  ButtonElement submitElem;
   TextInputElement zoneInput;
   TextInputElement aliasNameInput;
   bool canCreateZone = false;

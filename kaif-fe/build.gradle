@@ -6,7 +6,7 @@ plugins {
   id 'com.github.ngyewch.dart' version '0.3.0'
 }
 
-def DART_SDK_VERSION = "1.24.2"
+def DART_SDK_VERSION = "2.1.1"
 
 /// start of install local dart sdk
 
@@ -71,6 +71,7 @@ pubUpgrade.dependsOn installDart
 //
 // to workaround, we extends DartPubBuildTask instead
 
+// TODO#dart2 rework webdev build
 task pubCleanBuild(dependsOn: pubGet, type: com.github.ngyewch.dart.task.DartPubBuildTask) {
   group = "Build"
 }
@@ -80,8 +81,7 @@ task pubCleanBuild(dependsOn: pubGet, type: com.github.ngyewch.dart.task.DartPub
 //
 task pubPollServe(dependsOn: installDart, type: Exec) {
   group = "Build"
-  commandLine = ["${dart.dartSdkBin}/pub", "serve", "--port", "15980",
-                 "--hostname", "localhost", "--force-poll"]
+  commandLine = ["${dart.dartSdkBin}pub", "run", "webdev:webdev", "serve", "web:15980"]
 }
 
 task clean() {

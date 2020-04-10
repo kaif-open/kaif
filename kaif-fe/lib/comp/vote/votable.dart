@@ -133,7 +133,8 @@ class _WaitVoterState extends _VotableState {
   void exit() {
   }
 
-  State process(_VotableTrigger trigger) {
+  State process(dynamic raw) {
+_VotableTrigger trigger =  raw as _VotableTrigger;
 
     if (trigger.noSignIn == true) {
       return new _WaitSignUpState(votable);
@@ -174,7 +175,8 @@ class _WaitSignUpState extends _VotableState {
     votable._markVisualState(VoteState.EMPTY);
   }
 
-  State process(_VotableTrigger trigger) {
+  State process(dynamic raw) {
+    _VotableTrigger trigger =  raw as _VotableTrigger;
     if (trigger.upVoting == true || trigger.downVoting == true) {
       var actionElem = new AnchorElement()
         ..href = route.signIn
@@ -193,7 +195,8 @@ class _EmptyVoteState extends _VotableState {
     votable._markVisualState(VoteState.EMPTY);
   }
 
-  State process(_VotableTrigger trigger) {
+  State process(dynamic raw) {
+    _VotableTrigger trigger =  raw as _VotableTrigger;
     if (trigger.upVoting == true) {
       return new _VotingState(votable,
       VoteState.UP, VoteState.EMPTY, votable.currentCount);
@@ -214,7 +217,8 @@ class _UpVotedState extends _VotableState {
     votable._markVisualState(VoteState.UP);
   }
 
-  State process(_VotableTrigger trigger) {
+  State process(dynamic raw) {
+    _VotableTrigger trigger =  raw as _VotableTrigger;
     if (trigger.upVoting == true) {
       return new _VotingState(votable,
       VoteState.EMPTY, VoteState.UP, votable.currentCount);
@@ -235,7 +239,8 @@ class _DownVotedState extends _VotableState {
     votable._markVisualState(VoteState.DOWN);
   }
 
-  State process(_VotableTrigger trigger) {
+  State process(dynamic raw) {
+    _VotableTrigger trigger =  raw as _VotableTrigger;
     if (trigger.upVoting == true) {
       return new _VotingState(votable,
       VoteState.UP, VoteState.DOWN, votable.currentCount);
@@ -278,7 +283,8 @@ class _VotingState extends _VotableState {
     });
   }
 
-  State process(_VotableTrigger trigger) {
+  State process(dynamic raw) {
+    _VotableTrigger trigger =  raw as _VotableTrigger;
     if (trigger.votingCompleted != null) {
       switch (trigger.votingCompleted) {
         case VoteState.UP:

@@ -97,7 +97,7 @@ abstract class EditKmarkForm {
       return;
     }
 
-    SubmitButtonInputElement submitBtn = _elem.querySelector('[type=submit]');
+    ButtonElement submitBtn = _elem.querySelector('[type=submit]');
     submitBtn.disabled = true;
 
     var loading = new Loading.small()

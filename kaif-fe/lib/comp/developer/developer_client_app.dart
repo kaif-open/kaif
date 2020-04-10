@@ -33,9 +33,9 @@ class CreateClientAppForm {
       ..stopPropagation();
 
     var name = (elem.querySelector('[name=nameInput]') as TextInputElement).value;
-    var description = (elem.querySelector('[name=descriptionInput]') as TextInputElement).value;
+    var description = (elem.querySelector('[name=descriptionInput]') as TextAreaElement).value;
     var callbackUri = (elem.querySelector('[name=callbackUriInput]') as TextInputElement).value;
-    var submit = elem.querySelector('[type=submit]');
+    var submit = elem.querySelector('[type=submit]') as ButtonElement;
     submit.disabled = true;
     try {
       String clientId = await clientAppService.create(name, description, callbackUri);
@@ -67,9 +67,9 @@ class EditClientAppForm {
 
     var clientId = (elem.querySelector('[name=clientIdInput]') as TextInputElement).value;
     var name = (elem.querySelector('[name=nameInput]') as TextInputElement).value;
-    var description = (elem.querySelector('[name=descriptionInput]') as TextInputElement).value;
+    var description = (elem.querySelector('[name=descriptionInput]') as TextAreaElement).value;
     var callbackUri = (elem.querySelector('[name=callbackUriInput]') as TextInputElement).value;
-    var submit = elem.querySelector('[type=submit]');
+    var submit = elem.querySelector('[type=submit]') as ButtonElement;
     submit.disabled = true;
     try {
       await clientAppService.update(clientId, name, description, callbackUri);
@@ -99,7 +99,7 @@ class DebugClientAppForm {
       ..stopPropagation();
 
     var clientId = (elem.querySelector('[name=clientIdInput]') as TextInputElement).value;
-    var submit = elem.querySelector('[type=submit]');
+    var submit = elem.querySelector('[type=submit]') as ButtonElement;
     submit.disabled = true;
     var loading = new Loading.small()
       ..renderAfter(submit);
