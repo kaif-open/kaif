@@ -2,3 +2,4 @@ packages/
 packages
 build/
 .pub/
+.dart_tool/

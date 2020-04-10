@@ -64,6 +64,24 @@ sample configs:
           ${head}
       </#if>
 
+    <script>
+      <#-- workaround issue, start from Chrome 81:
+           https://github.com/dart-lang/sdk/issues/40901
+        -->
+      if (typeof dartNativeDispatchHooksTransformer == "undefined") dartNativeDispatchHooksTransformer=[];
+      dartNativeDispatchHooksTransformer.push(
+        function(hooks) {
+          var getTag = hooks.getTag;
+          var quickMap = {
+            "SubmitEvent": "Event",
+          };
+          function getTagFixed(o) {
+            var tag = getTag(o);
+            return quickMap[tag] || tag;
+          }
+          hooks.getTag = getTagFixed;
+        });
+    </script>
   </head>
   <body>
 
