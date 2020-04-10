@@ -34,7 +34,7 @@ class SignUpForm {
 
     elem.querySelector('#consentInput')
       ..onClick.first.then((e) {
-        (e.target as ButtonElement).disabled = true;
+        (e.target as InputElement).disabled = true;
       elem.querySelector('#consentLabel').text = '我猜你沒讀，不過就當作你看過了吧';
     });
   }

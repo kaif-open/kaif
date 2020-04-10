@@ -73,7 +73,7 @@ pubUpgrade.dependsOn installDart
 
 task pubCleanBuild(dependsOn: pubGet, type: Exec) {
   group = "Build"
-  commandLine = ["${dart.dartSdkBin}pub", "run", "webdev:webdev", "build"]
+  commandLine = ["${dart.dartSdkBin}pub", "run", "webdev:webdev", "build", "--verbose"]
 }
 
 //
