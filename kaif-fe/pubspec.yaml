@@ -4,8 +4,6 @@ environment:
   sdk: '>=2.0.0 <3.0.0'
 dependencies:
   intl: any
-  #TODO#dart2 cookie
-  #cookie: ">=0.0.4 <0.1.0"
   less_dart: "2.3.7"
 dev_dependencies:
   webdev: '2.5.6'

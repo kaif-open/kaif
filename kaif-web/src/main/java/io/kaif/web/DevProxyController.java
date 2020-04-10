@@ -13,7 +13,6 @@ import io.kaif.config.SpringProfile;
 @Controller
 public class DevProxyController {
 
-  //TODO#dart2 move proxy to dev
   //TODO#dart2 $requireDigestsPath CORS issue
   @RequestMapping(value = { "/packages/**", "main.ddc.js", "main.ddc.js.errors", "/dwds/**",
       "$requireDigestsPath" })

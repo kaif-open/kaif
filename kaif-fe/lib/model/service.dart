@@ -82,7 +82,7 @@ abstract class _AbstractService extends Object with _ModelMapper {
     params.forEach((key, value) {
       if (value != null) {
         String strValue = (value is Iterable)
-            ? (value as Iterable).join(',')
+            ? value.join(',')
             : value.toString();
         parts.add('${Uri.encodeQueryComponent(key)}='
             '${Uri.encodeQueryComponent(strValue)}');
