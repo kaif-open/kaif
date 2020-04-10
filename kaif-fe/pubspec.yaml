@@ -1,11 +1,8 @@
 name: kaif_web
 description: Kaif Web
 environment:
-  #TODO#dart2 use latest dart2
   sdk: '>=2.0.0 <3.0.0'
 dependencies:
-  #TODO#dart2 barback i18n
-  #barback: any
   intl: any
   #TODO#dart2 cookie
   #cookie: ">=0.0.4 <0.1.0"
@@ -17,6 +14,3 @@ dev_dependencies:
 
   #TODO#dart2 unit test
   #unittest: any
-transformers:
-  - kaif_web:
-      $include: ["lib/intl/messages*.dart", "lib/i18n_link/messages*.properties"]
