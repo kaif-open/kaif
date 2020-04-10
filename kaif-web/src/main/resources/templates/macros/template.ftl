@@ -64,6 +64,21 @@ sample configs:
           ${head}
       </#if>
 
+    <script>
+      if (typeof dartNativeDispatchHooksTransformer == "undefined") dartNativeDispatchHooksTransformer=[];
+      dartNativeDispatchHooksTransformer.push(
+        function(hooks) {
+          var getTag = hooks.getTag;
+          var quickMap = {
+            "SubmitEvent": "Event",
+          };
+          function getTagFixed(o) {
+            var tag = getTag(o);
+            return quickMap[tag] || tag;
+          }
+          hooks.getTag = getTagFixed;
+        });
+    </script>
   </head>
   <body>
 
