@@ -98,12 +98,13 @@ abstract class _AbstractService extends Object with _ModelMapper {
   }
 
   Future<HttpRequest> _getPlanTextWithoutHandleError(String url) {
-    var requestHeaders = {};
+    Map<String, String> requestHeaders = {};
     _populateAccessToken(requestHeaders);
     return HttpRequest.request(url, requestHeaders: requestHeaders);
   }
 
-  void _onHandleRequestError(ProgressEvent event) {
+  void _onHandleRequestError(Object raw) {
+    ProgressEvent event = raw as ProgressEvent;
     HttpRequest req = event.target;
     var restErrorResponse = RestErrorResponse.tryDecode(req.responseText);
     if (restErrorResponse == null) {
@@ -137,7 +138,8 @@ class PartService extends _AbstractService {
   Future<String> loadPart(String partPath) {
     return _getPlanTextWithoutHandleError(partPath)
         .then((req) => req.responseText)
-        .catchError((ProgressEvent event) {
+        .catchError((Object raw) {
+      ProgressEvent event = raw as ProgressEvent;
       HttpRequest request = event.target;
       if (request.status == 401 || request.status == 403) {
         throw new PermissionError();

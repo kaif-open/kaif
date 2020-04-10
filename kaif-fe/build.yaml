@@ -1,0 +1,9 @@
+targets:
+  $default:
+    builders:
+      less_dart:
+        options:
+          entry_points: ['web/less/kaif.less']
+          include_path: 'web/less'
+          cleancss: true
+          compress: true

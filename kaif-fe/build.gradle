@@ -6,7 +6,7 @@ plugins {
   id 'com.github.ngyewch.dart' version '0.3.0'
 }
 
-def DART_SDK_VERSION = "2.1.1"
+def DART_SDK_VERSION = "2.7.2"
 
 /// start of install local dart sdk
 
@@ -71,17 +71,18 @@ pubUpgrade.dependsOn installDart
 //
 // to workaround, we extends DartPubBuildTask instead
 
-// TODO#dart2 rework webdev build
-task pubCleanBuild(dependsOn: pubGet, type: com.github.ngyewch.dart.task.DartPubBuildTask) {
+task pubCleanBuild(dependsOn: pubGet, type: Exec) {
   group = "Build"
+  commandLine = ["${dart.dartSdkBin}pub", "run", "webdev:webdev", "build"]
 }
 
 //
 // could not customize exist pubServe arguments, use Exec directly.
 //
-task pubPollServe(dependsOn: installDart, type: Exec) {
+task pubPollServe(dependsOn: pubGet, type: Exec) {
   group = "Build"
-  commandLine = ["${dart.dartSdkBin}pub", "run", "webdev:webdev", "serve", "web:15980"]
+  //disable injected-client because we have CORS issue from dev server, this will disable auto refresh browser while development
+  commandLine = ["${dart.dartSdkBin}pub", "run", "webdev:webdev", "serve", "web:15980", "--no-injected-client"]
 }
 
 task clean() {

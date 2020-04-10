@@ -80,7 +80,8 @@ class AccountSession {
         method:'POST',
         sendData:jsonEncode(json),
         requestHeaders:headers)
-    .catchError((ProgressEvent event) {
+    .catchError((Object raw) {
+      ProgressEvent event = raw as ProgressEvent;
       HttpRequest req = event.target;
       if (req.status == 401 || req.status == 403) {
         throw new PermissionError();

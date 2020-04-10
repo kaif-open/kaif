@@ -51,7 +51,7 @@ sample configs:
       <#-- less/kaif.less are compiled by dart transformer
         -->
       <#if kaif.profilesActive?contains('dev')>
-        <link rel="stylesheet" href="//localhost:15980/css/kaif.css">
+        <link rel="stylesheet" href="//localhost:15980/less/kaif.css">
       <#else>
         <link rel="stylesheet" href="<@spring.url '/css/kaif.css' />">
       </#if>
