@@ -20,7 +20,7 @@ class ZoneForm {
 
     zoneInput = elem.querySelector('#zoneInput');
 
-    zoneInput.onKeyUp.map((e) => zoneInput.value.trim()).transform(Throttler.throttle(500)).listen((
+    zoneInput.onKeyUp.map((e) => zoneInput.value.trim()).transform(Throttler.throttle<String>(500)).listen((
         partial) {
       if (!zoneInput.checkValidity()) {
         _showHint(i18n('zone.invalid-zone'), ok:false);
