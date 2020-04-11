@@ -1,5 +1,6 @@
 package io.kaif.web.api;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -19,6 +20,8 @@ import io.kaif.web.support.AbstractRestExceptionHandler;
  * Oauth api use different response json, see {@link io.kaif.web.v1.V1ExceptionHandler}.
  */
 @ControllerAdvice(basePackageClasses = RestExceptionHandler.class)
+//make higher precedence than default spring error handling (which produce web page, not json)
+@Order(-10)
 public class RestExceptionHandler extends AbstractRestExceptionHandler<SimpleErrorResponse> {
 
   public static class TranslatedSimpleErrorResponse extends SimpleErrorResponse {
