@@ -105,7 +105,7 @@ class _UpdateNewPasswordForm {
       return;
     }
 
-    SubmitButtonInputElement submit = elem.querySelector('[type=submit]');
+    ButtonElement submit = elem.querySelector('[type=submit]');
     submit.disabled = true;
 
     var loading = new Loading.small()

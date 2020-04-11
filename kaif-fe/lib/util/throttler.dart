@@ -2,10 +2,10 @@ part of util;
 
 class Throttler {
 
-  static StreamTransformer throttle(int milliseconds) {
+  static StreamTransformer throttle<T>(int milliseconds) {
     Duration duration = new Duration(milliseconds:milliseconds);
     Timer lastTimer;
-    return new StreamTransformer.fromHandlers(handleData: (event, sink) {
+    return new StreamTransformer<T, T>.fromHandlers(handleData: (event, sink) {
       if (lastTimer != null) {
         lastTimer.cancel();
       }

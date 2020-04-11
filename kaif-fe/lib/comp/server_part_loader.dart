@@ -27,10 +27,11 @@ class ServerPartLoader {
       new LargeErrorModal(i18n('part-loader.permission-error')).render();
       return null;
     }, test:(error) => error is PermissionError)
-    .catchError((StateError stateError) {
+    .catchError((Object raw) {
+      StateError stateError = raw as StateError;
       new Toast.error(stateError.message).render();
       return null;
-    });
+    }, test:(error) => error is StateError);
 
   }
 

@@ -49,7 +49,6 @@ import io.kaif.config.SpringProfile;
  *
  * @author ingram
  */
-@Order(Ordered.LOWEST_PRECEDENCE)
 public abstract class AbstractRestExceptionHandler<E extends ErrorResponse>
     extends ResponseEntityExceptionHandler {
 

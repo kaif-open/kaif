@@ -124,7 +124,7 @@ class DebateForm {
       return;
     }
 
-    SubmitButtonInputElement submit = _elem.querySelector('[type=submit]');
+    ButtonElement submit = _elem.querySelector('[type=submit]');
     submit.disabled = true;
 
     var loading = new Loading.small()

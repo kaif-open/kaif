@@ -135,7 +135,7 @@ class ArticleDeletion {
     elem.classes.remove('hidden');
     var deleteElem = elem.querySelector('[delete]');
     elem.querySelector('[confirm-delete]').onClick.listen((e) {
-      e.target.classes.add('hidden');
+      (e.target as Element).classes.add('hidden');
       deleteElem.classes.remove('hidden');
     });
     deleteElem.onClick.listen((e) async {

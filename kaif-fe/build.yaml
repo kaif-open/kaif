@@ -1,0 +1,19 @@
+targets:
+  $default:
+    builders:
+      less_dart:
+        options:
+          entry_points: ['web/less/kaif.less']
+          include_path: 'web/less'
+          cleancss: true
+          compress: true
+      build_web_compilers|entrypoint:
+        options:
+
+        ### force compiler to dart2js even in dev mode.
+        #          compiler: dart2js
+
+        ### List any dart2js specific args here, or omit it.
+#          dart2js_args:
+#            - -O2
+#            - --show-package-warnings

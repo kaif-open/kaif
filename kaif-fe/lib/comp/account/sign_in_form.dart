@@ -23,7 +23,7 @@ class SignInForm {
     TextInputElement nameInput = elem.querySelector('#nameInput');
     TextInputElement passwordInput = elem.querySelector('#passwordInput');
     CheckboxInputElement rememberMeInput = elem.querySelector('#rememberMeInput');
-    SubmitButtonInputElement submit = elem.querySelector('[type=submit]');
+    ButtonElement submit = elem.querySelector('[type=submit]');
     submit.disabled = true;
 
     alert.hide();

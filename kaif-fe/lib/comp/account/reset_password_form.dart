@@ -30,7 +30,7 @@ class ResetPasswordForm {
       return;
     }
 
-    SubmitButtonInputElement submit = elem.querySelector('[type=submit]');
+    ButtonElement submit = elem.querySelector('[type=submit]');
     submit.disabled = true;
 
     var token = Uri.parse(window.location.href).queryParameters['key'];

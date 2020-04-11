@@ -16,7 +16,7 @@ class ArticleForm {
   final Element elem;
   final ArticleService articleService;
   Alert alert;
-  SubmitButtonInputElement submitElem;
+  ButtonElement submitElem;
   SelectElement zoneInput;
   TextAreaElement contentInput;
   Element duplicateArticleHint;
@@ -100,7 +100,7 @@ class ArticleForm {
       ..stopPropagation();
 
     alert.hide();
-    TextInputElement titleInput = elem.querySelector('#titleInput');
+    TextAreaElement titleInput = elem.querySelector('#titleInput');
     titleInput.value = titleInput.value.trim();
 
     //check Article.TITLE_MIN in java

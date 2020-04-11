@@ -1,11 +1,13 @@
 library model_service;
 
+import 'dart:async';
+import 'dart:convert';
+import 'dart:html';
+
+import 'package:kaif_web/util.dart';
+
 import 'account.dart';
 import 'vote.dart';
-import 'package:kaif_web/util.dart';
-import 'dart:html';
-import 'dart:convert';
-import 'dart:async';
 
 class RestErrorResponse extends Error {
   final int code;
@@ -14,7 +16,7 @@ class RestErrorResponse extends Error {
 
   static RestErrorResponse tryDecode(String text) {
     try {
-      var json = JSON.decode(text);
+      var json = jsonDecode(text);
       if (json is Map) {
         Map raw = json;
         if (raw.containsKey('code') && raw.containsKey('reason')) {
@@ -22,8 +24,7 @@ class RestErrorResponse extends Error {
           return new RestErrorResponse(raw['code'], raw['reason'], tx);
         }
       }
-    } catch (e) {
-    }
+    } catch (e) {}
     return null;
   }
 
@@ -40,8 +41,8 @@ class RestErrorResponse extends Error {
 }
 
 abstract class _ModelMapper {
-  dynamic _mapToSingleWrapper(HttpRequest request) {
-    return JSON.decode(request.responseText)['data'];
+  T _mapToSingleWrapper<T>(HttpRequest request) {
+    return jsonDecode(request.responseText)['data'] as T;
   }
 }
 
@@ -60,76 +61,75 @@ abstract class _AbstractService extends Object with _ModelMapper {
 
   _AbstractService(this._serverType, this._accessTokenProvider);
 
-  Future<HttpRequest> _postJson(String url, dynamic json, {Map<String, String> header}) {
-    return _requestJson('POST', url, json, header:header);
+  Future<HttpRequest> _postJson(String url, dynamic json,
+      {Map<String, String> header}) {
+    return _requestJson('POST', url, json, header: header);
   }
 
-  Future<HttpRequest> _deleteJson(String url, dynamic json, {Map<String, String> header}) {
-    return _requestJson('DELETE', url, json, header:header);
+  Future<HttpRequest> _deleteJson(String url, dynamic json,
+      {Map<String, String> header}) {
+    return _requestJson('DELETE', url, json, header: header);
   }
 
-  Future<HttpRequest> _putJson(String url, dynamic json, {Map<String, String> header}) {
-    return _requestJson('PUT', url, json, header:header);
+  Future<HttpRequest> _putJson(String url, dynamic json,
+      {Map<String, String> header}) {
+    return _requestJson('PUT', url, json, header: header);
   }
 
   Future<HttpRequest> _get(String url,
-                           {Map<String, Object> params:const {
-                           },
-                           Map<String, String> header}) {
+      {Map<String, Object> params: const {}, Map<String, String> header}) {
     var parts = [];
     params.forEach((key, value) {
       if (value != null) {
-        String strValue = (value is Iterable) ? (value as Iterable).join(',') : value.toString();
-        parts.add('${Uri.encodeQueryComponent(key)}=' '${Uri.encodeQueryComponent(strValue)}');
+        String strValue = (value is Iterable)
+            ? value.join(',')
+            : value.toString();
+        parts.add('${Uri.encodeQueryComponent(key)}='
+            '${Uri.encodeQueryComponent(strValue)}');
       }
     });
     var query = parts.join('&');
     String getUrl = query.isEmpty ? url : '${url}?${query}';
 
-    var requestHeaders = header == null ? {
-    } : header;
+    Map<String, String> requestHeaders = header == null ? {} : header;
     _populateAccessToken(requestHeaders);
-    return HttpRequest.request(getUrl, requestHeaders:requestHeaders)
-    .catchError(_onHandleRequestError);
+    return HttpRequest.request(getUrl, requestHeaders: requestHeaders)
+        .catchError(_onHandleRequestError);
   }
 
   Future<HttpRequest> _getPlanTextWithoutHandleError(String url) {
-    var requestHeaders = {
-    };
+    Map<String, String> requestHeaders = {};
     _populateAccessToken(requestHeaders);
-    return HttpRequest.request(url, requestHeaders:requestHeaders);
+    return HttpRequest.request(url, requestHeaders: requestHeaders);
   }
 
-  void _onHandleRequestError(ProgressEvent event) {
+  void _onHandleRequestError(Object raw) {
+    ProgressEvent event = raw as ProgressEvent;
     HttpRequest req = event.target;
     var restErrorResponse = RestErrorResponse.tryDecode(req.responseText);
     if (restErrorResponse == null) {
-      throw new RestErrorResponse(500, 'Unexpected error response, status:${req.status}', false);
+      throw new RestErrorResponse(
+          500, 'Unexpected error response, status:${req.status}', false);
     }
     throw restErrorResponse;
   }
 
-  Future<HttpRequest> _requestJson(String method,
-                                   String url,
-                                   dynamic json,
-                                   {Map<String, String> header}) {
-    var requestHeaders = header == null ? {
-    } : header;
+  Future<HttpRequest> _requestJson(String method, String url, dynamic json,
+      {Map<String, String> header}) {
+    Map<String, String> requestHeaders = header == null ? {} : header;
     requestHeaders['Content-Type'] = 'application/json';
     _populateAccessToken(requestHeaders);
-    return HttpRequest.request(
-        url,
-        method:method,
-        sendData:JSON.encode(json),
-        requestHeaders:requestHeaders)
-    .catchError(_onHandleRequestError);
+    return HttpRequest.request(url,
+            method: method,
+            sendData: jsonEncode(json),
+            requestHeaders: requestHeaders)
+        .catchError(_onHandleRequestError);
   }
-
 }
 
 class PartService extends _AbstractService {
   PartService(ServerType serverType, accessTokenProvider _provider)
-  : super(serverType, _provider);
+      : super(serverType, _provider);
 
   /**
    * throw PermissionError if auth failed
@@ -137,14 +137,16 @@ class PartService extends _AbstractService {
    */
   Future<String> loadPart(String partPath) {
     return _getPlanTextWithoutHandleError(partPath)
-    .then((req) => req.responseText)
-    .catchError((ProgressEvent event) {
+        .then((req) => req.responseText)
+        .catchError((Object raw) {
+      ProgressEvent event = raw as ProgressEvent;
       HttpRequest request = event.target;
       if (request.status == 401 || request.status == 403) {
         throw new PermissionError();
       } else {
         if (_serverType.isDevMode) {
-          throw new StateError('[DEBUG] render $partPath error, response:\n ${request.responseText}');
+          throw new StateError(
+              '[DEBUG] render $partPath error, response:\n ${request.responseText}');
         }
         throw new StateError('Unexpected error, status:${request.status}');
       }
@@ -153,308 +155,259 @@ class PartService extends _AbstractService {
 }
 
 class AccountService extends _AbstractService {
-
   AccountService(ServerType serverType, accessTokenProvider _provider)
-  : super(serverType, _provider);
+      : super(serverType, _provider);
 
   String _getUrl(String path) => '/api/account$path';
 
   Future createAccount(String username, String email, String password) {
-    var json = {
-      'username':username, 'email':email, 'password':password
-    };
-    return _putJson(_getUrl('/'), json)
-    .then((res) => null);
+    var json = {'username': username, 'email': email, 'password': password};
+    return _putJson(_getUrl('/'), json).then((res) => null);
   }
 
   Future<bool> isNameAvailable(String username) {
-    var params = {
-      'username':username
-    };
-    return _get(_getUrl('/name-available'), params:params)
-    .then(_mapToSingleWrapper);
+    var params = {'username': username};
+    return _get(_getUrl('/name-available'), params: params)
+        .then((request) => _mapToSingleWrapper<bool>(request));
   }
 
   Future<bool> isEmailAvailable(String email) {
-    var params = {
-      'email':email
-    };
-    return _get(_getUrl('/email-available'), params:params)
-    .then(_mapToSingleWrapper);
+    var params = {'email': email};
+    return _get(_getUrl('/email-available'), params: params)
+        .then((request) => _mapToSingleWrapper<bool>(request));
   }
 
   Future<int> newsFeedUnread() {
-    return _get(_getUrl('/news-feed-unread'), params:{
-    })
-    .then(_mapToSingleWrapper);
+    return _get(_getUrl('/news-feed-unread'), params: {})
+        .then((request) => _mapToSingleWrapper<int>(request));
   }
 
   Future newsFeedAcknowledge(String assetId) {
-    var json = {
-      'assetId':assetId
-    };
+    var json = {'assetId': assetId};
     return _postJson(_getUrl('/news-feed-acknowledge'), json)
-    .then((res) => null);
+        .then((res) => null);
   }
 
   Future<AccountAuth> authenticate(String username, String password) {
-    var json = {
-      'username':username, 'password':password
-    };
+    var json = {'username': username, 'password': password};
     return _postJson(_getUrl('/authenticate'), json)
-    .then((req) => JSON.decode(req.responseText))
-    .then((raw) => new AccountAuth.decode(raw));
+        .then((req) => jsonDecode(req.responseText))
+        .then((raw) => new AccountAuth.decode(raw));
   }
 
   Future resendActivation() {
-    return _postJson(_getUrl('/resend-activation'), {
-    }).then((req) => null);
+    return _postJson(_getUrl('/resend-activation'), {}).then((req) => null);
   }
 
   Future updatePasswordWithToken(String token, String password) {
-    var json = {
-      'token':token, 'password':password
-    };
+    var json = {'token': token, 'password': password};
     return _postJson(_getUrl('/update-password-with-token'), json)
-    .then((req) => null);
+        .then((req) => null);
   }
 
-  Future<AccountAuth> updateNewPassword(String oldPassword, String newPassword) {
-    var json = {
-      'oldPassword':oldPassword, 'newPassword':newPassword
-    };
+  Future<AccountAuth> updateNewPassword(
+      String oldPassword, String newPassword) {
+    var json = {'oldPassword': oldPassword, 'newPassword': newPassword};
     return _postJson(_getUrl('/update-new-password'), json)
-    .then((req) => JSON.decode(req.responseText))
-    .then((raw) => new AccountAuth.decode(raw));
+        .then((req) => jsonDecode(req.responseText))
+        .then((raw) => new AccountAuth.decode(raw));
   }
 
   Future sendResetPassword(String username, String email) {
-    var json = {
-      'username':username, 'email':email
-    };
-    return _postJson(_getUrl('/send-reset-password'), json)
-    .then((req) => null);
+    var json = {'username': username, 'email': email};
+    return _postJson(_getUrl('/send-reset-password'), json).then((req) => null);
   }
 
   Future<String> updateDescription(String description) {
-    var json = {
-      'description':description
-    };
+    var json = {'description': description};
     return _postJson(_getUrl('/description'), json)
-    .then((req) => req.responseText);
+        .then((req) => req.responseText);
   }
 
   Future<String> loadEditableDescription() {
-    return _get(_getUrl('/description'))
-    .then((req) => req.responseText);
+    return _get(_getUrl('/description')).then((req) => req.responseText);
   }
 
   Future<String> previewDescription(String description) {
-    var json = {
-      'description':description
-    };
+    var json = {'description': description};
     return _putJson(_getUrl('/description/preview'), json)
-    .then((req) => req.responseText);
+        .then((req) => req.responseText);
   }
 
   Future<String> createOauthDirectAuthorizeToken() async {
-    var json = {
-    };
-    return _mapToSingleWrapper(await _putJson(_getUrl('/oauth-direct-authorize-token'), json));
+    var json = {};
+    return _mapToSingleWrapper<String>(
+        await _putJson(_getUrl('/oauth-direct-authorize-token'), json));
   }
 }
 
 class ArticleService extends _AbstractService {
-
   ArticleService(ServerType serverType, accessTokenProvider _provider)
-  : super(serverType, _provider);
+      : super(serverType, _provider);
 
   String _getUrl(String path) => '/api/article$path';
 
   Future createExternalLink(String zone, String url, String title) {
-    var json = {
-      'zone':zone, 'url':url, 'title':title
-    };
-    return _putJson(_getUrl('/external-link'), json)
-    .then((res) => null);
+    var json = {'zone': zone, 'url': url, 'title': title};
+    return _putJson(_getUrl('/external-link'), json).then((res) => null);
   }
 
   Future createSpeak(String zone, String content, String title) {
-    var json = {
-      'zone':zone, 'content':content, 'title':title
-    };
-    return _putJson(_getUrl('/speak'), json)
-    .then((res) => null);
+    var json = {'zone': zone, 'content': content, 'title': title};
+    return _putJson(_getUrl('/speak'), json).then((res) => null);
   }
 
   Future<String> previewDebateContent(String content) {
-    var json = {
-      'content':content
-    };
+    var json = {'content': content};
     return _putJson(_getUrl('/debate/content/preview'), json)
-    .then((req) => req.responseText);
+        .then((req) => req.responseText);
   }
 
   Future<String> previewSpeakContent(String content) {
-    var json = {
-      'content':content
-    };
+    var json = {'content': content};
     return _putJson(_getUrl('/speak/preview'), json)
-    .then((req) => req.responseText);
+        .then((req) => req.responseText);
   }
 
   Future<String> loadEditableDebate(String debateId) {
-    var params = {
-      'debateId':debateId
-    };
-    return _get(_getUrl('/debate/content'), params:params)
-    .then((req) => req.responseText);
+    var params = {'debateId': debateId};
+    return _get(_getUrl('/debate/content'), params: params)
+        .then((req) => req.responseText);
   }
 
   Future<String> updateDebateContent(String debateId, String content) {
-    var json = {
-      'debateId':debateId, 'content':content
-    };
+    var json = {'debateId': debateId, 'content': content};
     return _postJson(_getUrl('/debate/content'), json)
-    .then((req) => req.responseText);
+        .then((req) => req.responseText);
   }
 
   /**
    * return created debateId
    */
-  Future<String> debate(String articleId, String parentDebateId, String content) {
+  Future<String> debate(
+      String articleId, String parentDebateId, String content) {
     String parent = isStringBlank(parentDebateId) ? null : parentDebateId;
     var json = {
-      'articleId':articleId, 'parentDebateId':parent, 'content':content
+      'articleId': articleId,
+      'parentDebateId': parent,
+      'content': content
     };
     return _putJson(_getUrl('/debate'), json)
-    .then(_mapToSingleWrapper);
+        .then((request) => _mapToSingleWrapper<String>(request));
   }
 
   Future<bool> canCreateArticle(String zone) {
-    var params = {
-      'zone':zone
-    };
-    return _get(_getUrl('/can-create'), params:params)
-    .then(_mapToSingleWrapper);
+    var params = {'zone': zone};
+    return _get(_getUrl('/can-create'), params: params)
+        .then((request) => _mapToSingleWrapper<bool>(request));
   }
 
   Future<bool> canDeleteArticle(String username, String articleId) {
-    var params = {
-      'username':username,
-      'articleId': articleId
-    };
-    return _get(_getUrl('/can-delete'), params:params)
-    .then(_mapToSingleWrapper);
+    var params = {'username': username, 'articleId': articleId};
+    return _get(_getUrl('/can-delete'), params: params)
+        .then((request) => _mapToSingleWrapper<bool>(request));
   }
 
   Future<bool> isExternalUrlExist(String zone, String url) {
-    var params = {
-      'zone':zone,
-      'url': url
-    };
-    return _get(_getUrl('/external-link/exist'), params:params)
-    .then(_mapToSingleWrapper);
+    var params = {'zone': zone, 'url': url};
+    return _get(_getUrl('/external-link/exist'), params: params)
+        .then((request) => _mapToSingleWrapper<bool>(request));
   }
 
   Future<List<String>> listArticleIdsByExternalLink(String zone, String url) {
-    var params = {
-      'zone':zone,
-      'url': url
-    };
-    return _get(_getUrl('/external-link'), params:params)
-    .then((res) => JSON.decode(res.responseText));
+    var params = {'zone': zone, 'url': url};
+    return _get(_getUrl('/external-link'), params: params).then((res) async {
+      return (jsonDecode(res.responseText) as List<dynamic>)
+          .map((x) => x as String)
+          .toList();
+    });
   }
 
   Future deleteArticle(String articleId) {
-    var json = {
-      'articleId':articleId
-    };
-    return _deleteJson(_getUrl('/'), json)
-    .then((res) => null);
+    var json = {'articleId': articleId};
+    return _deleteJson(_getUrl('/'), json).then((res) => null);
   }
 }
 
 class VoteService extends _AbstractService {
-
   VoteService(ServerType serverType, accessTokenProvider _provider)
-  : super(serverType, _provider);
+      : super(serverType, _provider);
 
   String _getUrl(String path) => '/api/vote$path';
 
   Future voteArticle(VoteState newState, String articleId,
-                     VoteState previousState, int previousCount) {
+      VoteState previousState, int previousCount) {
     var json = {
-      'newState':newState, 'articleId':articleId,
-      'previousState':previousState, 'previousCount':previousCount
+      'newState': newState,
+      'articleId': articleId,
+      'previousState': previousState,
+      'previousCount': previousCount
     };
-    return _postJson(_getUrl('/article'), json)
-    .then((res) => null);
+    return _postJson(_getUrl('/article'), json).then((res) => null);
   }
 
   Future<List<ArticleVoter>> listArticleVoters(List<String> articleIds) {
-    var params = {
-      'articleIds':articleIds
-    };
-    return _get(_getUrl('/article-voters'), params:params)
-    .then((req) => JSON.decode(req.responseText))
-    .then((List<Map> list) => list.map((raw) => new ArticleVoter.decode(raw)).toList());
+    var params = {'articleIds': articleIds};
+    return _get(_getUrl('/article-voters'), params: params)
+        .then((req) => jsonDecode(req.responseText) as List<dynamic>)
+        .then((List<dynamic> list) =>
+            list.map((raw) => new ArticleVoter.decode(raw)).toList());
   }
 
   Future<List<DebateVoter>> listDebateVotersByIds(List<String> debateIds) {
-    var params = {
-      'debateIds':debateIds
-    };
-    return _get(_getUrl('/debate-voters-by-ids'), params:params)
-    .then((req) => JSON.decode(req.responseText))
-    .then((List<Map> list) => list.map((raw) => new DebateVoter.decode(raw)).toList());
+    var params = {'debateIds': debateIds};
+    return _get(_getUrl('/debate-voters-by-ids'), params: params)
+        .then((req) => jsonDecode(req.responseText) as List<dynamic>)
+        .then((List<dynamic> list) =>
+            list.map((raw) => new DebateVoter.decode(raw)).toList());
   }
 
   Future voteDebate(VoteState newState, String debateId,
-                    VoteState previousState, int previousCount) {
+      VoteState previousState, int previousCount) {
     var json = {
-      'newState':newState, 'debateId':debateId,
-      'previousState':previousState, 'previousCount':previousCount
+      'newState': newState,
+      'debateId': debateId,
+      'previousState': previousState,
+      'previousCount': previousCount
     };
-    return _postJson(_getUrl('/debate'), json)
-    .then((res) => null);
+    return _postJson(_getUrl('/debate'), json).then((res) => null);
   }
 
   Future<List<DebateVoter>> listDebateVoters(String articleId) {
-    var params = {
-      'articleId':articleId
-    };
+    var params = {'articleId': articleId};
 
-    return _get(_getUrl('/debate-voters'), params:params)
-    .then((req) => JSON.decode(req.responseText))
-    .then((List<Map> list) => list.map((raw) => new DebateVoter.decode(raw)).toList());
+    return _get(_getUrl('/debate-voters'), params: params)
+        .then((req) => jsonDecode(req.responseText) as List<dynamic>)
+        .then((List<dynamic> list) =>
+            list.map((raw) => new DebateVoter.decode(raw)).toList());
   }
 }
 
 class ClientAppService extends _AbstractService {
-
-  ClientAppService(ServerType serverType,
-                   accessTokenProvider accessTokenProvider)
-  : super(serverType, accessTokenProvider);
+  ClientAppService(
+      ServerType serverType, accessTokenProvider accessTokenProvider)
+      : super(serverType, accessTokenProvider);
 
   String _getUrl(String path) => '/api/client-app$path';
 
-  Future<String> create(String name, String description, String callbackUri) async {
+  Future<String> create(
+      String name, String description, String callbackUri) async {
     var json = {
-      'name':name,
-      'description':description,
-      'callbackUri':callbackUri
+      'name': name,
+      'description': description,
+      'callbackUri': callbackUri
     };
-    return _mapToSingleWrapper(await _putJson(_getUrl('/create'), json));
+    return _mapToSingleWrapper<String>(
+        await _putJson(_getUrl('/create'), json));
   }
 
   Future<String> update(String clientId, String name, String description,
-                        String callbackUri) async {
+      String callbackUri) async {
     var json = {
-      'clientId':clientId,
-      'name':name,
-      'description':description,
-      'callbackUri':callbackUri
+      'clientId': clientId,
+      'name': name,
+      'description': description,
+      'callbackUri': callbackUri
     };
     await _postJson(_getUrl('/update'), json);
     return null;
@@ -462,7 +415,7 @@ class ClientAppService extends _AbstractService {
 
   Future revoke(String clientId) async {
     var json = {
-      'clientId':clientId,
+      'clientId': clientId,
     };
     await _postJson(_getUrl('/revoke'), json);
     return null;
@@ -470,40 +423,32 @@ class ClientAppService extends _AbstractService {
 
   Future<String> generateDebugAccessToken(String clientId) async {
     var json = {
-      'clientId':clientId,
+      'clientId': clientId,
     };
-    return _mapToSingleWrapper(await _postJson(_getUrl('/generate-debug-access-token'), json));
+    return _mapToSingleWrapper<String>(
+        await _postJson(_getUrl('/generate-debug-access-token'), json));
   }
 }
 
 class ZoneService extends _AbstractService {
-
   ZoneService(ServerType serverType, accessTokenProvider _provider)
-  : super(serverType, _provider);
+      : super(serverType, _provider);
 
   String _getUrl(String path) => '/api/zone$path';
 
   Future<bool> canCreateZone() {
     return _get(_getUrl('/can-create'))
-    .then(_mapToSingleWrapper);
+        .then((request) => _mapToSingleWrapper<bool>(request));
   }
 
   Future<bool> isZoneAvailable(String zone) {
-    var params = {
-      'zone':zone
-    };
-    return _get(_getUrl('/zone-available'), params:params)
-    .then(_mapToSingleWrapper);
+    var params = {'zone': zone};
+    return _get(_getUrl('/zone-available'), params: params)
+        .then((request) => _mapToSingleWrapper<bool>(request));
   }
 
   Future createZone(String zone, String aliasName) {
-    var json = {
-      'zone':zone,
-      'aliasName': aliasName
-    };
-    return _putJson(_getUrl('/'), json)
-    .then((res) => null);
+    var json = {'zone': zone, 'aliasName': aliasName};
+    return _putJson(_getUrl('/'), json).then((res) => null);
   }
-
-
 }

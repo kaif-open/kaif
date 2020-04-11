@@ -195,7 +195,7 @@ class FlashToast {
   static const _STORAGE_KEY = 'FLASH_TOAST';
 
   FlashToast._(String message, String type, int seconds) {
-    window.sessionStorage[_STORAGE_KEY] = JSON.encode({
+    window.sessionStorage[_STORAGE_KEY] = jsonEncode({
       'message' : message,
       'type': type,
       'seconds': seconds,
@@ -215,7 +215,7 @@ class FlashToast {
       if (!window.sessionStorage.containsKey(_STORAGE_KEY)) {
         return null;
       }
-      Map data = JSON.decode(window.sessionStorage[_STORAGE_KEY]);
+      Map data = jsonDecode(window.sessionStorage[_STORAGE_KEY]);
       window.sessionStorage.remove(_STORAGE_KEY);
       DateTime createTime = new DateTime.fromMillisecondsSinceEpoch(data['createTime']);
       if (createTime.add(const Duration(seconds:60)).isBefore(new DateTime.now())) {
@@ -310,7 +310,7 @@ class Tabs {
   List<Element> _tabPanes;
 
   Tabs(Element parent) {
-    var togglers = parent.querySelectorAll('[data-toggle=tab]').toList();
+    var togglers = parent.querySelectorAll<AnchorElement>('[data-toggle=tab]').toList();
     _tabPanes = togglers.map((toggler) => toggler.hash).map((
         href) => parent.querySelector(href)).toList();
 
@@ -318,6 +318,7 @@ class Tabs {
       toggler.onClick.listen((event) {
         _activeTabPane(toggler.hash);
       });
+      return;
     });
     _activeTabPane(route.currentHash);
   }

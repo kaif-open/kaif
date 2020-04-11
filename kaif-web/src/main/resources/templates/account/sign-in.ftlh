@@ -23,7 +23,7 @@
         密碼修改成功，請使用新密碼登入
     </p>
     </#if>
-<form class="pure-form pure-form-aligned" sign-in-form>
+<form class="pure-form pure-form-aligned" sign-in-form method="post">
     <fieldset>
 
         <legend><@spring.messageText "account-menu.sign-in" "Sign In" /></legend>

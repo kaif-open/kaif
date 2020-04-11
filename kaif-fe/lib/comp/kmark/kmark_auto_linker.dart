@@ -154,7 +154,7 @@ class ReferenceAppendix {
 
   static int nextIndex(List<ReferenceAppendix> appendixes) {
     int maxNumericIndex = appendixes.map((apx) => apx.index).map((index) {
-      return int.parse(index, onError:(s) => 0);
+      return int.tryParse(index) ?? 0;
     }).fold(0, (left, right) => Math.max(left, right));
 
     int maxIndex = Math.max(maxNumericIndex, appendixes.length);

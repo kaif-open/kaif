@@ -51,7 +51,7 @@ sample configs:
       <#-- less/kaif.less are compiled by dart transformer
         -->
       <#if kaif.profilesActive?contains('dev')>
-        <link rel="stylesheet" href="//localhost:15980/css/kaif.css">
+        <link rel="stylesheet" href="//localhost:15980/less/kaif.css">
       <#else>
         <link rel="stylesheet" href="<@spring.url '/css/kaif.css' />">
       </#if>
@@ -142,7 +142,7 @@ sample configs:
   <#-- Error page will not enable js, for security reason -->
   <#if !errorPage >
       <#if kaif.profilesActive?contains('dev')>
-      <#-- require dart pub serve, please run `cd kaif-fe; ../gradlew pubPollServe` -->
+      <#-- require dart pub serve, please run `cd kaif-fe; ../gradlew webDevServe` -->
         <div id="waitingPubServe"
              style="position: fixed; bottom:0; right:0px; padding: 3px 10px; background-color: rgba(92, 0, 0, 0.67); color:white">
           Waiting Pub Serve...

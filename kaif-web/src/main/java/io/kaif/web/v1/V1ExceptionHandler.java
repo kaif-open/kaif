@@ -3,6 +3,7 @@ package io.kaif.web.v1;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.*;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,8 @@ import io.kaif.web.support.AbstractRestExceptionHandler;
  * io.kaif.web.api.RestExceptionHandler}
  */
 @ControllerAdvice(basePackageClasses = V1ExceptionHandler.class)
+//make higher precedence than default spring error handling (which produce web page, not json)
+@Order(-10)
 public class V1ExceptionHandler extends AbstractRestExceptionHandler<V1ErrorResponse> {
 
   public static final String KAIF_API_REAM = "Kaif API";

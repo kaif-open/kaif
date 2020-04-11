@@ -49,13 +49,14 @@ bootJar {
   //mainClass = 'io.kaif.Application'
 
 
-  //copy `web/` folder to `static/` (dart dist)
+  //copy `build` folder to `static/web` (dart dist)
   from("../kaif-fe/build") {
-    exclude "less"
-    into "static"
+    include("packages/**")
+    include("main.dart.js")
+    into "static/web"
   }
   //copy less css to `static/css/` ( <@spring.url> only process this css folder )
-  from("../kaif-fe/build/web/css") {
+  from("../kaif-fe/build/less") {
     into "static/css"
   }
 }

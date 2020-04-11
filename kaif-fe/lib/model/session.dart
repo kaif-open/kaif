@@ -1,14 +1,15 @@
 library model_session;
 
-import 'account.dart';
-import 'dao.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:html';
-import 'package:cookie/cookie.dart' as cookie;
+
+import 'package:kaif_web/cookies.dart';
+
+import 'account.dart';
+import 'dao.dart';
 
 class AccountSession {
-
   final AccountDao accountDao;
   AccountAuth _current;
 
@@ -18,16 +19,20 @@ class AccountSession {
   }
 
   void _detectForceLogout() {
-    // see AccountController.java #activation
-    var value = cookie.get("force-logout");
-    if (value != null && "true" == value.toLowerCase()) {
-      cookie.remove("force-logout", path:"/", secure:true);
-      signOut();
+    try {
+      // see AccountController.java #activation
+      var value = cookieGet("force-logout");
+      if (value != null && "true" == value.toLowerCase()) {
+        cookieRemove("force-logout", path: "/", secure: true);
+        signOut();
+      }
+    } catch (ignored) {
+      print("${ignored}");
     }
   }
 
   void save(AccountAuth auth, {bool rememberMe}) {
-    accountDao.save(auth, permanent:rememberMe);
+    accountDao.save(auth, permanent: rememberMe);
     _current = accountDao.find();
   }
 
@@ -43,7 +48,7 @@ class AccountSession {
     return _extendsAccessToken(_current).then((renewAuth) {
       save(renewAuth);
       return true;
-    }).catchError((error) => false, test:(error) => error is! PermissionError);
+    }).catchError((error) => false, test: (error) => error is! PermissionError);
   }
 
   //null if not sign in
@@ -65,34 +70,29 @@ class AccountSession {
 
   Future<AccountAuth> _extendsAccessToken(AccountAuth exist) {
     var headers = {
-      'X-KAIF-ACCESS-TOKEN':exist.accessToken,
+      'X-KAIF-ACCESS-TOKEN': exist.accessToken,
       'Content-Type': 'application/json'
     };
 
     //empty json body may cause problem, so fill some garbage
-    var json = {
-      'username': exist.username
-    };
+    var json = {'username': exist.username};
 
-    return HttpRequest.request(
-        '/api/account/extends-access-token',
-        method:'POST',
-        sendData:JSON.encode(json),
-        requestHeaders:headers)
-    .catchError((ProgressEvent event) {
-      HttpRequest req = event.target;
-      if (req.status == 401 || req.status == 403) {
-        throw new PermissionError();
-      }
-      throw new StateError('abort');
-    })
-    .then((req) => JSON.decode(req.responseText))
-    .then((raw) => new AccountAuth.decode(raw));
+    return HttpRequest.request('/api/account/extends-access-token',
+            method: 'POST', sendData: jsonEncode(json), requestHeaders: headers)
+        .catchError((Object raw) {
+          ProgressEvent event = raw as ProgressEvent;
+          HttpRequest req = event.target;
+          if (req.status == 401 || req.status == 403) {
+            throw new PermissionError();
+          }
+          throw new StateError('abort');
+        })
+        .then((req) => jsonDecode(req.responseText))
+        .then((raw) => new AccountAuth.decode(raw));
   }
 
   void signOut() {
     _current = null;
     accountDao.remove();
   }
-
 }
