@@ -30,16 +30,16 @@
 
 ```
    cd kaif-web
-   ../gradlew pubPollServe
+   ../gradlew webDevServe
    ../gradlew bootRun
 ```
 
  * `bootRun` will start a development embed tomcat, you can visit
    http://localhost:5980
 
- * `pubPollServe` will start pub server in 15980 port, which used by dev server
+ * `webDevServe` will start pub server in 15980 port, which used by dev server
 
- * you can use gradle in Intellij to run `bootRun` and `pubPollServe`. 
+ * you can use gradle in Intellij to run `bootRun` and `webDevServe`. 
 
 ### Intellij IDEA configuration
 

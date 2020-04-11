@@ -61,15 +61,7 @@ dart {
 }
 
 pubGet.dependsOn installDart
-pubBuild.dependsOn installDart
-pubServe.dependsOn installDart
 pubUpgrade.dependsOn installDart
-
-// for some strange reason, following dependsOn not work (pubGet never executed)
-//
-//    task pubCleanBuild(dependsOn: [pubGet, pubBuild]) {}
-//
-// to workaround, we extends DartPubBuildTask instead
 
 task pubCleanBuild(dependsOn: pubGet, type: Exec) {
   group = "Build"
@@ -79,7 +71,7 @@ task pubCleanBuild(dependsOn: pubGet, type: Exec) {
 //
 // could not customize exist pubServe arguments, use Exec directly.
 //
-task pubPollServe(dependsOn: pubGet, type: Exec) {
+task webDevServe(dependsOn: pubGet, type: Exec) {
   group = "Build"
   //disable injected-client because we have CORS issue from dev server, this will disable auto refresh browser while development
   commandLine = ["${dart.dartSdkBin}pub", "run", "webdev:webdev", "serve", "web:15980", "--no-injected-client"]

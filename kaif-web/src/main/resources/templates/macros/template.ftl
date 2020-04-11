@@ -139,7 +139,7 @@ sample configs:
   <#-- Error page will not enable js, for security reason -->
   <#if !errorPage >
       <#if kaif.profilesActive?contains('dev')>
-      <#-- require dart pub serve, please run `cd kaif-fe; ../gradlew pubPollServe` -->
+      <#-- require dart pub serve, please run `cd kaif-fe; ../gradlew webDevServe` -->
         <div id="waitingPubServe"
              style="position: fixed; bottom:0; right:0px; padding: 3px 10px; background-color: rgba(92, 0, 0, 0.67); color:white">
           Waiting Pub Serve...
