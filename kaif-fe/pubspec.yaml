@@ -9,6 +9,3 @@ dev_dependencies:
   webdev: '2.5.6'
   build_runner: "1.8.1"
   build_web_compilers: "2.9.0"
-
-  #TODO#dart2 unit test
-  #unittest: any
