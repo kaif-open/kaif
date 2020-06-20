@@ -35,3 +35,6 @@ kaif
 inv_postfix_inet_interfaces="all"
 ## production should use blank ''
 inv_postfix_additional_my_networks="192.168.59.0/24"
+
+[all:vars]
+ansible_ssh_extra_args="-o IdentitiesOnly=yes"
