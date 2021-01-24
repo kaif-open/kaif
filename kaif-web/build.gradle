@@ -24,6 +24,23 @@ println "Using JDK: ${org.gradle.internal.jvm.Jvm.current()}"
 /** spring boot begin **/
 apply plugin: 'org.springframework.boot'
 
+/********** Start of Node ************/
+processResources.dependsOn ':kaif-fe:pubCleanBuild'
+/********** End of Node **************/
+
+processResources {
+
+    //copy `build` folder to `static/web` (dart dist)
+    from("../kaif-fe/build") {
+        include("packages/**")
+        include("main.dart.js")
+        into "static/web"
+    }
+    //copy less css to `static/css/` ( <@spring.url> only process this css folder )
+    from("../kaif-fe/build/less") {
+        into "static/css"
+    }
+}
 
 bootRun {
   doFirst {
@@ -47,18 +64,6 @@ bootJar {
   archivesBaseName = 'kaif-web'
   launchScript()
   //mainClass = 'io.kaif.Application'
-
-
-  //copy `build` folder to `static/web` (dart dist)
-  from("../kaif-fe/build") {
-    include("packages/**")
-    include("main.dart.js")
-    into "static/web"
-  }
-  //copy less css to `static/css/` ( <@spring.url> only process this css folder )
-  from("../kaif-fe/build/less") {
-    into "static/css"
-  }
 }
 
 dependencies {
