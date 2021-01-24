@@ -1,39 +1,39 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: { { include "kaif-web.fullname" . } }
+  name: {{ include "kaif-web.fullname" . }}
   labels:
-    { { - include "kaif-web.labels" . | nindent 4 } }
+  {{- include "kaif-web.labels" . | nindent 4 }}
 spec:
-  replicas: { { .Values.replicaCount } }
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      { { - include "kaif-web.selectorLabels" . | nindent 6 } }
+  {{- include "kaif-web.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       annotations:
         ## ensure config change force roll upgrade
-        checksum/config: { { include (print $.Template.BasePath "/nginx-config.yaml") . | sha256sum } }
+        checksum/config: {{ include (print $.Template.BasePath "/nginx-config.yaml") . | sha256sum }}
         ## prometheus auto discovery, the default 'prometheus.io/path' is /metrics
         prometheus.io/scrape: "true"
         prometheus.io/port: "5980"
         prometheus.io/path: "/actuator/prometheus"
       labels:
-        { { - include "kaif-web.selectorLabels" . | nindent 8 } }
+    {{- include "kaif-web.selectorLabels" . | nindent 8 }}
     spec:
-      { { - with .Values.imagePullSecrets } }
+      {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
-        { { - toYaml . | nindent 8 } }
-      { { - end } }
-      serviceAccountName: { { include "kaif-web.serviceAccountName" . } }
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "kaif-web.serviceAccountName" . }}
       securityContext:
-        { { - toYaml .Values.podSecurityContext | nindent 8 } }
+      {{- toYaml .Values.podSecurityContext | nindent 8 }}
       # default value is 10seconds
-      terminationGracePeriodSeconds: { { add .Values.kaif.gracefulShutdownWait 10 } }
+      terminationGracePeriodSeconds: {{ add .Values.kaif.gracefulShutdownWait 10 }}
       containers:
         - name: "{{ .Chart.Name }}-nginx"
           securityContext:
-            { { - toYaml .Values.securityContext | nindent 12 } }
+          {{- toYaml .Values.securityContext | nindent 12 }}
           image: "nginx:stable"
           imagePullPolicy: IfNotPresent
           volumeMounts:
@@ -59,12 +59,12 @@ spec:
                 # so use `sleep` to workaround
                 command: [ "sleep","{{ .Values.kaif.gracefulShutdownWait }}s" ]
           resources:
-            { { - toYaml .Values.nginxResources | nindent 12 } }
+        {{- toYaml .Values.nginxResources | nindent 12 }}
         - name: "{{ .Chart.Name }}-spring"
           securityContext:
-            { { - toYaml .Values.securityContext | nindent 12 } }
+          {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.springImage.repository }}:{{ .Values.springImage.tag }}"
-          imagePullPolicy: { { .Values.springImage.pullPolicy } }
+          imagePullPolicy: {{ .Values.springImage.pullPolicy }}
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "{{ .Values.kaif.springProfile }}"
@@ -91,20 +91,20 @@ spec:
               path: /actuator/health
               port: 5980
           resources:
-            { { - toYaml .Values.springResources | nindent 12 } }
+      {{- toYaml .Values.springResources | nindent 12 }}
       volumes:
         - name: nginx-conf
           configMap:
             name: "{{ .Chart.Name }}-nginx"
-      { { - with .Values.nodeSelector } }
+      {{- with .Values.nodeSelector }}
       nodeSelector:
-        { { - toYaml . | nindent 8 } }
-      { { - end } }
-      { { - with .Values.affinity } }
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
       affinity:
-        { { - toYaml . | nindent 8 } }
-      { { - end } }
-      { { - with .Values.tolerations } }
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
       tolerations:
-        { { - toYaml . | nindent 8 } }
-      { { - end } }
+      {{- toYaml . | nindent 8 }}
+  {{- end }}

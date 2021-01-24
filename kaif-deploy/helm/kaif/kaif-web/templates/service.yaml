@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: { { include "kaif-web.fullname" . } }
+  name: {{ include "kaif-web.fullname" . }}
   labels:
-    { { - include "kaif-web.labels" . | nindent 4 } }
+  {{- include "kaif-web.labels" . | nindent 4 }}
 spec:
-  type: { { .Values.service.type } }
+  type: {{ .Values.service.type }}
   ports:
-    - port: { { .Values.service.port } }
+    - port: {{ .Values.service.port }}
       targetPort: http
       protocol: TCP
       name: http
@@ -16,4 +16,4 @@ spec:
       name: spring
       targetPort: 5980
   selector:
-    { { - include "kaif-web.selectorLabels" . | nindent 4 } }
+  {{- include "kaif-web.selectorLabels" . | nindent 4 }}
