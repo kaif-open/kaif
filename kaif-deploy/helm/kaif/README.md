@@ -10,6 +10,16 @@ helm upgrade --install \
   -f values-local.yaml 
 ```
 
+### Open kaif-local
+
+* after installing kaif-local, you need to mapping localdev.kaif.io in /etc/hosts
+
+```
+127.0.0.1   localdev.kaif.io
+```
+
+* then visit https://localdev.kaif.io:5443
+
 ### generate template:
 
 * evaluate k8s yaml

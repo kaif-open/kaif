@@ -1,0 +1,10 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: mkcert-issuer
+  labels:
+  {{- include "kaif-web.labels" . | nindent 4 }}
+spec:
+  ca:
+    secretName: mkcert-tls-secret
