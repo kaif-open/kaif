@@ -22,7 +22,7 @@ management:
 
 ## database
 spring.datasource:
-  url: jdbc:postgresql://kaif-local:30598/kaif
+  url: jdbc:postgresql://${POSTGRES_ADDRESS:kaif-local:30598}/kaif
   username: kaif
   password: changeme
   schema:
@@ -37,7 +37,7 @@ spring.messages.cache-duration: 0s
 
 
 ## mail
-spring.mail.host: 192.168.59.59
+spring.mail.host: ${SMTP_ADDRESS:192.168.59.59}
 
 
 ## model, see AccountSecret.java

@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: { { include "kaif-web.fullname" . } }
+  labels:
+    { { - include "kaif-web.labels" . | nindent 4 } }
+spec:
+  replicas: { { .Values.replicaCount } }
+  selector:
+    matchLabels:
+      { { - include "kaif-web.selectorLabels" . | nindent 6 } }
+  template:
+    metadata:
+      annotations:
+        ## ensure config change force roll upgrade
+        checksum/config: { { include (print $.Template.BasePath "/nginx-config.yaml") . | sha256sum } }
+        ## prometheus auto discovery, the default 'prometheus.io/path' is /metrics
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "5980"
+        prometheus.io/path: "/actuator/prometheus"
+      labels:
+        { { - include "kaif-web.selectorLabels" . | nindent 8 } }
+    spec:
+      { { - with .Values.imagePullSecrets } }
+      imagePullSecrets:
+        { { - toYaml . | nindent 8 } }
+      { { - end } }
+      serviceAccountName: { { include "kaif-web.serviceAccountName" . } }
+      securityContext:
+        { { - toYaml .Values.podSecurityContext | nindent 8 } }
+      # default value is 10seconds
+      terminationGracePeriodSeconds: { { add .Values.kaif.gracefulShutdownWait 10 } }
+      containers:
+        - name: "{{ .Chart.Name }}-nginx"
+          securityContext:
+            { { - toYaml .Values.securityContext | nindent 12 } }
+          image: "nginx:stable"
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d
+              readOnly: true
+              name: nginx-conf
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          lifecycle:
+            preStop:
+              exec:
+                # note `nginx -s quit` does not what we want. we just want delay kill nginx
+                # so use `sleep` to workaround
+                command: [ "sleep","{{ .Values.kaif.gracefulShutdownWait }}s" ]
+          resources:
+            { { - toYaml .Values.nginxResources | nindent 12 } }
+        - name: "{{ .Chart.Name }}-spring"
+          securityContext:
+            { { - toYaml .Values.securityContext | nindent 12 } }
+          image: "{{ .Values.springImage.repository }}:{{ .Values.springImage.tag }}"
+          imagePullPolicy: { { .Values.springImage.pullPolicy } }
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "{{ .Values.kaif.springProfile }}"
+            - name: JAVA_TOOL_OPTIONS
+              value: "{{ .Values.kaif.javaOptions }}"
+            - name: POSTGRES_ADDRESS
+              value: "kaif-db-postgresql:5432"
+            - name: SMTP_ADDRESS
+              value: "kaif-postfix"
+          envFrom:
+            - secretRef:
+                name: "{{ .Release.Name }}-secret"
+          ports:
+            - containerPort: 5980
+          livenessProbe:
+            initialDelaySeconds: {{.Values.initialDelaySeconds }}
+            httpGet:
+              path: /
+              port: 5980
+          readinessProbe:
+            httpGet:
+              ## when spring graceful shutdown, the health return 503 out of service to let
+              ## k8s detect not ready
+              path: /actuator/health
+              port: 5980
+          resources:
+            { { - toYaml .Values.springResources | nindent 12 } }
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: "{{ .Chart.Name }}-nginx"
+      { { - with .Values.nodeSelector } }
+      nodeSelector:
+        { { - toYaml . | nindent 8 } }
+      { { - end } }
+      { { - with .Values.affinity } }
+      affinity:
+        { { - toYaml . | nindent 8 } }
+      { { - end } }
+      { { - with .Values.tolerations } }
+      tolerations:
+        { { - toYaml . | nindent 8 } }
+      { { - end } }

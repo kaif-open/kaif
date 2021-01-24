@@ -1,0 +1,40 @@
+kaif:
+  ## spring active profile, ex: 'stage,th,stage-th' 'prod,vn,prod-vn'
+  springProfile: 'dev'
+  javaOptions: '-XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=85.0'
+  siteServerName: localdev.kaif.io
+
+springImage:
+  repository: k3d-kaif-registry.localhost:5111/kaif/kaif-web
+  tag: latest
+  pullPolicy: Always
+
+ingress:
+  enabled: true
+  annotations:
+    # kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt
+  hosts:
+    - host: localdev.kaif.io
+      paths:
+        - path: "/"
+  tls:
+    - secretName: letsencrypt-issuer
+      hosts:
+        - localdev.kaif.io
+
+springResources:
+  limits:
+    cpu: 1000m
+    memory: 768Mi
+  requests:
+    cpu: 1000m
+    memory: 768Mi
+
+nginxResources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi

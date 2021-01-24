@@ -4,6 +4,7 @@ buildscript {
   }
   dependencies {
     classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    classpath "gradle.plugin.com.google.cloud.tools:jib-gradle-plugin:2.7.1"
   }
 }
 
@@ -11,6 +12,7 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management' // <-- add this to your build.gradle
+apply plugin: "com.google.cloud.tools.jib"
 
 
 tasks.withType(JavaCompile) {
@@ -120,3 +122,45 @@ dependencies {
 
 }
 
+// use `../gradlew jibDockerBuild` to build docker image in local
+jib {
+    from {
+        image = "adoptopenjdk/openjdk11:latest"
+    }
+
+    allowInsecureRegistries = true
+    to {
+        image = "k3d-kaif-registry.localhost:5111/kaif/kaif-web"
+        tags = ["latest"]
+    }
+
+    //you need additional env:
+    //
+    //   SPRING_PROFILES_ACTIVE=dev
+    //   SPRING_PROFILES_ACTIVE=prod
+    //
+    // and optional
+    //
+    //   JAVA_TOOL_OPTIONS='-XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=85.0'
+    //
+    container {
+        jvmFlags = ['-Duser.language=en',
+                    '-Duser.country=US',
+                    '-Djava.awt.headless=true',
+                    '-Dspring.jmx.enabled=false',
+                    '-Dspring.devtools.restart.enabled=false',
+                    '-Dspring.devtools.add-properties=false',
+                    '-server',
+                    '-XX:+UseContainerSupport',
+                    '-XshowSettings:vm']
+
+    mainClass = 'io.kaif.Application'
+
+        /*
+        args = ['some', 'args']
+        ports = ['1000', '2000-2003/udp']
+        labels = [key1:'value1', key2:'value2']
+        format = 'OCI'
+         */
+    }
+}

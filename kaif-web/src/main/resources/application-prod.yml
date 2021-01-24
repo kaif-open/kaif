@@ -30,7 +30,7 @@ management:
 ## database
 spring.datasource:
   initialization-mode: never
-  url: jdbc:postgresql://localhost:5432/kaif
+  url: jdbc:postgresql://${POSTGRES_ADDRESS:localhost:5432}/kaif
   username: kaif
   password: ${env.dbpassword}
   schema:
@@ -43,7 +43,7 @@ spring.datasource:
 
 
 ## mail
-spring.mail.host: localhost
+spring.mail.host: ${SMTP_ADDRESS:localhost}
 
 mail.aws-sender-address: noreply@kaif.io
 mail.aws-secret-key: ${env.mail.aws-secret-key}
