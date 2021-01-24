@@ -1,6 +1,6 @@
 kaif:
   ## spring active profile, ex: 'stage,th,stage-th' 'prod,vn,prod-vn'
-  springProfile: 'dev'
+  springProfile: 'prod'
   javaOptions: '-XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=85.0'
   siteServerName: localdev.kaif.io
 
@@ -13,15 +13,16 @@ ingress:
   enabled: true
   annotations:
     # kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: letsencrypt
+    cert-manager.io/issuer: selfsigned-issuer
+    ingress.kubernetes.io/ssl-redirect: "false"
   hosts:
     - host: localdev.kaif.io
       paths:
         - path: "/"
-  tls:
-    - secretName: letsencrypt-issuer
-      hosts:
-        - localdev.kaif.io
+  #tls:
+  #  - secretName: localdev-kaif-io-tls
+  #    hosts:
+  #      - localdev.kaif.io
 
 springResources:
   limits:

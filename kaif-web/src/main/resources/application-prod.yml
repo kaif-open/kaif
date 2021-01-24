@@ -32,7 +32,7 @@ spring.datasource:
   initialization-mode: never
   url: jdbc:postgresql://${POSTGRES_ADDRESS:localhost:5432}/kaif
   username: kaif
-  password: ${env.dbpassword}
+  password: ${POSTGRES_PASSWORD}
   schema:
   data:
 
@@ -46,22 +46,22 @@ spring.datasource:
 spring.mail.host: ${SMTP_ADDRESS:localhost}
 
 mail.aws-sender-address: noreply@kaif.io
-mail.aws-secret-key: ${env.mail.aws-secret-key}
-mail.aws-access-key: ${env.mail.aws-access-key}
+mail.aws-secret-key: ${MAIL_AWS_SECRET_KEY}
+mail.aws-access-key: ${MAIL_AWS_ACCESS_KEY}
 
 ## model
 account:
-  mac: ${env.account.mac}
-  key: ${env.account.key}
+  mac: ${ACCOUNT_MAC}
+  key: ${ACCOUNT_KEY}
 
 
 ## oauth, see OauthSecret.java
 oauth:
-  mac: ${env.oauth.mac}
-  key: ${env.oauth.key}
+  mac: ${OAUTH_MAC}
+  key: ${OAUTH_KEY}
 
 ## flake node id, every web server should use it's own unique node id
-flake.node-id: ${env.flake.node-id}
+flake.node-id: ${FLAKE_NODE_ID}
 
 
 ## logback

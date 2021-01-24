@@ -3,13 +3,9 @@
 <configuration scan="true">
     <!-- this should write log to /var/lib/{{springboot_name}}/logs folder, see ansible role -->
     <property name="LOG_FOLDER" value="logs"/>
-    
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <charset>utf-8</charset>
-            <Pattern>[%p] %c - %m%n</Pattern>
-        </encoder>
-    </appender>
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
 
     <!-- The FILE and ASYNC appenders are here as examples for a production configuration -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -107,6 +103,7 @@
     </contextListener>
 
     <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
         <appender-ref ref="ASYNC"/>
     </root>
 

@@ -47,11 +47,11 @@ data:
       listen 80;
       server_name {{ .Values.kaif.siteServerName }};
 
-      #force https
-      if ($http_x_forwarded_proto = 'http') {
-        return 301 https://$host$request_uri;
-      }
-      ## security settings
+      ####force https
+      ###if ($http_x_forwarded_proto = 'http') {
+      ###  return 301 https://$host$request_uri;
+      ###}
+      ##### security settings
 
       add_header Strict-Transport-Security "max-age=31536000";
       add_header X-Frame-Options SAMEORIGIN;
