@@ -22,7 +22,7 @@ management:
 
 ## database
 spring.datasource:
-  url: jdbc:postgresql://192.168.59.59:5432/kaif
+  url: jdbc:postgresql://kaif-local:30598/kaif
   username: kaif
   password: changeme
   schema:

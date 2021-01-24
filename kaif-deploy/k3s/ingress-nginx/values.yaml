@@ -1,0 +1,6 @@
+## nginx configuration
+## Ref: https://github.com/kubernetes/ingress-nginx
+##
+controller:
+  metrics:
+    enabled: true

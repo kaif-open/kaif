@@ -1,0 +1,11 @@
+ZSH=$HOME/.oh-my-zsh
+ZSH_THEME="evan"
+DISABLE_AUTO_UPDATE="true"
+
+plugins=(git kubectl aws)
+source $ZSH/oh-my-zsh.sh
+source <(kubectl completion zsh)
+
+alias tf=terraform
+
+PROMPT="%{$fg_bold[yellow]%}kaif_ctl%{$fg_bold[blue]%} %w %* % %{$reset_color%}$PROMPT"$'\n'"# "

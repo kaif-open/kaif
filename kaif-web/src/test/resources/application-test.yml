@@ -24,7 +24,7 @@ management:
 ## database
 spring.datasource:
   initialization-mode: always
-  url: jdbc:postgresql://192.168.59.59:5432/ci_kaif
+  url: jdbc:postgresql://kaif-local:30598/ci_kaif
   username: ci_kaif
   password: changeme
   schema: classpath:db/recreate_schema.sql,classpath:db/schema.sql
