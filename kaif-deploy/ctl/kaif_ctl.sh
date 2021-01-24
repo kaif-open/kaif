@@ -32,12 +32,22 @@ then
 
   touch "$kaif_deploy_dir/ctl/secret/zsh_history"
   kaif_local=$(cat /etc/hosts | sed 's/^#.//g' | grep 'kaif-local' | tr "\t" " " | awk '{print $2":"$1 }' | tr '\n' ' ')
+
+  ## k3d overwrite  TODO
+  kaif_local="kaif-local:172.17.0.1"
+
+  docker_host_mapping=""
+  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+     docker_host_mapping='--add-host=host.docker.internal:172.17.0.1'
+  fi
+
   docker run \
     -v "$project_dir":/root/kaif \
     -v "$kaif_deploy_dir/ctl/secret/aws_credentials":/root/.aws/credentials \
     -v "$kaif_deploy_dir/ctl/secret/kube_config":/root/.kube/config \
     -v "$kaif_deploy_dir/ctl/secret/zsh_history":/root/.zsh_history \
     --add-host="$kaif_local" \
+    "$docker_host_mapping" \
     -p 8009:8009 \
     --name kaif_ctl \
     -d \
