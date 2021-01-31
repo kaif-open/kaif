@@ -1,7 +1,0 @@
----
-
-postfix:
-  relay_host: gmail.com
-  relay_myhostname: localdev.kaif.io
-  relay_password: bar
-  relay_username: foo-not-exist-user

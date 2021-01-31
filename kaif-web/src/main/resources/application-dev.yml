@@ -37,7 +37,8 @@ spring.messages.cache-duration: 0s
 
 
 ## mail
-spring.mail.host: ${SMTP_ADDRESS:192.168.59.59}
+spring.mail.host: smtp.gmail.com
+spring.mail.port: 587
 
 
 ## model, see AccountSecret.java

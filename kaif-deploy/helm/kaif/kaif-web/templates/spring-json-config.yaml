@@ -1,0 +1,24 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Chart.Name }}-spring"
+  labels:
+  {{- include "kaif-web.labels" . | nindent 4 }}
+data:
+  ## gmail smtp sample
+  ##    spring.mail.host=smtp.gmail.com
+  ##    spring.mail.port=587
+  ##    spring.mail.username=<login user to smtp server>
+  ##    spring.mail.password=<login password to smtp server>
+  ##    spring.mail.properties.mail.smtp.auth=true
+  ##    spring.mail.properties.mail.smtp.starttls.enable=true
+  SPRING_APPLICATION_JSON: |
+    {
+      "spring": {
+        "mail": {
+          "host": "smtp.gmail.com",
+          "port": 587
+        }
+      }
+    }

@@ -43,8 +43,6 @@ spring.datasource:
 
 
 ## mail
-spring.mail.host: ${SMTP_ADDRESS:localhost}
-
 mail.aws-sender-address: noreply@kaif.io
 mail.aws-secret-key: ${MAIL_AWS_SECRET_KEY}
 mail.aws-access-key: ${MAIL_AWS_ACCESS_KEY}

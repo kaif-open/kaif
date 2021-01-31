@@ -13,7 +13,8 @@ spec:
     metadata:
       annotations:
         ## ensure config change force roll upgrade
-        checksum/config: {{ include (print $.Template.BasePath "/nginx-config.yaml") . | sha256sum }}
+        checksum/nginx-config: {{ include (print $.Template.BasePath "/nginx-config.yaml") . | sha256sum }}
+        checksum/spring-config: {{ include (print $.Template.BasePath "/spring-json-config.yaml") . | sha256sum }}
         ## prometheus auto discovery, the default 'prometheus.io/path' is /metrics
         prometheus.io/scrape: "true"
         prometheus.io/port: "5980"
@@ -72,11 +73,11 @@ spec:
               value: "{{ .Values.kaif.javaOptions }}"
             - name: POSTGRES_ADDRESS
               value: "kaif-db-postgresql:5432"
-            - name: SMTP_ADDRESS
-              value: "kaif-postfix"
           envFrom:
             - secretRef:
                 name: "{{ .Release.Name }}-secret"
+            - configMapRef:
+                name: "{{ .Chart.Name }}-spring"
           ports:
             - containerPort: 5980
           livenessProbe:
