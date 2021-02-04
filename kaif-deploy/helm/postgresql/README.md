@@ -20,3 +20,15 @@ helm upgrade --install \
 
 psql -h kaif-local -p 30598 -U kaif -d kaif
 ```
+
+### generate template:
+
+* evaluate k8s yaml
+
+```
+  helm template \
+     -n kaif-db \
+     --namespace kaif \
+     bitnami/postgresql \
+     -f values-local.yaml > tmp/render.yaml
+```

@@ -2,6 +2,10 @@
 image:
   tag: '13.1.0-debian-10-r67'
 
+service:
+  type: NodePort
+  nodePort: 30598
+
 initdbScripts:
   recreate_db.sql: |
     DROP DATABASE if exists kaif;
@@ -26,8 +30,41 @@ postgresqlConfiguration: {
 ## below is local specific
 persistence:
   enabled: true
-  size: 8Gi
+  existingClaim: kaif-db-postgresq-pvc
+  #size: 8Gi
 
-service:
-  type: NodePort
-  nodePort: 30598
+volumePermissions:
+  enabled: true
+
+## @formatter:off
+extraDeploy:
+  - kind: PersistentVolume
+    apiVersion: v1
+    metadata:
+      name: kaif-db-postgresq-pv
+      labels:
+        app: kaif-db
+    spec:
+      storageClassName: manual
+      capacity:
+        storage: 8Gi
+      accessModes:
+        - ReadWriteMany
+      hostPath:
+        path: "/volume/pg-data"
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: kaif-db-postgresq-pvc
+      labels:
+        app: kaif-db
+    spec:
+      storageClassName: manual
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: 8Gi
+      selector:
+        matchLabels:
+          app: kaif-db
