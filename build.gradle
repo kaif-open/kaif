@@ -14,7 +14,7 @@ idea {
 
 subprojects {
   repositories {
-    jcenter()
+    mavenCentral()
   }
 }
 

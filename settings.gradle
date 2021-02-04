@@ -3,7 +3,7 @@ include 'kaif-web', 'kaif-fe'
 gradle.allprojects {
   buildscript {
     repositories {
-      jcenter()
+      mavenCentral()
       maven {
         url "https://plugins.gradle.org/m2/"
       }
