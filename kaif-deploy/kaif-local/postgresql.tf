@@ -13,11 +13,11 @@ resource "helm_release" "kaif-db" {
   ]
 
   //lazy assign password because the password only known after deploy
-  dynamic "set" {
+  dynamic "set_sensitive" {
     for_each = try(data.kubernetes_secret.kaif-db-postgresql[*].data["postgresql-password"], [])
     content {
       name  = "postgresqlPassword"
-      value = set.value
+      value = set_sensitive.value
     }
   }
 }

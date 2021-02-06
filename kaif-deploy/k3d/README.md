@@ -30,3 +30,9 @@ target_config=~/develop/kaif-all/kaif/kaif-deploy/ctl/secret/kube_config
 k3d kubeconfig get kaif-local > "$target_config" 
 sed -i s/0.0.0.0/host.docker.internal/g "$target_config"
 ```
+
+* to shutdown k3d
+
+```
+k3d cluster stop kaif-local
+```

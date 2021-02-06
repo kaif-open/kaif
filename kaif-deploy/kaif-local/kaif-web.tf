@@ -9,5 +9,13 @@ resource "helm_release" "kaif-web" {
   values = [
     file("kaif-web-values.yaml")
   ]
+
+  ## force use latest image in local registry
+  recreate_pods = true
+  set {
+    name  = "always-redeploy"
+    value = timestamp()
+  }
+
 }
 

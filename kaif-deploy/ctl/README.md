@@ -3,7 +3,8 @@ Prepare
 
 * prepare files:
 
-    - secret/kube_config, it's from /etc/rancher/k3s/k3s.yaml inside local vm see k3s/README.md
+    - secret/kube_config
+        * for k3s, it's from /etc/rancher/k3s/k3s.yaml
 
 Open ctl console
 =======================

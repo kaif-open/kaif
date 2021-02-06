@@ -1,46 +1,48 @@
+### Introduction
 
-The Ansible playbook for server provision. Playbooks can
-apply to vagrant VM or production servers, depends on inventory file.
+The provision and deployment are all kubernetes based. In local development we use k3d as kubernetes
+distribution.
 
-Install required software
-==========================
+### Install required software
 
-* Prepare for Mac
+* `mkcert` for local root CA
+    * see kaif-deploy/mkcert for detail
+
+* docker
+
+* k3d for local k8s, see kaif-deploy/k3d for detail
+
+### A special `kaif_ctl` console via docker for devops operations
+
+* After k3d installed, a dedicated docker container `kaif_ctl` is used for most `terraform`
+  , `kubectl`, and `helm` commands
+
+* to start kaif_ctl:
 
 ```
-  # install ansible specified version (other version not work) 
-  brew install python
-  pip install ansible==2.9.10 markupsafe  
-
-  # vagrant version >= 1.8.1
-  # go to https://www.vagrantup.com/downloads and install .dmg
-
-  # virtualbox > 5.0
-  # go to https://www.virtualbox.org/wiki/Downloads and install .dmg
+cd kaif/kaif-deploy
+ctl/kaif_ctl.sh
 ```
 
+* in kaif_ctl shell, you can run `k9s -n all` to operate k3d
 
-Production provision and deployment
-===================================
+### Provision and deployment kaif in k3d
 
-* To use ansible with production server, you need to prepare secret files first.
+* first, build kaif-web docker image into k3d's private docker registry:
 
-* secret files
-  
-  prepare ansible vault password in file:
-  
-  ```
-  secret/vault_password_file
-  ```
+```
+cd kaif
+./gradlw jib
+```
 
-  then decrypt vault encrypted ssh keys:
+* provision postgresql, cert-manager... etc in k3d
 
-  ```
-  ansible-playbook -i production deploy/decrypt_secret.yml --vault-password-file=secret/vault_password_file 
-  ```
-  
-* NEVER commit `vault_password_file` and `kaif_rsa*` to git !!! See `kaif/kaif-deploy/.gitignore`
+```
+[inside kaif_ctl]
+cd kaif/kaif-deploy/kaif-local
+terraform init
+terraform apply
+```
 
-* after secret files ready, you can execute production commands in `COMMAND.md`
+* if everything setup correctly, visit https://localdev.kaif.io:5443
 
-* there are several how-to guide for configure GCE instances, see `howto` folder.
