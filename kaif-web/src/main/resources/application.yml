@@ -51,6 +51,8 @@ management:
 spring.datasource:
   driver-class-name: org.postgresql.Driver
 
+spring.liquibase:
+  change-log: classpath:db/changelog/db.changelog-master.xml
 
 ## jmx
 spring.jmx.enabled: false

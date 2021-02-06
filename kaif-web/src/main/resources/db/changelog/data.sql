@@ -1,3 +1,10 @@
+--liquibase formatted sql logicalFilePath:db.changelog-data
+
+/* @formatter:off */
+
+--changeset data:1 context:data
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM ZoneInfo
 INSERT INTO ZoneInfo (zone, aliasname, theme, voteauthority, debateauthority, writeauthority,
                       adminaccountids, hidefromtop, createtime)
 VALUES

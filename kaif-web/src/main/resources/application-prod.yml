@@ -36,6 +36,10 @@ spring.datasource:
   schema:
   data:
 
+spring.liquibase:
+  enabled: true
+  contexts: base, data
+
 ## jmx
 
 

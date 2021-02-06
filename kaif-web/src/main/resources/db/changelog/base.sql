@@ -1,3 +1,10 @@
+--liquibase formatted sql logicalFilePath:db.changelog-base
+
+/* @formatter:off */
+
+--changeset base:1 context:base
+--preconditions onFail:MARK_RAN onError:HALT
+--precondition-sql-check expectedResult:f SELECT EXISTS(SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'account')
 CREATE TABLE Account (
   accountId    UUID           NOT NULL PRIMARY KEY,
   username     VARCHAR(4096)  NOT NULL,
@@ -129,7 +136,7 @@ CREATE UNIQUE INDEX ArticleWatchAccountArticleIndex ON ArticleWatch (accountId, 
 CREATE INDEX ArticleWatchArticleAccountIndex ON ArticleWatch (articleId, accountId);
 
 -- see HotRanking.java
-CREATE FUNCTION hotRanking(upVoted BIGINT, downVoted BIGINT, createTime TIMESTAMPTZ)
+CREATE OR REPLACE FUNCTION hotRanking(upVoted BIGINT, downVoted BIGINT, createTime TIMESTAMPTZ)
   RETURNS NUMERIC AS $$
 SELECT round(cast(log(greatest(abs($1 - $2), 1)) * sign($1 - $2) +
                   (EXTRACT(EPOCH FROM $3) - 1420070400) / 45000.0 AS NUMERIC), 7)

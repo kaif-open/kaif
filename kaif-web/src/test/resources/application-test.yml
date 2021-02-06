@@ -23,13 +23,16 @@ management:
 
 ## database
 spring.datasource:
-  initialization-mode: always
+  initialization-mode: never
   url: jdbc:postgresql://kaif-local:30598/ci_kaif
   username: ci_kaif
   password: changeme
-  schema: classpath:db/recreate_schema.sql,classpath:db/schema.sql
   data:
 
+spring.liquibase:
+  enabled: true
+  contexts: base
+  drop-first: true
 
 ## jmx
 spring.jmx.enabled: false

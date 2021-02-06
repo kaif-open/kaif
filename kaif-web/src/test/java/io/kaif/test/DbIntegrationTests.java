@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -42,7 +43,8 @@ public abstract class DbIntegrationTests extends AbstractTransactionalJUnit4Spri
   @ComponentScan(basePackages = { "io.kaif.model", "io.kaif.service" })
   @Import(value = { DataSourceAutoConfiguration.class,
       DataSourceTransactionManagerAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
-      ModelConfiguration.class, UtilConfiguration.class, MockTestConfig.class })
+      LiquibaseAutoConfiguration.class, ModelConfiguration.class, UtilConfiguration.class,
+      MockTestConfig.class })
   @Configuration
   public static class JdbcTestApplication {
 

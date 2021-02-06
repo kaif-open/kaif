@@ -29,6 +29,9 @@ spring.datasource:
   data:
   initialization-mode: never
 
+spring.liquibase:
+  contexts: base, data
+
 ## jmx
 
 
