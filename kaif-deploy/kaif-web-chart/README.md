@@ -1,13 +1,13 @@
 ### Installation
 
 ```
-cd ../kaif && \
+cd ../kaif-web-chart && \
 helm upgrade --install \
-  kaif-local \
-  ./kaif-web \
+  kaif-web \
+  ../kaif-web-values \
   --namespace kaif \
   --create-namespace \
-  -f values-local.yaml 
+  -f kaif-web-values.yaml 
 ```
 
 ### Open kaif-local
@@ -26,9 +26,9 @@ helm upgrade --install \
 
 ```
   helm template \
-     -n kaif-local \
+     -n kaif-web \
      --namespace kaif \
-     ./kaif-web \
-     -f values-local.yaml > tmp/render.yaml
+     ../kaif-web-values \
+     -f kaif-web-values > tmp/render.yaml
 ``` 
 

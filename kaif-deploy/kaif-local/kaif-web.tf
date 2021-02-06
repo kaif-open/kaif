@@ -1,8 +1,8 @@
-resource "helm_release" "kaif-local" {
-  name    = "kaif-local"
+resource "helm_release" "kaif-web" {
+  name    = "kaif-web"
   replace = true
 
-  chart            = "../../helm/kaif/kaif-web"
+  chart            = "../kaif-web-chart"
   create_namespace = true
   namespace        = "kaif"
 

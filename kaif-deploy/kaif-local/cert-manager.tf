@@ -26,8 +26,8 @@ resource "kubernetes_secret" "mkcert-tls-secret" {
   }
 
   data = {
-    "tls.crt" = file("../../mkcert/rootCA.pem")
-    "tls.key" = file("../../mkcert/rootCA-key.pem")
+    "tls.crt" = file("../mkcert/rootCA.pem")
+    "tls.key" = file("../mkcert/rootCA-key.pem")
   }
 
   type = "kubernetes.io/tls"

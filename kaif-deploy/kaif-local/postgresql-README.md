@@ -10,7 +10,7 @@ helm upgrade --install \
   --namespace kaif \
   --create-namespace \
   --version 10.2.4 \
-  -f values-local.yaml 
+  -f postgresql-values.yaml
 ```
 
 ### check connection from local
@@ -30,5 +30,5 @@ psql -h kaif-local -p 30598 -U kaif -d kaif
      -n kaif-db \
      --namespace kaif \
      bitnami/postgresql \
-     -f values-local.yaml > tmp/render.yaml
+     -f postgresql-values.yaml > tmp/render.yaml
 ```

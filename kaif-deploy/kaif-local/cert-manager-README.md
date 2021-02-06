@@ -22,8 +22,8 @@ helm upgrade --install \
 
 ```
 kubectl -n kaif create secret tls mkcert-tls-secret \
-  --key=../../mkcert/rootCA-key.pem \
-  --cert=../../mkcert/rootCA.pem
+  --key=../mkcert/rootCA-key.pem \
+  --cert=../mkcert/rootCA.pem
 ```
 
 * now you can use `mkcert-tls-secret` in issuer like:
