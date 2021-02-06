@@ -3,7 +3,7 @@
 CUR_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
-  jhome=$(dirname /usr/lib/jvm/java-11*/bin)
+  jhome=$(dirname /usr/lib/jvm/*11*/bin)
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   jhome=$(/usr/libexec/java_home -v 11)
 else
