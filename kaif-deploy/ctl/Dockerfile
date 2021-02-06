@@ -25,17 +25,17 @@ RUN apt-get update && apt-get install -y \
      && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --no-cache-dir \
-    awscli==1.18.216
+    awscli==1.19.3
 
 RUN curl -L https://storage.googleapis.com/kubernetes-release/release/v1.20.2/bin/linux/amd64/kubectl \
     -o /usr/local/bin/kubectl \
  && chmod +x /usr/local/bin/kubectl
 
-RUN curl -L https://get.helm.sh/helm-v3.5.0-linux-amd64.tar.gz \
+RUN curl -L https://get.helm.sh/helm-v3.5.2-linux-amd64.tar.gz \
     | tar xvfz - --strip-components 1 -C /usr/local/bin linux-amd64/helm \
  && chmod +x /usr/local/bin/helm
 
-RUN curl -L https://releases.hashicorp.com/terraform/0.13.6/terraform_0.13.6_linux_amd64.zip \
+RUN curl -L https://releases.hashicorp.com/terraform/0.14.6/terraform_0.14.6_linux_amd64.zip \
     | bsdtar xvfz - -C /usr/local/bin terraform \
  && chmod +x /usr/local/bin/terraform
 
