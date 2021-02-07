@@ -124,16 +124,40 @@ dependencies {
 
 }
 
+def applicationVersion = {
+    def specified = System.getProperty("applicationVersion")
+    if (specified != null) {
+        return specified
+    }
+    return 'release-' + new Date().format('yyMMdd-HHmm', TimeZone.getTimeZone("Asia/Taipei"))
+}()
+
 // use `../gradlew jibDockerBuild` to build docker image in local
+// use `../gradlew jibBuildTar` to build at build/jib-image.tar
 jib {
     from {
         image = "adoptopenjdk/openjdk11:latest"
     }
 
-    allowInsecureRegistries = true
-    to {
-        image = "k3d-kaif-registry.localhost:5111/kaif/kaif-web"
-        tags = ["latest"]
+    def jsonKeyFile =  System.getProperty("jib-json-key-file")
+    if (jsonKeyFile == null) {
+        allowInsecureRegistries = true
+        to {
+            image = "k3d-kaif-registry.localhost:5111/kaif/kaif-web"
+            tags = ["latest"]
+        }
+    } else {
+        to {
+            image = 'asia.gcr.io/kaif-id/kaif'
+            tags = [applicationVersion]
+            auth {
+                username = '_json_key'
+                password = file(jsonKeyFile).text
+            }
+        }
+
+        println("push image with tag: ${applicationVersion}")
+        new File(projectDir, "../kaif-deploy/kaif-prod/kaif-web-version.txt").text = applicationVersion
     }
 
     //you need additional env:
