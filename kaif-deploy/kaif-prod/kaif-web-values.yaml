@@ -1,0 +1,49 @@
+imagePullSecrets:
+  - name: gcr-secret
+
+initialDelaySeconds: 30
+
+kaif:
+  springProfile: 'prod'
+  javaOptions: '-XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=85.0'
+  siteServerName: kaif.io
+
+springImage:
+  repository: gcr.io/kaif-id/kaif
+  tag: latest
+  pullPolicy: Always
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt
+    ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: kaif.io
+      paths:
+        - path: "/"
+    - host: www.kaif.io
+      paths:
+        - path: "/"
+  tls:
+    - secretName: letsencrypt-issuer
+      hosts:
+        - kaif.io
+        - www.kaif.io
+
+springResources:
+  limits:
+    cpu: 1000m
+    memory: 768Mi
+  requests:
+    cpu: 1000m
+    memory: 768Mi
+
+nginxResources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi

@@ -148,7 +148,7 @@ jib {
         }
     } else {
         to {
-            image = 'asia.gcr.io/kaif-id/kaif'
+            image = 'gcr.io/kaif-id/kaif'
             tags = [applicationVersion]
             auth {
                 username = '_json_key'

@@ -7,7 +7,8 @@ resource "helm_release" "kaif-web" {
   namespace        = "kaif"
 
   values = [
-    file("kaif-web-values.yaml")
+    file("kaif-web-values.yaml"),
+    file("kaif-web-secret.yaml")
   ]
 
   ## force use latest image in local registry
@@ -16,6 +17,5 @@ resource "helm_release" "kaif-web" {
     name  = "always-redeploy"
     value = timestamp()
   }
-
 }
 

@@ -30,41 +30,8 @@ postgresqlConfiguration: {
 ## below is local specific
 persistence:
   enabled: true
-  existingClaim: kaif-db-postgresq-pvc
   #size: 8Gi
 
 volumePermissions:
   enabled: true
 
-## @formatter:off
-extraDeploy:
-  - kind: PersistentVolume
-    apiVersion: v1
-    metadata:
-      name: kaif-db-postgresq-pv
-      labels:
-        app: kaif-db
-    spec:
-      storageClassName: manual
-      capacity:
-        storage: 8Gi
-      accessModes:
-        - ReadWriteMany
-      hostPath:
-        path: "/volume/pg-data"
-  - kind: PersistentVolumeClaim
-    apiVersion: v1
-    metadata:
-      name: kaif-db-postgresq-pvc
-      labels:
-        app: kaif-db
-    spec:
-      storageClassName: manual
-      accessModes:
-        - ReadWriteMany
-      resources:
-        requests:
-          storage: 8Gi
-      selector:
-        matchLabels:
-          app: kaif-db
