@@ -1,5 +1,0 @@
-- name: restart {{springboot_name}}
-  service: name={{springboot_name}} state=restarted
-
-- name: reload systemd
-  command: systemctl daemon-reload

@@ -1,4 +1,0 @@
----
-- name: Install OpenJDK
-  tags: java
-  apt: pkg={{ java_versions }} update-cache=yes state=latest

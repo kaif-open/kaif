@@ -1,2 +1,0 @@
-zsh_user: "{{ansible_user}}"
-

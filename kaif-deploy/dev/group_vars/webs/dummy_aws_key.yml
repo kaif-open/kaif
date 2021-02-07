@@ -1,5 +1,0 @@
-# To test lets encrypt under vagrant locally, you need to define aws key:
-
-# IAM key  for route53
-## letsencrypt_aws_access_key_id: 'TODO'
-## letsencrypt_aws_secret_access_key: 'TODO'

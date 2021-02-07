@@ -1,6 +1,0 @@
----
-
-- hosts: [pgs]
-  roles:
-    - role: postgresql
-      become: true

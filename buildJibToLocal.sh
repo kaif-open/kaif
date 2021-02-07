@@ -11,4 +11,4 @@ else
   exit 1
 fi
 
-JAVA_HOME=$jhome "$CUR_DIR"/gradlew clean assemble
+JAVA_HOME=$jhome "$CUR_DIR"/gradlew clean jib

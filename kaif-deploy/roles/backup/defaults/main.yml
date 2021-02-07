@@ -1,2 +1,0 @@
-backup_dir: "/home/{{ansible_user}}/backup"
-backup_notify_email: "noreply@kaif.io"
