@@ -48,14 +48,16 @@
 
 * append `?kaif-locale=en` can force change locale in bootRun server, default value is zh_TW
 
-### Deploy web app to k3d
+### Deploy web app to local k3d
 
 * build kaif-web docker image then deploy to k3d
 
 ```
-  ./gradlew clean jib
+  ./buildJibToLocal.sh
   
-  kaif-deploy/ctl/kaif_ct.sh # go to kaif_ctl
+  kaif-deploy/ctl/kaif_ct.sh # open kaif_ctl console
+  
+  # within kaif_ctl, execute:
   cd kaif/kaif-deploy/kaif-local
   terraform init
   terraform apply 
@@ -65,4 +67,4 @@
 
 ### Production provision and deployment
 
-* you need secret files to operate production servers. see kaif-deploy/README.md for detail
+* see kaif-deploy/README.md for detail

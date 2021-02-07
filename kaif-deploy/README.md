@@ -26,7 +26,7 @@ ctl/kaif_ctl.sh
 
 * in kaif_ctl shell, you can run `k9s -n all` to operate k3d
 
-### Provision and deployment kaif in k3d
+### Local provision and deployment kaif in k3d
 
 * first, build kaif-web docker image into k3d's private docker registry:
 
@@ -38,7 +38,7 @@ cd kaif
 * provision postgresql, cert-manager... etc in k3d
 
 ```
-[inside kaif_ctl]
+# open kaif_ctl.sh console then run following command:
 cd kaif/kaif-deploy/kaif-local
 terraform init
 terraform apply
@@ -46,3 +46,30 @@ terraform apply
 
 * if everything setup correctly, visit https://localdev.kaif.io:5443
 
+### Production provision and deployment
+
+* prepare production k8s kube config file: `kube_config_prod` in ctl/secret
+* prepare `gcloud` config in ctl/secret
+* prepare gcp json-key file in secret/kaif-id-328c723761f5.json
+
+* build docker image to gcr
+
+```
+# you need json-key to access production google container registry
+./buildJibToProd.sh
+```
+
+* provision
+
+```
+# inside kube_ctl, execute:
+cd kaif-prod
+tf init
+tf apply
+
+# note that you need `gcloud` config to access secret
+```
+
+* k8s cluster requirement
+    - cert-manager for kaif.io tls
+    - `gcr-secret` to pull image from gcr
