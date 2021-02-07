@@ -43,6 +43,10 @@ RUN curl -L https://github.com/derailed/k9s/releases/download/v0.24.2/k9s_Linux_
     | tar xvfz - -C /usr/local/bin k9s \
  && chmod +x /usr/local/bin/k9s
 
+RUN mkdir -p /opt \
+ && curl -L https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-319.0.0-linux-x86_64.tar.gz \
+    | tar xvfz - -C /opt
+
 ## for console access
 WORKDIR /root
 RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true

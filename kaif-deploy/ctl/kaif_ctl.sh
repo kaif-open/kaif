@@ -45,7 +45,9 @@ then
     -v "$project_dir":/root/kaif \
     -v "$kaif_deploy_dir/ctl/secret/aws_credentials":/root/.aws/credentials \
     -v "$kaif_deploy_dir/ctl/secret/kube_config":/root/.kube/config \
+    -v "$kaif_deploy_dir/ctl/secret/kube_config_prod":/root/.kube/config-prod \
     -v "$kaif_deploy_dir/ctl/secret/zsh_history":/root/.zsh_history \
+    -v "$kaif_deploy_dir/ctl/secret/gcloud":/root/.config/gcloud \
     --add-host="$kaif_local" \
     "$docker_host_mapping" \
     -p 8009:8009 \

@@ -6,6 +6,10 @@ plugins=(git kubectl aws)
 source $ZSH/oh-my-zsh.sh
 source <(kubectl completion zsh)
 
+export GOOGLE_APPLICATION_CREDENTIALS=`ls /root/.config/gcloud/legacy_credentials/*/*.json`
+
 alias tf=terraform
+
+PATH="$PATH:/opt/google-cloud-sdk/bin"
 
 PROMPT="%{$fg_bold[yellow]%}kaif_ctl%{$fg_bold[blue]%} %w %* % %{$reset_color%}$PROMPT"$'\n'"# "

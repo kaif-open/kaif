@@ -1,0 +1,68 @@
+---
+image:
+  tag: '13.1.0-debian-10-r67'
+
+initdbScripts:
+  recreate_db.sql: |
+    DROP DATABASE if exists kaif;
+    DROP ROLE if exists kaif;
+    CREATE ROLE kaif LOGIN PASSWORD 'changeme' NOINHERIT VALID UNTIL 'infinity';
+    CREATE DATABASE kaif WITH ENCODING='UTF8' OWNER=kaif TEMPLATE=template1;
+    \c kaif
+    ALTER SCHEMA public OWNER TO kaif;
+
+## the tuning is for 2GB ram in production
+## see http://www.pgconfig.org
+postgresqlConfiguration: {
+  "listenAddresses": "'*'",
+  "sharedBuffers": '512MB',
+  "effectiveCacheSize": "2GB",
+  "workMem": "16MB",
+  "checkpointCompletionTarget": "0.7",
+  "maintenanceWorkMem": "128MB",
+  "minWalSize": "80MB",
+  "maxWalSize": "1GB",
+  "walBuffers": "-1",
+  "maxConnections": "100"
+}
+
+## below is local specific
+persistence:
+  enabled: true
+  existingClaim: kaif-db-postgresq-pvc
+
+volumePermissions:
+  enabled: true
+
+## @formatter:off
+extraDeploy:
+  - kind: PersistentVolume
+    apiVersion: v1
+    metadata:
+      name: kaif-db-postgresq-pv
+      labels:
+        app: kaif-db
+    spec:
+      storageClassName: manual
+      capacity:
+        storage: 20Gi
+      accessModes:
+        - ReadWriteMany
+      hostPath:
+        path: "/volume/pg-data"
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: kaif-db-postgresq-pvc
+      labels:
+        app: kaif-db
+    spec:
+      storageClassName: manual
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: 20Gi
+      selector:
+        matchLabels:
+          app: kaif-db
