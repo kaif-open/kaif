@@ -1,31 +1,32 @@
 package io.kaif.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
 import io.kaif.model.KaifIdGenerator;
 
 @Configuration
 public class ModelConfiguration {
 
-  @Component
-  @ConfigurationProperties("flake")
-  public static class FlakeIdProperties {
-    private int nodeId;
-
-    public int getNodeId() {
-      return nodeId;
-    }
-
-    public void setNodeId(int nodeId) {
-      this.nodeId = nodeId;
-    }
-  }
+  private static final Logger logger = LoggerFactory.getLogger(KaifIdGenerator.class);
 
   @Bean
-  public KaifIdGenerator debateFlakeIdGenerator(FlakeIdProperties properties) {
-    return new KaifIdGenerator(properties.nodeId);
+  public KaifIdGenerator debateFlakeIdGenerator() {
+    int nodeId = resolveNodeId();
+    logger.info("Use nodeId - " + nodeId);
+    return new KaifIdGenerator(nodeId);
+  }
+
+  private int resolveNodeId() {
+    try {
+      return Math.abs(InetAddress.getLocalHost().getHostAddress().hashCode()) % (1 << 10);
+    } catch (UnknownHostException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

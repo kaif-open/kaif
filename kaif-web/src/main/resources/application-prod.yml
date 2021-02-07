@@ -62,10 +62,6 @@ oauth:
   mac: ${OAUTH_MAC}
   key: ${OAUTH_KEY}
 
-## flake node id, every web server should use it's own unique node id
-flake.node-id: ${FLAKE_NODE_ID:2}
-
-
 ## logback
 logging.config: classpath:logback-prod.xml
 
