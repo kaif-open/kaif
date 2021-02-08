@@ -23,7 +23,7 @@ k3d cluster create kaif-local \
 echo "127.0.0.1   kaif-local" | sudo tee -a /etc/hosts
 
 # for mac only:
-echo "127.0.0.1   kaif-registry.localhost" | sudo tee -a /etc/hosts
+echo "127.0.0.1   k3d-kaif-registry.localhost" | sudo tee -a /etc/hosts
 ```
 
 * configure k3d for kaif_ctl.sh
