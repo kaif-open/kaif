@@ -32,12 +32,9 @@ then
 
   touch "$kaif_deploy_dir/ctl/secret/zsh_history"
 
-  ## k3d overwrite  TODO
-  kaif_local="kaif-local:172.17.0.1"
-
   docker_host_mapping="-e foo=bar"
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-     docker_host_mapping='--add-host=host.docker.internal:host-gateway'
+     docker_host_mapping='--add-host=host.docker.internal:172.17.0.1'
   fi
 
   docker run \
@@ -47,7 +44,6 @@ then
     -v "$kaif_deploy_dir/ctl/secret/kube_config_prod":/root/.kube/config-prod \
     -v "$kaif_deploy_dir/ctl/secret/zsh_history":/root/.zsh_history \
     -v "$kaif_deploy_dir/ctl/secret/gcloud":/root/.config/gcloud \
-    --add-host="$kaif_local" \
     "$docker_host_mapping" \
     -p 8009:8009 \
     --name kaif_ctl \
