@@ -9,6 +9,8 @@ initialDelaySeconds: 10
 kaif:
   ## spring active profile, ex: 'stage,th,stage-th' 'prod,vn,prod-vn'
   springProfile:
+  ## pass json to env: SPRING_APPLICATION_JSON
+  springApplicationJson: { }
   ## jvm extra config, such as '-XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=85.0'
   javaOptions: '-XX:MinRAMPercentage=60.0 -XX:MaxRAMPercentage=85.0'
   siteServerName: kaif.io
@@ -39,6 +41,9 @@ nginxResources: { }
 # requests:
 #   cpu: 100m
 #   memory: 128Mi
+
+mkcertIssuer:
+  create: false
 
 ingress:
   enabled: false

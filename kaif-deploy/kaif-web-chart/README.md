@@ -15,10 +15,10 @@ helm upgrade --install \
 * evaluate k8s yaml
 
 ```
-  helm template \
-     -n kaif-web \
-     --namespace kaif \
-     ../kaif-web-values \
-     -f kaif-web-values > tmp/render.yaml
+helm template \
+ -n kaif-web \
+ --namespace kaif \
+ ../kaif-web-charts \
+ -f kaif-web-values.yaml > tmp/render.yaml
 ``` 
 

@@ -32,7 +32,7 @@ ctl/kaif_ctl.sh
 
 ```
 cd kaif
-./gradlw jib
+./buildJibToLocal.sh
 ```
 
 * provision postgresql, cert-manager... etc in k3d
@@ -73,3 +73,4 @@ tf apply
 * k8s cluster requirement
     - cert-manager for kaif.io tls
     - `gcr-secret` to pull image from gcr
+    - `letsencrypt-issuer` tls issuer

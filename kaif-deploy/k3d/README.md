@@ -30,7 +30,7 @@ echo "127.0.0.1   kaif-registry.localhost" | sudo tee -a /etc/hosts
 
   * copy k3d kubeconfig to ctl/secret/kube_config
   * then update 0.0.0.0 address to internal `host.docker.internal`
-  * following is example. sed may not work in MacOS
+  * following is example. but `sed` command may not work in MacOS
     
 ```
 target_config=~/develop/kaif-all/kaif/kaif-deploy/ctl/secret/kube_config

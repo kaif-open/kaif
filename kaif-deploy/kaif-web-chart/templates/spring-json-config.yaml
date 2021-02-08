@@ -13,12 +13,4 @@ data:
   ##    spring.mail.password=<login password to smtp server>
   ##    spring.mail.properties.mail.smtp.auth=true
   ##    spring.mail.properties.mail.smtp.starttls.enable=true
-  SPRING_APPLICATION_JSON: |
-    {
-      "spring": {
-        "mail": {
-          "host": "smtp.gmail.com",
-          "port": 587
-        }
-      }
-    }
+  SPRING_APPLICATION_JSON: {{ .Values.kaif.springApplicationJson | toJson | quote }}

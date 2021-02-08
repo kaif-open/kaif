@@ -8,9 +8,10 @@ resource "helm_release" "cert-manager" {
   version          = "v1.1.0"
   namespace        = "cert-manager"
 
-  values = [
-    file("cert-manager-values.yaml")
-  ]
+  set {
+    name  = "installCRDs"
+    value = true
+  }
 }
 
 ### create mkcert self-signed issuer (used for development only)

@@ -17,5 +17,10 @@ resource "helm_release" "kaif-web" {
     name  = "always-redeploy"
     value = timestamp()
   }
+
+  depends_on = [
+    helm_release.kaif-db,
+    helm_release.cert-manager
+  ]
 }
 
