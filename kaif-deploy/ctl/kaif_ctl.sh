@@ -23,7 +23,7 @@ then
   docker rm --force kaif_ctl >/dev/null 2>&1
 fi
 
-if [ "$1" == "restart" ] || [ "$(docker inspect -f {{.State.Running}} kaif_ctl 2> /dev/null)" != "true" ]
+if [[ "$1" == "restart" ]] || [[ "$(docker inspect -f {{.State.Running}} kaif_ctl 2> /dev/null)" != "true" ]]
 then
   docker rm --force kaif_ctl >/dev/null 2>&1
 
@@ -36,7 +36,7 @@ then
   ## k3d overwrite  TODO
   kaif_local="kaif-local:172.17.0.1"
 
-  docker_host_mapping=""
+  docker_host_mapping="-e foo=bar"
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
      docker_host_mapping='--add-host=host.docker.internal:172.17.0.1'
   fi

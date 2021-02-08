@@ -21,18 +21,31 @@ k3d cluster create kaif-local \
 
 ```
 echo "127.0.0.1   kaif-local" | sudo tee -a /etc/hosts
+
+# for mac only:
+echo "127.0.0.1   kaif-registry.localhost" | sudo tee -a /etc/hosts
 ```
 
 * configure k3d for kaif_ctl.sh
 
+  * copy k3d kubeconfig to ctl/secret/kube_config
+  * then update 0.0.0.0 address to internal `host.docker.internal`
+  * following is example. sed may not work in MacOS
+    
 ```
 target_config=~/develop/kaif-all/kaif/kaif-deploy/ctl/secret/kube_config
 k3d kubeconfig get kaif-local > "$target_config" 
 sed -i s/0.0.0.0/host.docker.internal/g "$target_config"
 ```
 
-* to shutdown k3d
+* k3d basic management
+
 
 ```
+# shutdown
 k3d cluster stop kaif-local
+
+# start again
+k3d cluster start kaif-local
 ```
+

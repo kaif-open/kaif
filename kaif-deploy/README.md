@@ -63,7 +63,7 @@ terraform apply
 
 ```
 # inside kube_ctl, execute:
-cd kaif-prod
+cd kaif/kaif-deploy/kaif-prod
 tf init
 tf apply
 
