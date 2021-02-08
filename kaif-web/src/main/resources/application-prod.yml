@@ -23,9 +23,26 @@ spring:
 
 ## actuator
 management:
+  metrics:
+    web:
+      server:
+        request.autotime.enabled: true
+    export:
+      prometheus:
+        enabled: true
   endpoints:
-    enabled-by-default: false
+    web:
+      exposure:
+        include: 'info, health, prometheus'
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
 
+management.metrics.tags:
+  application: kaif
+  profile: prod
 
 ## database
 spring.datasource:

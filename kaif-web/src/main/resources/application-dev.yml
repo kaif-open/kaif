@@ -19,6 +19,9 @@ management:
   endpoints:
     enabled-by-default: true
 
+management.metrics.tags:
+  application: kaif
+  profile: dev
 
 ## database
 spring.datasource:

@@ -89,6 +89,9 @@ data:
       location / {
         proxy_pass http://localhost:5980;
       }
+      location /actuator/prometheus {
+        return 403;
+      }
       if ($http_user_agent ~* "(YisouSpider|EasouSpider|EtaoSpider)") {
         return 403;
       }
