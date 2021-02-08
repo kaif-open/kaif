@@ -4,7 +4,7 @@ Prepare
 * prepare files:
 
     - secret/kube_config
-        * for k3s, it's from /etc/rancher/k3s/k3s.yaml
+        * for k3d, it's from `k3d kubeconfig get kaif-local`
 
 Open ctl console
 =======================
@@ -33,7 +33,7 @@ docker exec -it kaif_ctl zsh
 * use kube proxy via docker
 
 ```
-kubectl proxy --address='0.0.0.0' 
+kubectl proxy --address='0.0.0.0' --port=8009
 ```
 
 now you can open browser to view k8s api server `http://127.0.0.1:8009/`
