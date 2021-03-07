@@ -6,7 +6,7 @@ plugins {
   id 'com.github.ngyewch.dart' version '0.3.0'
 }
 
-def DART_SDK_VERSION = "2.7.2"
+def DART_SDK_VERSION = "2.12.0"
 
 /// start of install local dart sdk
 
@@ -68,13 +68,18 @@ task pubCleanBuild(dependsOn: pubGet, type: Exec) {
   commandLine = ["${dart.dartSdkBin}pub", "run", "webdev:webdev", "build", "--verbose"]
 }
 
+task pubOutdated(dependsOn: pubGet, type: Exec) {
+  group = "Build"
+  commandLine = ["${dart.dartSdkBin}pub", "outdated", "--mode=null-safety"]
+}
+
 //
 // could not customize exist pubServe arguments, use Exec directly.
 //
 task webDevServe(dependsOn: pubGet, type: Exec) {
   group = "Build"
-  //disable injected-client because we have CORS issue from dev server, this will disable auto refresh browser while development
-  commandLine = ["${dart.dartSdkBin}pub", "run", "webdev:webdev", "serve", "web:15980", "--no-injected-client"]
+  //use release mode (dart2js) since dartdevc not works well in different port and only support chrome browser
+  commandLine = ["${dart.dartSdkBin}pub", "run", "webdev:webdev", "serve", "web:15980", "--release"]
 }
 
 task clean() {
