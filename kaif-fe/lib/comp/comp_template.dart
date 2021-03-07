@@ -1,4 +1,5 @@
 library comp_template;
+
 import 'dart:html';
 
 /**
@@ -33,7 +34,7 @@ import 'dart:html';
  */
 class ComponentTemplate {
   final String name;
-  Element _templateElem;
+  late Element _templateElem;
 
   /**
    * `take` the template element in server rendered html. the template element on page will be
@@ -43,7 +44,7 @@ class ComponentTemplate {
    * loaded
    */
   ComponentTemplate.take(this.name) {
-    Element template = querySelector('[comp-template="$name"]');
+    Element template = querySelector('[comp-template="$name"]')!;
     _templateElem = (template.clone(true) as Element)
       ..classes.remove('hidden')
       ..attributes.remove('comp-template');
@@ -53,6 +54,6 @@ class ComponentTemplate {
   }
 
   Element createElement() {
-    return _templateElem.clone(true);
+    return _templateElem.clone(true) as Element;
   }
 }

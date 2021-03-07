@@ -10,9 +10,9 @@ class _SelfTrigger {
 }
 
 abstract class DispatchState extends State implements _StateMachineAware {
-  StateMachine _stateMachine;
+  StateMachine? _stateMachine;
 
-  void set stateMachine(StateMachine stateMachine) {
+  void set stateMachine(StateMachine? stateMachine) {
     _stateMachine = stateMachine;
   }
 
@@ -34,7 +34,7 @@ abstract class DispatchState extends State implements _StateMachineAware {
     if (_stateMachine == null) {
       return;
     }
-    _stateMachine.processTrigger(new _SelfTrigger(this, toNextState));
+    _stateMachine!.processTrigger(new _SelfTrigger(this, toNextState));
   }
 
   State processRest(dynamic trigger) {

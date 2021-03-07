@@ -1,9 +1,8 @@
 part of view;
 
 class Loading {
-
-  Element _el;
-  Timer _timer;
+  late Element _el;
+  Timer? _timer;
 
   factory Loading.none() {
     return const _NoneLoading();
@@ -23,7 +22,7 @@ class Loading {
     """);
   }
 
-  void renderAfter(Element sibling, {Duration delay}) {
+  void renderAfter(Element sibling, {Duration? delay}) {
     if (delay != null) {
       _timer = new Timer(delay, () {
         elementInsertAfter(sibling, _el);
@@ -33,7 +32,7 @@ class Loading {
     }
   }
 
-  void renderAppend(Element parent, {Duration delay}) {
+  void renderAppend(Element parent, {Duration? delay}) {
     if (delay != null) {
       _timer = new Timer(delay, () {
         parent.append(_el);
@@ -46,34 +45,28 @@ class Loading {
   void remove() {
     _el.remove();
     if (_timer != null) {
-      _timer.cancel();
+      _timer!.cancel();
       _timer = null;
     }
   }
 }
 
 class _NoneLoading implements Loading {
+  void set _el(_) {}
 
-  void set _el(_) {
-  }
+  Element get _el => document.createElement("span");
 
-  Element get _el => null;
+  void set _timer(_) {}
 
-  void set _timer(_) {
-  }
-
-  Timer get _timer => null;
+  Timer? get _timer => null;
 
   const _NoneLoading();
 
-  void renderAfter(Element parent, {Duration delay}) {
-  }
+  void renderAfter(Element parent, {Duration? delay}) {}
 
-  void renderAppend(Element sibling, {Duration delay}) {
-  }
+  void renderAppend(Element sibling, {Duration? delay}) {}
 
-  void remove() {
-  }
+  void remove() {}
 }
 
 class LargeErrorModal {
@@ -82,10 +75,8 @@ class LargeErrorModal {
   LargeErrorModal(this.message);
 
   void render() {
-
     //do not embed ${message} within _unSafeHtml !
-    var dangerUnSafeElem = _unSafeHtml(
-        """
+    var dangerUnSafeElem = _unSafeHtml("""
       <div class="large-error-modal">
          <div class="alert alert-danger">
            <span class="safeMessage"></span>
@@ -94,11 +85,11 @@ class LargeErrorModal {
       </div>
     """);
 
-    var safeHtmlElem = dangerUnSafeElem.querySelector('span.safeMessage');
+    var safeHtmlElem = dangerUnSafeElem.querySelector('span.safeMessage')!;
 
     //must use `.text = message` to ensure html safety !!
     safeHtmlElem.text = message;
-    (window.document as HtmlDocument).body.append(dangerUnSafeElem);
+    (window.document as HtmlDocument).body!.append(dangerUnSafeElem);
   }
 }
 
@@ -109,24 +100,21 @@ class LargeErrorModal {
     snack bar is singleton
  */
 class SnackBar {
-
   static SnackBar _INSTANCE = new SnackBar._();
 
-  factory SnackBar(String message, {AnchorElement action}) {
+  factory SnackBar(String message, {AnchorElement? action}) {
     return _INSTANCE
       .._message = message
       .._actionElem = action;
-
   }
 
-  String _message;
-  Element _dangerUnSafeElem;
-  Element _actionElem;
-  Timer _timer;
+  late String _message;
+  late Element _dangerUnSafeElem;
+  Element? _actionElem;
+  Timer? _timer;
 
   SnackBar._() {
-    _dangerUnSafeElem = _unSafeHtml(
-        """
+    _dangerUnSafeElem = _unSafeHtml("""
        <div class="snack-bar alert alert-warning">
          <span class="safeMessage"></span>
          <span class="action"></span>
@@ -134,22 +122,20 @@ class SnackBar {
     """);
   }
 
-  void render({int seconds:100000000}) {
-    var actionWrapper = _dangerUnSafeElem.querySelector('.action');
+  void render({int seconds: 100000000}) {
+    var actionWrapper = _dangerUnSafeElem.querySelector('.action')!;
     actionWrapper.nodes.clear();
     if (_actionElem != null) {
-      actionWrapper.append(_actionElem);
+      actionWrapper.append(_actionElem!);
     }
 
-    _dangerUnSafeElem.querySelector('.safeMessage').text = _message;
+    _dangerUnSafeElem.querySelector('.safeMessage')!.text = _message;
 
     //animation ?
-    (window.document as HtmlDocument).body.append(_dangerUnSafeElem);
+    (window.document as HtmlDocument).body!.append(_dangerUnSafeElem);
 
-    if (_timer != null) {
-      _timer.cancel();
-    }
-    _timer = new Timer(new Duration(seconds:seconds), () {
+    _timer?.cancel();
+    _timer = new Timer(new Duration(seconds: seconds), () {
       _dangerUnSafeElem.remove();
       actionWrapper.nodes.clear();
       _timer = null;
@@ -159,17 +145,17 @@ class SnackBar {
 
 class Toast {
   final String message;
-  Duration _duration;
-  String _type;
+  late Duration _duration;
+  late String _type;
 
-  Toast.error(this.message, {int seconds:10}) {
+  Toast.error(this.message, {int seconds: 10}) {
     _type = 'danger';
-    _duration = new Duration(seconds:seconds);
+    _duration = new Duration(seconds: seconds);
   }
 
-  Toast.success(this.message, {int seconds:5}) {
+  Toast.success(this.message, {int seconds: 5}) {
     _type = 'success';
-    _duration = new Duration(seconds:seconds);
+    _duration = new Duration(seconds: seconds);
   }
 
   Future render() {
@@ -178,7 +164,7 @@ class Toast {
 
     //.text = message to ensure safe html here !
     safeHtmlElem.text = message;
-    (window.document as HtmlDocument).body.append(safeHtmlElem);
+    (window.document as HtmlDocument).body!.append(safeHtmlElem);
 
     return new Future.delayed(_duration, () {
       safeHtmlElem.remove();
@@ -196,16 +182,18 @@ class FlashToast {
 
   FlashToast._(String message, String type, int seconds) {
     window.sessionStorage[_STORAGE_KEY] = jsonEncode({
-      'message' : message,
+      'message': message,
       'type': type,
       'seconds': seconds,
       'createTime': new DateTime.now().millisecondsSinceEpoch
     });
   }
 
-  FlashToast.error(String message, {int seconds:10}) : this._(message, 'error', seconds);
+  FlashToast.error(String message, {int seconds: 10})
+      : this._(message, 'error', seconds);
 
-  FlashToast.success(String message, {int seconds:10}) : this._(message, 'success', seconds);
+  FlashToast.success(String message, {int seconds: 10})
+      : this._(message, 'success', seconds);
 
   /**
    * show message once, this is called automatically by main, don't call this manually.
@@ -215,10 +203,13 @@ class FlashToast {
       if (!window.sessionStorage.containsKey(_STORAGE_KEY)) {
         return null;
       }
-      Map data = jsonDecode(window.sessionStorage[_STORAGE_KEY]);
+      Map data = jsonDecode(window.sessionStorage[_STORAGE_KEY] ?? "{}");
       window.sessionStorage.remove(_STORAGE_KEY);
-      DateTime createTime = new DateTime.fromMillisecondsSinceEpoch(data['createTime']);
-      if (createTime.add(const Duration(seconds:60)).isBefore(new DateTime.now())) {
+      DateTime createTime =
+          new DateTime.fromMillisecondsSinceEpoch(data['createTime']);
+      if (createTime
+          .add(const Duration(seconds: 60))
+          .isBefore(new DateTime.now())) {
         //expired, ignored
         return null;
       }
@@ -238,7 +229,7 @@ class FlashToast {
 
     //.text = message to ensure safe html here !
     safeHtmlElem.text = message;
-    (window.document as HtmlDocument).body.append(safeHtmlElem);
+    (window.document as HtmlDocument).body!.append(safeHtmlElem);
 
     return new Future.delayed(duration, () {
       safeHtmlElem.remove();
@@ -247,8 +238,7 @@ class FlashToast {
 }
 
 class Alert {
-
-  Element _safeHtmlElem;
+  late Element _safeHtmlElem;
 
   factory Alert.append(Element sibling) {
     var alert = new Alert._();
@@ -265,8 +255,7 @@ class Alert {
   }
 
   Alert._() {
-    _safeHtmlElem = new DivElement()
-      ..classes.add('alert');
+    _safeHtmlElem = new DivElement()..classes.add('alert');
     hide();
   }
 
@@ -279,7 +268,6 @@ class Alert {
   void renderWarning(String message) => _render(message, 'warning');
 
   void _render(String message, String type) {
-
     // use .text = message ensure safe html
     _safeHtmlElem
       ..text = message
@@ -306,17 +294,19 @@ class Alert {
  * </div>
  */
 class Tabs {
-
-  List<Element> _tabPanes;
+  late List<Element> _tabPanes;
 
   Tabs(Element parent) {
-    var togglers = parent.querySelectorAll<AnchorElement>('[data-toggle=tab]').toList();
-    _tabPanes = togglers.map((toggler) => toggler.hash).map((
-        href) => parent.querySelector(href)).toList();
+    var togglers =
+        parent.querySelectorAll<AnchorElement>('[data-toggle=tab]').toList();
+    _tabPanes = togglers
+        .map((toggler) => toggler.hash!)
+        .map((href) => parent.querySelector(href)!)
+        .toList();
 
     togglers.forEach((AnchorElement toggler) {
       toggler.onClick.listen((event) {
-        _activeTabPane(toggler.hash);
+        _activeTabPane(toggler.hash!);
       });
       return;
     });

@@ -1,15 +1,15 @@
 part of util;
 
 class ServerType {
-  String _locale;
-  List<String> _profilesActive;
+  String? _locale;
+  late List<String> _profilesActive;
 
   /**
    * server detected client locale (may not same as browser locale)
    *
    * only available in dev mode. production return null
    */
-  String get locale => _locale;
+  String? get locale => _locale;
 
   /**
    * server spring active profiles, only meaningful in dev mode. production always
@@ -20,9 +20,12 @@ class ServerType {
   bool get isDevMode => _profilesActive.contains('dev');
 
   ServerType() {
-    MetaElement localeEl = querySelector('meta[name=kaifLocale]');
+    MetaElement? localeEl =
+        querySelector('meta[name=kaifLocale]') as MetaElement?;
     _locale = localeEl == null ? null : localeEl.content;
-    MetaElement modeEl = querySelector('meta[name=kaifProfilesActive]');
-    _profilesActive = modeEl == null ? ['prod'] : modeEl.content.split(',').toList();
+    MetaElement? modeEl =
+        querySelector('meta[name=kaifProfilesActive]') as MetaElement?;
+    _profilesActive =
+        modeEl == null ? ['prod'] : modeEl.content.split(',').toList();
   }
 }

@@ -1,20 +1,21 @@
 library model_dao;
 
-import 'account.dart';
-import 'dart:html';
 import 'dart:convert';
+import 'dart:html';
+
+import 'account.dart';
 
 class AccountDao {
   static const String _KEY = 'ACCOUNT_AUTH';
   bool _useLocalStorage = false;
 
-  void save(AccountAuth auth, {bool permanent}) {
-
+  void save(AccountAuth auth, {bool? permanent}) {
     if (permanent != null) {
       _useLocalStorage = permanent;
     }
 
-    var storage = _useLocalStorage ? window.localStorage : window.sessionStorage;
+    var storage =
+        _useLocalStorage ? window.localStorage : window.sessionStorage;
     storage[_KEY] = jsonEncode(auth);
   }
 
@@ -24,13 +25,13 @@ class AccountDao {
   }
 
   // return null if not found
-  AccountAuth find() {
-    AccountAuth loadFromStorage(Storage storage) {
+  AccountAuth? find() {
+    AccountAuth? loadFromStorage(Storage storage) {
       if (!storage.containsKey(_KEY)) {
         return null;
       }
       try {
-        return new AccountAuth.decode(jsonDecode(storage[_KEY]));
+        return new AccountAuth.decode(jsonDecode(storage[_KEY]!));
       } catch (error) {
         // possible cause of decode error:
         //
@@ -40,6 +41,7 @@ class AccountDao {
         return null;
       }
     }
+
     var auth = loadFromStorage(window.localStorage);
     if (auth == null) {
       _useLocalStorage = false;
@@ -62,7 +64,7 @@ class AccountDao {
 
 class NewsFeedDao {
   static const String _KEY = 'NEWS_FEED';
-  static const Duration _EXPIRE = const Duration(minutes:1);
+  static const Duration _EXPIRE = const Duration(minutes: 1);
 
   void saveCounter(int value) {
     window.localStorage[_KEY] = jsonEncode({
@@ -72,13 +74,14 @@ class NewsFeedDao {
   }
 
   // return null if not exist
-  int findCounter() {
+  int? findCounter() {
     if (!window.localStorage.containsKey(_KEY)) {
       return null;
     }
     try {
-      var saved = jsonDecode(window.localStorage[_KEY]);
-      var updateTime = new DateTime.fromMillisecondsSinceEpoch(saved['updateTime']);
+      var saved = jsonDecode(window.localStorage[_KEY]!);
+      var updateTime =
+          new DateTime.fromMillisecondsSinceEpoch(saved['updateTime']);
       if (updateTime.add(_EXPIRE).isBefore(new DateTime.now())) {
         //expired
         return null;

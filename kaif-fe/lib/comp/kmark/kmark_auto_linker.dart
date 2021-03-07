@@ -1,15 +1,16 @@
 library kmark_auto_linker;
+
+import 'dart:async';
 import 'dart:html';
 import 'dart:math' as Math;
+
 import 'package:kaif_web/util.dart';
-import 'dart:async';
 
 class KmarkAutoLinker {
-
   final TextAreaElement contentInput;
 
-  static final RegExp _PURE_LINK_REGEX = new RegExp(r'^\s*(https?://[^\s]+)\s*$',
-  caseSensitive:false);
+  static final RegExp _PURE_LINK_REGEX =
+      new RegExp(r'^\s*(https?://[^\s]+)\s*$', caseSensitive: false);
 
   KmarkAutoLinker(this.contentInput) {
     //chrome/firefox/safari supported
@@ -17,21 +18,21 @@ class KmarkAutoLinker {
   }
 
   void _onPasted(Event e) {
-
     // print("onPasted range: ${contentInput.selectionStart}, ${contentInput.selectionEnd}");
 
-    var initialText = contentInput.value;
-    var pasteAtIndex = contentInput.selectionStart;
+    var initialText = contentInput.value ?? "";
+    var pasteAtIndex = contentInput.selectionStart ?? 0;
     //if paste without selection, length is 0
-    var selectionLength = contentInput.selectionEnd - pasteAtIndex;
-    var selectionText = initialText.substring(contentInput.selectionStart,
-    contentInput.selectionEnd);
+    var selectionLength = (contentInput.selectionEnd ?? 0) - pasteAtIndex;
+    var selectionText = initialText.substring(
+        contentInput.selectionStart ?? 0, contentInput.selectionEnd);
 
     // print("current: $initialText");
-    new Timer(const Duration(milliseconds:1), () {
-      var pastedTextLength = contentInput.value.length - (initialText.length - selectionLength);
+    new Timer(const Duration(milliseconds: 1), () {
+      var pastedTextLength = (contentInput.value?.length ?? 0) -
+          (initialText.length - selectionLength);
       var end = pasteAtIndex + pastedTextLength;
-      var pastedText = contentInput.value.substring(pasteAtIndex, end);
+      var pastedText = (contentInput.value ?? "").substring(pasteAtIndex, end);
       _onTextPasted(selectionText, pastedText.trim());
     });
 
@@ -61,12 +62,12 @@ class KmarkAutoLinker {
     if (match == null) {
       return;
     }
-    var link = match.group(1);
-    if (_isLinkWithinCodeBlock(contentInput.value, link)) {
+    var link = match.group(1)!;
+    if (_isLinkWithinCodeBlock(contentInput.value ?? "", link)) {
       return;
     }
 
-    if (_isLinkOnReferenceAppendix(contentInput.value, link)) {
+    if (_isLinkOnReferenceAppendix(contentInput.value ?? "", link)) {
       return;
     }
 
@@ -124,20 +125,22 @@ class KmarkAutoLinker {
 
     // replace with placeholder and append appendix
     var placeholder = isStringBlank(selectionText)
-                      ? i18n("kmark.auto-link-placeholder")
-                      : selectionText.trim();
+        ? i18n("kmark.auto-link-placeholder")
+        : selectionText.trim();
     var replacedText = " [$placeholder][$nextIndex] ";
 
     // note that we only search first occurrence of link, so if multiple link present.
     // the replace will be problematic.
-    contentInput.value = contentInput.value.replaceFirst(link, replacedText);
+    contentInput.value =
+        (contentInput.value ?? "").replaceFirst(link, replacedText);
     if (existRefs.isEmpty) {
-      contentInput.value += "\n";
+      contentInput.value = contentInput.value! + "\n";
     }
-    contentInput.value += "\n${new ReferenceAppendix(nextIndex.toString(), link)}";
+    contentInput.value = contentInput.value! +
+        "\n${new ReferenceAppendix(nextIndex.toString(), link)}";
 
     // apply placeholder selection:
-    var start = contentInput.value.indexOf(replacedText) + 2; // 2 is `space+[`
+    var start = contentInput.value!.indexOf(replacedText) + 2; // 2 is `space+[`
     contentInput.selectionStart = start;
     contentInput.selectionEnd = start + placeholder.length;
   }
@@ -147,8 +150,8 @@ class KmarkAutoLinker {
  * the parser support index is not number, (because server allow non-number index).
  */
 class ReferenceAppendix {
-  static final RegExp _LINE_PATTERN = new RegExp(r'^\s*\[([^\]]+)\]:\s*(http.+)\s*$',
-  multiLine:true);
+  static final RegExp _LINE_PATTERN =
+      new RegExp(r'^\s*\[([^\]]+)\]:\s*(http.+)\s*$', multiLine: true);
   final String index;
   final String url;
 
@@ -161,12 +164,12 @@ class ReferenceAppendix {
     return maxIndex + 1;
   }
 
-  static List<ReferenceAppendix> tryParse(String rawLines) {
+  static List<ReferenceAppendix> tryParse(String? rawLines) {
     if (rawLines == null) {
       return [];
     }
     return _LINE_PATTERN.allMatches(rawLines).map((match) {
-      return new ReferenceAppendix(match.group(1), match.group(2));
+      return new ReferenceAppendix(match.group(1)!, match.group(2)!);
     }).toList();
   }
 

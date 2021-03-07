@@ -1,34 +1,37 @@
 library debate_comp;
 
+import 'dart:async';
 import 'dart:html';
-import 'package:kaif_web/util.dart';
+
+import 'package:collection/collection.dart';
 import 'package:kaif_web/model.dart';
+import 'package:kaif_web/util.dart';
+
 import '../vote/votable.dart';
 import 'debate_form.dart';
 import 'edit_debate_form.dart';
-import 'dart:async';
-
 
 class DebateComp {
   final VoteService voteService;
   final AccountSession accountSession;
   final ArticleService articleService;
   final Element elem;
-  String zone;
-  String articleId;
-  String debateId;
-  String debaterName;
+  late String zone;
+  late String articleId;
+  late String debateId;
+  late String debaterName;
   bool reloadWhenReply = true;
-  DebateVoteBox voteBox;
+  late DebateVoteBox voteBox;
 
-  DebateComp(this.elem, this.articleService, this.voteService, this.accountSession) {
-    debateId = elem.dataset['debate-id'];
-    zone = elem.dataset['zone'];
-    articleId = elem.dataset['article-id'];
-    debaterName = elem.dataset['debater-name'];
+  DebateComp(
+      this.elem, this.articleService, this.voteService, this.accountSession) {
+    debateId = elem.dataset['debate-id']!;
+    zone = elem.dataset['zone']!;
+    articleId = elem.dataset['article-id']!;
+    debaterName = elem.dataset['debater-name']!;
 
-    var voteElem = elem.querySelector('[debate-vote-box]');
-    var voteCountElem = elem.querySelector('[debate-vote-count]');
+    var voteElem = elem.querySelector('[debate-vote-box]')!;
+    var voteCountElem = elem.querySelector('[debate-vote-count]')!;
     voteBox = new DebateVoteBox(voteElem, this, voteCountElem);
 
     var replierElem = elem.querySelector('[debate-replier]');
@@ -39,10 +42,12 @@ class DebateComp {
 
     if (accountSession.isSelf(debaterName)) {
       var editorElem = elem.querySelector('[debate-content-editor]');
-      Element contentElem = elem.querySelector('[debate-content]');
-      Element contentEditElem = elem.querySelector('[debate-content-edit]');
+      Element? contentElem = elem.querySelector('[debate-content]');
+      Element? contentEditElem = elem.querySelector('[debate-content-edit]');
       //if any element missing, this debate is not editable
-      if (editorElem == null || contentElem == null || contentEditElem == null) {
+      if (editorElem == null ||
+          contentElem == null ||
+          contentEditElem == null) {
         return;
       }
       new DebateEditor(contentElem, contentEditElem, editorElem, this);
@@ -55,9 +60,10 @@ class DebateEditor {
   final Element contentElem;
   final Element contentEditElem;
   final Element elem;
-  EditDebateForm form;
+  EditDebateForm? form;
 
-  DebateEditor(this.contentElem, this.contentEditElem, this.elem, this.debateComp) {
+  DebateEditor(
+      this.contentElem, this.contentEditElem, this.elem, this.debateComp) {
     this.elem.classes.toggle('hidden', false);
     elem.onClick.listen(_onClick);
   }
@@ -67,28 +73,28 @@ class DebateEditor {
       ..preventDefault()
       ..stopPropagation();
 
-    debateComp.articleService.loadEditableDebate(debateComp.debateId)
-    .then((content) {
+    debateComp.articleService
+        .loadEditableDebate(debateComp.debateId)
+        .then((content) {
       //lazy create
       if (form == null) {
         form = new EditDebateForm.placeHolder(contentEditElem, contentElem,
-        debateComp.articleService, debateComp.debateId);
+            debateComp.articleService, debateComp.debateId);
       }
-      form
+      form!
         ..content = content
         ..show();
     }).catchError((e) {
-      new Toast.error('$e', seconds:5).render();
+      new Toast.error('$e', seconds: 5).render();
     });
   }
-
 }
 
 class DebateReplier {
   final Element elem;
   final DebateComp debateComp;
 
-  DebateForm form;
+  DebateForm? form;
 
   DebateReplier(this.elem, this.debateComp) {
     elem.onClick.listen(_onClick);
@@ -102,26 +108,28 @@ class DebateReplier {
     //lazy create
     if (form == null) {
       Element placeHolderElem = new DivElement();
-      elem.parent.insertAdjacentElement('afterEnd', placeHolderElem);
+      elem.parent!.insertAdjacentElement('afterEnd', placeHolderElem);
       form = new DebateForm.placeHolder(
-          placeHolderElem, debateComp.articleService, debateComp.accountSession, debateComp.zone,
+          placeHolderElem,
+          debateComp.articleService,
+          debateComp.accountSession,
+          debateComp.zone,
           debateComp.articleId)
         ..reloadWhenSubmit = debateComp.reloadWhenReply
         ..parentDebateId = debateComp.debateId;
     }
-    form.show();
+    form!.show();
   }
 }
 
 class DebateVoteBox extends Votable {
-
   final DebateComp debateComp;
 
   DebateVoteBox(Element elem, this.debateComp, Element voteCountElem)
-  : super(elem) {
-    var upVoteElem = elem.querySelector('[debate-up-vote]');
-    var downVoteElem = elem.querySelector('[debate-down-vote]');
-    var currentCount = int.parse(elem.dataset['debate-vote-count']);
+      : super(elem) {
+    var upVoteElem = elem.querySelector('[debate-up-vote]')!;
+    var downVoteElem = elem.querySelector('[debate-down-vote]')!;
+    var currentCount = int.parse(elem.dataset['debate-vote-count']!);
     init(currentCount, upVoteElem, downVoteElem, voteCountElem);
   }
 
@@ -132,7 +140,7 @@ class DebateVoteBox extends Votable {
     }
 
     var voter = voters
-    .firstWhere((voter) => voter.debateId == debateComp.debateId, orElse:() => null);
+        .firstWhereOrNull((voter) => voter.debateId == debateComp.debateId);
     if (voter == null) {
       applyNoVoter();
       return;
@@ -141,10 +149,9 @@ class DebateVoteBox extends Votable {
     applyVoterReady(voter);
   }
 
-  Future onVote(VoteState newState, VoteState previousState, int previousCount) {
+  Future onVote(
+      VoteState newState, VoteState previousState, int previousCount) {
     return debateComp.voteService.voteDebate(
-        newState, debateComp.debateId, previousState,
-        previousCount);
+        newState, debateComp.debateId, previousState, previousCount);
   }
-
 }

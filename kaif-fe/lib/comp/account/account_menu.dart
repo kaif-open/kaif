@@ -1,12 +1,12 @@
 library account_menu;
 
 import 'dart:html';
+
 import 'package:kaif_web/model.dart';
 import 'package:kaif_web/util.dart';
 
 class AccountMenu {
-
-  void _render(AccountAuth auth) {
+  void _render(AccountAuth? auth) {
     elem.nodes.clear();
     if (auth == null) {
       elem.append(_menuLink(route.signIn, i18n('account-menu.sign-in')));
@@ -20,13 +20,14 @@ class AccountMenu {
           </li>
       """);
 
-      elem.nodes.insert(0, _menuElement(route.newsFeed, counterNotification.elem));
+      elem.nodes
+          .insert(0, _menuElement(route.newsFeed, counterNotification.elem));
 
-      elem.querySelector('[username]')
-        ..text = auth.username;
+      elem.querySelector('[username]')?..text = auth.username;
 
       elem.querySelector('[child-menu]')
-        ..append(_menuLink(route.user(auth.username), route.user(auth.username)))
+        ?..append(
+            _menuLink(route.user(auth.username), route.user(auth.username)))
         ..append(_menuLink(route.settings, i18n('account-menu.settings')))
         ..appendHtml(_menuSeparator)
         ..append(_createSignOut());
@@ -39,8 +40,8 @@ class AccountMenu {
      only support one level drop down, purecss-0.5
    */
   void _enablePureCssDropDown(Element parent) {
-    var dropDownTarget = parent.querySelector('.pure-menu-can-have-children');
-    var dropDownMenu = dropDownTarget.querySelector('.pure-menu-label');
+    var dropDownTarget = parent.querySelector('.pure-menu-can-have-children')!;
+    var dropDownMenu = dropDownTarget.querySelector('.pure-menu-label')!;
     dropDownMenu.onClick.listen((e) {
       e
         ..preventDefault()
@@ -48,8 +49,8 @@ class AccountMenu {
       dropDownTarget.classes.toggle('pure-menu-open');
     });
     // cancel drop down menu if click outside
-    document.documentElement.onClick.listen((
-        e) => dropDownTarget.classes.toggle('pure-menu-open', false));
+    document.documentElement!.onClick
+        .listen((e) => dropDownTarget.classes.toggle('pure-menu-open', false));
   }
 
   String get _menuSeparator => '<li class="pure-menu-separator"></li>';
@@ -58,22 +59,22 @@ class AccountMenu {
     //use .text = value to ensure safe html
     return new LIElement()
       ..append(new AnchorElement()
-      ..href = href
-      ..text = text);
+        ..href = href
+        ..text = text);
   }
 
   Element _menuElement(String href, Element body) {
     return new LIElement()
       ..append(new AnchorElement()
-      ..href = href
-      ..append(body));
+        ..href = href
+        ..append(body));
   }
 
   final Element elem;
   final AccountSession accountSession;
 
   final NewsFeedNotification newsFeedNotification;
-  CounterNotification counterNotification;
+  late CounterNotification counterNotification;
 
   AccountMenu(this.elem, this.accountSession, this.newsFeedNotification) {
     counterNotification = new CounterNotification();
@@ -101,7 +102,7 @@ class AccountMenu {
 
   Element _createSignOut() {
     var signOut = _menuLink("#", i18n('account-menu.sign-out'));
-    signOut.querySelector('a').onClick.first.then((e) {
+    signOut.querySelector('a')!.onClick.first.then((e) {
       e
         ..preventDefault()
         ..stopImmediatePropagation();
@@ -110,37 +111,30 @@ class AccountMenu {
     });
     return signOut;
   }
-
 }
 
 class CounterNotification {
-  Element elem;
-  Element textElem;
-  Element counterElem;
+  late Element elem;
+  late Element textElem;
+  late Element counterElem;
 
   CounterNotification() {
-    elem = new SpanElement()
-      ..classes.add("notification");
+    elem = new SpanElement()..classes.add("notification");
 
     //use .text = value to ensure safe html
     textElem = new SpanElement()
       ..classes.add("notification-name")
       ..text = i18n('account-menu.news-feed');
 
-    counterElem = new SpanElement()
-      ..classes.add('notification-counter');
+    counterElem = new SpanElement()..classes.add('notification-counter');
 
-    elem
-      ..append(textElem)
-      ..append(counterElem);
+    elem..append(textElem)..append(counterElem);
 
     counter = 0;
-
   }
 
   set counter(int value) {
     counterElem.classes.toggle('hidden', value <= 0);
     counterElem.text = value > 10 ? '10+' : value.toString();
   }
-
 }

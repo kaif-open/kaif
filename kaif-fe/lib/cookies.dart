@@ -37,8 +37,8 @@ String _format_date(DateTime datetime) {
       '${hour}:${minute}:${second} ${utc.timeZoneName}';
 }
 
-String cookieGet(String key) {
-  var cookies = document.cookie != null ? document.cookie.split('; ') : [];
+String? cookieGet(String key) {
+  var cookies = document.cookie != null ? document.cookie!.split('; ') : [];
 
   for (var i = 0, l = cookies.length; i < l; i++) {
     var parts = cookies[i].split('=');
@@ -52,18 +52,20 @@ String cookieGet(String key) {
   return null;
 }
 
-void cookieSet(String key, String value, {expires, path, domain, secure}) {
+void cookieSet(String key, String value,
+    {num? expires, String? path, String? domain, bool? secure}) {
+  DateTime? expiresDate = null;
   if (expires is num) {
-    expires = new DateTime.fromMillisecondsSinceEpoch(
+    expiresDate = new DateTime.fromMillisecondsSinceEpoch(
         new DateTime.now().millisecondsSinceEpoch +
-            expires * 24 * 60 * 60 * 1000);
+            expires.toInt() * 24 * 60 * 60 * 1000);
   }
 
   var cookie = ([
     Uri.encodeComponent(key),
     '=',
     Uri.encodeComponent(value),
-    expires != null ? '; expires=' + _format_date(expires) : '',
+    expiresDate != null ? '; expires=' + _format_date(expiresDate) : '',
     // use expires attribute, max-age is not supported by IE
     path != null ? '; path=' + path : '',
     domain != null ? '; domain=' + domain : '',

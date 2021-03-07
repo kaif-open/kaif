@@ -1,6 +1,7 @@
 library sign_in_form;
 
 import 'dart:html';
+
 import 'package:kaif_web/model.dart';
 import 'package:kaif_web/util.dart';
 
@@ -8,7 +9,7 @@ class SignInForm {
   final Element elem;
   final AccountService accountService;
   final AccountSession accountSession;
-  Alert alert;
+  late Alert alert;
 
   SignInForm(this.elem, this.accountService, this.accountSession) {
     elem.onSubmit.listen(_login);
@@ -20,16 +21,20 @@ class SignInForm {
       ..preventDefault()
       ..stopPropagation();
 
-    TextInputElement nameInput = elem.querySelector('#nameInput');
-    TextInputElement passwordInput = elem.querySelector('#passwordInput');
-    CheckboxInputElement rememberMeInput = elem.querySelector('#rememberMeInput');
-    ButtonElement submit = elem.querySelector('[type=submit]');
+    TextInputElement nameInput =
+        elem.querySelector('#nameInput') as TextInputElement;
+    TextInputElement passwordInput =
+        elem.querySelector('#passwordInput') as TextInputElement;
+    CheckboxInputElement rememberMeInput =
+        elem.querySelector('#rememberMeInput') as CheckboxInputElement;
+    ButtonElement submit = elem.querySelector('[type=submit]') as ButtonElement;
     submit.disabled = true;
 
     alert.hide();
-    accountService.authenticate(nameInput.value, passwordInput.value)//
-    .then((AccountAuth accountAuth) {
-      accountSession.save(accountAuth, rememberMe:rememberMeInput.checked);
+    accountService.authenticate(nameInput.value!, passwordInput.value!) //
+        .then((AccountAuth accountAuth) {
+      accountSession.save(accountAuth,
+          rememberMe: rememberMeInput.checked ?? false);
       //TODO handle ?from=
       route.gotoHome();
     }).catchError((e) {
@@ -40,7 +45,5 @@ class SignInForm {
     }).whenComplete(() {
       submit.disabled = false;
     });
-
   }
-
 }

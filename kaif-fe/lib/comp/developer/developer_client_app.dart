@@ -1,15 +1,18 @@
 library developer_client_app;
-import 'dart:html';
-import 'package:kaif_web/util.dart';
-import 'package:kaif_web/model.dart';
+
 import 'dart:async';
+import 'dart:html';
+
+import 'package:kaif_web/model.dart';
+import 'package:kaif_web/util.dart';
 
 class DeveloperClientApp {
   final Element elem;
 
   DeveloperClientApp(this.elem, ClientAppService clientAppService) {
     new Tabs(elem);
-    new CreateClientAppForm(elem.querySelector('[create-client-app-form]'), clientAppService);
+    new CreateClientAppForm(
+        elem.querySelector('[create-client-app-form]')!, clientAppService);
     elem.querySelectorAll('[edit-client-app-form]').forEach((el) {
       new EditClientAppForm(el, clientAppService);
     });
@@ -32,25 +35,31 @@ class CreateClientAppForm {
       ..preventDefault()
       ..stopPropagation();
 
-    var name = (elem.querySelector('[name=nameInput]') as TextInputElement).value;
-    var description = (elem.querySelector('[name=descriptionInput]') as TextInputElement).value;
-    var callbackUri = (elem.querySelector('[name=callbackUriInput]') as TextInputElement).value;
+    var name =
+        (elem.querySelector('[name=nameInput]') as TextInputElement).value ??
+            "";
+    var description =
+        (elem.querySelector('[name=descriptionInput]') as TextInputElement)
+                .value ??
+            "";
+    var callbackUri =
+        (elem.querySelector('[name=callbackUriInput]') as TextInputElement)
+                .value ??
+            "";
     var submit = elem.querySelector('[type=submit]') as ButtonElement;
     submit.disabled = true;
     try {
-      String clientId = await clientAppService.create(name, description, callbackUri);
-      new FlashToast.success(i18n('success'), seconds:2);
-      route.reload(hash:"edit-client-app_$clientId");
+      String clientId =
+          await clientAppService.create(name, description, callbackUri);
+      new FlashToast.success(i18n('success'), seconds: 2);
+      route.reload(hash: "edit-client-app_$clientId");
     } catch (error) {
       new Toast.error("$error").render();
     } finally {
       submit.disabled = false;
     }
-
   }
-
 }
-
 
 class EditClientAppForm {
   final Element elem;
@@ -65,24 +74,33 @@ class EditClientAppForm {
       ..preventDefault()
       ..stopPropagation();
 
-    var clientId = (elem.querySelector('[name=clientIdInput]') as TextInputElement).value;
-    var name = (elem.querySelector('[name=nameInput]') as TextInputElement).value;
-    var description = (elem.querySelector('[name=descriptionInput]') as TextInputElement).value;
-    var callbackUri = (elem.querySelector('[name=callbackUriInput]') as TextInputElement).value;
+    var clientId =
+        (elem.querySelector('[name=clientIdInput]') as TextInputElement)
+                .value ??
+            "";
+    var name =
+        (elem.querySelector('[name=nameInput]') as TextInputElement).value ??
+            "";
+    var description =
+        (elem.querySelector('[name=descriptionInput]') as TextInputElement)
+                .value ??
+            "";
+    var callbackUri =
+        (elem.querySelector('[name=callbackUriInput]') as TextInputElement)
+                .value ??
+            "";
     var submit = elem.querySelector('[type=submit]') as ButtonElement;
     submit.disabled = true;
     try {
       await clientAppService.update(clientId, name, description, callbackUri);
-      new FlashToast.success(i18n('success'), seconds:2);
+      new FlashToast.success(i18n('success'), seconds: 2);
       route.reload();
     } catch (error) {
       new Toast.error("$error").render();
     } finally {
       submit.disabled = false;
     }
-
   }
-
 }
 
 class DebugClientAppForm {
@@ -98,16 +116,17 @@ class DebugClientAppForm {
       ..preventDefault()
       ..stopPropagation();
 
-    var clientId = (elem.querySelector('[name=clientIdInput]') as TextInputElement).value;
+    var clientId =
+        (elem.querySelector('[name=clientIdInput]') as TextInputElement).value!;
     var submit = elem.querySelector('[type=submit]') as ButtonElement;
     submit.disabled = true;
-    var loading = new Loading.small()
-      ..renderAfter(submit);
+    var loading = new Loading.small()..renderAfter(submit);
     try {
       String token = await clientAppService.generateDebugAccessToken(clientId);
-      await new Future.delayed(const Duration(seconds:2));
-      elem.querySelector('[generated-token-group]').classes.remove('hidden');
-      (elem.querySelector('[name=generatedTokenInput]') as TextAreaElement).value = token;
+      await new Future.delayed(const Duration(seconds: 2));
+      elem.querySelector('[generated-token-group]')!.classes.remove('hidden');
+      (elem.querySelector('[name=generatedTokenInput]') as TextAreaElement)
+          .value = token;
     } catch (error) {
       new Toast.error("$error").render();
     } finally {

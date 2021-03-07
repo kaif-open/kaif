@@ -1,15 +1,15 @@
 library reset_password_form;
 
 import 'dart:html';
-import 'package:kaif_web/util.dart';
+
 import 'package:kaif_web/model.dart';
+import 'package:kaif_web/util.dart';
 
 class ResetPasswordForm {
-
   final Element elem;
   final AccountService accountService;
   final AccountSession accountSession;
-  Alert alert;
+  late Alert alert;
 
   ResetPasswordForm(this.elem, this.accountService, this.accountSession) {
     alert = new Alert.append(elem);
@@ -21,8 +21,10 @@ class ResetPasswordForm {
       ..preventDefault()
       ..stopPropagation();
 
-    TextInputElement passwordInput = elem.querySelector('#passwordInput');
-    TextInputElement confirmPasswordInput = elem.querySelector('#confirmPasswordInput');
+    TextInputElement passwordInput =
+        elem.querySelector('#passwordInput') as TextInputElement;
+    TextInputElement confirmPasswordInput =
+        elem.querySelector('#confirmPasswordInput') as TextInputElement;
     alert.hide();
 
     if (passwordInput.value != confirmPasswordInput.value) {
@@ -30,14 +32,14 @@ class ResetPasswordForm {
       return;
     }
 
-    ButtonElement submit = elem.querySelector('[type=submit]');
+    ButtonElement submit = elem.querySelector('[type=submit]') as ButtonElement;
     submit.disabled = true;
 
     var token = Uri.parse(window.location.href).queryParameters['key'];
-    var loading = new Loading.small()
-      ..renderAfter(submit);
-    accountService.updatePasswordWithToken(token, passwordInput.value)
-    .then((_) {
+    var loading = new Loading.small()..renderAfter(submit);
+    accountService
+        .updatePasswordWithToken(token!, passwordInput.value!)
+        .then((_) {
       // force sign out because old token is stale because password changed
       accountSession.signOut();
       route.gotoSignInWithUpdatePasswordSuccess();
@@ -47,7 +49,5 @@ class ResetPasswordForm {
       submit.disabled = false;
       loading.remove();
     });
-
   }
-
 }

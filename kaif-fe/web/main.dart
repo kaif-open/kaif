@@ -1,24 +1,25 @@
-import 'package:kaif_web/model.dart';
-import 'package:kaif_web/util.dart';
-import 'package:kaif_web/comp/account/sign_up_form.dart';
-import 'package:kaif_web/comp/account/sign_in_form.dart';
-import 'package:kaif_web/comp/account/news_feed.dart';
-import 'package:kaif_web/comp/account/forget_password_form.dart';
-import 'package:kaif_web/comp/account/reset_password_form.dart';
+import 'dart:async';
+import 'dart:html';
+
 import 'package:kaif_web/comp/account/account_menu.dart';
 import 'package:kaif_web/comp/account/account_settings.dart';
-import 'package:kaif_web/comp/article/article_form.dart';
+import 'package:kaif_web/comp/account/forget_password_form.dart';
+import 'package:kaif_web/comp/account/granted_client_app.dart';
+import 'package:kaif_web/comp/account/news_feed.dart';
+import 'package:kaif_web/comp/account/reset_password_form.dart';
+import 'package:kaif_web/comp/account/sign_in_form.dart';
+import 'package:kaif_web/comp/account/sign_up_form.dart';
 import 'package:kaif_web/comp/article/article-list.dart';
-import 'package:kaif_web/comp/debate/debate_tree.dart';
+import 'package:kaif_web/comp/article/article_form.dart';
 import 'package:kaif_web/comp/debate/debate_list.dart';
+import 'package:kaif_web/comp/debate/debate_tree.dart';
+import 'package:kaif_web/comp/developer/developer_client_app.dart';
+import 'package:kaif_web/comp/oauth/oauth_authorize_form.dart';
 import 'package:kaif_web/comp/server_part_loader.dart';
 import 'package:kaif_web/comp/short_url.dart';
 import 'package:kaif_web/comp/zone/zone_form.dart';
-import 'dart:html';
-import 'dart:async';
-import 'package:kaif_web/comp/developer/developer_client_app.dart';
-import 'package:kaif_web/comp/oauth/oauth_authorize_form.dart';
-import 'package:kaif_web/comp/account/granted_client_app.dart';
+import 'package:kaif_web/model.dart';
+import 'package:kaif_web/util.dart';
 
 final ServerType serverType = new ServerType();
 
@@ -30,22 +31,22 @@ customizeDev() {
   querySelectorAll('#waitingPubServe').forEach((Element el) {
     el.text = 'Pub Serve Ready!';
     el.style.backgroundColor = '#006600';
-    new Timer(const Duration(seconds:1), () => el.remove());
+    new Timer(const Duration(seconds: 1), () => el.remove());
   });
 }
 
 class AppModule {
-  AccountDao accountDao;
-  NewsFeedDao newsFeedDao;
-  AccountSession accountSession;
-  AccountService accountService;
-  ArticleService articleService;
-  ZoneService zoneService;
-  VoteService voteService;
-  ClientAppService clientAppService;
-  PartService partService;
-  ServerPartLoader serverPartLoader;
-  NewsFeedNotification newsFeedNotification;
+  late AccountDao accountDao;
+  late NewsFeedDao newsFeedDao;
+  late AccountSession accountSession;
+  late AccountService accountService;
+  late ArticleService articleService;
+  late ZoneService zoneService;
+  late VoteService voteService;
+  late ClientAppService clientAppService;
+  late PartService partService;
+  late ServerPartLoader serverPartLoader;
+  late NewsFeedNotification newsFeedNotification;
 
   AppModule() {
     accountDao = new AccountDao();
@@ -59,7 +60,8 @@ class AppModule {
     clientAppService = new ClientAppService(serverType, accessTokenProvider);
     zoneService = new ZoneService(serverType, accessTokenProvider);
     partService = new PartService(serverType, accessTokenProvider);
-    newsFeedNotification = new NewsFeedNotification(accountService, accountSession, newsFeedDao);
+    newsFeedNotification =
+        new NewsFeedNotification(accountService, accountSession, newsFeedDao);
     serverPartLoader = new ServerPartLoader(partService, _initializeComponents);
   }
 
@@ -92,10 +94,12 @@ class AppModule {
       new DebateTree(el, articleService, voteService, accountSession);
     });
     parent.querySelectorAll('[debate-list]').forEach((el) {
-      new DebateList(el, articleService, voteService, accountSession, serverPartLoader);
+      new DebateList(
+          el, articleService, voteService, accountSession, serverPartLoader);
     });
     parent.querySelectorAll('[article-list]').forEach((el) {
-      new ArticleList(el, articleService, voteService, accountSession, serverPartLoader);
+      new ArticleList(
+          el, articleService, voteService, accountSession, serverPartLoader);
     });
     parent.querySelectorAll('[news-feed]').forEach((el) {
       new NewsFeedComp(el, serverPartLoader, newsFeedNotification);
@@ -120,16 +124,16 @@ class AppModule {
 
   void start() {
     //AccountMenu is singleton, it is not part of other components
-    new AccountMenu(querySelector('[account-menu]'), accountSession, newsFeedNotification);
+    new AccountMenu(
+        querySelector('[account-menu]')!, accountSession, newsFeedNotification);
 
     // apply to whole page
     _initializeComponents(window.document);
 
     // if server page use part-template.ftl, auto load
     serverPartLoader.tryLoadInto(
-        '#__part_template',
-        route.currentPartTemplatePath(),
-        loading:new Loading.largeCenter());
+        '#__part_template', route.currentPartTemplatePath(),
+        loading: new Loading.largeCenter());
   }
 }
 
@@ -139,4 +143,3 @@ main() {
   });
   customizeDev();
 }
-

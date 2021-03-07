@@ -1,29 +1,32 @@
 library article_list;
 
-import 'dart:html';
-import 'package:kaif_web/model.dart';
-import '../vote/votable.dart';
 import 'dart:async';
-import '../server_part_loader.dart';
+import 'dart:html';
+
+import 'package:collection/collection.dart';
+import 'package:kaif_web/model.dart';
 import 'package:kaif_web/util.dart';
 
-class ArticleList {
+import '../server_part_loader.dart';
+import '../vote/votable.dart';
 
+class ArticleList {
   final Element elem;
   final ArticleService articleService;
   final VoteService voteService;
   final AccountSession accountSession;
 
-  ArticleList(this.elem, this.articleService, this.voteService, this.accountSession,
-              ServerPartLoader serverPartLoader) {
-    List<ArticleComp> articleComps = elem.querySelectorAll('[article]').map((Element el) {
+  ArticleList(this.elem, this.articleService, this.voteService,
+      this.accountSession, ServerPartLoader serverPartLoader) {
+    List<ArticleComp> articleComps =
+        elem.querySelectorAll('[article]').map((Element el) {
       return new ArticleComp(el, voteService, accountSession, articleService);
     }).toList();
 
     _initArticleVoters(articleComps);
 
     new PartLoaderPager(elem, serverPartLoader,
-    articleComps.isEmpty ? null : articleComps.last.articleId);
+        articleComps.isEmpty ? null : articleComps.last.articleId);
   }
 
   _initArticleVoters(List<ArticleComp> articleComps) {
@@ -36,8 +39,9 @@ class ArticleList {
     }
 
     future.then((articleVoters) {
-      articleComps.map((articleComp) => articleComp.voteBox).forEach((
-          box) => box.applyVoters(articleVoters));
+      articleComps
+          .map((articleComp) => articleComp.voteBox)
+          .forEach((box) => box.applyVoters(articleVoters));
     });
   }
 }
@@ -48,9 +52,9 @@ class ArticleComp {
   final AccountSession accountSession;
   final ArticleService articleService;
 
-  String _zone;
-  String _articleId;
-  ArticleVoteBox _voteBox;
+  late String _zone;
+  late String _articleId;
+  late ArticleVoteBox _voteBox;
 
   String get zone => _zone;
 
@@ -58,10 +62,11 @@ class ArticleComp {
 
   ArticleVoteBox get voteBox => _voteBox;
 
-  ArticleComp(this.elem, this.voteService, this.accountSession, this.articleService) {
-    _articleId = elem.dataset['article-id'];
-    _zone = elem.dataset['zone'];
-    var voteBoxElem = elem.querySelector('[article-vote-box]');
+  ArticleComp(
+      this.elem, this.voteService, this.accountSession, this.articleService) {
+    _articleId = elem.dataset['article-id']!;
+    _zone = elem.dataset['zone']!;
+    var voteBoxElem = elem.querySelector('[article-vote-box]')!;
     _voteBox = new ArticleVoteBox(voteBoxElem, this);
     elem.querySelectorAll('[article-deletion]').forEach((targetElem) {
       new ArticleDeletion(targetElem, this);
@@ -70,15 +75,12 @@ class ArticleComp {
 }
 
 class ArticleVoteBox extends Votable {
-
   final ArticleComp articleComp;
 
-  ArticleVoteBox(Element elem, this.articleComp)
-  : super(elem) {
-
-    var upVoteElem = elem.querySelector('[article-up-vote]');
-    var voteCountElem = elem.querySelector('[article-vote-count]');
-    var currentCount = int.parse(elem.dataset['article-vote-count']);
+  ArticleVoteBox(Element elem, this.articleComp) : super(elem) {
+    var upVoteElem = elem.querySelector('[article-up-vote]')!;
+    var voteCountElem = elem.querySelector('[article-vote-count]')!;
+    var currentCount = int.parse(elem.dataset['article-vote-count']!);
 
     //not support down vote
     var fakeDownVoteElem = new SpanElement();
@@ -93,7 +95,7 @@ class ArticleVoteBox extends Votable {
     }
 
     var voter = voters
-    .firstWhere((voter) => voter.articleId == articleComp.articleId, orElse:() => null);
+        .firstWhereOrNull((voter) => voter.articleId == articleComp.articleId);
 
     if (voter == null) {
       applyNoVoter();
@@ -103,7 +105,8 @@ class ArticleVoteBox extends Votable {
     applyVoterReady(voter);
   }
 
-  Future onVote(VoteState newState, VoteState previousState, int previousCount) {
+  Future onVote(
+      VoteState newState, VoteState previousState, int previousCount) {
     return articleComp.voteService.voteArticle(
         newState, articleComp.articleId, previousState, previousCount);
   }
@@ -114,27 +117,32 @@ class ArticleDeletion {
   final Element elem;
 
   ArticleDeletion(this.elem, this.articleComp) {
-    String authorName = elem.dataset['author-name'];
+    String authorName = elem.dataset['author-name']!;
 
-    List<String> deleterNames = trimStringToEmpty(elem.dataset['zone-admins']).split(",").where((
-        name) => !isStringBlank(name)).toList(growable:true)
-      ..add(authorName);
+    List<String> deleterNames = trimStringToEmpty(elem.dataset['zone-admins'])
+        .split(",")
+        .where((name) => !isStringBlank(name))
+        .toList(growable: true)
+          ..add(authorName);
 
     if (!articleComp.accountSession.containSelf(deleterNames)) {
       return;
     }
-    _init(articleComp.accountSession.current.username);
+    _init(articleComp.accountSession.current?.username);
   }
 
-  _init(String deleterName) async {
-    bool canDelete = await articleComp.articleService.canDeleteArticle(deleterName,
-    articleComp.articleId);
+  _init(String? deleterName) async {
+    if (deleterName == null) {
+      return;
+    }
+    bool canDelete = await articleComp.articleService
+        .canDeleteArticle(deleterName, articleComp.articleId);
     if (!canDelete) {
       return;
     }
     elem.classes.remove('hidden');
-    var deleteElem = elem.querySelector('[delete]');
-    elem.querySelector('[confirm-delete]').onClick.listen((e) {
+    var deleteElem = elem.querySelector('[delete]')!;
+    elem.querySelector('[confirm-delete]')!.onClick.listen((e) {
       (e.target as Element).classes.add('hidden');
       deleteElem.classes.remove('hidden');
     });
@@ -143,7 +151,7 @@ class ArticleDeletion {
         await articleComp.articleService.deleteArticle(articleComp.articleId);
         route.reload();
       } catch (error) {
-        new Toast.error('${error}', seconds:2).render();
+        new Toast.error('${error}', seconds: 2).render();
       }
     });
   }

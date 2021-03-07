@@ -10,10 +10,10 @@ class _NullUriPolicy implements UriPolicy {
   }
 }
 
-const _ScriptLessValidator _SCRIPT_LESS_VALIDATOR = const _ScriptLessValidator();
+const _ScriptLessValidator _SCRIPT_LESS_VALIDATOR =
+    const _ScriptLessValidator();
 
 class _ScriptLessValidator implements NodeValidator {
-
   const _ScriptLessValidator();
 
   bool allowsElement(Element element) {
@@ -25,14 +25,13 @@ class _ScriptLessValidator implements NodeValidator {
   }
 }
 
-
 /**
  * parse html to create element, should only used in code template, not user generated content.
  *
  * note all <script> element and onFoo="" attribute will be removed
  */
 Element _unSafeHtml(String rawHtml) {
-  return new Element.html(rawHtml, validator:_SCRIPT_LESS_VALIDATOR);
+  return new Element.html(rawHtml, validator: _SCRIPT_LESS_VALIDATOR);
 }
 
 /**
@@ -41,12 +40,12 @@ Element _unSafeHtml(String rawHtml) {
  *
  * note all <script> element and onFoo="" attribute will be removed
  */
-void unSafeInnerHtml(Element parent, String rawInnerHtml) {
-  parent.setInnerHtml(rawInnerHtml, validator:_SCRIPT_LESS_VALIDATOR);
+void unSafeInnerHtml(Element parent, String? rawInnerHtml) {
+  parent.setInnerHtml(rawInnerHtml, validator: _SCRIPT_LESS_VALIDATOR);
 }
 
 void elementInsertAfter(Element sibling, Element elem) {
-  var childNodes = sibling.parent.nodes;
+  var childNodes = sibling.parent?.nodes ?? [];
   if (childNodes.isEmpty || childNodes.last == sibling) {
     childNodes.add(elem);
     return;

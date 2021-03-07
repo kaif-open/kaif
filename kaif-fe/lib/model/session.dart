@@ -11,7 +11,7 @@ import 'dao.dart';
 
 class AccountSession {
   final AccountDao accountDao;
-  AccountAuth _current;
+  AccountAuth? _current;
 
   AccountSession(this.accountDao) {
     _current = accountDao.find();
@@ -31,7 +31,7 @@ class AccountSession {
     }
   }
 
-  void save(AccountAuth auth, {bool rememberMe}) {
+  void save(AccountAuth auth, {bool? rememberMe}) {
     accountDao.save(auth, permanent: rememberMe);
     _current = accountDao.find();
   }
@@ -40,32 +40,32 @@ class AccountSession {
    * return true if extends, false if unchanged. caller should handle PermissionError
    */
   Future<bool> extendsTokenIfRequired() {
-    if (_current == null || !_current.isRequireExtends()) {
+    if (_current == null || !_current!.isRequireExtends()) {
       return new Future.value(false);
     }
 
     //TODO broadcast changed ?
-    return _extendsAccessToken(_current).then((renewAuth) {
+    return _extendsAccessToken(_current!).then((renewAuth) {
       save(renewAuth);
       return true;
     }).catchError((error) => false, test: (error) => error is! PermissionError);
   }
 
   //null if not sign in
-  AccountAuth get current => _current;
+  AccountAuth? get current => _current;
 
   bool get isSignIn => current != null;
 
   bool isSelf(String username) {
-    return isSignIn && username == current.username;
+    return isSignIn && username == current?.username;
   }
 
   bool containSelf(List<String> usernames) {
-    return isSignIn && usernames.contains(current.username);
+    return isSignIn && usernames.contains(current?.username);
   }
 
-  String provideAccessToken() {
-    return _current != null ? _current.accessToken : null;
+  String? provideAccessToken() {
+    return _current?.accessToken;
   }
 
   Future<AccountAuth> _extendsAccessToken(AccountAuth exist) {
@@ -81,13 +81,13 @@ class AccountSession {
             method: 'POST', sendData: jsonEncode(json), requestHeaders: headers)
         .catchError((Object raw) {
           ProgressEvent event = raw as ProgressEvent;
-          HttpRequest req = event.target;
+          HttpRequest req = event.target as HttpRequest;
           if (req.status == 401 || req.status == 403) {
             throw new PermissionError();
           }
           throw new StateError('abort');
         })
-        .then((req) => jsonDecode(req.responseText))
+        .then((req) => jsonDecode(req.responseText!))
         .then((raw) => new AccountAuth.decode(raw));
   }
 

@@ -7,15 +7,13 @@ abstract class State {
     return StateMachineControl.RETAIN;
   }
 
-  void enter() {
-  }
+  void enter() {}
 
-  void exit() {
-  }
+  void exit() {}
 }
 
 abstract class _StateMachineAware {
-  void set stateMachine(StateMachine stateMachine);
+  void set stateMachine(StateMachine? stateMachine);
 }
 
 const State DUMMY_STATE = const _DummyState();
@@ -43,7 +41,7 @@ class StateMachineControl {
 
 class StateMachine {
   static const State _TERMINATED = const _TerminatedState();
-  State _current;
+  late State _current;
 
   StateMachine(State initialState) {
     _current = initialState;

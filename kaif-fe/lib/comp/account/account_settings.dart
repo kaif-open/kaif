@@ -1,12 +1,13 @@
 library account_settings;
 
 import 'dart:html';
-import 'edit_description_form.dart';
+
 import 'package:kaif_web/model.dart';
 import 'package:kaif_web/util.dart';
 
-class AccountSettings {
+import 'edit_description_form.dart';
 
+class AccountSettings {
   final Element elem;
   final AccountService accountService;
   final AccountSession accountSession;
@@ -15,19 +16,20 @@ class AccountSettings {
     _createReactivateIfRequire();
 
     new _UpdateNewPasswordForm(
-        elem.querySelector('[update-new-password-form]'),
+        elem.querySelector('[update-new-password-form]')!,
         accountService,
         accountSession);
 
     new _DescriptionEditor(
-        elem.querySelector('[description-content-edit]'),
-        elem.querySelector('[description-content]'),
-        elem.querySelector('[description-content-editor]'),
+        elem.querySelector('[description-content-edit]')!,
+        elem.querySelector('[description-content]')!,
+        elem.querySelector('[description-content-editor]')!,
         accountService);
   }
 
   void _createReactivateIfRequire() {
-    ButtonElement found = elem.querySelector('#account-reactivate');
+    ButtonElement? found =
+        elem.querySelector('#account-reactivate') as ButtonElement?;
     if (found == null) {
       //already activated
       return;
@@ -52,9 +54,10 @@ class _DescriptionEditor {
   final Element contentEditElem;
   final Element actionElem;
   final AccountService accountService;
-  EditDescriptionForm form;
+  EditDescriptionForm? form;
 
-  _DescriptionEditor(this.contentEditElem, this.contentElem, this.actionElem, this.accountService) {
+  _DescriptionEditor(this.contentEditElem, this.contentElem, this.actionElem,
+      this.accountService) {
     actionElem.onClick.listen(_onClick);
   }
 
@@ -63,28 +66,26 @@ class _DescriptionEditor {
       ..preventDefault()
       ..stopPropagation();
 
-    accountService.loadEditableDescription()
-    .then((content) {
+    accountService.loadEditableDescription().then((content) {
       //lazy create
       if (form == null) {
-        form = new EditDescriptionForm.placeHolder(contentEditElem, contentElem, actionElem,
-        accountService);
+        form = new EditDescriptionForm.placeHolder(
+            contentEditElem, contentElem, actionElem, accountService);
       }
-      form
+      form!
         ..content = content
         ..show();
     }).catchError((e) {
-      new Toast.error('$e', seconds:5).render();
+      new Toast.error('$e', seconds: 5).render();
     });
   }
-
 }
 
 class _UpdateNewPasswordForm {
   final Element elem;
   final AccountSession accountSession;
   final AccountService accountService;
-  Alert alert;
+  late Alert alert;
 
   _UpdateNewPasswordForm(this.elem, this.accountService, this.accountSession) {
     alert = new Alert.append(elem);
@@ -95,9 +96,12 @@ class _UpdateNewPasswordForm {
     e
       ..preventDefault()
       ..stopPropagation();
-    TextInputElement oldPasswordInput = elem.querySelector('#oldPasswordInput');
-    TextInputElement passwordInput = elem.querySelector('#passwordInput');
-    TextInputElement confirmPasswordInput = elem.querySelector('#confirmPasswordInput');
+    TextInputElement oldPasswordInput =
+        elem.querySelector('#oldPasswordInput') as TextInputElement;
+    TextInputElement passwordInput =
+        elem.querySelector('#passwordInput') as TextInputElement;
+    TextInputElement confirmPasswordInput =
+        elem.querySelector('#confirmPasswordInput') as TextInputElement;
     alert.hide();
 
     if (passwordInput.value != confirmPasswordInput.value) {
@@ -105,17 +109,19 @@ class _UpdateNewPasswordForm {
       return;
     }
 
-    ButtonElement submit = elem.querySelector('[type=submit]');
+    ButtonElement submit = elem.querySelector('[type=submit]') as ButtonElement;
     submit.disabled = true;
 
-    var loading = new Loading.small()
-      ..renderAfter(submit);
-    accountService.updateNewPassword(oldPasswordInput.value, passwordInput.value)
-    .then((AccountAuth auth) {
+    var loading = new Loading.small()..renderAfter(submit);
+    accountService
+        .updateNewPassword(oldPasswordInput.value!, passwordInput.value!)
+        .then((AccountAuth auth) {
       accountSession.save(auth);
       elem.remove();
       alert.hide();
-      new FlashToast.success(i18n('account-settings.update-new-password-success'), seconds:3);
+      new FlashToast.success(
+          i18n('account-settings.update-new-password-success'),
+          seconds: 3);
       route.reload();
     }).catchError((e) {
       alert.renderError('${e}');
@@ -123,6 +129,5 @@ class _UpdateNewPasswordForm {
       submit.disabled = false;
       loading.remove();
     });
-
   }
 }

@@ -1,10 +1,10 @@
 library route;
+
 import 'dart:html';
 
 const Router route = const Router._();
 
 class Router {
-
   const Router._();
 
   String get signUp => '/account/sign-up';
@@ -25,21 +25,23 @@ class Router {
 
   String user(String username) => '/u/$username';
 
-  void reload({String hash}) {
+  void reload({String? hash}) {
     if (hash != null) {
       window.location.hash = hash;
     }
     window.location.reload();
   }
 
-  void gotoHome([String queryString]) => _gotoWithQuery(home, queryString);
+  void gotoHome([String? queryString]) => _gotoWithQuery(home, queryString);
 
-  void gotoSignInWithSignUpSuccess() => _gotoWithQuery(signIn, 'sign-up-success');
+  void gotoSignInWithSignUpSuccess() =>
+      _gotoWithQuery(signIn, 'sign-up-success');
 
-  void gotoSignInWithSendResetPasswordSuccess() => _gotoWithQuery(signIn,
-  'send-reset-password-success');
+  void gotoSignInWithSendResetPasswordSuccess() =>
+      _gotoWithQuery(signIn, 'send-reset-password-success');
 
-  void gotoSignInWithUpdatePasswordSuccess() => _gotoWithQuery(signIn, 'update-password-success');
+  void gotoSignInWithUpdatePasswordSuccess() =>
+      _gotoWithQuery(signIn, 'update-password-success');
 
   void gotoNewArticlesOfZone(String zone) {
     _gotoWithQuery('/z/${zone}/new', null);
@@ -55,7 +57,7 @@ class Router {
    *
    * browser do not send referrer.
    */
-  void _gotoWithQuery(String path, String queryString) {
+  void _gotoWithQuery(String path, String? queryString) {
     if (queryString == null) {
       window.location.href = path;
       return;
@@ -68,15 +70,14 @@ class Router {
     return '${window.location.pathname}.part';
   }
 
-  String currentZone() {
+  String? currentZone() {
     //see Zone.java for pattern
-    return new RegExp(r'/z/([a-z0-9][a-z0-9\-]{1,28}[a-z0-9])')
-    .allMatches(window.location.pathname).first.group(1);
+    var matches = new RegExp(r'/z/([a-z0-9][a-z0-9\-]{1,28}[a-z0-9])')
+        .allMatches(window.location.pathname ?? "");
+    return matches.isEmpty ? null : matches.first.group(1);
   }
 
   void redirect(String location) {
     window.location.href = location;
   }
-
-
 }

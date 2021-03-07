@@ -1,13 +1,14 @@
 library forget_password_form;
 
 import 'dart:html';
+
 import 'package:kaif_web/model.dart';
 import 'package:kaif_web/util.dart';
 
 class ForgetPasswordForm {
   final Element elem;
   final AccountService accountService;
-  Alert alert;
+  late Alert alert;
 
   ForgetPasswordForm(this.elem, this.accountService) {
     elem.onSubmit.listen(_submit);
@@ -19,14 +20,17 @@ class ForgetPasswordForm {
       ..preventDefault()
       ..stopPropagation();
 
-    TextInputElement nameInput = elem.querySelector('#nameInput');
-    TextInputElement emailInput = elem.querySelector('#emailInput');
-    ButtonElement submit = elem.querySelector('[type=submit]');
+    TextInputElement nameInput =
+        elem.querySelector('#nameInput') as TextInputElement;
+    TextInputElement emailInput =
+        elem.querySelector('#emailInput') as TextInputElement;
+    ButtonElement submit = elem.querySelector('[type=submit]') as ButtonElement;
     submit.disabled = true;
 
     alert.hide();
-    accountService.sendResetPassword(nameInput.value, emailInput.value)
-    .then((_) {
+    accountService
+        .sendResetPassword(nameInput.value!, emailInput.value!)
+        .then((_) {
       route.gotoSignInWithSendResetPasswordSuccess();
     }).catchError((e) {
       alert.renderError('${e}');
@@ -34,5 +38,4 @@ class ForgetPasswordForm {
       submit.disabled = false;
     });
   }
-
 }

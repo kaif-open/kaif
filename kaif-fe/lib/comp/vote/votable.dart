@@ -1,9 +1,11 @@
 library votable;
-import 'package:kaif_web/state/state_machine.dart';
-import 'package:kaif_web/model.dart';
-import 'package:kaif_web/util.dart';
+
 import 'dart:async';
 import 'dart:html';
+
+import 'package:kaif_web/model.dart';
+import 'package:kaif_web/state/state_machine.dart';
+import 'package:kaif_web/util.dart';
 
 //TODO back off click too fast
 //TODO total vote CD time
@@ -13,23 +15,20 @@ import 'dart:html';
  * and call [init] first, then invoke [apply*] methods after voters is ready
  */
 abstract class Votable {
-
   final Element elem;
 
-  StateMachine _machine;
-  int _currentCount;
-  Element _upVoteElem;
-  Element _downVoteElem;
-  Element _voteCountElem;
+  late StateMachine _machine;
+  late int _currentCount;
+  late Element _upVoteElem;
+  late Element _downVoteElem;
+  late Element _voteCountElem;
 
   Votable(this.elem) {
     _machine = new StateMachine(new _WaitVoterState(this));
   }
 
-  void init(int currentCount,
-            Element upVoteElem,
-            Element downVoteElem,
-            Element voteCountElem) {
+  void init(int currentCount, Element upVoteElem, Element downVoteElem,
+      Element voteCountElem) {
     _currentCount = currentCount;
     _upVoteElem = upVoteElem;
     _downVoteElem = downVoteElem;
@@ -39,27 +38,19 @@ abstract class Votable {
   }
 
   void applyNotSignIn() {
-    _machine.processTrigger(
-        new _VotableTrigger()
-          ..noSignIn = true);
+    _machine.processTrigger(new _VotableTrigger()..noSignIn = true);
   }
 
   void applyNoVoter() {
-    _machine.processTrigger(
-        new _VotableTrigger()
-          ..noVoter = true);
+    _machine.processTrigger(new _VotableTrigger()..noVoter = true);
   }
 
   void applyVoterReady(Voter voter) {
-    _machine.processTrigger(
-        new _VotableTrigger()
-          ..voterReady = voter);
+    _machine.processTrigger(new _VotableTrigger()..voterReady = voter);
   }
 
   void _triggerVotingCompleted(VoteState voteState) {
-    _machine.processTrigger(
-        new _VotableTrigger()
-          ..votingCompleted = voteState);
+    _machine.processTrigger(new _VotableTrigger()..votingCompleted = voteState);
   }
 
   void _markVisualState(VoteState voteState) {
@@ -76,22 +67,18 @@ abstract class Votable {
         ..stopPropagation()
         ..preventDefault();
 
-      _machine.processTrigger(
-          new _VotableTrigger()
-            ..upVoting = true);
+      _machine.processTrigger(new _VotableTrigger()..upVoting = true);
     });
     _downVoteElem.onClick.listen((e) {
       e
         ..stopPropagation()
         ..preventDefault();
 
-      _machine.processTrigger(
-          new _VotableTrigger()
-            ..downVoting = true);
+      _machine.processTrigger(new _VotableTrigger()..downVoting = true);
     });
   }
 
-  void _changeCount({int delta}) {
+  void _changeCount({required int delta}) {
     _currentCount += delta;
     _voteCountElem.text = "${currentCount}";
   }
@@ -104,12 +91,12 @@ abstract class Votable {
 
 // all triggers
 class _VotableTrigger {
-  Voter voterReady;
-  bool noVoter;
-  bool noSignIn;
-  bool upVoting;
-  bool downVoting;
-  VoteState votingCompleted;
+  Voter? voterReady;
+  bool? noVoter;
+  bool? noSignIn;
+  bool? upVoting;
+  bool? downVoting;
+  VoteState? votingCompleted;
 }
 
 // base class of all machine's state
@@ -121,20 +108,15 @@ abstract class _VotableState extends State {
   }
 }
 
-
 class _WaitVoterState extends _VotableState {
+  _WaitVoterState(Votable votable) : super(votable) {}
 
-  _WaitVoterState(Votable votable) : super(votable) {
-  }
+  void enter() {}
 
-  void enter() {
-  }
-
-  void exit() {
-  }
+  void exit() {}
 
   State process(dynamic raw) {
-_VotableTrigger trigger =  raw as _VotableTrigger;
+    _VotableTrigger trigger = raw as _VotableTrigger;
 
     if (trigger.noSignIn == true) {
       return new _WaitSignUpState(votable);
@@ -145,16 +127,16 @@ _VotableTrigger trigger =  raw as _VotableTrigger;
     }
 
     if (trigger.voterReady != null) {
-      Voter voter = trigger.voterReady;
+      Voter voter = trigger.voterReady!;
       if (voter.voteState == VoteState.UP) {
         if (votable.currentCount <= voter.previousCount) {
           // web page is cached (counting is stale)
-          votable._changeCount(delta:1);
+          votable._changeCount(delta: 1);
         }
         return new _UpVotedState(votable);
       } else if (voter.voteState == VoteState.DOWN) {
         if (votable.currentCount >= voter.previousCount) {
-          votable._changeCount(delta:-1);
+          votable._changeCount(delta: -1);
         }
         return new _DownVotedState(votable);
       } else {
@@ -164,90 +146,86 @@ _VotableTrigger trigger =  raw as _VotableTrigger;
 
     return StateMachineControl.RETAIN;
   }
-
 }
 
 class _WaitSignUpState extends _VotableState {
-  _WaitSignUpState(Votable votable) : super(votable) {
-  }
+  _WaitSignUpState(Votable votable) : super(votable) {}
 
   void enter() {
     votable._markVisualState(VoteState.EMPTY);
   }
 
   State process(dynamic raw) {
-    _VotableTrigger trigger =  raw as _VotableTrigger;
+    _VotableTrigger trigger = raw as _VotableTrigger;
     if (trigger.upVoting == true || trigger.downVoting == true) {
       var actionElem = new AnchorElement()
         ..href = route.signIn
         ..text = i18n('account-menu.sign-in');
-      new SnackBar(i18n('votable.sign-in-to-vote'), action:actionElem).render();
+      new SnackBar(i18n('votable.sign-in-to-vote'), action: actionElem)
+          .render();
     }
     return StateMachineControl.RETAIN;
   }
 }
 
 class _EmptyVoteState extends _VotableState {
-  _EmptyVoteState(Votable votable) : super(votable) {
-  }
+  _EmptyVoteState(Votable votable) : super(votable) {}
 
   void enter() {
     votable._markVisualState(VoteState.EMPTY);
   }
 
   State process(dynamic raw) {
-    _VotableTrigger trigger =  raw as _VotableTrigger;
+    _VotableTrigger trigger = raw as _VotableTrigger;
     if (trigger.upVoting == true) {
-      return new _VotingState(votable,
-      VoteState.UP, VoteState.EMPTY, votable.currentCount);
+      return new _VotingState(
+          votable, VoteState.UP, VoteState.EMPTY, votable.currentCount);
     }
     if (trigger.downVoting == true) {
-      return new _VotingState(votable,
-      VoteState.DOWN, VoteState.EMPTY, votable.currentCount);
+      return new _VotingState(
+          votable, VoteState.DOWN, VoteState.EMPTY, votable.currentCount);
     }
     return StateMachineControl.RETAIN;
   }
 }
 
 class _UpVotedState extends _VotableState {
-  _UpVotedState(Votable votable) : super(votable) {
-  }
+  _UpVotedState(Votable votable) : super(votable) {}
 
   void enter() {
     votable._markVisualState(VoteState.UP);
   }
 
   State process(dynamic raw) {
-    _VotableTrigger trigger =  raw as _VotableTrigger;
+    _VotableTrigger trigger = raw as _VotableTrigger;
     if (trigger.upVoting == true) {
-      return new _VotingState(votable,
-      VoteState.EMPTY, VoteState.UP, votable.currentCount);
+      return new _VotingState(
+          votable, VoteState.EMPTY, VoteState.UP, votable.currentCount);
     }
     if (trigger.downVoting == true) {
-      return new _VotingState(votable,
-      VoteState.DOWN, VoteState.UP, votable.currentCount);
+      return new _VotingState(
+          votable, VoteState.DOWN, VoteState.UP, votable.currentCount);
     }
     return StateMachineControl.RETAIN;
   }
 }
 
 class _DownVotedState extends _VotableState {
-  _DownVotedState(Votable votable) : super(votable) {
-  }
+  _DownVotedState(Votable votable) : super(votable) {}
 
   void enter() {
     votable._markVisualState(VoteState.DOWN);
   }
 
   State process(dynamic raw) {
-    _VotableTrigger trigger =  raw as _VotableTrigger;
+    _VotableTrigger trigger = raw as _VotableTrigger;
     if (trigger.upVoting == true) {
-      return new _VotingState(votable,
-      VoteState.UP, VoteState.DOWN, votable.currentCount);
+      return new _VotingState(
+          votable, VoteState.UP, VoteState.DOWN, votable.currentCount);
     }
     if (trigger.downVoting == true) {
-      return new _VotingState(votable,
-      VoteState.EMPTY, VoteState.DOWN, votable.currentCount);
+      return new _VotingState(
+          votable, VoteState.EMPTY, VoteState.DOWN, votable.currentCount);
     }
     return StateMachineControl.RETAIN;
   }
@@ -258,33 +236,31 @@ class _VotingState extends _VotableState {
   final VoteState previousState;
   final int previousCount;
 
-  _VotingState(Votable votable,
-               this.newState, this.previousState, this.previousCount) : super(votable) {
-
-  }
+  _VotingState(
+      Votable votable, this.newState, this.previousState, this.previousCount)
+      : super(votable) {}
 
   void enter() {
     //visually visible for user, before actually submit success
 
     var delta = newState.deltaFrom(previousState);
-    votable._changeCount(delta:delta);
+    votable._changeCount(delta: delta);
     votable._markVisualState(newState);
 
-    votable.onVote(newState, previousState, previousCount)
-    .then((_) {
+    votable.onVote(newState, previousState, previousCount).then((_) {
       votable._triggerVotingCompleted(newState);
     }).catchError((e) {
       //revert
-      votable._changeCount(delta:-delta);
+      votable._changeCount(delta: -delta);
 
       //TODO handle not enough permission
-      new Toast.error('$e', seconds:5).render();
+      new Toast.error('$e', seconds: 5).render();
       votable._triggerVotingCompleted(previousState);
     });
   }
 
   State process(dynamic raw) {
-    _VotableTrigger trigger =  raw as _VotableTrigger;
+    _VotableTrigger trigger = raw as _VotableTrigger;
     if (trigger.votingCompleted != null) {
       switch (trigger.votingCompleted) {
         case VoteState.UP:

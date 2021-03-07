@@ -1,37 +1,42 @@
 library model_account;
 
-class PermissionError extends Error {
-}
+class PermissionError extends Error {}
 
 class AccountAuth {
-  final String username;
-  final String accessToken;
-  final DateTime expireTime;
-  final DateTime generateTime;
+  late String username;
+  late String accessToken;
+  late DateTime expireTime;
+  late DateTime generateTime;
 
-  AccountAuth(this.username, this.accessToken, this.expireTime, this.generateTime) {
-    if (username == null || accessToken == null || expireTime == null || generateTime == null) {
+  AccountAuth(String? username, String? accessToken, int? expireTime,
+      int? generateTime) {
+    if (username == null ||
+        accessToken == null ||
+        expireTime == null ||
+        generateTime == null) {
       //someone corrupt data, force abort
       throw new PermissionError();
     }
+    this.username = username;
+    this.accessToken = accessToken;
+    this.expireTime = new DateTime.fromMillisecondsSinceEpoch(expireTime);
+    this.generateTime = new DateTime.fromMillisecondsSinceEpoch(generateTime);
   }
 
-  AccountAuth.decode(Map raw) : this(
-      raw['username'],
-      raw['accessToken'],
-      new DateTime.fromMillisecondsSinceEpoch(raw['expireTime']),
-      new DateTime.fromMillisecondsSinceEpoch(raw['generateTime']));
+  AccountAuth.decode(Map raw)
+      : this(raw['username'], raw['accessToken'], raw['expireTime'],
+            raw['generateTime']);
 
   toJson() => {
-    'username':username,
-    'accessToken':accessToken,
-    'expireTime':expireTime.millisecondsSinceEpoch,
-    'generateTime':generateTime.millisecondsSinceEpoch
-  };
+        'username': username,
+        'accessToken': accessToken,
+        'expireTime': expireTime.millisecondsSinceEpoch,
+        'generateTime': generateTime.millisecondsSinceEpoch
+      };
 
   bool isRequireExtends() {
     var now = new DateTime.now();
-    return now.isAfter(generateTime.add(const Duration(days:1)));
+    return now.isAfter(generateTime.add(const Duration(days: 1)));
   }
 
   bool isExpired() {
@@ -39,5 +44,3 @@ class AccountAuth {
     return now.isAfter(expireTime);
   }
 }
-
-
