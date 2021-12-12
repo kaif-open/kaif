@@ -47,5 +47,9 @@ k3d cluster stop kaif-local
 
 # start again
 k3d cluster start kaif-local
+
+# delete all
+k3d registry delete k3d-kaif-registry.localhost
+k3d cluster delete kaif-local
 ```
 
