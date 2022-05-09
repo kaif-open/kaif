@@ -74,3 +74,15 @@ tf apply
     - cert-manager for kaif.io tls
     - `gcr-secret` to pull image from gcr
     - `letsencrypt-issuer` tls issuer
+
+
+### example command for postgres adminstration in k8s
+
+ * connect to postgres
+
+```
+kubectl run postgresql-postgresql-client --rm --tty -i --restart='Never' --namespace kaif --image bitnami/postgresql \
+   --env="PGPASSWORD=changeme" --command -- psql --host kaif-db-postgresql -U kaif 
+```
+
+ * for production password, refer to gcloud secret manager 
