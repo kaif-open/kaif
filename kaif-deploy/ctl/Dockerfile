@@ -44,7 +44,7 @@ RUN curl -L https://github.com/derailed/k9s/releases/download/v0.24.2/k9s_Linux_
  && chmod +x /usr/local/bin/k9s
 
 RUN mkdir -p /opt \
- && curl -L https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-319.0.0-linux-x86_64.tar.gz \
+ && curl -L https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-414.0.0-linux-x86_64.tar.gz \
     | tar xvfz - -C /opt
 
 ## for console access

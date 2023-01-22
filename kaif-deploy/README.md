@@ -50,7 +50,8 @@ terraform apply
 
 * prepare production k8s kube config file: `kube_config_prod` in ctl/secret
 * prepare `gcloud` config in ctl/secret
-* prepare gcp json-key file in secret/kaif-id-328c723761f5.json
+* prepare gcp json-key file in secret/kaif-id-93d44b502305.json
+  * from `Compute Engine default service account`
 
 * build docker image to gcr
 

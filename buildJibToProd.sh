@@ -12,4 +12,4 @@ else
 fi
 
 JAVA_HOME=$jhome "$CUR_DIR"/gradlew clean jib \
-  -Djib-json-key-file="$CUR_DIR/kaif-deploy/secret/kaif-id-328c723761f5.json"
+  -Djib-json-key-file="$CUR_DIR/kaif-deploy/secret/kaif-id-93d44b502305.json"
